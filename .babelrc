@@ -14,5 +14,21 @@
       }
     ],
     "@emotion/babel-preset-css-prop"
-  ]
+  ],
+  // Override present-env for test because Jest runs on Node and 
+  // needs commonJS imports
+  "env": {
+    "test": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "esmodules": false 
+            }
+          }
+        ]
+      ]
+    }
+  }
 }

@@ -1,6 +1,6 @@
-# celo-web-wallet
+# Celo Web Wallet
 
-A light, purely client-side wallet for the Celo network 
+A light, purely client-side wallet for the Celo network.
 
 ## Building and running on localhost
 
