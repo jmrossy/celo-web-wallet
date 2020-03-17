@@ -1,0 +1,28 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "no-eval": 2,
+    "no-extra-boolean-cast": 2,
+    "no-ex-assign": 2,
+    "@typescript-eslint/no-floating-promises": 2,
+    "@typescript-eslint/explicit-function-return-type": 0
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
