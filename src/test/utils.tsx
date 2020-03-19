@@ -3,13 +3,13 @@ import * as React from 'react'
 import { Provider } from 'react-redux'
 import configureStore from 'redux-mock-store'
 import { RootState } from '../app/rootReducer'
-import { accountInitialState } from '../features/account/accountSlice'
+import { walletInitialState } from '../features/wallet/walletSlice'
 import { RecursivePartial } from '../utils/typescript'
 
 // Needs to be kept in sync with all slices used in store
 export function getFullInitialState(): RootState {
   return {
-    account: accountInitialState,
+    wallet: walletInitialState,
   }
 }
 

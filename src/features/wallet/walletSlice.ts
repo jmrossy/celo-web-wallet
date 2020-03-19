@@ -1,17 +1,17 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assert } from '../../utils/assert'
 
-interface Account {
+interface Wallet {
   address: string
 }
 
-export const accountInitialState: Account = {
+export const walletInitialState: Wallet = {
   address: '0x0000000000000000000000000000000000000000',
 }
 
-const accountSlice = createSlice({
+const walletSlice = createSlice({
   name: 'account',
-  initialState: accountInitialState,
+  initialState: walletInitialState,
   reducers: {
     setAddress(state, action: PayloadAction<string>) {
       const address = action.payload
@@ -21,6 +21,7 @@ const accountSlice = createSlice({
   },
 })
 
-export const { setAddress } = accountSlice.actions
+export const { setAddress } = walletSlice.actions
+export const createWallet = createAction('CREATE_WALLET')
 
-export const accountReducer = accountSlice.reducer
+export const walletReducer = walletSlice.reducer

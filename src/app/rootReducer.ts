@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit'
-import { accountReducer } from '../features/account/accountSlice'
+import { walletReducer } from '../features/wallet/walletSlice'
 
-const rootReducer = combineReducers({ account: accountReducer })
+const rootReducer = combineReducers({ wallet: walletReducer })
 
 export type RootState = ReturnType<typeof rootReducer>
 
