@@ -11,8 +11,8 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server --hot --open",
-    "build": "webpack -d --mode development",
-    "build:prod": "webpack -p --mode production",
+    "build": "webpack -d --mode development --display-modules",
+    "build:prod": "webpack -p --mode production --display-modules",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
     "test": "jest",
     "test:all": "yarn test && yarn lint",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
+    "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
     "@emotion/babel-preset-css-prop": "^10.0.27",

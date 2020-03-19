@@ -2,10 +2,15 @@
 
 exports[`Header snapshot 1`] = `
 <DocumentFragment>
-  <h1
-    class="css-pm4pww-Header"
-  >
-    Your address is 0x0000000000000000000000000000000000000000
-  </h1>
+  <div>
+    <h1
+      class="css-pm4pww-Header"
+    >
+      Your address is 0x0000000000000000000000000000000000000000
+    </h1>
+    <button>
+      Create New Wallet
+    </button>
+  </div>
 </DocumentFragment>
 `;
