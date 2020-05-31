@@ -1,4 +1,4 @@
-import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assert } from '../../utils/assert'
 
 interface Wallet {
@@ -13,7 +13,7 @@ const walletSlice = createSlice({
   name: 'account',
   initialState: walletInitialState,
   reducers: {
-    setAddress(state, action: PayloadAction<string>) {
+    setAddress: (state, action: PayloadAction<string>) => {
       const address = action.payload
       assert(address && address.length === 42, `Invalid address ${address}`)
       state.address = address
@@ -22,6 +22,4 @@ const walletSlice = createSlice({
 })
 
 export const { setAddress } = walletSlice.actions
-export const createWallet = createAction('CREATE_WALLET')
-
 export const walletReducer = walletSlice.reducer

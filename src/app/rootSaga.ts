@@ -1,6 +1,9 @@
+import { combineReducers } from '@reduxjs/toolkit'
 import { spawn } from 'redux-saga/effects'
-import walletSaga from '../features/wallet/walletSaga'
+import { createWalletReducer, createWalletSaga } from '../features/wallet/walletSaga'
 
-export default function* root() {
-  yield spawn(walletSaga)
+export const monitoredSagaReducers = combineReducers({ createWallet: createWalletReducer })
+
+export function* rootSaga() {
+  yield spawn(createWalletSaga)
 }

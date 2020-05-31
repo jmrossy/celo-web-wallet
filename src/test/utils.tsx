@@ -4,13 +4,23 @@ import { Provider } from 'react-redux'
 import configureStore from 'redux-mock-store'
 import { RootState } from '../app/rootReducer'
 import { walletInitialState } from '../features/wallet/walletSlice'
+import { DefaultSagaState } from '../utils/saga'
 import { RecursivePartial } from '../utils/typescript'
 
 // Needs to be kept in sync with all slices used in store
+// TODO find a way to create full mock state without requiring this to be
+// updated when state schema changes
 export function getFullInitialState(): RootState {
   return {
     wallet: walletInitialState,
+    saga: getSagaDefaultState(['createWallet']) as any,
   }
+}
+
+function getSagaDefaultState(sagas: string[]) {
+  const state: { [name: string]: DefaultSagaState } = {}
+  sagas.forEach((sagaName) => (state[sagaName] = { progress: null, error: null }))
+  return state
 }
 
 export function createMockStore(overrides: RecursivePartial<RootState> = {}) {

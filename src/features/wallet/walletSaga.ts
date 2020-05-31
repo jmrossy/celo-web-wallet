@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
-import { put, takeLeading } from 'redux-saga/effects'
-import { createWallet, setAddress } from './walletSlice'
+import { put } from 'redux-saga/effects'
+import { createMonitoredSaga } from '../../utils/saga'
+import { setAddress } from './walletSlice'
 
 function* doCreateWallet() {
   console.debug('Creating new wallet')
@@ -8,6 +9,8 @@ function* doCreateWallet() {
   yield put(setAddress(wallet.address))
 }
 
-export default function* walletSaga() {
-  yield takeLeading(createWallet.type, doCreateWallet)
-}
+export const {
+  wrappedSaga: createWalletSaga,
+  reducer: createWalletReducer,
+  actions: createWalletActions,
+} = createMonitoredSaga(doCreateWallet, { name: 'create-wallet' })

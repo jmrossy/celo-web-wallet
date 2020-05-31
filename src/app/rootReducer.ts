@@ -1,8 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import { walletReducer } from '../features/wallet/walletSlice'
+import { monitoredSagaReducers } from './rootSaga'
 
-const rootReducer = combineReducers({ wallet: walletReducer })
-
+export const rootReducer = combineReducers({ wallet: walletReducer, saga: monitoredSagaReducers })
 export type RootState = ReturnType<typeof rootReducer>
-
-export default rootReducer
