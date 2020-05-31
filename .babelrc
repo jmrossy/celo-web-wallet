@@ -15,8 +15,8 @@
     ],
     "@emotion/babel-preset-css-prop"
   ],
-  // Override present-env for test because Jest runs on Node and 
-  // needs commonJS imports
+  // Override preset-env for test because tests run on Node 
+  // and Node needs commonJS imports
   "env": {
     "test": {
       "presets": [
@@ -27,7 +27,19 @@
               "esmodules": false 
             }
           }
-        ]
+        ],
+        [
+          "@babel/preset-react",
+          {
+            "useBuiltIns": true,
+            "useSpread": true
+          }
+        ],
+        "@emotion/babel-preset-css-prop",
+        // For testing, we use babel's TS compiler instead of tsc
+        // The alternative would be hacking ts-node into the flow which 
+        // hasn't worked so far.
+        "@babel/preset-typescript"
       ]
     }
   },

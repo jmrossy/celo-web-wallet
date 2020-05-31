@@ -4,6 +4,7 @@ import createSagaMiddleware from 'redux-saga'
 import rootReducer from './rootReducer'
 import rootSaga from './rootSaga'
 
+// TODO add monitor only in dev mode
 const sagaMiddleware = createSagaMiddleware({ sagaMonitor })
 
 const store = configureStore({
