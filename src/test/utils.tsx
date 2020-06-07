@@ -3,6 +3,7 @@ import * as React from 'react'
 import { Provider } from 'react-redux'
 import configureStore from 'redux-mock-store'
 import { RootState } from '../app/rootReducer'
+import { monitoredSagas } from '../app/rootSaga'
 import { walletInitialState } from '../features/wallet/walletSlice'
 import { DefaultSagaState } from '../utils/saga'
 import { RecursivePartial } from '../utils/typescript'
@@ -13,11 +14,12 @@ import { RecursivePartial } from '../utils/typescript'
 export function getFullInitialState(): RootState {
   return {
     wallet: walletInitialState,
-    saga: getSagaDefaultState(['createWallet']) as any,
+    saga: getSagaDefaultState() as any,
   }
 }
 
-function getSagaDefaultState(sagas: string[]) {
+function getSagaDefaultState() {
+  const sagas = Object.keys(monitoredSagas)
   const state: { [name: string]: DefaultSagaState } = {}
   sagas.forEach((sagaName) => (state[sagaName] = { progress: null, error: null }))
   return state

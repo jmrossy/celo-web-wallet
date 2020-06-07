@@ -4,7 +4,6 @@ import { createMonitoredSaga } from '../../utils/saga'
 import { setAddress } from './walletSlice'
 
 function* doCreateWallet() {
-  console.debug('Creating new wallet')
   const wallet = ethers.Wallet.createRandom()
   yield put(setAddress(wallet.address))
 }

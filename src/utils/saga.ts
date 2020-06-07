@@ -1,5 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { call, delay, put, race, take } from 'redux-saga/effects'
+import logger from './logger'
 
 const DEFAULT_TIMEOUT = 60 * 1000 // 1 minute
 
@@ -53,7 +54,7 @@ export function createMonitoredSaga<SagaParams = void>(
     while (true) {
       try {
         const trigger = yield take(triggerAction.type)
-        console.debug(`${name} triggered`)
+        logger.debug(`${name} triggered`)
         yield put(progressAction(DefaultProgressStates.Started))
         const { result, cancel, timeout } = yield race({
           // TODO Use fork here instead if parallelism is required for the saga
@@ -63,26 +64,26 @@ export function createMonitoredSaga<SagaParams = void>(
         })
 
         if (cancel) {
-          console.debug(`${name} canceled`)
+          logger.debug(`${name} canceled`)
           yield put(errorAction(DefaultErrorStates.Cancel))
           continue
         }
 
         if (timeout) {
-          console.warn(`${name} timed out`)
+          logger.warn(`${name} timed out`)
           yield put(errorAction(DefaultErrorStates.Timeout))
           continue
         }
 
         if (result === false) {
-          console.warn(`${name} returned failure result`)
+          logger.warn(`${name} returned failure result`)
           yield put(errorAction(DefaultErrorStates.Failure))
           continue
         }
 
         yield put(progressAction(DefaultProgressStates.Success))
       } catch (error) {
-        console.error(`${name} error`, error)
+        logger.error(`${name} error`, error)
         yield put(errorAction(DefaultErrorStates.Exception))
       }
     }
