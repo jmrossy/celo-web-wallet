@@ -2,6 +2,32 @@ import { createAction, createReducer } from '@reduxjs/toolkit'
 import { call, delay, put, race, take } from 'redux-saga/effects'
 import logger from './logger'
 
+/**
+ * A convinence utility to create a saga and trigger action
+ * Use to create simple sagas, for more complex ones use createMonitoredSaga
+ * @param saga the worker saga that will be wrapped
+ */
+export function createSaga<SagaParams = void>(saga: (...args: any[]) => any, name: string) {
+  const triggerAction = createAction<SagaParams>(`${name}/trigger`)
+
+  const wrappedSaga = function* () {
+    while (true) {
+      try {
+        const trigger = yield take(triggerAction.type)
+        logger.debug(`${name} triggered`)
+        yield call(saga, trigger.payload)
+      } catch (error) {
+        logger.error(`${name} error`, error)
+      }
+    }
+  }
+
+  return {
+    wrappedSaga,
+    trigger: triggerAction,
+  }
+}
+
 const DEFAULT_TIMEOUT = 60 * 1000 // 1 minute
 
 export enum DefaultProgressStates {
@@ -22,15 +48,22 @@ export interface DefaultSagaState {
   error: string | null
 }
 
-interface SagaOptions {
+interface MonitoredSagaOptions {
   name: string
   timeoutDuration?: number // in milliseconds
   // TODO add retry option
 }
 
+/**
+ * A convinence utility to create a wrapped saga that handles common concerns like
+ * triger watching, cancel watching, timeout, progress updates, and success/fail updates.
+ * Use to create complex, risky, or long-lived sagas
+ * @param saga the worker saga that will be wrapped
+ * @param options configurations for the wrapper
+ */
 export function createMonitoredSaga<SagaParams = void>(
   saga: (...args: any[]) => any,
-  options: SagaOptions
+  options: MonitoredSagaOptions
 ) {
   const { name, timeoutDuration } = options
   const triggerAction = createAction<SagaParams>(`${name}/trigger`)

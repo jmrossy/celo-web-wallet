@@ -10,9 +10,9 @@ function* doFetchBalances() {
   yield put(updateBalances({ cUsd: '0', cGld: cGld.toString(), lastUpdated: Date.now() }))
 }
 
-async function fetchDollarBalance(address: string) {
-  // TODO
-}
+// async function fetchDollarBalance(address: string) {
+//   // TODO
+// }
 
 async function fetchGoldBalance(address: string) {
   const provider = getProvider()

@@ -9,6 +9,7 @@
         "moduleResolution": "node",
         "target": "es2019",
         "allowJs": true,
+        "allowSyntheticDefaultImports": true,
         "jsx": "preserve",
     },
     "include": [

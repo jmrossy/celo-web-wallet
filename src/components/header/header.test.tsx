@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { renderWithProvider } from '../../test/utils'
-import Header from './header'
+import { Header } from './Header'
 
 describe('Header', () => {
   it('matches snapshot', () => {

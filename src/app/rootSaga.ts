@@ -2,7 +2,11 @@ import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { spawn } from 'redux-saga/effects'
 import { createWalletReducer, createWalletSaga } from '../features/wallet/createWallet'
 import { fetchBalancesReducer, fetchBalancesSaga } from '../features/wallet/fetchBalances'
+import { importWalletSaga } from '../features/wallet/importWallet'
 import { DefaultSagaState } from '../utils/saga'
+
+// All regular sagas must be included here
+const sagas = [importWalletSaga]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {
@@ -31,7 +35,10 @@ export const monitoredSagaReducers = combineReducers(
 )
 
 export function* rootSaga() {
-  for (const s of Object.values(monitoredSagas)) {
-    yield spawn(s.saga)
+  for (const s of sagas) {
+    yield spawn(s)
+  }
+  for (const m of Object.values(monitoredSagas)) {
+    yield spawn(m.saga)
   }
 }

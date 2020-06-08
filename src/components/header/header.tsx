@@ -1,21 +1,21 @@
-import * as React from 'react'
+import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../app/rootReducer'
 import { createWalletActions } from '../../features/wallet/createWallet'
 import { fetchBalancesActions } from '../../features/wallet/fetchBalances'
 
-function Header() {
+export function Header() {
   const { address, balances } = useSelector((s: RootState) => ({
     address: s.wallet.address,
     balances: s.wallet.balances,
   }))
   const dispatch = useDispatch()
 
-  const onClickCreateWallet = React.useCallback(() => {
+  const onClickCreateWallet = useCallback(() => {
     dispatch(createWalletActions.trigger())
   }, [])
 
-  const onClickFetchBalances = React.useCallback(() => {
+  const onClickFetchBalances = useCallback(() => {
     dispatch(fetchBalancesActions.trigger())
   }, [])
 
@@ -23,7 +23,7 @@ function Header() {
     <div>
       <h1
         css={{
-          backgroundColor: 'green',
+          backgroundColor: 'yellow',
         }}
       >
         Your address is {address}
@@ -35,5 +35,3 @@ function Header() {
     </div>
   )
 }
-
-export default Header
