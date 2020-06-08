@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Header } from '../components/header/Header'
-import { ImportWalletForm } from '../components/header/ImportWalletForm'
+import { ImportWalletForm } from '../components/ImportWalletForm'
 import { connectToForno } from '../features/provider/provider'
 
 class App extends React.Component {

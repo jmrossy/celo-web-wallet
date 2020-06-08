@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { importWalletTrigger } from '../../features/wallet/importWallet'
+import { importWalletTrigger } from '../features/wallet/importWallet'
 
 export function ImportWalletForm() {
   const [mnemonic, setMnemonic] = useState('')

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../app/rootReducer'
 import { createWalletActions } from '../../features/wallet/createWallet'
@@ -11,13 +11,13 @@ export function Header() {
   }))
   const dispatch = useDispatch()
 
-  const onClickCreateWallet = useCallback(() => {
+  const onClickCreateWallet = () => {
     dispatch(createWalletActions.trigger())
-  }, [])
+  }
 
-  const onClickFetchBalances = useCallback(() => {
+  const onClickFetchBalances = () => {
     dispatch(fetchBalancesActions.trigger())
-  }, [])
+  }
 
   return (
     <div>
