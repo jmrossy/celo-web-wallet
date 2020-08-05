@@ -15,7 +15,7 @@ const configProd: Config = {
 const configDev: Config = {
   debug: true,
   fornoUrl: 'https://alfajores-forno.celo-testnet.org',
-  chainId: 44786,
+  chainId: 44787,
 }
 
 export const config = Object.freeze(configDev)
