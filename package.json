@@ -27,7 +27,8 @@
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.1",
     "redux-saga": "^1.1.3",
-    "ses": "^0.9.1"
+    "ses": "^0.9.1",
+    "typed-redux-saga": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.1",

@@ -24,5 +24,8 @@ export async function connectToForno() {
 }
 
 export function getProvider() {
+  if (!provider) {
+    logger.warn('Provider is not yet initialized')
+  }
   return provider
 }

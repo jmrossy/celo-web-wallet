@@ -1,37 +1,38 @@
-import { ethers } from 'ethers'
-import { call, put, select } from 'redux-saga/effects'
+import { call, put, select } from 'typed-redux-saga'
 import { RootState } from '../../app/rootReducer'
+import { CeloContract } from '../../config'
 import { createMonitoredSaga } from '../../utils/saga'
+import { getContract } from '../provider/contracts'
 import { getProvider } from '../provider/provider'
-import { ABI as StableTokenAbi, CONTRACT_ADDRESS } from '../tokens/stableToken'
 import { updateBalances } from './walletSlice'
 
-function* doFetchBalances() {
-  const address = yield select((state: RootState) => state.wallet.address)
-  const cGld = yield call(fetchGoldBalance, address)
-  const cUsd = yield call(fetchDollarBalance, address)
+function* fetchBalances() {
+  const address = yield* select((state: RootState) => state.wallet.address)
+  const { cGld, cUsd } = yield* call(fetchAllBalances, address)
   console.log('cGld', cGld)
   console.log('cUsd', cUsd)
-  yield put(
-    updateBalances({ cUsd: cUsd.toString(), cGld: cGld.toString(), lastUpdated: Date.now() })
-  )
+  yield* put(updateBalances({ cUsd, cGld, lastUpdated: Date.now() }))
+}
+
+async function fetchAllBalances(address: string) {
+  const [cGld, cUsd] = await Promise.all([fetchGoldBalance(address), fetchDollarBalance(address)])
+  return { cGld, cUsd }
 }
 
 async function fetchGoldBalance(address: string) {
   const provider = getProvider()
-  return provider.getBalance(address)
+  const balance = await provider.getBalance(address)
+  return balance.toString()
 }
 
 async function fetchDollarBalance(address: string) {
-  const provider = getProvider()
-  const stableTokenContract = new ethers.Contract(CONTRACT_ADDRESS, StableTokenAbi, provider)
-  console.log(stableTokenContract)
-  console.log(JSON.stringify(stableTokenContract))
-  return stableTokenContract.balanceOf(address)
+  const stableToken = getContract(CeloContract.StableToken)
+  const balance = await stableToken.balanceOf(address)
+  return balance.toString()
 }
 
 export const {
   wrappedSaga: fetchBalancesSaga,
   reducer: fetchBalancesReducer,
   actions: fetchBalancesActions,
-} = createMonitoredSaga(doFetchBalances, { name: 'fetch-balances' })
+} = createMonitoredSaga(fetchBalances, { name: 'fetch-balances' })
