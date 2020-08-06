@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { Header } from '../components/header/Header'
-import { ImportWalletForm } from '../components/ImportWalletForm'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HomeScreen } from '../features/home/homeScreen'
+import { WelcomeScreen } from '../features/onboarding/WelcomeScreen'
 import { connectToForno } from '../features/provider/provider'
 
 class App extends React.Component {
@@ -10,10 +11,12 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
-        <Header />
-        <ImportWalletForm />
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomeScreen />} />
+          <Route path="setup/*" element={<WelcomeScreen />} />
+        </Routes>
+      </BrowserRouter>
     )
   }
 }
