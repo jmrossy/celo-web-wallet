@@ -1,9 +1,9 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { spawn } from 'redux-saga/effects'
-import { createWalletReducer, createWalletSaga } from '../features/wallet/createWallet'
-import { fetchBalancesReducer, fetchBalancesSaga } from '../features/wallet/fetchBalances'
-import { importWalletSaga } from '../features/wallet/importWallet'
-import { DefaultSagaState } from '../utils/saga'
+import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
+import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
+import { importWalletSaga } from 'src/features/wallet/importWallet'
+import { DefaultSagaState } from 'src/utils/saga'
 
 // All regular sagas must be included here
 const sagas = [importWalletSaga]

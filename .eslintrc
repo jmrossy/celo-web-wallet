@@ -9,6 +9,9 @@
   ],
   "extends": [
     "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
@@ -18,17 +21,26 @@
     "no-extra-boolean-cast": 2,
     "no-ex-assign": 2,
     "no-console": 1,
+    "import/no-self-import": 2,
+    "import/no-duplicates": 2,
+    "import/no-default-export": 1,
     "@typescript-eslint/no-floating-promises": 2,
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/member-delimiter-style": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/ban-ts-ignore": 0,
     "@typescript-eslint/ban-ts-comment": 0,
-    "@typescript-eslint/explicit-module-boundary-types": 0
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/no-require-imports": 1
   },
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "paths": ["./"]
+      }
     }
   }
 }

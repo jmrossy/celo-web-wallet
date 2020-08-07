@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
+import { CELO_DERIVATION_PATH } from 'src/consts'
+import { createSaga } from 'src/utils/saga'
 import { put } from 'typed-redux-saga'
-import { CELO_DERIVATION_PATH } from '../../consts'
-import { createSaga } from '../../utils/saga'
 import { setAddress } from './walletSlice'
 
 function* importWallet(mnemonic: string) {

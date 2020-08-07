@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { renderWithProvider } from '../../test/utils'
+import { renderWithProvider } from 'src/test/utils'
 import { Header } from './Header'
 
 describe('Header', () => {

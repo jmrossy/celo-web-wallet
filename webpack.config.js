@@ -1,12 +1,12 @@
-const webpack = require('webpack');
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack')
+const path = require('path')
+const CopyPlugin = require('copy-webpack-plugin')
 
 const config = {
-  entry: "./src/index.tsx",
+  entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   module: {
     rules: [
@@ -21,7 +21,7 @@ const config = {
             loader: 'eslint-loader',
           },
         ],
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.ts(x)?$/,
@@ -32,20 +32,12 @@ const config = {
             options: { cacheDirectory: true },
           },
           {
-            loader: 'ts-loader'
+            loader: 'ts-loader',
           },
           {
             loader: 'eslint-loader',
           },
-        ]
-      },
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader'
         ],
-        exclude: /\.module\.css$/
       },
       {
         test: /\.css$/,
@@ -55,34 +47,27 @@ const config = {
             loader: 'css-loader',
             options: {
               importLoaders: 1,
-              modules: true
-            }
-          }
+              modules: true,
+            },
+          },
         ],
-        include: /\.module\.css$/
+        include: /\.module\.css$/,
       },
       {
         test: /\.svg$/,
-        use: 'file-loader'
-      }
-    ]
+        use: 'file-loader',
+      },
+    ],
   },
   resolve: {
-    extensions: [
-      '.js',
-      '.jsx',
-      '.tsx',
-      '.ts',
-    ]
+    extensions: ['.js', '.jsx', '.tsx', '.ts'],
+    modules: [path.resolve('./node_modules'), path.resolve('./')],
   },
   plugins: [
     new CopyPlugin({
-      patterns:
-      [
-        { from: './src/index.html', to: 'index.html' },
-      ]
+      patterns: [{ from: './src/index.html', to: 'index.html' }],
     }),
   ],
-};
+}
 
-module.exports = config;
+module.exports = config

@@ -1,6 +1,6 @@
 import React from 'react'
-import { Header } from '../../components/header/Header'
-import { ImportWalletForm } from '../../components/ImportWalletForm'
+import { Header } from 'src/components/header/Header'
+import { ImportWalletForm } from 'src/components/ImportWalletForm'
 
 export function HomeScreen() {
   return (

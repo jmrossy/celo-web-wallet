@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
-import { config } from '../../config'
-import logger from '../../utils/logger'
-import { sleep } from '../../utils/sleep'
+import { config } from 'src/config'
+import { logger } from 'src/utils/logger'
+import { sleep } from 'src/utils/sleep'
 
 let provider: ethers.providers.JsonRpcProvider
 

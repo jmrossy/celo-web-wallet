@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { HomeScreen } from '../features/home/homeScreen'
-import { WelcomeScreen } from '../features/onboarding/WelcomeScreen'
-import { connectToForno } from '../features/provider/provider'
+import { HomeScreen } from 'src/features/home/HomeScreen'
+import { WelcomeScreen } from 'src/features/onboarding/WelcomeScreen'
+import { connectToForno } from 'src/provider/provider'
 
-class App extends React.Component {
+export class App extends React.Component {
   async componentDidMount() {
     await connectToForno()
   }
@@ -20,5 +20,3 @@ class App extends React.Component {
     )
   }
 }
-
-export default App

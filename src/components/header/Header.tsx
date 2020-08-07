@@ -1,8 +1,8 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../app/rootReducer'
-import { createWalletActions } from '../../features/wallet/createWallet'
-import { fetchBalancesActions } from '../../features/wallet/fetchBalances'
+import { RootState } from 'src/app/rootReducer'
+import { createWalletActions } from 'src/features/wallet/createWallet'
+import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 
 export function Header() {
   const { address, balances } = useSelector((s: RootState) => ({

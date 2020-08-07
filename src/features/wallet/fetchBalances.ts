@@ -1,9 +1,9 @@
+import { RootState } from 'src/app/rootReducer'
+import { CeloContract } from 'src/config'
+import { getContract } from 'src/provider/contracts'
+import { getProvider } from 'src/provider/provider'
+import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
-import { RootState } from '../../app/rootReducer'
-import { CeloContract } from '../../config'
-import { createMonitoredSaga } from '../../utils/saga'
-import { getContract } from '../provider/contracts'
-import { getProvider } from '../provider/provider'
 import { updateBalances } from './walletSlice'
 
 function* fetchBalances() {

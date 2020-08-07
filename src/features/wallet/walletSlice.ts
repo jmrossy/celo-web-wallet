@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { assert } from '../../utils/assert'
+import { assert } from 'src/utils/assert'
 
 export interface Balances {
   // All balances are represented in wei

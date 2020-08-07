@@ -40,6 +40,16 @@
         // The alternative would be hacking ts-node into the flow which 
         // hasn't worked so far.
         "@babel/preset-typescript"
+      ],
+      "plugins": [
+        [
+          "module-name-mapper",
+          {
+            "moduleNameMapper": {
+              "^src/(.*)": "<pkgDir>/src/$1"
+            }
+          }
+        ]
       ]
     }
   },

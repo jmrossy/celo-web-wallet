@@ -1,4 +1,4 @@
-export const enum CeloContract {
+export enum CeloContract {
   StableToken,
 }
 

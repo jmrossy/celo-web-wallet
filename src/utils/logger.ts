@@ -8,5 +8,3 @@ export const logger = {
   warn: (...args: any[]) => config.debug && console.warn(...args),
   error: (...args: any[]) => console.error(...args),
 }
-
-export default logger

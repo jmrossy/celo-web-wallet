@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
         "outDir": "./dist/",
         "sourceMap": true,
         "strict": true,
@@ -15,4 +16,7 @@
     "include": [
         "./src/**/*"
     ],
+    "exclude": [
+      "node_modules"
+    ]
 }

@@ -1,7 +1,7 @@
 import { Contract, ethers } from 'ethers'
-import { CeloContract, config } from '../../config'
-import { ABI as StableTokenAbi } from '../ABIs/stableToken'
-import { getProvider } from '../provider/provider'
+import { CeloContract, config } from 'src/config'
+import { ABI as StableTokenAbi } from 'src/provider/ABIs/stableToken'
+import { getProvider } from 'src/provider/provider'
 
 const contractCache: Partial<Record<CeloContract, Contract>> = {}
 

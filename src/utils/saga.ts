@@ -1,6 +1,6 @@
 import { createAction, createReducer } from '@reduxjs/toolkit'
 import { call, delay, put, race, take } from 'redux-saga/effects'
-import logger from './logger'
+import { logger } from './logger'
 
 /**
  * A convinence utility to create a saga and trigger action

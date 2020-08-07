@@ -1,13 +1,13 @@
 import sagaMonitor from '@redux-saga/simple-saga-monitor'
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import createSagaMiddleware from 'redux-saga'
-import { config } from '../config'
-import { rootReducer } from './rootReducer'
-import { rootSaga } from './rootSaga'
+import { rootReducer } from 'src/app/rootReducer'
+import { rootSaga } from 'src/app/rootSaga'
+import { config } from 'src/config'
 
 const sagaMiddleware = createSagaMiddleware(config.debug ? { sagaMonitor } : undefined)
 
-const store = configureStore({
+export const store = configureStore({
   reducer: rootReducer,
   // Disable thunk, use saga instead
   middleware: [...getDefaultMiddleware({ thunk: false }), sagaMiddleware],
@@ -16,5 +16,3 @@ const store = configureStore({
 sagaMiddleware.run(rootSaga)
 
 export type AppDispatch = typeof store.dispatch
-
-export default store

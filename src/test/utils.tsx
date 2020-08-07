@@ -2,11 +2,11 @@ import { render } from '@testing-library/react'
 import * as React from 'react'
 import { Provider } from 'react-redux'
 import configureStore from 'redux-mock-store'
-import { RootState } from '../app/rootReducer'
-import { monitoredSagas } from '../app/rootSaga'
-import { walletInitialState } from '../features/wallet/walletSlice'
-import { DefaultSagaState } from '../utils/saga'
-import { RecursivePartial } from '../utils/typescript'
+import { RootState } from 'src/app/rootReducer'
+import { monitoredSagas } from 'src/app/rootSaga'
+import { walletInitialState } from 'src/features/wallet/walletSlice'
+import { DefaultSagaState } from 'src/utils/saga'
+import { RecursivePartial } from 'src/utils/typescript'
 
 // Needs to be kept in sync with all slices used in store
 // TODO find a way to create full mock state without requiring this to be
