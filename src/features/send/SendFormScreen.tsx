@@ -1,15 +1,10 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import { Currency } from 'src/consts'
+import { sendPaymentActions, SendPaymentParams } from 'src/features/send/sendPayment'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
-interface SendFormState {
-  recipient: string
-  amount: number
-  currency: Currency
-  comment?: string
-}
-
-const initialValues: SendFormState = {
+const initialValues: SendPaymentParams = {
   recipient: '',
   amount: 0,
   currency: Currency.cUSD,
@@ -17,11 +12,14 @@ const initialValues: SendFormState = {
 }
 
 export function SendFormScreen() {
-  const onSubmit = (values: SendFormState) => {
+  const dispatch = useDispatch()
+
+  const onSubmit = (values: SendPaymentParams) => {
     console.log(values)
+    dispatch(sendPaymentActions.trigger(values))
   }
 
-  const { values, handleChange, handleSubmit } = useCustomForm<SendFormState, any>(
+  const { values, handleChange, handleSubmit } = useCustomForm<SendPaymentParams, any>(
     initialValues,
     onSubmit
   )
