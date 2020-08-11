@@ -14,7 +14,7 @@ export async function connectToForno() {
       provider.getNetwork(),
       provider.ready,
     ])
-    if (latestBlock > 0 && network.chainId === config.chainId && ready) {
+    if (latestBlock > 0 && network?.chainId === config.chainId && ready) {
       logger.info('Provider is connected')
       return
     }

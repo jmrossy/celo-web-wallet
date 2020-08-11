@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { spawn } from 'redux-saga/effects'
-import { sendPaymentReducer, sendPaymentSaga } from 'src/features/send/sendPayment'
+import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
 import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
 import { importWalletSaga } from 'src/features/wallet/importWallet'
@@ -21,9 +21,9 @@ export const monitoredSagas: {
     saga: fetchBalancesSaga,
     reducer: fetchBalancesReducer,
   },
-  sendPayment: {
-    saga: sendPaymentSaga,
-    reducer: sendPaymentReducer,
+  sendToken: {
+    saga: sendTokenSaga,
+    reducer: sendTokenReducer,
   },
 }
 
