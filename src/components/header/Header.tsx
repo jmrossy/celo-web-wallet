@@ -28,8 +28,8 @@ export function Header() {
       >
         Your address is {address}
       </h1>
-      <h1>Your dollar balance is {balances.cUsd}</h1>
-      <h1>Your gold balance is {balances.cGld}</h1>
+      <h1>Your cUsd balance is {balances.cUsd}</h1>
+      <h1>Your CELO balance is {balances.celo}</h1>
       <button onClick={onClickCreateWallet}>Create New Wallet</button>
       <button onClick={onClickFetchBalances}>Fetch balances</button>
     </div>

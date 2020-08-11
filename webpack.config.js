@@ -68,6 +68,9 @@ const config = {
       patterns: [{ from: './src/index.html', to: 'index.html' }],
     }),
   ],
+  devServer: {
+    historyApiFallback: true,
+  },
 }
 
 module.exports = config

@@ -4,7 +4,7 @@ import { assert } from 'src/utils/assert'
 export interface Balances {
   // All balances are represented in wei
   cUsd: string
-  cGld: string
+  celo: string
   lastUpdated: number | null
 }
 
@@ -17,7 +17,7 @@ export const walletInitialState: Wallet = {
   address: '0x0000000000000000000000000000000000000000',
   balances: {
     cUsd: '0',
-    cGld: '0',
+    celo: '0',
     lastUpdated: null,
   },
 }
@@ -32,8 +32,8 @@ const walletSlice = createSlice({
       state.address = address
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {
-      const { cUsd, cGld, lastUpdated } = action.payload
-      assert(cUsd && cGld && lastUpdated, `Invalid balance`)
+      const { cUsd, celo, lastUpdated } = action.payload
+      assert(cUsd && celo && lastUpdated, `Invalid balance`)
       state.balances = action.payload
     },
   },

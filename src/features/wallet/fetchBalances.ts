@@ -8,18 +8,18 @@ import { updateBalances } from './walletSlice'
 
 function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
-  const { cGld, cUsd } = yield* call(fetchAllBalances, address)
-  console.log('cGld', cGld)
+  const { celo, cUsd } = yield* call(fetchAllBalances, address)
+  console.log('celo', celo)
   console.log('cUsd', cUsd)
-  yield* put(updateBalances({ cUsd, cGld, lastUpdated: Date.now() }))
+  yield* put(updateBalances({ cUsd, celo, lastUpdated: Date.now() }))
 }
 
 async function fetchAllBalances(address: string) {
-  const [cGld, cUsd] = await Promise.all([fetchGoldBalance(address), fetchDollarBalance(address)])
-  return { cGld, cUsd }
+  const [celo, cUsd] = await Promise.all([fetchCeloBalance(address), fetchDollarBalance(address)])
+  return { celo, cUsd }
 }
 
-async function fetchGoldBalance(address: string) {
+async function fetchCeloBalance(address: string) {
   const provider = getProvider()
   const balance = await provider.getBalance(address)
   return balance.toString()
