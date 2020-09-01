@@ -13,10 +13,10 @@
     "start": "webpack-dev-server --hot --open",
     "build": "webpack -d --mode development --display-modules",
     "build:prod": "webpack -p --mode production --display-modules",
+    "clean": "rm -r dist",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
     "test": "NODE_ENV=test jasmine --random=false",
-    "test:all": "yarn test && yarn lint",
-    "clean": "rm -r dist"
+    "test:all": "yarn test && yarn lint"
   },
   "dependencies": {
     "@emotion/core": "^10.0.28",
