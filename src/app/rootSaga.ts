@@ -1,10 +1,19 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
-import { spawn } from 'redux-saga/effects'
+import { call, spawn } from 'redux-saga/effects'
+import { config } from 'src/config'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
 import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
-import { importWalletSaga } from 'src/features/wallet/importWallet'
+import { importWallet, importWalletSaga } from 'src/features/wallet/importWallet'
+import { connectToForno } from 'src/provider/provider'
 import { DefaultSagaState } from 'src/utils/saga'
+
+function* init() {
+  yield call(connectToForno)
+  if (config.defaultAccount) {
+    yield call(importWallet, config.defaultAccount)
+  }
+}
 
 // All regular sagas must be included here
 const sagas = [importWalletSaga]
@@ -40,6 +49,7 @@ export const monitoredSagaReducers = combineReducers(
 )
 
 export function* rootSaga() {
+  yield spawn(init)
   for (const s of sagas) {
     yield spawn(s)
   }

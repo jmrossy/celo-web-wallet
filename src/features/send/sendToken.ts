@@ -78,7 +78,15 @@ async function sendCeloToken(recipient: string, amountInWei: BigNumber) {
     }
     */
 
-  const txResponse = await signer.sendTransaction({ to: recipient, value: amountInWei })
+  const txResponse = await signer.sendTransaction({
+    to: recipient,
+    value: amountInWei,
+    gasPrice: 0,
+    gasLimit: 10000000,
+    // //@ts-ignore
+    // gatewayFeeRecipient: '0x8c2a2c7a71c68f30c1ec8940a1efe72c06d8f32f',
+    // gasCurrency: '0x874069fa1eb16d44d622f2e0ca25eea172369bc1',
+  })
   const txReceipt = await txResponse.wait()
   logger.info(`CELO transaction hash received: ${txReceipt.transactionHash}`)
 }
