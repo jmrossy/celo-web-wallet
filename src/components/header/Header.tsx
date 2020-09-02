@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
+import { Identicon } from 'src/components/Identicon'
 import { createWalletActions } from 'src/features/wallet/createWallet'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 
@@ -28,6 +29,7 @@ export function Header() {
       >
         Your address is {address}
       </h1>
+      <Identicon address={address} />
       <h1>Your cUsd balance is {balances.cUsd}</h1>
       <h1>Your CELO balance is {balances.celo}</h1>
       <button onClick={onClickCreateWallet}>Create New Wallet</button>

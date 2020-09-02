@@ -9,8 +9,6 @@ import { updateBalances } from './walletSlice'
 function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
   const { celo, cUsd } = yield* call(doFetchBalances, address)
-  console.log('celo', celo)
-  console.log('cUsd', cUsd)
   yield* put(updateBalances({ cUsd, celo, lastUpdated: Date.now() }))
 }
 

@@ -7,8 +7,8 @@ export function useCustomForm<V, E>(
   const [values, setValues] = useState<V>(initialValues)
   const [errors, setErrors] = useState<Partial<E>>({})
   const [touched, setTouched] = useState({})
-  const [onSubmitting, setOnSubmitting] = useState<boolean>(false)
-  const [onBlur, setOnBlur] = useState<boolean>(false)
+  const [, setOnSubmitting] = useState<boolean>(false)
+  const [, setOnBlur] = useState<boolean>(false)
 
   useEffect(() => {
     setValues(initialValues)

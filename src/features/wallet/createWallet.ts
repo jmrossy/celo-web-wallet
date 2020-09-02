@@ -10,7 +10,6 @@ import { setAddress } from './walletSlice'
 function* createWallet() {
   const entropy = randomBytes(32)
   const mnemonic = entropyToMnemonic(entropy)
-  console.log(mnemonic)
   const derivationPath = CELO_DERIVATION_PATH + '/0'
   const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath)
   setSigner(wallet)

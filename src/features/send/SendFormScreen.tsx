@@ -15,7 +15,6 @@ export function SendFormScreen() {
   const dispatch = useDispatch()
 
   const onSubmit = (values: SendTokenParams) => {
-    console.log(values)
     dispatch(sendTokenActions.trigger(values))
   }
 
