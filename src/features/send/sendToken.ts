@@ -51,42 +51,27 @@ async function doSendToken({ recipient, amount, currency, comment }: SendTokenPa
 
 async function sendCeloToken(recipient: string, amountInWei: BigNumber) {
   const signer = getSigner()
-  // TODO fix send error
-  /*
-        from: account,
-      feeCurrency: feeCurrencyAddress,
-      // Hack to prevent web3 from adding the suggested gold gas price, allowing geth to add
-      // the suggested price in the selected feeCurrency.
-      gasPrice: gasPrice ? gasPrice : '0',
-    gatewayFeeRecipient?: string
-    gatewayFee?: string
-
-    if (txParams.chainId == null) {
-      txParams.chainId = await this.getChainId()
-    }
-
-    if (txParams.nonce == null) {
-      txParams.nonce = await this.getNonce(txParams.from!.toString())
-    }
-
-    if (!txParams.gas || isEmpty(txParams.gas.toString())) {
-      txParams.gas = await this.getEstimateGas(txParams)
-    }
-
-    if (!txParams.gasPrice || isEmpty(txParams.gasPrice.toString())) {
-      txParams.gasPrice = await this.getGasPrice(txParams.feeCurrency)
-    }
-    */
 
   const txResponse = await signer.sendTransaction({
     to: recipient,
     value: amountInWei,
-    gasPrice: 0,
+    gasPrice: 500000000,
     gasLimit: 10000000,
     // //@ts-ignore
     // gatewayFeeRecipient: '0x8c2a2c7a71c68f30c1ec8940a1efe72c06d8f32f',
     // gasCurrency: '0x874069fa1eb16d44d622f2e0ca25eea172369bc1',
   })
+  // const rawTx = await signer.signTransaction({
+  //   to: recipient,
+  //   value: amountInWei,
+  //   gasPrice: 500000000,
+  //   gasLimit: 10000000,
+  //   // //@ts-ignore
+  //   // gatewayFeeRecipient: '0x8c2a2c7a71c68f30c1ec8940a1efe72c06d8f32f',
+  //   // gasCurrency: '0x874069fa1eb16d44d622f2e0ca25eea172369bc1',
+  // })
+  // const provider = getProvider()
+  // const txResponse = await provider.sendTransaction(rawTx)
   const txReceipt = await txResponse.wait()
   logger.info(`CELO transaction hash received: ${txReceipt.transactionHash}`)
 }

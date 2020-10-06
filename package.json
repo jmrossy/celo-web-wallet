@@ -10,7 +10,7 @@
   "author": "J M Rossy",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server --hot --open",
+    "dev": "webpack-dev-server --hot --open",
     "build": "webpack -d --mode development --display-modules",
     "build:prod": "webpack -p --mode production --display-modules",
     "clean": "rm -r dist",

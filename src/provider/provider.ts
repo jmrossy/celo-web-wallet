@@ -1,13 +1,16 @@
-import { ethers } from 'ethers'
+// import { providers } from 'ethers'
 import { config } from 'src/config'
+import { CeloProvider } from 'src/ethers/CeloProvider'
 import { logger } from 'src/utils/logger'
 import { sleep } from 'src/utils/sleep'
 
-let provider: ethers.providers.JsonRpcProvider
+// let provider: providers.JsonRpcProvider
+let provider: CeloProvider
 
 export async function connectToForno() {
   logger.info('Connecting to Forno provider')
-  provider = new ethers.providers.JsonRpcProvider(config.fornoUrl)
+  // provider = new providers.JsonRpcProvider(config.fornoUrl)
+  provider = new CeloProvider(config.fornoUrl)
   for (let i = 0; i < 5; i++) {
     const [latestBlock, network, ready] = await Promise.all([
       provider.getBlockNumber(),

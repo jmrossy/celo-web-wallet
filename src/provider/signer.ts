@@ -1,4 +1,5 @@
 import { ethers, Wallet } from 'ethers'
+import { CeloWallet } from 'src/ethers/CeloWallet'
 import { getProvider } from 'src/provider/provider'
 import { logger } from 'src/utils/logger'
 
@@ -17,8 +18,8 @@ export function setSigner(_signer: ethers.Wallet) {
     return
   }
 
-  // signer = new CeloWallet(_signer, getProvider())
+  signer = new CeloWallet(_signer, getProvider())
   // signer = new Wallet(_signer, getProvider())
-  signer = _signer.connect(getProvider())
+  // signer = _signer.connect(getProvider())
   logger.info('Signer is set')
 }

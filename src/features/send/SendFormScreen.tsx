@@ -5,7 +5,8 @@ import { sendTokenActions, SendTokenParams } from 'src/features/send/sendToken'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
 const initialValues: SendTokenParams = {
-  recipient: '',
+  // TODO set to empty string
+  recipient: '0xa2972a33550c33ecfa4a02a0ea212ac98e77fa55',
   amount: 0,
   currency: Currency.CELO,
   comment: '',
