@@ -29,13 +29,32 @@ export function SendFormScreen() {
       <form onSubmit={handleSubmit}>
         <h1>Send Payment</h1>
 
-        <label>Recipient Address</label>
-        <input type="text" name="recipient" onChange={handleChange} value={values.recipient} />
+        <div>
+          <label>Recipient Address</label>
+          <input type="text" name="recipient" onChange={handleChange} value={values.recipient} />
+        </div>
 
-        <label>Amount</label>
-        <input type="number" name="amount" onChange={handleChange} value={values.amount} />
+        <div>
+          <label>Amount</label>
+          <input type="number" name="amount" onChange={handleChange} value={values.amount} />
+        </div>
 
-        <button type="submit">Submit</button>
+        <div>
+          <label>Currency</label>
+          <select name="currency" value={values.currency} onChange={handleChange}>
+            <option value={Currency.CELO}>CELO</option>
+            <option value={Currency.cUSD}>cUSD</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Comment</label>
+          <input type="text" name="comment" onChange={handleChange} value={values.comment} />
+        </div>
+
+        <div>
+          <button type="submit">Submit</button>
+        </div>
       </form>
     </div>
   )

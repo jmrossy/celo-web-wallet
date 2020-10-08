@@ -18,7 +18,7 @@ export function useCustomForm<V, E>(
     setOnBlur(false)
   }, [])
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { target } = event
     const { name, value } = target
     event.persist()

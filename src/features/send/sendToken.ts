@@ -1,6 +1,8 @@
-import { BigNumber } from 'ethers'
+import { BigNumber, providers } from 'ethers'
 import { isAddress, parseEther } from 'ethers/lib/utils'
+import { CeloContract } from 'src/config'
 import { Currency, MAX_COMMENT_CHAR_LENGTH, MAX_SEND_TOKEN_SIZE } from 'src/consts'
+import { getContract } from 'src/provider/contracts'
 import { getSigner } from 'src/provider/signer'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
@@ -52,6 +54,7 @@ async function doSendToken({ recipient, amount, currency, comment }: SendTokenPa
 async function sendCeloToken(recipient: string, amountInWei: BigNumber) {
   const signer = getSigner()
 
+  logger.info(`Sending ${amountInWei} CELO`)
   const txResponse = await signer.sendTransaction({
     to: recipient,
     value: amountInWei,
@@ -73,11 +76,23 @@ async function sendCeloToken(recipient: string, amountInWei: BigNumber) {
   // const provider = getProvider()
   // const txResponse = await provider.sendTransaction(rawTx)
   const txReceipt = await txResponse.wait()
-  logger.info(`CELO transaction hash received: ${txReceipt.transactionHash}`)
+  logger.info(`CELO payment hash received: ${txReceipt.transactionHash}`)
 }
 
 async function sendDollarToken(recipient: string, amountInWei: BigNumber, comment?: string) {
-  //TODO
+  const stableToken = getContract(CeloContract.StableToken, true)
+  let txResponse: providers.TransactionResponse
+
+  if (comment && comment.length && comment.length <= MAX_COMMENT_CHAR_LENGTH) {
+    logger.info(`Sending ${amountInWei} cUSD with comment`)
+    txResponse = await stableToken.transferWithComment(recipient, amountInWei, comment)
+  } else {
+    logger.info(`Sending ${amountInWei} cUSD without comment`)
+    txResponse = await stableToken.transfer(recipient, amountInWei)
+  }
+
+  const txReceipt = await txResponse.wait()
+  logger.info(`cUSD payment hash received: ${txReceipt.transactionHash}`)
 }
 
 export const {

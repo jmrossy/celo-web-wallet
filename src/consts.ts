@@ -1,6 +1,6 @@
 export enum Currency {
-  cUSD,
-  CELO,
+  cUSD = 'cusd',
+  CELO = 'celo',
 }
 
 export const ETHEREUM_DERIVATION_PATH = "m/44'/60'/0'/0"
