@@ -51,7 +51,7 @@ const config = {
             },
           },
         ],
-        include: /\.module\.css$/,
+        exclude: /node_modules/,
       },
       {
         test: /\.svg$/,

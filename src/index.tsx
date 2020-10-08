@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { App } from 'src/app/App'
 import { store } from 'src/app/store'
+import './normalize.css'
 
 const mountNode = document.getElementById('app')
 ReactDOM.render(
