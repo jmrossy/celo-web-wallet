@@ -19,11 +19,12 @@
     "test:all": "yarn test && yarn lint"
   },
   "dependencies": {
+    "@celo-tools/celo-ethers-wrapper": "^0.0.2",
     "@emotion/core": "^10.0.35",
     "@metamask/jazzicon": "^2.0.0",
     "@redux-saga/simple-saga-monitor": "^1.1.2",
-    "@reduxjs/toolkit": "1.4.0",
-    "ethers": "5.0.16",
+    "@reduxjs/toolkit": "^1.4.0",
+    "ethers": "^5.0.16",
     "history": "^5.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
