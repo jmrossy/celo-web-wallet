@@ -5,6 +5,7 @@ export enum CeloContract {
 interface Config {
   debug: boolean
   fornoUrl: string
+  blockscoutUrl: string
   chainId: number
   contractAddresses: Record<CeloContract, string>
   defaultAccount?: string // strictly for dev use, provide a backup phrase
@@ -15,6 +16,7 @@ interface Config {
 const configMainnet: Config = {
   debug: false,
   fornoUrl: 'https://rc1-forno.celo-testnet.org',
+  blockscoutUrl: 'https://explorer.celo.org/',
   chainId: 42220,
   contractAddresses: {
     [CeloContract.StableToken]: 'TODO',
@@ -24,6 +26,7 @@ const configMainnet: Config = {
 const configAlfajores: Config = {
   debug: true,
   fornoUrl: 'https://alfajores-forno.celo-testnet.org',
+  blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   chainId: 44787,
   contractAddresses: {
     [CeloContract.StableToken]: '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1',

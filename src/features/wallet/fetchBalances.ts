@@ -8,6 +8,11 @@ import { updateBalances } from './walletSlice'
 
 function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
+
+  if (!address) {
+    return
+  }
+
   const { celo, cUsd } = yield* call(doFetchBalances, address)
   yield* put(updateBalances({ cUsd, celo, lastUpdated: Date.now() }))
 }
@@ -33,4 +38,4 @@ export const {
   wrappedSaga: fetchBalancesSaga,
   reducer: fetchBalancesReducer,
   actions: fetchBalancesActions,
-} = createMonitoredSaga(fetchBalances, { name: 'fetch-balances' })
+} = createMonitoredSaga(fetchBalances, { name: 'fetchBalances' })

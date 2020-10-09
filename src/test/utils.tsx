@@ -11,7 +11,7 @@ import { RecursivePartial } from 'src/utils/typescript'
 // Needs to be kept in sync with all slices used in store
 // TODO find a way to create full mock state without requiring this to be
 // updated when state schema changes
-export function getFullInitialState(): RootState {
+export function getFullInitialState(): RecursivePartial<RootState> {
   return {
     wallet: walletInitialState,
     saga: getSagaDefaultState() as any,
@@ -32,7 +32,7 @@ export function createMockStore(overrides: RecursivePartial<RootState> = {}) {
     // @ts-ignore overrides already checked to be partial of RootState
     initialState[key] = { ...initialState[key], ...overrides[key] }
   }
-  return configureStore<RootState>()(initialState)
+  return configureStore<RecursivePartial<RootState>>()(initialState)
 }
 
 export function renderWithProvider(

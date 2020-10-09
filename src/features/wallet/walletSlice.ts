@@ -9,12 +9,12 @@ export interface Balances {
 }
 
 interface Wallet {
-  address: string
+  address: string | null
   balances: Balances
 }
 
 export const walletInitialState: Wallet = {
-  address: '0x0000000000000000000000000000000000000000',
+  address: null,
   balances: {
     cUsd: '0',
     celo: '0',
