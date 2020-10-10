@@ -1,40 +1,33 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Currency } from 'src/consts'
-
-export type TransactionMap = Record<string, TransactionFeedItem> // hash to item
+import { TransactionMap } from 'src/features/feed/types'
 
 export interface TransactionFeed {
   transactions: TransactionMap
-  lastUpdated: number | null
-}
-
-interface TransactionFeedItem {
-  hash: string
-  from: string
-  to: string
-  token: Currency
-  value: string
-  blockNumber: number
-  timestamp: number
-  gasPrice: string
-  gasUsed: string
-  feeToken?: string
-  gatewayFee?: string
-  gatewayFeeRecipient?: string
+  lastUpdatedTime: number | null
+  lastBlockNumber: number | null
 }
 
 export const feedInitialState: TransactionFeed = {
   transactions: {},
-  lastUpdated: null,
+  lastUpdatedTime: null,
+  lastBlockNumber: null,
 }
 
 const feedSlice = createSlice({
   name: 'feed',
   initialState: feedInitialState,
   reducers: {
-    addTransactions: (state, action: PayloadAction<TransactionMap>) => {
-      state.transactions = { ...state.transactions, ...action.payload }
-      state.lastUpdated = Date.now()
+    addTransactions: (
+      state,
+      action: PayloadAction<{
+        txs: TransactionMap
+        lastUpdatedTime: number
+        lastBlockNumber: number
+      }>
+    ) => {
+      state.transactions = { ...state.transactions, ...action.payload.txs }
+      state.lastUpdatedTime = action.payload.lastUpdatedTime
+      state.lastBlockNumber = action.payload.lastBlockNumber
     },
   },
 })

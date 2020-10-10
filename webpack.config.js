@@ -70,6 +70,7 @@ const config = {
   ],
   devServer: {
     historyApiFallback: true,
+    open: 'Google Chrome',
   },
 }
 
