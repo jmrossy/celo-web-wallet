@@ -3,8 +3,10 @@ import { RootState } from 'src/app/rootReducer'
 import { CeloContract, config } from 'src/config'
 import { addTransactions } from 'src/features/feed/feedSlice'
 import {
+  CeloNativeTransferTx,
   CeloTokenTransferTx,
   CeloTransaction,
+  OtherTx,
   StableTokenTransferTx,
   TransactionMap,
   TransactionType,
@@ -76,16 +78,13 @@ export const {
 } = createMonitoredSaga(fetchFeed, { name: 'fetchFeed' })
 
 async function doFetchFeed(address: string, lastBlockNumber: number | null) {
-  const { txList, tokenTxList } = await fetchTxsFromBlockscout(address, lastBlockNumber)
+  const txList = await fetchTxsFromBlockscout(address, lastBlockNumber)
 
-  console.log(txList)
-  console.log(tokenTxList)
   const newTransactions: TransactionMap = {}
   let newLastBlockNumber = lastBlockNumber || 0
 
-  // TODO parse the tokenTxs too, likely needed to be handled slightly differently
   for (const tx of txList) {
-    const parsedTx = parseTransaction(tx)
+    const parsedTx = parseTransaction(tx, address)
     if (!parsedTx) continue
     newTransactions[parsedTx.hash] = parsedTx
     newLastBlockNumber = Math.max(BigNumber.from(tx.blockNumber).toNumber(), newLastBlockNumber)
@@ -94,9 +93,11 @@ async function doFetchFeed(address: string, lastBlockNumber: number | null) {
   return { newTransactions, newLastBlockNumber }
 }
 
+// TODO confirm this works for txs with fees paid in cUSD
 async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number | null) {
   // TODO consider pagination here
 
+  // First fetch the basic tx list, which includes outgoing token transfers
   let txQueryUrl = config.blockscoutUrl + '?module=account&action=txlist&address=' + address
   if (lastBlockNumber) {
     txQueryUrl += `&startblock=${lastBlockNumber + 1}`
@@ -113,7 +114,15 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
 
   const [txList, tokenTxList] = await Promise.all([txListP, tokenTxListP])
 
-  return { txList, tokenTxList }
+  // Then de-dupe the lists, preferring the tokenTx result as it has more info
+  const txMap = new Map<string, BlockscoutTransaction | BlockscoutTokenTransaction>()
+  for (const tx of txList) {
+    txMap.set(tx.hash, tx)
+  }
+  for (const tx of tokenTxList) {
+    txMap.set(tx.hash, tx)
+  }
+  return txMap.values()
 }
 
 async function queryBlockscout<P>(url: string) {
@@ -131,7 +140,10 @@ async function queryBlockscout<P>(url: string) {
   return json.result
 }
 
-function parseTransaction(tx: BlockscoutTransaction): CeloTransaction | null {
+function parseTransaction(
+  tx: BlockscoutTransaction | BlockscoutTokenTransaction,
+  address: string
+): CeloTransaction | null {
   if (!tx || !tx.hash) {
     logger.warn('Ignoring invalid tx', JSON.stringify(tx))
   }
@@ -146,23 +158,24 @@ function parseTransaction(tx: BlockscoutTransaction): CeloTransaction | null {
     return null
   }
 
-  if (compareAddresses(tx.to, config.contractAddresses[CeloContract.StableToken])) {
-    return parseStableTokenTransfer(tx, true)
+  // @ts-ignore https://github.com/microsoft/TypeScript/issues/20863
+  if (tx.tokenSymbol) {
+    const tokenTx = tx as BlockscoutTokenTransaction
+    const symbol = tokenTx.tokenSymbol.toLowerCase()
+    if (symbol === 'cusd') {
+      return parseStableTokenTransfer(tokenTx, address)
+    }
+    if (symbol === 'celo' || symbol === 'gold') {
+      return parseCeloTokenTransfer(tokenTx, address)
+    }
   }
 
-  if (compareAddresses(tx.from, config.contractAddresses[CeloContract.StableToken])) {
-    return parseStableTokenTransfer(tx, false)
+  if (
+    compareAddresses(tx.to, config.contractAddresses[CeloContract.StableToken]) ||
+    compareAddresses(tx.to, config.contractAddresses[CeloContract.GoldToken])
+  ) {
+    return parseOtherTokenTx(tx)
   }
-
-  if (compareAddresses(tx.to, config.contractAddresses[CeloContract.GoldToken])) {
-    return parseCeloTokenTransfer(tx, true)
-  }
-
-  if (compareAddresses(tx.from, config.contractAddresses[CeloContract.GoldToken])) {
-    return parseCeloTokenTransfer(tx, false)
-  }
-
-  // TODO figure out how to detect and label simple gold transfers
 
   if (compareAddresses(tx.to, config.contractAddresses[CeloContract.Exchange])) {
     // TODO parse exchange
@@ -176,14 +189,18 @@ function parseTransaction(tx: BlockscoutTransaction): CeloTransaction | null {
     // TODO parse escrow incoming
   }
 
+  if (tx.value && BigNumber.from(tx.value).gt(0)) {
+    return parseNativeTransferTx(tx, address)
+  }
+
   return parseOtherTx(tx)
 }
 
 function parseStableTokenTransfer(
-  tx: BlockscoutTransaction,
-  isOutgoing: boolean
+  tx: BlockscoutTokenTransaction,
+  address: string
 ): StableTokenTransferTx | null {
-  const transfer = parseTokenTransfer(tx, isOutgoing)
+  const transfer = parseTokenTransfer(tx, address)
   if (!transfer) return null
   return {
     ...transfer,
@@ -192,10 +209,10 @@ function parseStableTokenTransfer(
 }
 
 function parseCeloTokenTransfer(
-  tx: BlockscoutTransaction,
-  isOutgoing: boolean
+  tx: BlockscoutTokenTransaction,
+  address: string
 ): CeloTokenTransferTx | null {
-  const transfer = parseTokenTransfer(tx, isOutgoing)
+  const transfer = parseTokenTransfer(tx, address)
   if (!transfer) return null
   return {
     ...transfer,
@@ -203,39 +220,68 @@ function parseCeloTokenTransfer(
   }
 }
 
-function parseTokenTransfer(tx: BlockscoutTransaction, isOutgoing: boolean) {
+function parseTokenTransfer(tx: BlockscoutTokenTransaction, address: string) {
   try {
     // TODO check if separate ABI is needed for goldToken?
     const abiInterface = getContractAbiInterface(CeloContract.StableToken)
-    const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
-    console.log(txDescription)
+    // Blockscout does most of the heavy lifting in decoding these
+    // Still need to manually decode with ethers though because blockscout
+    // doesn't include the comment
+    const txDescription = abiInterface.parseTransaction({ data: tx.input })
     if (txDescription.name !== 'transfer' && txDescription.name !== 'transferWithComment') {
-      throw new Error('Unsupported token transfer method: ' + JSON.stringify(txDescription))
-    }
-
-    if (!txDescription.args.to || !txDescription.args.value) {
-      throw new Error('Invalid tx description args: ' + JSON.stringify(txDescription.args))
+      throw new Error('Not a valid token transfer tx: ' + JSON.stringify(txDescription))
     }
 
     return {
-      isOutgoing,
-      hash: tx.hash,
-      from: tx.from,
-      to: txDescription.args.to,
-      value: txDescription.args.value.toString(),
+      ...parseOtherTx(tx),
+      isOutgoing: compareAddresses(tx.from, address),
       comment: txDescription.args.comment,
-      blockNumber: BigNumber.from(tx.blockNumber).toNumber(),
-      timestamp: BigNumber.from(tx.timeStamp).toNumber(),
-      gasPrice: tx.gasPrice,
-      gasUsed: tx.gasUsed,
     }
   } catch (error) {
-    logger.error('Failed to parse input data', error, tx)
+    logger.error('Failed to parse tx data', error, tx)
     return null
   }
 }
 
-function parseOtherTx(tx: BlockscoutTransaction) {
-  //TODO
-  return null
+// Parse token transactions other than transfers
+// The most common would probably be 'approve' calls
+function parseOtherTokenTx(tx: BlockscoutTransaction) {
+  try {
+    // TODO check if separate ABI is needed for goldToken?
+    const abiInterface = getContractAbiInterface(CeloContract.StableToken)
+    const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
+    if (txDescription.name === 'transfer' || txDescription.name === 'transferWithComment') {
+      throw new Error(
+        'Tx should have been parsed by parseTokenTransfer: ' + JSON.stringify(txDescription)
+      )
+    }
+
+    // TODO identify more tx types here, jut proxying to generic parse for now
+    return parseOtherTx(tx)
+  } catch (error) {
+    logger.error('Failed to parse tx data', error, tx)
+    return null
+  }
+}
+
+function parseNativeTransferTx(tx: BlockscoutTransaction, address: string): CeloNativeTransferTx {
+  return {
+    ...parseOtherTx(tx),
+    type: TransactionType.CeloNativeTransfer,
+    isOutgoing: compareAddresses(tx.from, address),
+  }
+}
+
+function parseOtherTx(tx: BlockscoutTransaction): OtherTx {
+  return {
+    type: TransactionType.Other,
+    hash: tx.hash,
+    from: tx.from,
+    to: tx.to,
+    value: tx.value,
+    blockNumber: BigNumber.from(tx.blockNumber).toNumber(),
+    timestamp: BigNumber.from(tx.timeStamp).toNumber(),
+    gasPrice: tx.gasPrice,
+    gasUsed: tx.gasUsed,
+  }
 }
