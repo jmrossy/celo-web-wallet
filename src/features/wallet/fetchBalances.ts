@@ -13,11 +13,11 @@ function* fetchBalances() {
     return
   }
 
-  const { celo, cUsd } = yield* call(doFetchBalances, address)
+  const { celo, cUsd } = yield* call(_fetchBalances, address)
   yield* put(updateBalances({ cUsd, celo, lastUpdated: Date.now() }))
 }
 
-async function doFetchBalances(address: string) {
+async function _fetchBalances(address: string) {
   const [celo, cUsd] = await Promise.all([fetchCeloBalance(address), fetchDollarBalance(address)])
   return { celo, cUsd }
 }

@@ -12,10 +12,10 @@ export interface ExchangeTokenParams {
 
 function* exchangeToken(context: ExchangeTokenParams) {
   // const address = yield* select((state: RootState) => state.wallet.address)
-  yield* call(doExchangeToken, context)
+  yield* call(_exchangeToken, context)
 }
 
-async function doExchangeToken({ amount, fromCurrency, toCurrency }: ExchangeTokenParams) {
+async function _exchangeToken({ amount, fromCurrency, toCurrency }: ExchangeTokenParams) {
   logger.info(`Exchanging ${amount} ${fromCurrency} to ${toCurrency}`)
 
   const amountInWei = parseEther('' + amount)

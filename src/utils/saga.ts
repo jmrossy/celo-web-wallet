@@ -24,7 +24,9 @@ export function createSaga<SagaParams = void>(saga: (...args: any[]) => any, nam
 
   return {
     wrappedSaga,
-    trigger: triggerAction,
+    actions: {
+      trigger: triggerAction,
+    },
   }
 }
 

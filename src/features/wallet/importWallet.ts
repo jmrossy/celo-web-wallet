@@ -12,7 +12,7 @@ export function* importWallet(mnemonic: string) {
   yield* put(setAddress(wallet.address))
 }
 
-export const { wrappedSaga: importWalletSaga, trigger: importWalletTrigger } = createSaga<string>(
+export const { wrappedSaga: importWalletSaga, actions: importWalletActions } = createSaga<string>(
   importWallet,
   'importWallet'
 )

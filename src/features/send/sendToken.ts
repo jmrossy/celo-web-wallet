@@ -17,10 +17,10 @@ export interface SendTokenParams {
 
 function* sendToken(context: SendTokenParams) {
   // const address = yield* select((state: RootState) => state.wallet.address)
-  yield* call(doSendToken, context)
+  yield* call(_sendToken, context)
 }
 
-async function doSendToken({ recipient, amount, currency, comment }: SendTokenParams) {
+async function _sendToken({ recipient, amount, currency, comment }: SendTokenParams) {
   const amountInWei = parseEther('' + amount)
   if (amountInWei.lte(0) || amountInWei.gte(MAX_SEND_TOKEN_SIZE)) {
     logger.error(`Invalid amount: ${amountInWei.toString()}`)
