@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { Button } from 'src/components/Button'
+import { Box } from 'src/components/layout/Box'
 import { importWalletActions } from 'src/features/wallet/importWallet'
 
 export function ImportWalletForm() {
@@ -20,8 +22,16 @@ export function ImportWalletForm() {
         marginTop: 20,
       }}
     >
-      <textarea value={mnemonic} onChange={onInputChange} />
-      <button onClick={onClickImport}>Import Wallet</button>
+      <Box
+        direction="column"
+        styles={{
+          margin: 20,
+          width: 200,
+        }}
+      >
+        <textarea value={mnemonic} onChange={onInputChange} />
+        <Button onClick={onClickImport}>Import Wallet</Button>
+      </Box>
     </div>
   )
 }

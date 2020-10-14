@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Header } from 'src/components/header/Header'
-import { ImportWalletForm } from 'src/components/ImportWalletForm'
 import { TransactionFeed } from 'src/features/feed/TransactionFeed'
+import { ImportWalletForm } from 'src/features/onboarding/import/ImportWalletForm'
 
 export function HomeScreen() {
   return (
