@@ -1,5 +1,8 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
+import { AddressInput } from 'src/components/input/AddressInput'
+import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
+import { TextInput } from 'src/components/input/TextInput'
 import { Currency } from 'src/consts'
 import { sendTokenActions, SendTokenParams } from 'src/features/send/sendToken'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -31,12 +34,22 @@ export function SendFormScreen() {
 
         <div>
           <label>Recipient Address</label>
-          <input type="text" name="recipient" onChange={handleChange} value={values.recipient} />
+          <AddressInput
+            width={200}
+            name="recipient"
+            onChange={handleChange}
+            value={values.recipient}
+          />
         </div>
 
         <div>
           <label>Amount</label>
-          <input type="number" name="amount" onChange={handleChange} value={values.amount} />
+          <MoneyValueInput
+            width={100}
+            name="amount"
+            onChange={handleChange}
+            value={values.amount.toString()}
+          />
         </div>
 
         <div>
@@ -49,7 +62,7 @@ export function SendFormScreen() {
 
         <div>
           <label>Comment</label>
-          <input type="text" name="comment" onChange={handleChange} value={values.comment} />
+          <TextInput name="comment" width={200} onChange={handleChange} value={values.comment} />
         </div>
 
         <div>
