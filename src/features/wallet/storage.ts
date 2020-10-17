@@ -1,6 +1,6 @@
+import { getSigner } from 'src/blockchain/signer'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
 import { importWallet } from 'src/features/wallet/importWallet'
-import { getSigner } from 'src/provider/signer'
 import { logger } from 'src/utils/logger'
 import { createSaga } from 'src/utils/saga'
 import { call } from 'typed-redux-saga'

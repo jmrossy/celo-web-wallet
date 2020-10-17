@@ -1,5 +1,6 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
+import { connectToForno } from 'src/blockchain/provider'
 import { config } from 'src/config'
 import { fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
@@ -7,7 +8,6 @@ import { createWalletReducer, createWalletSaga } from 'src/features/wallet/creat
 import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
 import { importWallet, importWalletSaga } from 'src/features/wallet/importWallet'
 import { loadWalletSaga } from 'src/features/wallet/storage'
-import { connectToForno } from 'src/provider/provider'
 import { DefaultSagaState } from 'src/utils/saga'
 
 function* init() {

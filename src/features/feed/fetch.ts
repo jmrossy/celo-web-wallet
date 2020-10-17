@@ -1,5 +1,6 @@
 import { BigNumber, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
+import { getContractAbiInterface } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { Currency } from 'src/consts'
 import { addTransactions } from 'src/features/feed/feedSlice'
@@ -12,7 +13,6 @@ import {
   TransactionMap,
   TransactionType,
 } from 'src/features/feed/types'
-import { getContractAbiInterface } from 'src/provider/contracts'
 import { compareAddresses } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'

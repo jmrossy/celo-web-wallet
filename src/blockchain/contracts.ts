@@ -1,6 +1,6 @@
 import { Contract, ethers, utils } from 'ethers'
+import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { getSigner } from 'src/provider/signer'
 
 const contractCache: Partial<Record<CeloContract, Contract>> = {}
 const abiInterfaceCache: Partial<Record<CeloContract, utils.Interface>> = {}
@@ -32,9 +32,9 @@ export async function getContractAbiInterface(c: CeloContract) {
 async function getContractAbi(c: CeloContract) {
   switch (c) {
     case CeloContract.StableToken:
-      return (await import('src/provider/ABIs/stableToken')).ABI
+      return (await import('src/blockchain/ABIs/stableToken')).ABI
     case CeloContract.GoldToken:
-      return (await import('src/provider/ABIs/goldToken')).ABI
+      return (await import('src/blockchain/ABIs/goldToken')).ABI
     default:
       throw new Error(`No ABI for contract ${c}`)
   }

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
+import { setSigner } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH } from 'src/consts'
-import { setSigner } from 'src/provider/signer'
 import { createSaga } from 'src/utils/saga'
 import { put } from 'typed-redux-saga'
 import { setAddress } from './walletSlice'

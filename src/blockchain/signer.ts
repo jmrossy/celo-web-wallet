@@ -1,6 +1,6 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
 import { ethers, Wallet } from 'ethers'
-import { getProvider } from 'src/provider/provider'
+import { getProvider } from 'src/blockchain/provider'
 import { logger } from 'src/utils/logger'
 
 let signer: Wallet
