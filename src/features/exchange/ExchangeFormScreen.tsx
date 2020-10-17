@@ -1,5 +1,8 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
+import { Button } from 'src/components/Button'
+import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
+import { Box } from 'src/components/layout/Box'
 import { Currency } from 'src/consts'
 import { exchangeTokenActions, ExchangeTokenParams } from 'src/features/exchange/exchangeToken'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -7,7 +10,6 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 const initialValues: ExchangeTokenParams = {
   amount: 0,
   fromCurrency: Currency.cUSD,
-  toCurrency: Currency.CELO,
 }
 
 export function ExchangeFormScreen() {
@@ -27,10 +29,28 @@ export function ExchangeFormScreen() {
       <form onSubmit={handleSubmit}>
         <h1>Exchange Currency</h1>
 
-        <label>Amount</label>
-        <input type="number" name="amount" onChange={handleChange} value={values.amount} />
+        <Box direction="column">
+          <label>Amount</label>
+          <MoneyValueInput
+            name="amount"
+            width={200}
+            margin={'1rem 0'}
+            onChange={handleChange}
+            value={values.amount.toString()}
+          />
 
-        <button type="submit">Submit</button>
+          <label>Currency</label>
+          <div>
+            <select name="fromCurrency" value={values.fromCurrency} onChange={handleChange}>
+              <option value={Currency.CELO}>CELO</option>
+              <option value={Currency.cUSD}>cUSD</option>
+            </select>
+          </div>
+
+          <Button type="submit" margin={'1rem 0'}>
+            Submit
+          </Button>
+        </Box>
       </form>
     </div>
   )

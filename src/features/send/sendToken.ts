@@ -4,6 +4,9 @@ import { getContract } from 'src/blockchain/contracts'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract } from 'src/config'
 import { Currency, MAX_COMMENT_CHAR_LENGTH, MAX_SEND_TOKEN_SIZE } from 'src/consts'
+import { fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import { Balances } from 'src/features/wallet/walletSlice'
+import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call } from 'typed-redux-saga'
@@ -15,15 +18,15 @@ export interface SendTokenParams {
   comment?: string
 }
 
-function* sendToken(context: SendTokenParams) {
-  // const address = yield* select((state: RootState) => state.wallet.address)
-  yield* call(_sendToken, context)
+function* sendToken(params: SendTokenParams) {
+  const balances = yield* call(fetchBalancesIfStale)
+  yield* call(_sendToken, params, balances)
 }
 
-async function _sendToken({ recipient, amount, currency, comment }: SendTokenParams) {
+async function _sendToken(params: SendTokenParams, balances: Balances) {
+  const { recipient, amount, currency, comment } = params
   const amountInWei = parseEther('' + amount)
-  if (amountInWei.lte(0) || amountInWei.gte(MAX_SEND_TOKEN_SIZE)) {
-    logger.error(`Invalid amount: ${amountInWei.toString()}`)
+  if (!isAmountValid(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE)) {
     // TODO show error
     return
   }

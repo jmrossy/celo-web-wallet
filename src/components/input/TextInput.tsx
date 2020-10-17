@@ -5,7 +5,7 @@ export interface TextInputProps {
   name: string
   width: number
   height?: number // defaults to 40
-  margin?: string
+  margin?: string | number
   value: string | undefined
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void

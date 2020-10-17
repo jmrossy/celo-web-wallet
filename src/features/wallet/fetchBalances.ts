@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
@@ -6,15 +7,35 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
 import { updateBalances } from './walletSlice'
 
+const BALANCE_STALE_TIME = 15000 // 15 seconds
+
 function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
 
   if (!address) {
-    return
+    throw new Error('Cannot fetch balances before address is set')
   }
 
   const { celo, cUsd } = yield* call(_fetchBalances, address)
-  yield* put(updateBalances({ cUsd, celo, lastUpdated: Date.now() }))
+  const balances = { cUsd, celo, lastUpdated: Date.now() }
+  yield* put(updateBalances(balances))
+  return balances
+}
+
+export function* fetchBalancesIfStale() {
+  const balances = yield* select((state: RootState) => state.wallet.balances)
+  const { lastUpdated, cUsd, celo } = balances
+
+  if (
+    !lastUpdated ||
+    Date.now() - lastUpdated > BALANCE_STALE_TIME ||
+    BigNumber.from(cUsd).isZero() ||
+    BigNumber.from(celo).isZero()
+  ) {
+    return yield* call(fetchBalances)
+  } else {
+    return balances
+  }
 }
 
 async function _fetchBalances(address: string) {

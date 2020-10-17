@@ -7,7 +7,7 @@ interface BoxProps {
   justify?: 'start' | 'end' | 'center' | 'around' | 'between' | 'evenly'
   // Other css styles to be applied
   // Can't call it 'css' or Emotion will pre-parse it out
-  styles: CSSObject
+  styles?: CSSObject
 }
 
 // Just a handy component for a display: flex wrapper

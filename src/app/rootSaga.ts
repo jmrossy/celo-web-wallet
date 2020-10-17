@@ -2,6 +2,7 @@ import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
 import { connectToForno } from 'src/blockchain/provider'
 import { config } from 'src/config'
+import { exchangeTokenReducer, exchangeTokenSaga } from 'src/features/exchange/exchangeToken'
 import { fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
@@ -39,6 +40,10 @@ export const monitoredSagas: {
   fetchFeed: {
     saga: fetchFeedSaga,
     reducer: fetchFeedReducer,
+  },
+  exchangeToken: {
+    saga: exchangeTokenSaga,
+    reducer: exchangeTokenReducer,
   },
 }
 

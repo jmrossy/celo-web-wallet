@@ -3,13 +3,14 @@ import { Color } from 'src/components/Color'
 
 interface ButtonProps {
   size?: 's' | 'm' | 'l' // defaults to 'm'
+  type?: 'submit' | 'reset' | 'button'
   color?: Color // defaults to primaryGreen
-  margin?: string
-  onClick: () => void
+  margin?: string | number
+  onClick?: () => void
 }
 
 export function Button(props: React.PropsWithChildren<ButtonProps>) {
-  const { size, color, margin, onClick } = props
+  const { size, type, color, margin, onClick } = props
   const { height, width } = getDimensions(size)
   return (
     <button
@@ -23,6 +24,7 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
         border: 'none',
       }}
       onClick={onClick}
+      type={type}
     >
       {props.children}
     </button>

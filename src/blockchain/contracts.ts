@@ -35,6 +35,8 @@ async function getContractAbi(c: CeloContract) {
       return (await import('src/blockchain/ABIs/stableToken')).ABI
     case CeloContract.GoldToken:
       return (await import('src/blockchain/ABIs/goldToken')).ABI
+    case CeloContract.Exchange:
+      return (await import('src/blockchain/ABIs/exchange')).ABI
     default:
       throw new Error(`No ABI for contract ${c}`)
   }
