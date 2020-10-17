@@ -29,7 +29,7 @@ async function fetchCeloBalance(address: string) {
 }
 
 async function fetchDollarBalance(address: string) {
-  const stableToken = getContract(CeloContract.StableToken)
+  const stableToken = await getContract(CeloContract.StableToken)
   const balance = await stableToken.balanceOf(address)
   return balance.toString()
 }

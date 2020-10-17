@@ -1,6 +1,7 @@
 import { BigNumber, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { CeloContract, config } from 'src/config'
+import { Currency } from 'src/consts'
 import { addTransactions } from 'src/features/feed/feedSlice'
 import {
   CeloNativeTransferTx,
@@ -78,13 +79,15 @@ export const {
 } = createMonitoredSaga(fetchFeed, { name: 'fetchFeed' })
 
 async function doFetchFeed(address: string, lastBlockNumber: number | null) {
-  const txList = await fetchTxsFromBlockscout(address, lastBlockNumber)
+  const txListP = fetchTxsFromBlockscout(address, lastBlockNumber)
+  const abiInterfacesP = getAbiInterfacesForParsing()
+  const [txList, abiInterfaces] = await Promise.all([txListP, abiInterfacesP])
 
   const newTransactions: TransactionMap = {}
   let newLastBlockNumber = lastBlockNumber || 0
 
   for (const tx of txList) {
-    const parsedTx = parseTransaction(tx, address)
+    const parsedTx = parseTransaction(tx, address, abiInterfaces)
     if (!parsedTx) continue
     newTransactions[parsedTx.hash] = parsedTx
     newLastBlockNumber = Math.max(BigNumber.from(tx.blockNumber).toNumber(), newLastBlockNumber)
@@ -140,9 +143,22 @@ async function queryBlockscout<P>(url: string) {
   return json.result
 }
 
+type AbiInterfaceMap = Record<Currency, utils.Interface>
+
+async function getAbiInterfacesForParsing(): Promise<AbiInterfaceMap> {
+  const celoAbiIntP = getContractAbiInterface(CeloContract.GoldToken)
+  const stableTokenAbiIntP = getContractAbiInterface(CeloContract.StableToken)
+  const [celoAbiInt, stableTokenAbiInt] = await Promise.all([celoAbiIntP, stableTokenAbiIntP])
+  return {
+    [Currency.CELO]: celoAbiInt,
+    [Currency.cUSD]: stableTokenAbiInt,
+  }
+}
+
 function parseTransaction(
   tx: BlockscoutTransaction | BlockscoutTokenTransaction,
-  address: string
+  address: string,
+  abiInterfaces: AbiInterfaceMap
 ): CeloTransaction | null {
   if (!tx || !tx.hash) {
     logger.warn('Ignoring invalid tx', JSON.stringify(tx))
@@ -163,18 +179,19 @@ function parseTransaction(
     const tokenTx = tx as BlockscoutTokenTransaction
     const symbol = tokenTx.tokenSymbol.toLowerCase()
     if (symbol === 'cusd') {
-      return parseStableTokenTransfer(tokenTx, address)
+      return parseStableTokenTransfer(tokenTx, address, abiInterfaces[Currency.cUSD])
     }
     if (symbol === 'celo' || symbol === 'gold') {
-      return parseCeloTokenTransfer(tokenTx, address)
+      return parseCeloTokenTransfer(tokenTx, address, abiInterfaces[Currency.CELO])
     }
   }
 
-  if (
-    compareAddresses(tx.to, config.contractAddresses[CeloContract.StableToken]) ||
-    compareAddresses(tx.to, config.contractAddresses[CeloContract.GoldToken])
-  ) {
-    return parseOtherTokenTx(tx)
+  if (compareAddresses(tx.to, config.contractAddresses[CeloContract.StableToken])) {
+    return parseOtherTokenTx(tx, abiInterfaces[Currency.cUSD])
+  }
+
+  if (compareAddresses(tx.to, config.contractAddresses[CeloContract.GoldToken])) {
+    return parseOtherTokenTx(tx, abiInterfaces[Currency.CELO])
   }
 
   if (compareAddresses(tx.to, config.contractAddresses[CeloContract.Exchange])) {
@@ -198,9 +215,10 @@ function parseTransaction(
 
 function parseStableTokenTransfer(
   tx: BlockscoutTokenTransaction,
-  address: string
+  address: string,
+  abiInterface: utils.Interface
 ): StableTokenTransferTx | null {
-  const transfer = parseTokenTransfer(tx, address)
+  const transfer = parseTokenTransfer(tx, address, abiInterface)
   if (!transfer) return null
   return {
     ...transfer,
@@ -210,9 +228,10 @@ function parseStableTokenTransfer(
 
 function parseCeloTokenTransfer(
   tx: BlockscoutTokenTransaction,
-  address: string
+  address: string,
+  abiInterface: utils.Interface
 ): CeloTokenTransferTx | null {
-  const transfer = parseTokenTransfer(tx, address)
+  const transfer = parseTokenTransfer(tx, address, abiInterface)
   if (!transfer) return null
   return {
     ...transfer,
@@ -220,10 +239,12 @@ function parseCeloTokenTransfer(
   }
 }
 
-function parseTokenTransfer(tx: BlockscoutTokenTransaction, address: string) {
+function parseTokenTransfer(
+  tx: BlockscoutTokenTransaction,
+  address: string,
+  abiInterface: utils.Interface
+) {
   try {
-    // TODO check if separate ABI is needed for goldToken?
-    const abiInterface = getContractAbiInterface(CeloContract.StableToken)
     // Blockscout does most of the heavy lifting in decoding these
     // Still need to manually decode with ethers though because blockscout
     // doesn't include the comment
@@ -245,10 +266,8 @@ function parseTokenTransfer(tx: BlockscoutTokenTransaction, address: string) {
 
 // Parse token transactions other than transfers
 // The most common would probably be 'approve' calls
-function parseOtherTokenTx(tx: BlockscoutTransaction) {
+function parseOtherTokenTx(tx: BlockscoutTransaction, abiInterface: utils.Interface) {
   try {
-    // TODO check if separate ABI is needed for goldToken?
-    const abiInterface = getContractAbiInterface(CeloContract.StableToken)
     const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
     if (txDescription.name === 'transfer' || txDescription.name === 'transferWithComment') {
       throw new Error(

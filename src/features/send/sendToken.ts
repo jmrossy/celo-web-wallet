@@ -80,7 +80,7 @@ async function sendCeloToken(recipient: string, amountInWei: BigNumber) {
 }
 
 async function sendDollarToken(recipient: string, amountInWei: BigNumber, comment?: string) {
-  const stableToken = getContract(CeloContract.StableToken, true)
+  const stableToken = await getContract(CeloContract.StableToken)
   let txResponse: providers.TransactionResponse
 
   if (comment && comment.length && comment.length <= MAX_COMMENT_CHAR_LENGTH) {
