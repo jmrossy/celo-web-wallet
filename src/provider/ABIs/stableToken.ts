@@ -1,4 +1,4 @@
-// TODO minify and or stringify this
+// TODO minify and stringify this
 export const ABI = [
   {
     anonymous: false,
