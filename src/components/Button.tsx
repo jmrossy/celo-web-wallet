@@ -39,7 +39,7 @@ function getDimensions(size?: string) {
     case undefined:
       return { height: 52, width: 200 }
     case 'l':
-      return { height: 265, width: 268 }
+      return { height: 68, width: 265 }
     default:
       throw new Error(`Unsupported size: ${size}`)
   }

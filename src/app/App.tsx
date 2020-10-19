@@ -13,7 +13,7 @@ export class App extends React.Component {
           <Route path="/" element={<HomeScreen />} />
           <Route path="/send/*" element={<SendFormScreen />} />
           <Route path="/exchange/*" element={<ExchangeFormScreen />} />
-          <Route path="setup/*" element={<WelcomeScreen />} />
+          <Route path="/setup/*" element={<WelcomeScreen />} />
         </Routes>
       </BrowserRouter>
     )
