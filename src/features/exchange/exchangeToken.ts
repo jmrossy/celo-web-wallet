@@ -59,9 +59,10 @@ async function executeExchange(amountInWei: BigNumber, fromCurrency: Currency) {
   const exchange = await getContract(CeloContract.Exchange)
 
   // TODO query for expected exchange rate and set minBuyAmount properly
-  const txResponse: providers.TransactionResponse = await exchange.sell(
+  // TODO exchange method for sell once updated contract is live
+  const txResponse: providers.TransactionResponse = await exchange.exchange(
     amountInWei,
-    1,
+    BigNumber.from(10),
     fromCurrency === Currency.CELO
   )
   const txReceipt = await txResponse.wait()

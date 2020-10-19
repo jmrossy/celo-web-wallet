@@ -11,7 +11,7 @@ export function normalizeAddress(address: string) {
   return utils.getAddress(address)
 }
 
-export function compareAddresses(a1: string, a2: string) {
+export function areAddressesEqual(a1: string, a2: string) {
   if (!a1 || !a2 || !utils.isAddress(a1) || !utils.isAddress(a2)) {
     const errorMsg = `Invalid addresses being compared: ${a1}, ${a2}`
     logger.error(errorMsg)

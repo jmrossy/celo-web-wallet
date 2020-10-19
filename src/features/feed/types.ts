@@ -42,10 +42,10 @@ export interface CeloNativeTransferTx extends Transaction {
 
 export interface TokenExchangeTx extends Transaction {
   type: TransactionType.TokenExchange
-  makerToken: Currency
-  takerToken: Currency
-  makerAmount: string
-  takerAmount: string
+  fromToken: Currency
+  toToken: Currency
+  fromValue: string
+  toValue: string
 }
 
 export interface OtherTx extends Transaction {
