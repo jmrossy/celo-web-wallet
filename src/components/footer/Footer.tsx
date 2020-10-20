@@ -1,5 +1,7 @@
 import React from 'react'
+import { Color } from 'src/components/Color'
 import { Box } from 'src/components/layout/Box'
+import { Stylesheet } from 'src/styles/types'
 
 export function Footer() {
   return (
@@ -17,12 +19,14 @@ export function Footer() {
   )
 }
 
-const style = {
+const style: Stylesheet = {
   container: {
-    padding: '2rem 0',
+    padding: '2em',
+    opacity: 0.8,
   },
   anchor: {
-    // TODO style these
-    padding: '0 1rem',
+    padding: '0 1em',
+    color: Color.primaryBlack,
+    textAlign: 'center',
   },
 }

@@ -34,12 +34,12 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
 function getDimensions(size?: string) {
   switch (size) {
     case 's':
-      return { height: 36, width: 150 }
+      return { height: '2.25em', width: '9em' }
     case 'm':
     case undefined:
-      return { height: 52, width: 200 }
+      return { height: '3.25em', width: '12.5em' }
     case 'l':
-      return { height: 68, width: 265 }
+      return { height: '4.25em', width: '16.5em' }
     default:
       throw new Error(`Unsupported size: ${size}`)
   }

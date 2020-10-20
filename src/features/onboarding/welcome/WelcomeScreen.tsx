@@ -19,11 +19,11 @@ export function WelcomeScreen() {
   return (
     <Box direction="column" justify="between" align="center" styles={{ minHeight: '100vh' }}>
       <Box direction="column" justify="center" align="center" styles={{ marginTop: '30vh' }}>
-        <img width={'500px'} src={Logo} alt="Celo Logo" />
-        <Button size={'l'} onClick={onCreateNewClick} margin={'1rem'}>
+        <img width={'500rem'} src={Logo} alt="Celo Logo" css={{ maxWidth: '80%' }} />
+        <Button size={'l'} onClick={onCreateNewClick} margin={'2.5rem 0 0 0'}>
           Create New Account
         </Button>
-        <Button size={'l'} onClick={onUseExistingClick} margin={'1rem'}>
+        <Button size={'l'} onClick={onUseExistingClick} margin={'2rem 0 0 0'}>
           Use Existing Account
         </Button>
       </Box>
