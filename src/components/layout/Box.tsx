@@ -1,5 +1,4 @@
 import { CSSObject } from '@emotion/core'
-import React from 'react'
 
 interface BoxProps {
   direction?: 'column' | 'row'

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Identicon } from 'src/components/Identicon'
@@ -30,7 +29,7 @@ export function Header() {
   }
 
   const onClickLoadWallet = () => {
-    dispatch(loadWalletActions.trigger({pincode:'112233'}))
+    dispatch(loadWalletActions.trigger({ pincode: '112233' }))
   }
 
   return (
@@ -46,12 +45,12 @@ export function Header() {
       <h1>Your cUsd balance is {balances.cUsd}</h1>
       <h1>Your CELO balance is {balances.celo}</h1>
       <div>
-      <button onClick={onClickCreateWallet}>Create New Wallet</button>
-      <button onClick={onClickFetchBalances}>Fetch balances</button>
+        <button onClick={onClickCreateWallet}>Create New Wallet</button>
+        <button onClick={onClickFetchBalances}>Fetch balances</button>
       </div>
       <div>
-      <button onClick={onClickSaveWallet}>Save Wallet</button>
-      <button onClick={onClickLoadWallet}>Load Wallet</button>
+        <button onClick={onClickSaveWallet}>Save Wallet</button>
+        <button onClick={onClickLoadWallet}>Load Wallet</button>
       </div>
     </div>
   )

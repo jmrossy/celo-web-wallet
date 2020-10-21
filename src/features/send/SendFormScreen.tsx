@@ -1,4 +1,3 @@
-import React from 'react'
 import { useDispatch } from 'react-redux'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'

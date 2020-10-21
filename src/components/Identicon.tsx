@@ -1,6 +1,6 @@
 import jazzicon from '@metamask/jazzicon'
 import { BigNumber } from 'ethers'
-import React from 'react'
+import { PureComponent } from 'react'
 
 type Props = {
   address: string
@@ -10,7 +10,7 @@ function addressToSeed(address: string) {
   return BigNumber.from(address.slice(0, 8)).toNumber()
 }
 
-export class Identicon extends React.PureComponent<Props> {
+export class Identicon extends PureComponent<Props> {
   render() {
     const { address } = this.props
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Color } from 'src/components/Color'
 import { Box } from 'src/components/layout/Box'
 import { Stylesheet } from 'src/styles/types'

@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { renderWithProvider } from 'src/test/utils'
 import { Header } from './Header'
 

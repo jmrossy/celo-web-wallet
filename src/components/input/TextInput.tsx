@@ -1,4 +1,3 @@
-import React from 'react'
 import { Color } from 'src/components/Color'
 
 export interface TextInputProps {

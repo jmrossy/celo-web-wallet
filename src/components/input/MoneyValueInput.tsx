@@ -1,4 +1,3 @@
-import React from 'react'
 import { TextInput, TextInputProps } from 'src/components/input/TextInput'
 
 interface MoneyValueInputProps extends TextInputProps {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
