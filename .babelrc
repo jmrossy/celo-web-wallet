@@ -10,7 +10,8 @@
       "@babel/preset-react",
       {
         "useBuiltIns": true,
-        "useSpread": true
+        "useSpread": true,
+        "runtime": "automatic"
       }
     ],
     "@emotion/babel-preset-css-prop"

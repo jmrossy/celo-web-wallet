@@ -1,11 +1,9 @@
-import sagaMonitor from '@redux-saga/simple-saga-monitor'
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import createSagaMiddleware from 'redux-saga'
 import { rootReducer } from 'src/app/rootReducer'
 import { rootSaga } from 'src/app/rootSaga'
-import { config } from 'src/config'
 
-const sagaMiddleware = createSagaMiddleware(config.debug ? { sagaMonitor } : undefined)
+const sagaMiddleware = createSagaMiddleware()
 
 export const store = configureStore({
   reducer: rootReducer,

@@ -1,5 +1,4 @@
-import { BigNumber, Contract, providers } from 'ethers'
-import { parseEther } from 'ethers/lib/utils'
+import { BigNumber, Contract, providers, utils } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
 import { Currency, MAX_EXCHANGE_TOKEN_SIZE } from 'src/consts'
@@ -24,7 +23,7 @@ async function _exchangeToken(params: ExchangeTokenParams, balances: Balances) {
   const { amount, fromCurrency } = params
   logger.info(`Exchanging ${amount} ${fromCurrency}`)
 
-  const amountInWei = parseEther('' + amount)
+  const amountInWei = utils.parseEther('' + amount)
   if (!isAmountValid(amountInWei, params.fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE)) {
     // TODO show error
     return

@@ -1,5 +1,4 @@
-import { BigNumber, providers } from 'ethers'
-import { isAddress, parseEther } from 'ethers/lib/utils'
+import { BigNumber, providers, utils } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract } from 'src/config'
@@ -25,13 +24,13 @@ function* sendToken(params: SendTokenParams) {
 
 async function _sendToken(params: SendTokenParams, balances: Balances) {
   const { recipient, amount, currency, comment } = params
-  const amountInWei = parseEther('' + amount)
+  const amountInWei = utils.parseEther('' + amount)
   if (!isAmountValid(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE)) {
     // TODO show error
     return
   }
 
-  if (!isAddress(recipient)) {
+  if (!utils.isAddress(recipient)) {
     logger.error(`Invalid recipient: ${recipient}`)
     // TODO show error
     return

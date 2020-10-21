@@ -8,6 +8,9 @@ const config = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
   },
+  // https://github.com/webpack/webpack-dev-server/issues/2758
+  // TODO remove when fixed
+  target: process.env.NODE_ENV === 'development' ? 'web' : 'browserslist',
   module: {
     rules: [
       {
@@ -55,13 +58,14 @@ const config = {
       },
       {
         test: /\.svg$/,
-        use: 'file-loader',
+        type: 'asset/inline',
       },
     ],
   },
   resolve: {
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
     modules: [path.resolve('./node_modules'), path.resolve('./')],
+    mainFields: ['browser', 'module', 'main'],
   },
   plugins: [
     new CopyPlugin({
@@ -71,6 +75,7 @@ const config = {
   devServer: {
     historyApiFallback: true,
     open: 'Google Chrome',
+    hot: true,
   },
 }
 

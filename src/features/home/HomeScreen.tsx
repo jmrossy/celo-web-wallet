@@ -1,4 +1,3 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/Button'
 import { Header } from 'src/components/header/Header'
