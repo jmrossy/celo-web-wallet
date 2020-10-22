@@ -1,11 +1,11 @@
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import { Color } from 'src/components/Color'
 import Logo from 'src/components/icons/logo.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency, NULL_ADDRESS } from 'src/consts'
+import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { shortenAddress } from 'src/utils/addresses'
 

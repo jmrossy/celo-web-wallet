@@ -1,4 +1,4 @@
-import { Color } from 'src/components/Color'
+import { Color } from 'src/styles/Color'
 
 export interface TextInputProps {
   name: string

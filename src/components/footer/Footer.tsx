@@ -1,5 +1,5 @@
-import { Color } from 'src/components/Color'
 import { Box } from 'src/components/layout/Box'
+import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 
 export function Footer() {

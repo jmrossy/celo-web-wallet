@@ -1,6 +1,6 @@
 import { BigNumberish, FixedNumber, utils } from 'ethers'
-import { Color } from 'src/components/Color'
 import { Currency } from 'src/consts'
+import { Color } from 'src/styles/Color'
 
 interface MoneyValueProps {
   amountInWei: BigNumberish
