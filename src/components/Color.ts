@@ -7,4 +7,5 @@ export enum Color {
 
   borderInactive = '#DDDDDD',
   borderActive = 'rgba(46, 51, 56, 0.8)',
+  borderLight = '#F5F5F5',
 }

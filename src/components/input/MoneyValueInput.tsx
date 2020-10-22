@@ -1,3 +1,4 @@
+import { PropsWithChildren } from 'react'
 import { TextInput, TextInputProps } from 'src/components/input/TextInput'
 
 interface MoneyValueInputProps extends TextInputProps {
@@ -6,7 +7,7 @@ interface MoneyValueInputProps extends TextInputProps {
   max?: number // defaults to MAX_SEND_TOKEN_SIZE
 }
 
-export function MoneyValueInput(props: React.PropsWithChildren<MoneyValueInputProps>) {
+export function MoneyValueInput(props: PropsWithChildren<MoneyValueInputProps>) {
   // TODO
   return <TextInput {...props} />
 }

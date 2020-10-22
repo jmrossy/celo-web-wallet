@@ -1,9 +1,10 @@
 import jazzicon from '@metamask/jazzicon'
-import { BigNumber } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { PureComponent } from 'react'
 
 type Props = {
   address: string
+  size?: number
 }
 
 function addressToSeed(address: string) {
@@ -12,31 +13,23 @@ function addressToSeed(address: string) {
 
 export class Identicon extends PureComponent<Props> {
   render() {
-    const { address } = this.props
+    const { address, size } = this.props
 
-    const parsedAddress = BigNumber.from(address)
-    if (!address || parsedAddress.isZero()) {
+    if (!address || !utils.isAddress(address) || BigNumber.from(address).isZero()) {
       return null
     }
 
-    // TODO don't block render on this?
-    const jazziconResult = jazzicon(50, addressToSeed(address))
+    const jazziconResult = jazzicon(size ?? 30, addressToSeed(address))
 
     return (
-      <div
-        css={{
-          marginTop: 20,
+      <span
+        ref={(nodeElement) => {
+          if (nodeElement) {
+            nodeElement.innerHTML = ''
+            nodeElement.appendChild(jazziconResult)
+          }
         }}
-      >
-        <div
-          ref={(nodeElement) => {
-            if (nodeElement) {
-              nodeElement.innerHTML = ''
-              nodeElement.appendChild(jazziconResult)
-            }
-          }}
-        ></div>
-      </div>
+      ></span>
     )
   }
 }

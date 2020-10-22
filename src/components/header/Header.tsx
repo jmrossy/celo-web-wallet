@@ -1,10 +1,13 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
+import { Color } from 'src/components/Color'
+import Logo from 'src/components/icons/logo.svg'
 import { Identicon } from 'src/components/Identicon'
-import { NULL_ADDRESS } from 'src/consts'
-import { createWalletActions } from 'src/features/wallet/createWallet'
-import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
-import { loadWalletActions, saveWallet } from 'src/features/wallet/storage'
+import { Box } from 'src/components/layout/Box'
+import { MoneyValue } from 'src/components/MoneyValue'
+import { Currency, NULL_ADDRESS } from 'src/consts'
+import { mq, useIsMobile } from 'src/styles/mediaQueries'
+import { shortenAddress } from 'src/utils/addresses'
 
 export function Header() {
   const { address, balances } = useSelector((s: RootState) => ({
@@ -14,44 +17,45 @@ export function Header() {
 
   const addressOrDefault = address || NULL_ADDRESS
 
-  const dispatch = useDispatch()
-
-  const onClickCreateWallet = () => {
-    dispatch(createWalletActions.trigger())
-  }
-
-  const onClickFetchBalances = () => {
-    dispatch(fetchBalancesActions.trigger())
-  }
-
-  const onClickSaveWallet = async () => {
-    await saveWallet('112233')
-  }
-
-  const onClickLoadWallet = () => {
-    dispatch(loadWalletActions.trigger({ pincode: '112233' }))
-  }
+  const isMobile = useIsMobile()
+  const identiconSize = isMobile ? 30 : 40
 
   return (
-    <div>
-      <h1
-        css={{
-          backgroundColor: 'yellow',
-        }}
-      >
-        Your address is {addressOrDefault}
-      </h1>
-      <Identicon address={addressOrDefault} />
-      <h1>Your cUsd balance is {balances.cUsd}</h1>
-      <h1>Your CELO balance is {balances.celo}</h1>
-      <div>
-        <button onClick={onClickCreateWallet}>Create New Wallet</button>
-        <button onClick={onClickFetchBalances}>Fetch balances</button>
-      </div>
-      <div>
-        <button onClick={onClickSaveWallet}>Save Wallet</button>
-        <button onClick={onClickLoadWallet}>Load Wallet</button>
-      </div>
-    </div>
+    <Box align="center" justify="between" styles={style.container}>
+      <img width={'150rem'} src={Logo} alt="Celo Logo" css={{ maxWidth: '20%' }} />
+      <span>
+        <MoneyValue
+          amountInWei={balances.cUsd}
+          currency={Currency.cUSD}
+          margin={'0 1em'}
+          baseFontSize={1.4}
+        />
+        <MoneyValue
+          amountInWei={balances.celo}
+          currency={Currency.CELO}
+          margin={'0 1em'}
+          baseFontSize={1.4}
+        />
+      </span>
+      <Box align="center" justify="between">
+        <span css={style.address}>{shortenAddress(addressOrDefault)}</span>
+        <Identicon address={addressOrDefault} size={identiconSize} />
+      </Box>
+    </Box>
   )
+}
+
+const style = {
+  container: {
+    borderBottom: `1px solid ${Color.borderLight}`,
+    padding: '0.5em 0.5em 0.5em 0.2em',
+  },
+  address: {
+    display: 'none',
+    [mq[768]]: {
+      display: 'inline',
+      fontSize: '1.4em',
+      marginRight: '0.3em',
+    },
+  },
 }
