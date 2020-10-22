@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
+const packageJson = require('./package.json')
 
 const config = {
   entry: './src/index.tsx',
@@ -70,6 +71,10 @@ const config = {
   plugins: [
     new CopyPlugin({
       patterns: [{ from: './src/index.html', to: 'index.html' }],
+    }),
+    new webpack.DefinePlugin({
+      __VERSION__: JSON.stringify(packageJson.version),
+      __DEBUG__: process.env.NODE_ENV === 'development',
     }),
   ],
   devServer: {

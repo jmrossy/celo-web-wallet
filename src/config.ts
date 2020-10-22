@@ -19,10 +19,13 @@ interface Config {
   defaultAccount?: string // strictly for dev use, provide a backup phrase
 }
 
+// @ts-ignore Defined by webpack define plugin
+const debugMode = __DEBUG__ ?? false
+
 // TODO find a nice way to switch btwn configs at build/run time
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configMainnet: Config = {
-  debug: false,
+  debug: debugMode,
   fornoUrl: 'https://rc1-forno.celo-testnet.org',
   blockscoutUrl: 'https://explorer.celo.org/api',
   chainId: 42220,
@@ -60,3 +63,8 @@ const configAlfajores: Config = {
 }
 
 export const config = Object.freeze(configAlfajores)
+
+export function getVersion(): string | null {
+  // @ts-ignore Defined by webpack define plugin
+  return __VERSION__ || null
+}

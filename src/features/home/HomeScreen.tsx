@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/Button'
-import { Header } from 'src/components/header/Header'
+import { ScreenFrame } from 'src/components/layout/ScreenFrame'
 import { TransactionFeed } from 'src/features/feed/TransactionFeed'
 import { ImportWalletForm } from 'src/features/onboarding/import/ImportWalletForm'
 import { createWalletActions } from 'src/features/wallet/createWallet'
@@ -30,8 +30,7 @@ export function HomeScreen() {
   }
 
   return (
-    <div>
-      <Header />
+    <ScreenFrame>
       <div css={{ marginTop: '2rem' }}>
         <button onClick={onClickCreateWallet}>Create New Wallet</button>
         <button onClick={onClickFetchBalances}>Fetch balances</button>
@@ -48,6 +47,6 @@ export function HomeScreen() {
         Exchange Tokens
       </Button>
       <TransactionFeed />
-    </div>
+    </ScreenFrame>
   )
 }

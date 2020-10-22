@@ -1,3 +1,4 @@
+import { PropsWithChildren } from 'react'
 import { Color } from 'src/styles/Color'
 
 export interface TextInputProps {
@@ -11,7 +12,7 @@ export interface TextInputProps {
   // TODO add validation hook
 }
 
-export function TextInput(props: React.PropsWithChildren<TextInputProps>) {
+export function TextInput(props: PropsWithChildren<TextInputProps>) {
   const { name, width, height, margin, value, onBlur, onChange } = props
 
   return (

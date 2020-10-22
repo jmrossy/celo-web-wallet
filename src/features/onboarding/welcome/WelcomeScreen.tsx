@@ -26,7 +26,7 @@ export function WelcomeScreen() {
           Use Existing Account
         </Button>
       </Box>
-      <Footer />
+      <Footer isOnboarding={true} />
     </Box>
   )
 }
