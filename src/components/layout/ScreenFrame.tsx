@@ -3,7 +3,7 @@ import { Footer } from 'src/components/footer/Footer'
 import { Header } from 'src/components/header/Header'
 import { Box } from 'src/components/layout/Box'
 
-export function ScreenFrame(props: PropsWithChildren<any>) {
+export function ScreenFrame(props: PropsWithChildren<unknown>) {
   return (
     <Box direction="column" styles={{ height: '100vh' }}>
       <Header />
