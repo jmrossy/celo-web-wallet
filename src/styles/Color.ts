@@ -4,6 +4,7 @@ export enum Color {
   primaryBlack = '#2E3338',
   primaryWhite = '#FFFFFF',
   primaryGrey = '#9CA4A9',
+  textGrey = '#8B8D8E',
 
   borderInactive = '#DDDDDD',
   borderActive = 'rgba(46, 51, 56, 0.8)',

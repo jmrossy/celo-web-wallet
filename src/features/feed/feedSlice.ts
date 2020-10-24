@@ -5,12 +5,14 @@ export interface TransactionFeed {
   transactions: TransactionMap
   lastUpdatedTime: number | null
   lastBlockNumber: number | null
+  openTransaction: string | null // hash of transaction selected from the feed
 }
 
 export const feedInitialState: TransactionFeed = {
   transactions: {},
   lastUpdatedTime: null,
   lastBlockNumber: null,
+  openTransaction: null,
 }
 
 const feedSlice = createSlice({
@@ -29,8 +31,20 @@ const feedSlice = createSlice({
       state.lastUpdatedTime = action.payload.lastUpdatedTime
       state.lastBlockNumber = action.payload.lastBlockNumber
     },
+    openTransaction: (
+      state,
+      action: PayloadAction<{
+        txHash: string
+      }>
+    ) => {
+      if (state.transactions[action.payload.txHash]) {
+        state.openTransaction = action.payload.txHash
+      } else {
+        state.openTransaction = null
+      }
+    },
   },
 })
 
-export const { addTransactions } = feedSlice.actions
+export const { addTransactions, openTransaction } = feedSlice.actions
 export const feedReducer = feedSlice.reducer

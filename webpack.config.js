@@ -58,7 +58,7 @@ const config = {
         exclude: /node_modules/,
       },
       {
-        test: /\.svg$/,
+        test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
         type: 'asset/inline',
       },
     ],

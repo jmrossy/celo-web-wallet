@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux'
+import { shallowEqual, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import Logo from 'src/components/icons/logo.svg'
 import { Identicon } from 'src/components/Identicon'
@@ -10,10 +10,13 @@ import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { shortenAddress } from 'src/utils/addresses'
 
 export function Header() {
-  const { address, balances } = useSelector((s: RootState) => ({
-    address: s.wallet.address,
-    balances: s.wallet.balances,
-  }))
+  const { address, balances } = useSelector(
+    (s: RootState) => ({
+      address: s.wallet.address,
+      balances: s.wallet.balances,
+    }),
+    shallowEqual
+  )
 
   const addressOrDefault = address || NULL_ADDRESS
 

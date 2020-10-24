@@ -37,8 +37,6 @@ const style: Stylesheet = {
   },
   feedContainer: {
     flex: 1,
-    overflowX: 'hidden',
-    overflowY: 'auto',
     [mq[768]]: {
       flex: 'initial',
       width: '22em',
