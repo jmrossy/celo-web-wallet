@@ -19,7 +19,7 @@ export class Identicon extends PureComponent<Props> {
       return null
     }
 
-    const jazziconResult = jazzicon(size ?? 30, addressToSeed(address))
+    const jazziconResult = jazzicon(size ?? 34, addressToSeed(address))
 
     return (
       <span

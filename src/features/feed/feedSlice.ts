@@ -31,14 +31,9 @@ const feedSlice = createSlice({
       state.lastUpdatedTime = action.payload.lastUpdatedTime
       state.lastBlockNumber = action.payload.lastBlockNumber
     },
-    openTransaction: (
-      state,
-      action: PayloadAction<{
-        txHash: string
-      }>
-    ) => {
-      if (state.transactions[action.payload.txHash]) {
-        state.openTransaction = action.payload.txHash
+    openTransaction: (state, action: PayloadAction<string>) => {
+      if (state.transactions[action.payload]) {
+        state.openTransaction = action.payload
       } else {
         state.openTransaction = null
       }

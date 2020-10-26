@@ -23,9 +23,11 @@ export function Footer(props: FooterProps) {
         <a css={anchorStyle} href="https://celo.org" target="_blank" rel="noopener noreferrer">
           Learn More About Celo
         </a>
+        <span>-</span>
         <a css={anchorStyle} href="https://valoraapp.com" target="_blank" rel="noopener noreferrer">
           Try the Celo Mobile Wallet
         </a>
+        <span>-</span>
         <a
           css={anchorStyle}
           href="https://github.com/celo-tools/celo-web-wallet"
@@ -41,8 +43,9 @@ export function Footer(props: FooterProps) {
 }
 
 const textStyle: CSSObject = {
-  padding: '0 0.5em',
+  padding: '0 0.8em',
   fontSize: '0.8em',
+  letterSpacing: '0.03em',
   color: Color.primaryBlack,
   textAlign: 'center',
   textDecoration: 'none',
@@ -50,7 +53,7 @@ const textStyle: CSSObject = {
 
 const style: Stylesheet = {
   container: {
-    padding: '1em',
+    padding: '0.7em 1em',
     width: '100%',
     opacity: 0.8,
     borderTop: `1px solid ${Color.borderLight}`,

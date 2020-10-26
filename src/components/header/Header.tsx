@@ -25,19 +25,19 @@ export function Header() {
 
   return (
     <Box align="center" justify="between" styles={style.container}>
-      <img width={'150rem'} src={Logo} alt="Celo Logo" css={{ maxWidth: '20%' }} />
+      <img width={'130em'} src={Logo} alt="Celo Logo" css={{ maxWidth: '20%' }} />
       <span>
         <MoneyValue
           amountInWei={balances.cUsd}
           currency={Currency.cUSD}
           margin={'0 1em'}
-          baseFontSize={1.4}
+          baseFontSize={1.3}
         />
         <MoneyValue
           amountInWei={balances.celo}
           currency={Currency.CELO}
           margin={'0 1em'}
-          baseFontSize={1.4}
+          baseFontSize={1.3}
         />
       </span>
       <Box align="center" justify="between">
@@ -51,13 +51,14 @@ export function Header() {
 const style = {
   container: {
     borderBottom: `1px solid ${Color.borderLight}`,
-    padding: '0.5em 0.5em 0.5em 0.2em',
+    padding: '0.4em 0.5em 0.4em 0.2em',
   },
   address: {
     display: 'none',
     [mq[768]]: {
       display: 'inline',
-      fontSize: '1.4em',
+      fontSize: '1.3em',
+      letterSpacing: '0.06em',
       marginRight: '0.3em',
     },
   },

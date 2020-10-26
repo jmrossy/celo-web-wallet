@@ -337,6 +337,7 @@ function parseNativeTransferTx(tx: BlockscoutTx, address: string): CeloNativeTra
     ...parseOtherTx(tx),
     type: TransactionType.CeloNativeTransfer,
     isOutgoing: areAddressesEqual(tx.from, address),
+    comment: undefined,
   }
 }
 

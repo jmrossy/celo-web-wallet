@@ -38,6 +38,7 @@ export interface CeloTokenTransferTx extends Transaction {
 export interface CeloNativeTransferTx extends Transaction {
   type: TransactionType.CeloNativeTransfer
   isOutgoing: boolean
+  comment: undefined
 }
 
 export interface TokenExchangeTx extends Transaction {

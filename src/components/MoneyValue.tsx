@@ -30,7 +30,7 @@ export function MoneyValue(props: MoneyValueProps) {
   )
 }
 
-function getCurrencyProps(currency: Currency) {
+export function getCurrencyProps(currency: Currency) {
   if (currency === Currency.cUSD) {
     return { symbol: 'cUSD', decimals: 2, color: Color.primaryGreen }
   }
