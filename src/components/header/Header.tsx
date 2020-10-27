@@ -1,4 +1,5 @@
 import { shallowEqual, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import Logo from 'src/components/icons/logo.svg'
 import { Identicon } from 'src/components/Identicon'
@@ -17,7 +18,6 @@ export function Header() {
     }),
     shallowEqual
   )
-
   const addressOrDefault = address || NULL_ADDRESS
 
   const isMobile = useIsMobile()
@@ -25,7 +25,9 @@ export function Header() {
 
   return (
     <Box align="center" justify="between" styles={style.container}>
-      <img width={'130em'} src={Logo} alt="Celo Logo" css={{ maxWidth: '20%' }} />
+      <Link to={'/'}>
+        <img width={'130em'} src={Logo} alt="Celo Logo" css={style.logo} />
+      </Link>
       <span>
         <MoneyValue
           amountInWei={balances.cUsd}
@@ -52,6 +54,9 @@ const style = {
   container: {
     borderBottom: `1px solid ${Color.borderLight}`,
     padding: '0.4em 0.5em 0.4em 0.2em',
+  },
+  logo: {
+    maxWidth: '20vw',
   },
   address: {
     display: 'none',

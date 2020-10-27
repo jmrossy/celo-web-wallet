@@ -266,18 +266,23 @@ function parseTokenTransfer(
   abiInterface: utils.Interface
 ) {
   try {
-    // Blockscout does most of the heavy lifting in decoding these
-    // Still need to manually decode with ethers though because blockscout
-    // doesn't include the comment
-    const txDescription = abiInterface.parseTransaction({ data: tx.input })
-    if (txDescription.name !== 'transfer' && txDescription.name !== 'transferWithComment') {
-      throw new Error('Not a valid token transfer tx: ' + JSON.stringify(txDescription))
+    let comment: string | undefined
+
+    if (tx.input && tx.input.toLowerCase() !== '0x' && !BigNumber.from(tx.input).isZero()) {
+      // Blockscout does most of the heavy lifting in decoding these
+      // Still need to manually decode with ethers though because blockscout
+      // doesn't include the comment
+      const txDescription = abiInterface.parseTransaction({ data: tx.input })
+      if (txDescription.name !== 'transfer' && txDescription.name !== 'transferWithComment') {
+        throw new Error('Not a valid token transfer tx: ' + JSON.stringify(txDescription))
+      }
+      comment = txDescription.args.comment
     }
 
     return {
       ...parseOtherTx(tx),
       isOutgoing: areAddressesEqual(tx.from, address),
-      comment: txDescription.args.comment,
+      comment,
     }
   } catch (error) {
     logger.error('Failed to parse tx data', error, tx)

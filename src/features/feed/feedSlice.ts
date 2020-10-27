@@ -31,8 +31,8 @@ const feedSlice = createSlice({
       state.lastUpdatedTime = action.payload.lastUpdatedTime
       state.lastBlockNumber = action.payload.lastBlockNumber
     },
-    openTransaction: (state, action: PayloadAction<string>) => {
-      if (state.transactions[action.payload]) {
+    openTransaction: (state, action: PayloadAction<string | null>) => {
+      if (action.payload && state.transactions[action.payload]) {
         state.openTransaction = action.payload
       } else {
         state.openTransaction = null

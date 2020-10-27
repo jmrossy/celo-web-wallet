@@ -18,7 +18,7 @@ export function TransactionFeed() {
   return (
     <div css={style.container}>
       <ol css={style.ol}>
-        {/* Use some kind of flatlist or pagination */}
+        {/* TODO: Use some kind of flatlist or pagination */}
         {sortedTransaction.map((tx) => (
           <FeedItem
             tx={tx}
