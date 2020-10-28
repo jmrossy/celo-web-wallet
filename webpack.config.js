@@ -76,6 +76,7 @@ const config = {
       __VERSION__: JSON.stringify(packageJson.version),
       __DEBUG__: process.env.NODE_ENV === 'development',
     }),
+    // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
   ],
   devServer: {
     historyApiFallback: true,

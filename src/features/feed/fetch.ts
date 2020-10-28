@@ -17,9 +17,10 @@ import {
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { call, put, select } from 'typed-redux-saga'
+import { call, delay, put, select } from 'typed-redux-saga'
 
-const QUERY_DEBOUNCE_TIME = 2000
+const QUERY_DEBOUNCE_TIME = 2000 // 2 seconds
+const POLL_DELAY = 10000 // 10 seconds
 
 interface BlockscoutTxBase {
   hash: string
@@ -56,6 +57,14 @@ interface BlockscoutResponse<R> {
   status: string
   result: R
   message: string
+}
+
+// Triggers polling of feed fetching
+export function* feedFetchPoller() {
+  while (true) {
+    yield* delay(POLL_DELAY)
+    yield* put(fetchFeedActions.trigger())
+  }
 }
 
 function* fetchFeed() {

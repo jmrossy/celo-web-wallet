@@ -13,8 +13,8 @@ export const Font = {
     letterSpacing: '0.04em',
   },
   header: {
-    fontSize: '1.2em',
-    fontWeight: 300,
+    fontSize: '1.1em',
+    fontWeight: 400,
     letterSpacing: '0.06em',
   },
   label: {

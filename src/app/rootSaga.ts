@@ -3,7 +3,7 @@ import { call, spawn } from 'redux-saga/effects'
 import { connectToForno } from 'src/blockchain/provider'
 import { config } from 'src/config'
 import { exchangeTokenReducer, exchangeTokenSaga } from 'src/features/exchange/exchangeToken'
-import { fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
+import { feedFetchPoller, fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
 import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
@@ -19,7 +19,7 @@ function* init() {
 }
 
 // All regular sagas must be included here
-const sagas = [importWalletSaga, loadWalletSaga]
+const sagas = [importWalletSaga, loadWalletSaga, feedFetchPoller]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {

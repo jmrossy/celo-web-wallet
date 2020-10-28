@@ -1,7 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
+import { Box } from 'src/components/layout/Box'
 import { openTransaction } from 'src/features/feed/feedSlice'
 import { Color } from 'src/styles/Color'
+import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
 interface Props {
@@ -24,11 +26,22 @@ export function TransactionReview(props: Props) {
 
   return (
     <div css={style.container}>
-      <div css={style.header}>
-        TODO tx header
-        <button onClick={onCloseClick}>X</button>
+      <Box align="center" justify="between" styles={style.header}>
+        <span>Payment Received</span>
+        {/* TODO a real x icon */}
+        <a onClick={onCloseClick} css={style.closeButton}>
+          X
+        </a>
+      </Box>
+      <div css={style.contentContainer}>
+        <div css={Font.header}>Transaction Details</div>
+        <div css={style.txProperties}>
+          <span css={Font.label}>Status</span>
+          <span css={style.txPropertyValue}>Confirmed</span>
+          <span css={Font.label}>Status</span>
+          <span css={style.txPropertyValue}>Confirmed</span>
+        </div>
       </div>
-      <div>TODO tx review content</div>
     </div>
   )
 }
@@ -43,6 +56,27 @@ const style: Stylesheet = {
     overflow: 'auto',
   },
   header: {
+    ...Font.header,
     background: Color.accentBlue,
+    color: Color.primaryWhite,
+    padding: '0.9em 1.5em',
+  },
+  closeButton: {
+    ...Font.header,
+    color: Color.primaryWhite,
+    fontWeight: 600,
+    cursor: 'pointer',
+  },
+  contentContainer: {
+    padding: '1em 1.5em',
+  },
+  txProperties: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateRow: 'repeat(4, 1fr)',
+    gap: '1em 1em',
+  },
+  txPropertyValue: {
+    fontWeight: 400,
   },
 }
