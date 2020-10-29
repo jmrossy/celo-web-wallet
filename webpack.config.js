@@ -50,15 +50,15 @@ const config = {
           {
             loader: 'css-loader',
             options: {
-              importLoaders: 1,
-              modules: true,
+              importLoaders: 0,
+              modules: false,
             },
           },
         ],
         exclude: /node_modules/,
       },
       {
-        test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
+        test: /\.(woff|woff2|eot|ttf|otf|svg|)$/,
         type: 'asset/inline',
       },
     ],
