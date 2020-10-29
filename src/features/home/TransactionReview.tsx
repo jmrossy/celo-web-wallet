@@ -2,6 +2,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
 import { openTransaction } from 'src/features/feed/feedSlice'
+import { CeloTransaction, TransactionType } from 'src/features/feed/types'
+import { TokenTransferReview } from 'src/features/home/TokenTransferReview'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -34,16 +36,27 @@ export function TransactionReview(props: Props) {
         </a>
       </Box>
       <div css={style.contentContainer}>
-        <div css={Font.header}>Transaction Details</div>
-        <div css={style.txProperties}>
-          <span css={Font.label}>Status</span>
-          <span css={style.txPropertyValue}>Confirmed</span>
-          <span css={Font.label}>Status</span>
-          <span css={style.txPropertyValue}>Confirmed</span>
-        </div>
+        <div css={style.sectionHeader}>Transaction Details</div>
+        {getContentByTxType(tx)}
       </div>
     </div>
   )
+}
+
+function getContentByTxType(tx: CeloTransaction) {
+  if (
+    tx.type === TransactionType.StableTokenTransfer ||
+    tx.type === TransactionType.CeloNativeTransfer ||
+    tx.type === TransactionType.CeloTokenTransfer
+  ) {
+    return <TokenTransferReview tx={tx} />
+  }
+
+  if (tx.type === TransactionType.TokenExchange) {
+    return <div>TODO</div>
+  }
+
+  return <div>default content TODO</div>
 }
 
 // TODO
@@ -68,15 +81,10 @@ const style: Stylesheet = {
     cursor: 'pointer',
   },
   contentContainer: {
-    padding: '1em 1.5em',
+    padding: '1.5em',
   },
-  txProperties: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gridTemplateRow: 'repeat(4, 1fr)',
-    gap: '1em 1em',
-  },
-  txPropertyValue: {
-    fontWeight: 400,
+  sectionHeader: {
+    ...Font.header,
+    marginBottom: '2em',
   },
 }

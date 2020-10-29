@@ -30,14 +30,7 @@ export function FeedItem(props: FeedItemProps) {
     onClick(tx.hash)
   }
 
-  const {
-    icon,
-    description,
-    subDescription,
-    value,
-    currency,
-    isPositive,
-  } = getFeedContentForTxType(tx)
+  const { icon, description, subDescription, value, currency, isPositive } = getContentByTxType(tx)
 
   const { symbol, color } = getCurrencyProps(currency)
 
@@ -65,7 +58,7 @@ export function FeedItem(props: FeedItemProps) {
   )
 }
 
-function getFeedContentForTxType(tx: CeloTransaction): FeedItemContent {
+function getContentByTxType(tx: CeloTransaction): FeedItemContent {
   const subDescription = getFormattedTimestamp(tx.timestamp)
 
   if (
@@ -73,7 +66,6 @@ function getFeedContentForTxType(tx: CeloTransaction): FeedItemContent {
     tx.type === TransactionType.CeloNativeTransfer ||
     tx.type === TransactionType.CeloTokenTransfer
   ) {
-    const currency = tx.type === TransactionType.StableTokenTransfer ? Currency.cUSD : Currency.CELO
     // TODO support comment encryption
     const description = tx.comment ?? (tx.isOutgoing ? 'Payment Sent' : 'Payment Received')
     const icon = <Identicon address={tx.isOutgoing ? tx.to : tx.from} />
@@ -82,7 +74,7 @@ function getFeedContentForTxType(tx: CeloTransaction): FeedItemContent {
       icon,
       description,
       subDescription,
-      currency,
+      currency: tx.currency,
       value: tx.value,
       isPositive: !tx.isOutgoing,
     }

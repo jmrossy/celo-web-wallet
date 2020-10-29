@@ -253,6 +253,7 @@ function parseStableTokenTransfer(
   return {
     ...transfer,
     type: TransactionType.StableTokenTransfer,
+    currency: Currency.cUSD,
   }
 }
 
@@ -266,6 +267,7 @@ function parseCeloTokenTransfer(
   return {
     ...transfer,
     type: TransactionType.CeloTokenTransfer,
+    currency: Currency.CELO,
   }
 }
 
@@ -352,6 +354,7 @@ function parseNativeTransferTx(tx: BlockscoutTx, address: string): CeloNativeTra
     type: TransactionType.CeloNativeTransfer,
     isOutgoing: areAddressesEqual(tx.from, address),
     comment: undefined,
+    currency: Currency.CELO,
   }
 }
 

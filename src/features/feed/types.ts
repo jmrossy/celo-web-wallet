@@ -27,18 +27,21 @@ export interface StableTokenTransferTx extends Transaction {
   type: TransactionType.StableTokenTransfer
   comment?: string
   isOutgoing: boolean
+  currency: Currency.cUSD
 }
 
 export interface CeloTokenTransferTx extends Transaction {
   type: TransactionType.CeloTokenTransfer
   comment?: string
   isOutgoing: boolean
+  currency: Currency.CELO
 }
 
 export interface CeloNativeTransferTx extends Transaction {
   type: TransactionType.CeloNativeTransfer
   isOutgoing: boolean
   comment: undefined
+  currency: Currency.CELO
 }
 
 export interface TokenExchangeTx extends Transaction {
@@ -59,5 +62,7 @@ export type CeloTransaction =
   | CeloNativeTransferTx
   | TokenExchangeTx
   | OtherTx
+
+export type TokenTransfer = StableTokenTransferTx | CeloTokenTransferTx | CeloNativeTransferTx
 
 export type TransactionMap = Record<string, CeloTransaction> // hash to item
