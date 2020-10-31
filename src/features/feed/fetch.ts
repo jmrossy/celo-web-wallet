@@ -1,6 +1,6 @@
 import { BigNumber, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContractAbiInterface } from 'src/blockchain/contracts'
+import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { Currency } from 'src/consts'
 import { addTransactions } from 'src/features/feed/feedSlice'
@@ -174,12 +174,15 @@ async function queryBlockscout<P>(url: string) {
 type AbiInterfaceMap = Record<Currency, utils.Interface>
 
 async function getAbiInterfacesForParsing(): Promise<AbiInterfaceMap> {
-  const celoAbiIntP = getContractAbiInterface(CeloContract.GoldToken)
-  const stableTokenAbiIntP = getContractAbiInterface(CeloContract.StableToken)
-  const [celoAbiInt, stableTokenAbiInt] = await Promise.all([celoAbiIntP, stableTokenAbiIntP])
+  const goldTokenContractP = getContract(CeloContract.GoldToken)
+  const stableTokenContractP = getContract(CeloContract.StableToken)
+  const [goldTokenContract, stableTokenContract] = await Promise.all([
+    goldTokenContractP,
+    stableTokenContractP,
+  ])
   return {
-    [Currency.CELO]: celoAbiInt,
-    [Currency.cUSD]: stableTokenAbiInt,
+    [Currency.CELO]: goldTokenContract.interface,
+    [Currency.cUSD]: stableTokenContract.interface,
   }
 }
 

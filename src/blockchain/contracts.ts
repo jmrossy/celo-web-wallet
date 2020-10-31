@@ -1,9 +1,8 @@
-import { Contract, ethers, utils } from 'ethers'
+import { Contract, ethers } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
 
 const contractCache: Partial<Record<CeloContract, Contract>> = {}
-const abiInterfaceCache: Partial<Record<CeloContract, utils.Interface>> = {}
 
 export async function getContract(c: CeloContract) {
   const cachedContract = contractCache[c]
@@ -16,17 +15,6 @@ export async function getContract(c: CeloContract) {
   const contract = new ethers.Contract(address, abi, signer)
   contractCache[c] = contract
   return contract
-}
-
-export async function getContractAbiInterface(c: CeloContract) {
-  const cachedInterface = abiInterfaceCache[c]
-  if (cachedInterface) {
-    return cachedInterface
-  }
-  const abi = await getContractAbi(c)
-  const abiInterface = new utils.Interface(abi)
-  abiInterfaceCache[c] = abiInterface
-  return abiInterface
 }
 
 async function getContractAbi(c: CeloContract) {
