@@ -1,9 +1,9 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
-import { ethers, Wallet } from 'ethers'
+import { Wallet } from 'ethers'
 import { getProvider } from 'src/blockchain/provider'
 import { logger } from 'src/utils/logger'
 
-let signer: Wallet
+let signer: CeloWallet
 
 export function getSigner() {
   if (!signer) {
@@ -12,7 +12,7 @@ export function getSigner() {
   return signer
 }
 
-export function setSigner(_signer: ethers.Wallet) {
+export function setSigner(_signer: Wallet) {
   if (!_signer || !_signer._isSigner) {
     logger.error('Signer is invalid')
     return

@@ -1,7 +1,7 @@
+import { getTransactionFee } from 'src/blockchain/gas'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/consts'
 import { TokenTransfer } from 'src/features/feed/types'
-import { getTransactionFee } from 'src/features/gas/utils'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 

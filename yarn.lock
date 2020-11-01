@@ -977,10 +977,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@celo-tools/celo-ethers-wrapper@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@celo-tools/celo-ethers-wrapper/-/celo-ethers-wrapper-0.0.3.tgz#c8676f4a8d14027c7ac3eb9b4b7898aaee84cb3c"
-  integrity sha512-UfrHEAaTeAUqLjr2ybs15U17sjXPwjpfwM4KOrDXc/XMi59zKtBC8p4Nv2k1mxzVtIStIb5EU7wY9lffDcheHA==
+"@celo-tools/celo-ethers-wrapper@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@celo-tools/celo-ethers-wrapper/-/celo-ethers-wrapper-0.0.4.tgz#44179f8e4cfa6c1a340fdb09b488f7aa13305d72"
+  integrity sha512-01Zoz8uXmHim+EkSVA7SW0sCUjqod5vN2jWDKOgMjYlXtRNj1+qYcyPFfoncvCaTyigF8883SXjBghIYPlJKKg==
 
 "@emotion/babel-plugin-jsx-pragmatic@^0.1.5":
   version "0.1.5"

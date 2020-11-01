@@ -19,7 +19,7 @@
     "test:all": "yarn test && yarn lint"
   },
   "dependencies": {
-    "@celo-tools/celo-ethers-wrapper": "^0.0.3",
+    "@celo-tools/celo-ethers-wrapper": "^0.0.4",
     "@emotion/core": "^10.0.35",
     "@metamask/jazzicon": "^2.0.0",
     "@reduxjs/toolkit": "^1.4.0",
