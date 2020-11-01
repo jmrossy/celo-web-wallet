@@ -7,9 +7,10 @@ export enum Color {
 
   textGrey = '#8B8D8E',
 
-  accentBlue = '#3488EC',
+  accentBlue = '#6A9EDC',
 
   borderInactive = '#DDDDDD',
   borderActive = 'rgba(46, 51, 56, 0.8)',
-  borderLight = '#EDEEEF',
+  borderLight = '#F5F5F5',
+  fillLight = '#F4F5F6',
 }
