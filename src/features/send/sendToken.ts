@@ -55,13 +55,10 @@ async function _sendToken(params: SendTokenParams, balances: Balances) {
 
 async function sendCeloToken(recipient: string, amountInWei: BigNumber) {
   logger.info(`Sending ${amountInWei} CELO`)
-  const txReceipt = await sendTransaction(
-    {
-      to: recipient,
-      value: amountInWei,
-    },
-    Currency.cUSD
-  )
+  const txReceipt = await sendTransaction({
+    to: recipient,
+    value: amountInWei,
+  })
 
   logger.info(`CELO payment hash received: ${txReceipt.transactionHash}`)
 }
