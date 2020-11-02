@@ -1,4 +1,6 @@
 import { getTransactionFee } from 'src/blockchain/gas'
+import { Address } from 'src/components/Address'
+import { TransactionPropertyGroup } from 'src/components/layout/TransactionPropertyGroup'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/consts'
 import { TokenTransfer } from 'src/features/feed/types'
@@ -19,15 +21,15 @@ export function TokenTransferReview({ tx }: Props) {
   const { feeValue, feeCurrency } = getTransactionFee(tx)
 
   return (
-    <div css={style.container}>
-      <div css={style.propertyGroup}>
+    <TransactionPropertyGroup>
+      <div>
         <div css={Font.label}>Status</div>
         <div css={style.value}>{`Confirmed: ${time}`} </div>
         <div css={style.value}>{date} </div>
       </div>
-      <div css={style.propertyGroup}>
+      <div>
         <div css={Font.label}>Amount</div>
-        <div css={style.value}>
+        <div css={[style.value, Font.bold]}>
           <span>{amountLabel}</span>
           <MoneyValue amountInWei={tx.value} currency={Currency.cUSD} />
         </div>
@@ -36,17 +38,19 @@ export function TokenTransferReview({ tx }: Props) {
           <MoneyValue amountInWei={feeValue} currency={feeCurrency} />
         </div>
       </div>
-      <div css={style.propertyGroup}>
+      <div>
         <div css={Font.label}>{addressLabel}</div>
-        <div css={style.value}>{address} </div>
+        <div css={style.value}>
+          <Address address={address} />
+        </div>
       </div>
       {tx.comment && (
-        <div css={style.propertyGroup}>
+        <div>
           <div css={Font.label}>Comment</div>
           <div css={style.value}>{tx.comment} </div>
         </div>
       )}
-    </div>
+    </TransactionPropertyGroup>
   )
 }
 
@@ -56,12 +60,6 @@ function getFormattedTime(timestamp: number) {
 }
 
 const style: Stylesheet = {
-  container: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '3em 1em',
-    marginBottom: '2em',
-  },
   value: {
     ...Font.body,
     marginTop: '0.75em',

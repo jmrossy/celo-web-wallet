@@ -30,7 +30,7 @@ export function DevTools() {
   }
 
   return (
-    <div css={{ margin: '2rem' }}>
+    <div css={{ padding: '2em' }}>
       <div>
         <button onClick={onClickCreateWallet}>Create New Wallet</button>
         <button onClick={onClickFetchBalances}>Fetch balances</button>

@@ -116,7 +116,7 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
   // TODO consider pagination here
 
   // First fetch the basic tx list, which includes outgoing token transfers
-  let txQueryUrl = config.blockscoutUrl + '?module=account&action=txlist&address=' + address
+  let txQueryUrl = config.blockscoutUrl + '/api?module=account&action=txlist&address=' + address
   if (lastBlockNumber) {
     txQueryUrl += `&startblock=${lastBlockNumber + 1}`
   }
@@ -124,7 +124,8 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
 
   // The txlist query alone doesn't get all needed transactions
   // It excludes incoming token transfers so we need a second query to cover those
-  let tokenTxQueryUrl = config.blockscoutUrl + '?module=account&action=tokentx&address=' + address
+  let tokenTxQueryUrl =
+    config.blockscoutUrl + '/api?module=account&action=tokentx&address=' + address
   if (lastBlockNumber) {
     tokenTxQueryUrl += `&startblock=${lastBlockNumber + 1}`
   }
@@ -369,6 +370,7 @@ function parseOtherTx(tx: BlockscoutTx): OtherTx {
     to: tx.to,
     value: tx.value,
     blockNumber: BigNumber.from(tx.blockNumber).toNumber(),
+    nonce: BigNumber.from(tx.nonce).toNumber(),
     timestamp: BigNumber.from(tx.timeStamp).toNumber(),
     gasPrice: tx.gasPrice,
     gasUsed: tx.gasUsed,

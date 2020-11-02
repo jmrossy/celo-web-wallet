@@ -13,4 +13,5 @@ export enum Color {
   borderActive = 'rgba(46, 51, 56, 0.8)',
   borderLight = '#F5F5F5',
   fillLight = '#F4F5F6',
+  fillLighter = '#F8FAF9',
 }

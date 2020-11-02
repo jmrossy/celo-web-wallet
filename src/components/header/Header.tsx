@@ -19,6 +19,7 @@ export function Header() {
     shallowEqual
   )
   const addressOrDefault = address || NULL_ADDRESS
+  const addressStub = '0x' + shortenAddress(addressOrDefault).substring(2).toUpperCase()
 
   const isMobile = useIsMobile()
   const identiconSize = isMobile ? 30 : 40
@@ -28,22 +29,22 @@ export function Header() {
       <Link to={'/'}>
         <img width={'130em'} src={Logo} alt="Celo Logo" css={style.logo} />
       </Link>
-      <span>
+      <span css={style.balances}>
         <MoneyValue
           amountInWei={balances.cUsd}
           currency={Currency.cUSD}
-          margin={'0 1em'}
-          baseFontSize={1.3}
+          margin={'0 1.5em'}
+          baseFontSize={1.4}
         />
         <MoneyValue
           amountInWei={balances.celo}
           currency={Currency.CELO}
-          margin={'0 1em'}
-          baseFontSize={1.3}
+          margin={'0 1.5em'}
+          baseFontSize={1.4}
         />
       </span>
       <Box align="center" justify="between">
-        <span css={style.address}>{shortenAddress(addressOrDefault)}</span>
+        <span css={style.address}>{addressStub}</span>
         <Identicon address={addressOrDefault} size={identiconSize} />
       </Box>
     </Box>
@@ -58,13 +59,16 @@ const style = {
   logo: {
     maxWidth: '20vw',
   },
+  balances: {
+    letterSpacing: '0.05em',
+  },
   address: {
     display: 'none',
     [mq[768]]: {
       display: 'inline',
       fontSize: '1.3em',
       letterSpacing: '0.06em',
-      marginRight: '0.3em',
+      marginRight: '0.6em',
     },
   },
 }

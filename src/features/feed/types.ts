@@ -7,6 +7,7 @@ interface Transaction {
   to: string
   value: string
   blockNumber: number
+  nonce: number
   timestamp: number
   gasPrice: string
   gasUsed: string

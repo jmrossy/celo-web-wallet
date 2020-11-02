@@ -14,9 +14,9 @@ export function normalizeAddress(address: string) {
   return utils.getAddress(address)
 }
 
-export function shortenAddress(address: string) {
+export function shortenAddress(address: string, elipsis?: boolean) {
   validateAddress(address, 'shorten')
-  return normalizeAddress(address).substr(0, 8) + '...'
+  return normalizeAddress(address).substr(0, 8) + (elipsis ? '...' : '')
 }
 
 export function areAddressesEqual(a1: string, a2: string) {

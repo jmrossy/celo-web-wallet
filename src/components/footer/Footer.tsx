@@ -1,6 +1,5 @@
 import { CSSObject } from '@emotion/core'
 import { Box } from 'src/components/layout/Box'
-import { config, getVersion } from 'src/config'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -10,22 +9,18 @@ interface FooterProps {
 }
 
 export function Footer(props: FooterProps) {
-  const version = getVersion()
-  const showVersion = version && config.debug
-
   const anchorStyle = props.isOnboarding ? style.anchorOnboarding : textStyle
   const containerStyle = props.isOnboarding ? style.containerOnboarding : style.container
 
   return (
     <Box align="center" justify="between" styles={containerStyle}>
-      {showVersion && <div></div>}
       <Box align="center" justify="center">
         <a css={anchorStyle} href="https://celo.org" target="_blank" rel="noopener noreferrer">
-          Learn More About Celo
+          About Celo
         </a>
         <span>-</span>
         <a css={anchorStyle} href="https://valoraapp.com" target="_blank" rel="noopener noreferrer">
-          Try the Celo Mobile Wallet
+          Celo Mobile Wallet
         </a>
         <span>-</span>
         <a
@@ -34,10 +29,11 @@ export function Footer(props: FooterProps) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          View Source on Github
+          View Source
         </a>
       </Box>
-      {showVersion && <div css={style.version}>{version}</div>}
+      {/* TODO check connected status and add icon */}
+      {<div css={style.version}>Connected</div>}
     </Box>
   )
 }
@@ -45,7 +41,7 @@ export function Footer(props: FooterProps) {
 const textStyle: CSSObject = {
   padding: '0 0.8em',
   fontSize: '0.8em',
-  letterSpacing: '0.03em',
+  fontWeight: 300,
   color: Color.primaryBlack,
   textAlign: 'center',
   textDecoration: 'none',
@@ -53,7 +49,7 @@ const textStyle: CSSObject = {
 
 const style: Stylesheet = {
   container: {
-    padding: '0.7em 1em',
+    padding: '0.5em 0.8em',
     width: '100%',
     opacity: 0.8,
     borderTop: `1px solid ${Color.borderLight}`,

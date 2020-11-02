@@ -123,7 +123,7 @@ function getFormattedTimestamp(timestamp: number) {
 const style: Stylesheet = {
   li: {
     listStyle: 'none',
-    padding: '0.7em',
+    padding: '1em 0.8em',
     borderBottom: `1px solid ${Color.borderLight}`,
     cursor: 'pointer',
     ':hover': {

@@ -27,7 +27,7 @@ const debugMode = __DEBUG__ ?? false
 const configMainnet: Config = {
   debug: debugMode,
   fornoUrl: 'https://rc1-forno.celo-testnet.org',
-  blockscoutUrl: 'https://explorer.celo.org/api',
+  blockscoutUrl: 'https://explorer.celo.org',
   chainId: 42220,
   contractAddresses: {
     [CeloContract.Accounts]: '0x7d21685C17607338b313a7174bAb6620baD0aaB7',
@@ -45,7 +45,7 @@ const configMainnet: Config = {
 const configAlfajores: Config = {
   debug: true,
   fornoUrl: 'https://alfajores-forno.celo-testnet.org',
-  blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org/api',
+  blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   chainId: 44787,
   contractAddresses: {
     [CeloContract.Accounts]: '0xed7f51A34B4e71fbE69B3091FcF879cD14bD73A9',

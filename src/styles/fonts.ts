@@ -3,7 +3,7 @@ import { Color } from 'src/styles/Color'
 export const Font = {
   body: {
     fontSize: '1em',
-    fontWeight: 300,
+    fontWeight: 400,
     color: Color.primaryBlack,
   },
   subtitle: {
@@ -20,5 +20,8 @@ export const Font = {
     fontWeight: 500,
     letterSpacing: '0.06em',
     color: Color.textGrey,
+  },
+  bold: {
+    fontWeight: 500,
   },
 }
