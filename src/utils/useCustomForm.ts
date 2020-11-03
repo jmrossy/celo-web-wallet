@@ -18,14 +18,14 @@ export function useCustomForm<V, E>(
     setOnBlur(false)
   }, [])
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { target } = event
     const { name, value } = target
     event.persist()
     setValues({ ...values, [name]: value })
   }
 
-  const handleBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlur = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { target } = event
     const { name } = target
     setTouched({ ...touched, [name]: true })
