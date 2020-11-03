@@ -10,7 +10,7 @@
   "author": "J M Rossy",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development webpack serve --devtool inline-cheap-source-map --mode development",
+    "dev": "SET NODE_ENV=development && webpack serve --devtool inline-cheap-source-map --mode development",
     "build": "NODE_ENV=development webpack --devtool source-map --mode development",
     "build:prod": "NODE_ENV=production webpack --mode production",
     "clean": "rm -r dist",

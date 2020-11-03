@@ -24,6 +24,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         height: height ?? 40,
         margin,
         borderRadius: 3,
+        padding: '2px 8px',
         outline: 'none',
         border: `2px solid ${Color.borderInactive}`,
         ':focus': {

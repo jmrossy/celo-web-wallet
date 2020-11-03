@@ -1,5 +1,6 @@
-import { PropsWithChildren } from 'react'
-import { Color } from 'src/styles/Color'
+import { PropsWithChildren } from 'react';
+import { Color } from 'src/styles/Color';
+import { InputStyles } from 'src/styles/inputs';
 
 export interface TextAreaProps {
   name: string
@@ -21,11 +22,12 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
       name={name}
       css={{
         width,
-        height: height ?? 40,
+        height: height ?? InputStyles.defaultHeight,
         margin,
-        borderRadius: 3,
+        borderRadius: InputStyles.borderRadius,
         outline: 'none',
-        border: `2px solid ${Color.borderInactive}`,
+        padding: InputStyles.paddingTextArea,
+        border: InputStyles.border,
         ':focus': {
           borderColor: Color.borderActive,
         },

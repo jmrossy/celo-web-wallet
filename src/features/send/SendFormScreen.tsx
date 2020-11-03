@@ -1,11 +1,12 @@
 import { useDispatch } from 'react-redux';
 import { Button } from 'src/components/Button';
-// import CopyIcon from 'src/components/icons/copy.svg'
 import PasteIcon from 'src/components/icons/paste.svg';
-// import CopyIcon from 'src/components/icons/copyToClipbard.svg'
+import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg';
+import SendPaymentIcon from 'src/components/icons/send_payment_white.svg';
 import { Identicon } from 'src/components/Identicon';
 import { AddressInput } from 'src/components/input/AddressInput';
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput';
+import { RadioBox } from 'src/components/input/RadioBox';
 import { TextArea } from 'src/components/input/TextArea';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
@@ -34,10 +35,6 @@ export function SendFormScreen() {
     initialValues,
     onSubmit
   )
-
-  // function onRadioChanged(e: ChangeEvent<HTMLElement>){
-    
-  // }
 
   return (
     <ScreenFrameWithFeed>
@@ -74,14 +71,8 @@ export function SendFormScreen() {
             <Box direction="column" align="start" styles={{width: "50%"}}>
               <label css={style.inputLabel}>Currency</label>
               <Box direction="row" justify="start" align="end" styles={style.radioBox}>
-                <label css={values.currency === Currency.cUSD ? style.radioSelectedLabel : style.radioLabel}>
-                  <input type="radio" value={Currency.cUSD} name="currency" css={style.radioInput} checked={values.currency === Currency.cUSD} onChange={handleChange}/>
-                  <span css={style.radioSpan}>cUSD</span>
-                </label>
-                <label css={values.currency === Currency.CELO ? style.radioSelectedLabel : style.radioLabel}>
-                  <input type="radio" value={Currency.CELO} name="currency" css={style.radioInput} checked={values.currency === Currency.CELO} onChange={handleChange}/>
-                  <span css={style.radioSpan}>CELO</span>
-                </label>
+                <RadioBox tabIndex={0} label="cUSD" value={Currency.cUSD} name="currency" checked={values.currency === Currency.cUSD} onChange={handleChange} classes={{container: {minWidth: 52}}} />
+                <RadioBox tabIndex={1} label="CELO" value={Currency.CELO} name="currency" checked={values.currency === Currency.CELO} onChange={handleChange} classes={{container: {minWidth: 52}}} />
               </Box>
             </Box>
           </Box>
@@ -93,10 +84,20 @@ export function SendFormScreen() {
 
           <Box direction="row" justify="between">
             <Box styles={{width: "48%"}}>
-              <Button type="submit" size="m">Send Payment</Button>
+              <Button type="submit" size="m">
+                <Box justify="center" align="center">
+                  <img src={SendPaymentIcon} css={style.iconLeft} color="white"/>
+                  Send Payment
+                </Box>
+              </Button>
             </Box>
             <Box styles={{width: "48%"}}>
-              <Button type="button" size="m">Request Payment</Button>
+              <Button type="button" size="m">
+                <Box align="center" justify="center">
+                  <img src={RequestPaymentIcon} css={style.iconLeft} color="white"/>
+                  Request Payment
+                </Box>
+              </Button>
             </Box>
           </Box>
         </form>
@@ -118,15 +119,15 @@ const style: Stylesheet = {
     fontWeight: 400,
     fontSize: 30,
     marginTop: 0,
-    marginBottom: 14,
+    marginBottom: 20,
   },
   inputRow: {
-    marginBottom: 33,
+    marginBottom: 30,
   },
   inputLabel: {
     fontWeight: 300,
     fontSize: 18,
-    marginBottom: 14,
+    marginBottom: 8,
   },
   button: {
     marginLeft: 8,
@@ -146,37 +147,7 @@ const style: Stylesheet = {
     height: "100%", 
     width: "100%",
   },
-  radioLabel: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    padding: "0 14px",
-    border: "1px solid #9CA4A9",
-    cursor: "pointer",
-    userSelect: "none",
-    color: "#9CA4A9",
-    height: 40,
-    marginRight: 4,
-  },
-  radioSelectedLabel: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    padding: "0 14px",
-    border: "1px solid #2EC376",
-    cursor: "pointer",
-    userSelect: "none",
-    color: "#2EC376",
-    height: 40,    
-    marginRight: 4,
-  },
-  radioInput: {
-    position: "absolute",
-    opacity: 0,
-    cursor: "pointer",
-
-  },
-  radioSpan: {
-    color: "inherit",
+  iconLeft: {
+    marginRight: 8,
   }
 }
