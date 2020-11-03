@@ -9,11 +9,13 @@ interface FooterProps {
 }
 
 export function Footer(props: FooterProps) {
-  const anchorStyle = props.isOnboarding ? style.anchorOnboarding : textStyle
-  const containerStyle = props.isOnboarding ? style.containerOnboarding : style.container
+  const { isOnboarding } = props
+  const anchorStyle = isOnboarding ? style.anchorOnboarding : textStyle
+  const containerStyle = isOnboarding ? style.containerOnboarding : style.container
+  const justify = isOnboarding ? 'center' : 'between'
 
   return (
-    <Box align="center" justify="between" styles={containerStyle}>
+    <Box align="center" justify={justify} styles={containerStyle}>
       <Box align="center" justify="center">
         <a css={anchorStyle} href="https://celo.org" target="_blank" rel="noopener noreferrer">
           About Celo
@@ -33,7 +35,7 @@ export function Footer(props: FooterProps) {
         </a>
       </Box>
       {/* TODO check connected status and add icon */}
-      {<div css={style.version}>Connected</div>}
+      {!isOnboarding && <div css={style.version}>Connected</div>}
     </Box>
   )
 }
@@ -55,7 +57,7 @@ const style: Stylesheet = {
     borderTop: `1px solid ${Color.borderLight}`,
   },
   containerOnboarding: {
-    padding: '1.5em',
+    padding: '2em',
     width: '100%',
     opacity: 0.9,
   },
@@ -64,7 +66,6 @@ const style: Stylesheet = {
     padding: '0 1em',
     fontSize: '1em',
     textDecoration: 'underline',
-    marginBottom: '0.5em',
   },
   version: {
     display: 'none',
