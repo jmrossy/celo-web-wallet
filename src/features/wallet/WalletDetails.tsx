@@ -3,6 +3,7 @@ import { RootState } from 'src/app/rootReducer'
 import { getSigner } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
 import { Identicon } from 'src/components/Identicon'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function WalletDetails() {
@@ -34,7 +35,12 @@ export function WalletDetails() {
 const style: Stylesheet = {
   container: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '2em 2em',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(20em, 1fr))',
+    gap: '3em 2em',
+    alignItems: 'center',
+    justifyItems: 'center',
+    [mq[768]]: {
+      justifyItems: 'stretch',
+    },
   },
 }

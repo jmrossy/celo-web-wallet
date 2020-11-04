@@ -20,6 +20,8 @@ export function Address(props: Props) {
 
   const addressSections = chunk(utils.getAddress(address).substring(2).toUpperCase(), 4)
 
+  const addressContainerStyle = hideIdenticon ? addressContainerNoIcon : style.addressContainer
+
   return (
     <Box direction="row" align="start">
       {!hideIdenticon && (
@@ -27,7 +29,7 @@ export function Address(props: Props) {
           <Identicon address={address} size={46} />
         </div>
       )}
-      <div css={style.addressContainer}>
+      <div css={addressContainerStyle}>
         <div>
           {addressSections.slice(0, 5).map((chunk) => (
             <span key={`address-chunk-${chunk}`} css={style.addressChunk}>
@@ -63,4 +65,10 @@ const style: Stylesheet = {
     padding: '0px 4px',
     lineHeight: '20px',
   },
+}
+
+const addressContainerNoIcon = {
+  ...style.addressContainer,
+  padding: '3px 8px',
+  margin: 0,
 }

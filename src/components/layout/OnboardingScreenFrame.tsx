@@ -23,10 +23,11 @@ const style: Stylesheet = {
     overflow: 'auto',
   },
   logoContainer: {
-    width: '100vw',
+    position: 'fixed',
+    alignSelf: 'flex-start',
   },
   logo: {
     maxWidth: '25vw',
-    padding: '0.5em',
+    padding: '0.75em 0.5em',
   },
 }

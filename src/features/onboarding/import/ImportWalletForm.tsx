@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
 import { importWalletActions } from 'src/features/wallet/importWallet'
+import { Color } from 'src/styles/Color'
+import { Stylesheet } from 'src/styles/types'
 
 export function ImportWalletForm() {
   const [mnemonic, setMnemonic] = useState('')
@@ -17,21 +19,33 @@ export function ImportWalletForm() {
   }
 
   return (
-    <div
-      css={{
-        marginTop: 20,
-      }}
-    >
-      <Box
-        direction="column"
-        styles={{
-          margin: 20,
-          width: 200,
-        }}
-      >
-        <textarea value={mnemonic} onChange={onInputChange} />
-        <Button onClick={onClickImport}>Import Wallet</Button>
-      </Box>
-    </div>
+    <Box direction="column" styles={style.container} align="center">
+      <textarea
+        value={mnemonic}
+        onChange={onInputChange}
+        placeholder="fish boot jump hand..."
+        css={style.input}
+      />
+      <Button onClick={onClickImport} margin="2em 0 0 0">
+        Import Account
+      </Button>
+    </Box>
   )
+}
+
+const style: Stylesheet = {
+  container: { marginTop: '2em' },
+  input: {
+    padding: '0.5em',
+    borderRadius: 3,
+    outline: 'none',
+    border: `2px solid ${Color.borderInactive}`,
+    ':focus': {
+      borderColor: Color.borderActive,
+    },
+    minWidth: '20em',
+    maxWidth: '30em',
+    minHeight: '5em',
+    maxHeight: '8em',
+  },
 }

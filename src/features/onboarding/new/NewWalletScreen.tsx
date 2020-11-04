@@ -18,7 +18,7 @@ export function NewWalletScreen() {
       <Box align="center" justify="center" direction="column" styles={style.container}>
         <h1 css={style.header}>Your New Celo Account</h1>
         <WalletDetails />
-        <Button size={'m'} onClick={onClickContinue} margin={'2rem 0 0 0'}>
+        <Button size={'m'} onClick={onClickContinue} margin={'3em 0 0 0'}>
           Continue
         </Button>
       </Box>
@@ -28,7 +28,9 @@ export function NewWalletScreen() {
 
 const style: Stylesheet = {
   container: {
-    maxWidth: '40em',
+    maxWidth: '46em',
+    padding: '2em',
+    height: '100%',
   },
   header: {
     ...Font.h1,
