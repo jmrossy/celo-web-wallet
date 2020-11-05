@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router'
-import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
 import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
 import { PincodeForm } from 'src/features/pincode/PincodeForm'
@@ -7,21 +5,11 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
 export function SetPinScreen() {
-  const navigate = useNavigate()
-
-  const onClickSetPin = () => {
-    // TODO
-    navigate('/')
-  }
-
   return (
     <OnboardingScreenFrame>
       <Box align="center" justify="center" direction="column" styles={style.container}>
         <h1 css={style.header}>Set Your Account Pin</h1>
         <PincodeForm />
-        <Button size={'m'} onClick={onClickSetPin} margin={'3em 0 0 0'}>
-          Set Pin
-        </Button>
       </Box>
     </OnboardingScreenFrame>
   )

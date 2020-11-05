@@ -1,15 +1,20 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router'
+import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
+import { isPinValid, setPinActions } from 'src/features/pincode/pincode'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
-// TODO handle submit
 export function PincodeForm() {
   const [pin1, setPin1] = useState<string>('')
   const [pin2, setPin2] = useState<string>('')
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
-  const handlePinChange = (setter: (value: string) => void) => {
+  const onPinChange = (setter: (value: string) => void) => {
     return (event: React.ChangeEvent<HTMLInputElement>) => {
       const { target } = event
       event.preventDefault()
@@ -17,18 +22,39 @@ export function PincodeForm() {
     }
   }
 
+  const onClickSetPin = () => {
+    if (!isPinValid(pin1)) {
+      // TODO show error
+      alert('Invalid pin')
+      return
+    }
+
+    if (pin1 !== pin2) {
+      // TODO show error
+      alert('Pins do not match')
+      return
+    }
+
+    dispatch(setPinActions.trigger(pin1))
+
+    // navigate('/')
+  }
+
   return (
     <Box direction="column" align="center">
-      <div css={style.description}>You Pincode protects your account on this device.</div>
+      <div css={style.description}>You pincode protects your account on this device.</div>
       <div css={style.description}>Use six numbers (0-9).</div>
       <Box align="center" styles={style.inputContainer}>
         <span css={style.inputLabel}>Enter Pin</span>
-        <PincodeInput name="pin1" value={pin1} onChange={handlePinChange(setPin1)} />
+        <PincodeInput name="pin1" value={pin1} onChange={onPinChange(setPin1)} />
       </Box>
       <Box align="center" styles={style.inputContainer}>
         <span css={style.inputLabel}>Re-Enter Pin</span>
-        <PincodeInput name="pin2" value={pin2} onChange={handlePinChange(setPin2)} />
+        <PincodeInput name="pin2" value={pin2} onChange={onPinChange(setPin2)} />
       </Box>
+      <Button size={'m'} onClick={onClickSetPin} margin={'3em 0 0 0'}>
+        Set Pin
+      </Button>
     </Box>
   )
 }
@@ -52,13 +78,16 @@ const style: Stylesheet = {
   },
   inputContainer: {
     marginTop: '1.5em',
+    textAlign: 'right',
   },
   inputLabel: {
-    width: '8em',
-  },
-  input: {
     width: '7em',
-    height: '2em',
+    paddingRight: '1em',
+  },
+  // TODO de-dupe with TextInput styles
+  input: {
+    width: '6em',
+    height: '1.6em',
     borderRadius: 3,
     outline: 'none',
     border: `2px solid ${Color.borderInactive}`,

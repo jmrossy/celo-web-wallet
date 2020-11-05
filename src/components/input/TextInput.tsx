@@ -26,6 +26,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         borderRadius: 3,
         outline: 'none',
         border: `2px solid ${Color.borderInactive}`,
+        // TODO css transition
         ':focus': {
           borderColor: Color.borderActive,
         },
