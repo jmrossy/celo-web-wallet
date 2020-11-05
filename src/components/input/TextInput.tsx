@@ -3,7 +3,7 @@ import { Color } from 'src/styles/Color'
 
 export interface TextInputProps {
   name: string
-  width: number
+  width: string | number
   height?: number // defaults to 40
   margin?: string | number
   value: string | undefined
@@ -29,6 +29,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         ':focus': {
           borderColor: Color.borderActive,
         },
+        padding: '2px 6px',
       }}
       value={value}
       onBlur={onBlur}
