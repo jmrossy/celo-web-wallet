@@ -36,6 +36,7 @@ export function useCustomForm<V, E>(
     if (event) event.preventDefault()
     setErrors({ ...errors })
     onSubmit(values, errors)
+    setTouched({})
   }
 
   return {

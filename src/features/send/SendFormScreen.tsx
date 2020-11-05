@@ -1,4 +1,6 @@
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { shallowEqual } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Button } from 'src/components/Button';
 import PasteIcon from 'src/components/icons/paste.svg';
 import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg';
@@ -11,7 +13,7 @@ import { TextArea } from 'src/components/input/TextArea';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { Currency } from 'src/consts';
-import { sendTokenActions, SendTokenParams } from 'src/features/send/sendToken';
+import { SendTokenParams } from 'src/features/send/sendToken';
 import { Stylesheet } from 'src/styles/types';
 import { useCustomForm } from 'src/utils/useCustomForm';
 
@@ -23,19 +25,76 @@ const initialValues: SendTokenParams = {
   comment: '',
 }
 
+type FieldError = {
+  error: boolean;
+  helpText: string;
+}
+type ErrorState = {
+  [field: string]: FieldError;
+}
+
+function validate(values: SendTokenParams): [boolean, ErrorState]{
+  let hasErrors = false;
+  const errors: ErrorState = {};
+  if(!values.amount || isNaN(parseFloat(values.amount.toString())) || values.amount <= 0){
+    hasErrors = true;
+    errors["amount"] = {error: true, helpText: "Must be greater than 0"};
+  }
+  if(!values.recipient){
+    hasErrors = true;
+    errors["recipient"] = {error: true, helpText: "Recipient is required"};
+  }
+  
+  return [hasErrors, errors];
+}
+
 export function SendFormScreen() {
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState<ErrorState>({});
+  // const dispatch = useDispatch()
 
 
   const onSubmit = (values: SendTokenParams) => {
-    dispatch(sendTokenActions.trigger(values))
+    const [hasErrors, fieldErrors] = validate(values);
+    if(hasErrors){
+      setErrors(fieldErrors);
+      return;
+    }
+    else{
+      setErrors({});
+      navigate("/send-review", { state: values });
+    // dispatch(sendTokenActions.trigger(values))
+    }
   }
 
-  const { values, handleChange, handleSubmit } = useCustomForm<SendTokenParams, any>(
+  const { values, touched, handleChange, handleBlur, handleSubmit } = useCustomForm<SendTokenParams, any>(
     initialValues,
     onSubmit
   )
 
+  useEffect(() => {
+    const updated = {...errors};
+    for(const propertyName in touched){
+      if((touched as any)[propertyName] === true){
+        delete updated[propertyName];
+      }
+    }
+    if(!shallowEqual(errors, updated)) setErrors(updated);
+  }, [touched]);
+
+  const onRequest = () => {
+    const [hasErrors, fieldErrors] = validate(values);
+    if(hasErrors){
+      setErrors(fieldErrors);
+      return;
+    }
+    else{
+      setErrors({});
+      navigate("/request-review", { state: values });
+    // dispatch(sendTokenActions.trigger(values))
+    }
+  }
+  
   return (
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
@@ -45,12 +104,17 @@ export function SendFormScreen() {
           <Box direction="column" styles={style.inputRow}>
             <label css={style.inputLabel}>Recipient Address or Phone Number</label>
             <Box direction="row" justify="start">
-              <AddressInput
-                width={346}
-                name="recipient"
-                onChange={handleChange}
-                value={values.recipient}
-              />
+              {/* <Box direction="column"> */}
+                <AddressInput
+                  width={346}
+                  name="recipient"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.recipient}
+                  {...errors["recipient"]}
+                />
+                {/* {errors["recipient"] && <span css={style.errorLabel}>{errors["recipient"].helpText}</span>} */}
+              {/* </Box> */}
               <button css={style.button}>
                 <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon}/>
               </button>
@@ -65,8 +129,11 @@ export function SendFormScreen() {
                 width={173}
                 name="amount"
                 onChange={handleChange}
+                onBlur={handleBlur}
                 value={values.amount.toString()}
+                {...errors["amount"]}
               />
+              
             </Box>
             <Box direction="column" align="start" styles={{width: "50%"}}>
               <label css={style.inputLabel}>Currency</label>
@@ -79,7 +146,7 @@ export function SendFormScreen() {
 
           <Box direction="column" align="start" styles={style.inputRow}>
             <label css={style.inputLabel}>Comment (optional)</label>
-            <TextArea name="comment" width={346} rows={8} height={80} onChange={handleChange} value={values.comment} />
+            <TextArea name="comment" width={346} rows={8} height={80} onChange={handleChange} onBlur={handleBlur} value={values.comment} />
           </Box>
 
           <Box direction="row" justify="between">
@@ -92,7 +159,7 @@ export function SendFormScreen() {
               </Button>
             </Box>
             <Box styles={{width: "48%"}}>
-              <Button type="button" size="m">
+              <Button type="button" size="m" onClick={onRequest}>
                 <Box align="center" justify="center">
                   <img src={RequestPaymentIcon} css={style.iconLeft} color="white"/>
                   Request Payment
@@ -149,5 +216,5 @@ const style: Stylesheet = {
   },
   iconLeft: {
     marginRight: 8,
-  }
+  },
 }

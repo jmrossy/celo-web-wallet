@@ -3,11 +3,11 @@ import { ExchangeTokenParams } from 'src/features/exchange/exchangeToken';
 
 export function ExchangeConfirmationScreen() {
   const location = useLocation();
-  const exchangeState = location.state as ExchangeTokenParams;
+  const state = location.state as ExchangeTokenParams;
 
   return (
     <span>
-      Exchange {exchangeState.amount} from {exchangeState.fromCurrency}
+      Exchange {state.amount} from {state.fromCurrency}
     </span>
   );
 }

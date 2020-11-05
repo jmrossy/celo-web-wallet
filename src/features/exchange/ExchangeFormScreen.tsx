@@ -22,6 +22,8 @@ export function ExchangeFormScreen() {
   const navigate = useNavigate();
 
   const onSubmit = (values: ExchangeTokenParams) => {
+    //TODO: validation
+
     // dispatch(exchangeTokenActions.trigger(values))
     navigate("/exchange-review", {state: values});
   }
