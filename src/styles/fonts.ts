@@ -11,7 +11,11 @@ export const Font = {
     fontWeight: 300,
     color: Color.textGrey,
   },
-  header: {
+  h1: {
+    fontSize: '1.5em',
+    fontWeight: 400,
+  },
+  h2: {
     fontSize: '1.1em',
     fontWeight: 400,
   },

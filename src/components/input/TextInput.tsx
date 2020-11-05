@@ -4,7 +4,7 @@ import { Color } from 'src/styles/Color'
 
 export interface TextInputProps {
   name: string
-  width: number
+  width: string | number
   height?: number // defaults to 40
   margin?: string | number
   value: string | undefined
@@ -31,6 +31,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
           padding: '2px 8px',
           outline: 'none',
           border: `2px solid ${error ? Color.borderError : Color.borderInactive}`,
+          // TODO css transition
           ':focus': {
             borderColor: Color.borderActive,
           },

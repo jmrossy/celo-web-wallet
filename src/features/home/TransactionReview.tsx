@@ -137,13 +137,13 @@ const style: Stylesheet = {
     overflow: 'auto',
   },
   header: {
-    ...Font.header,
+    ...Font.h2,
     background: Color.accentBlue,
     color: Color.primaryWhite,
     padding: '0.9em 1.5em',
   },
   closeButton: {
-    ...Font.header,
+    ...Font.h2,
     color: Color.primaryWhite,
     fontWeight: 600,
     cursor: 'pointer',
@@ -152,7 +152,7 @@ const style: Stylesheet = {
     padding: '1.5em',
   },
   sectionHeader: {
-    ...Font.header,
+    ...Font.h2,
     marginBottom: '2em',
   },
 }

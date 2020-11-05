@@ -1,3 +1,7 @@
+import { RootState } from 'src/app/rootReducer'
+import { createSaga } from 'src/utils/saga'
+import { select } from 'typed-redux-saga'
+
 const CACHE_TIMEOUT = 300000 // 5 minutes
 const PIN_LENGTH = 6
 
@@ -48,3 +52,19 @@ export function setCachedPin(pin: string | null | undefined) {
 export function clearPinCache() {
   pinCache = {}
 }
+
+function* setPin(pin: string) {
+  const address = yield* select((state: RootState) => state.wallet.address)
+
+  if (!address) {
+    throw new Error('Account not setup yet')
+  }
+
+  setCachedPin(pin)
+  // TODO encrypt wallet and save it to storage
+}
+
+export const { wrappedSaga: setPinSaga, actions: setPinActions } = createSaga<string>(
+  setPin,
+  'setPin'
+)

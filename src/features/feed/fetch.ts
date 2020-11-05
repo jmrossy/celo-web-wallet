@@ -61,6 +61,7 @@ interface BlockscoutResponse<R> {
 
 // Triggers polling of feed fetching
 export function* feedFetchPoller() {
+  // TODO only do this when home screen is showing
   while (true) {
     yield* delay(POLL_DELAY)
     yield* put(fetchFeedActions.trigger())
