@@ -13,18 +13,14 @@ export const sharedInputStyles: Stylesheet = {
   },
 }
 
-export const sharedInputStylesWithError = {
-  input: (isError: boolean | undefined = undefined): Stylesheet => {
-    return {
-      input: {
-        borderRadius: 3,
-        outline: 'none',
-        border: `2px solid ${isError ? Color.borderError : Color.borderInactive}`,
-        ':focus': {
-          borderColor: isError ? Color.borderError : Color.borderActive,
-        },
-        padding: '0.1em 0.5em',
-      }
-    };
+export const sharedInputStylesWithError = (isError: boolean | undefined = undefined) => ({
+  input: {
+    borderRadius: 3,
+    outline: 'none',
+    border: `2px solid ${isError ? Color.borderError : Color.borderInactive}`,
+    ':focus': {
+      borderColor: isError ? Color.borderError : Color.borderActive,
+    },
+    padding: '0.1em 0.5em',
   },
-};
+});

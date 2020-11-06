@@ -18,6 +18,7 @@ export interface TextInputProps {
 
 export function TextInput(props: PropsWithChildren<TextInputProps>) {
   const { name, width, height, margin, value, onBlur, onChange, error, helpText } = props
+  const inputCss = sharedInputStylesWithError(error).input
 
   return (
     <Box direction="column">
@@ -25,11 +26,10 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         type="text"
         name={name}
         css={{
-          ...sharedInputStylesWithError.input(error),
+          ...inputCss,
           width,
           height: height ?? 40,
           margin,
-          border: `2px solid ${error ? Color.borderError : Color.borderInactive}`,          
         }}
         value={value}
         onBlur={onBlur}
