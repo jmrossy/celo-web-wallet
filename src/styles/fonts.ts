@@ -14,6 +14,7 @@ export const Font = {
   h1: {
     fontSize: '1.5em',
     fontWeight: 400,
+    marginBottom: '1em',
   },
   h2: {
     fontSize: '1.1em',

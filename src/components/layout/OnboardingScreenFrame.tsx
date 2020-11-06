@@ -9,7 +9,11 @@ export function OnboardingScreenFrame(props: PropsWithChildren<unknown>) {
       <div css={style.logoContainer}>
         <img width={'150em'} src={Logo} alt="Celo Logo" css={style.logo} />
       </div>
-      <div css={style.content}>{props.children}</div>
+      <div css={style.content}>
+        <Box align="center" justify="center" direction="column" styles={style.childrenContainer}>
+          {props.children}
+        </Box>
+      </div>
     </Box>
   )
 }
@@ -29,5 +33,10 @@ const style: Stylesheet = {
   logo: {
     maxWidth: '25vw',
     padding: '0.75em 0.5em',
+  },
+  childrenContainer: {
+    maxWidth: '46em',
+    padding: '2em',
+    height: '100%',
   },
 }

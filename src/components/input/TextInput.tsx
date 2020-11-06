@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from 'react'
+import { sharedInputStylesWithError } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 
@@ -24,17 +25,11 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         type="text"
         name={name}
         css={{
+          ...sharedInputStylesWithError.input(error),
           width,
           height: height ?? 40,
           margin,
-          borderRadius: 3,
-          padding: '2px 8px',
-          outline: 'none',
-          border: `2px solid ${error ? Color.borderError : Color.borderInactive}`,
-          // TODO css transition
-          ':focus': {
-            borderColor: Color.borderActive,
-          },
+          border: `2px solid ${error ? Color.borderError : Color.borderInactive}`,          
         }}
         value={value}
         onBlur={onBlur}

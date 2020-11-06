@@ -24,6 +24,8 @@ export function ExchangeFormScreen() {
   const onSubmit = (values: ExchangeTokenParams) => {
     //TODO: validation
 
+    //TODO: create the transaction
+
     // dispatch(exchangeTokenActions.trigger(values))
     const safeValues = { ...values, amount: parseFloat(values.amount.toString())};
     navigate("/exchange-review", {state: safeValues});

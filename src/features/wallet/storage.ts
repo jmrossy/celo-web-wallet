@@ -27,7 +27,7 @@ export async function saveWallet(pincode: string) {
     localStorage.setItem(MNEMONIC_STORAGE_KEY, encryptedMnemonic)
   } catch (error) {
     logger.error('Failed to save wallet to storage', error)
-    // TODO surface error
+    throw new Error('Failure saving wallet')
   }
 }
 
