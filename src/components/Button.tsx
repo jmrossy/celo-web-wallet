@@ -21,7 +21,14 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
         borderRadius: 3,
         color: Color.primaryWhite,
         border: 'none',
+        outline: 'none',
         cursor: 'pointer',
+        ':hover': {
+          backgroundColor: '#4cdd91',
+        },
+        ':active': {
+          backgroundColor: '#0fb972',
+        },
       }}
       onClick={onClick}
       type={type}

@@ -30,7 +30,7 @@ export function EnterPincodeForm() {
 
   return (
     <Box direction="column" align="center">
-      <div css={style.description}>Enter your pincode to unlock your account on this device.</div>
+      <div css={style.description}>Enter your pincode to unlock your account.</div>
       <PincodeInput name="pin" value={pin} onChange={onPinChange} />
       <Button size={'m'} onClick={onClickSubmit} margin={'3em 0 0 0'}>
         Unlock

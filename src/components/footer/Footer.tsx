@@ -47,6 +47,9 @@ const textStyle: CSSObject = {
   color: Color.primaryBlack,
   textAlign: 'center',
   textDecoration: 'none',
+  ':hover': {
+    textDecoration: 'underline',
+  },
 }
 
 const style: Stylesheet = {
