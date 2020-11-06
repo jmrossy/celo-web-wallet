@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { shallowEqual } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { RootState } from 'src/app/rootReducer';
 import { Button } from 'src/components/Button';
 import PasteIcon from 'src/components/icons/paste.svg';
 import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg';
@@ -13,7 +14,10 @@ import { TextArea } from 'src/components/input/TextArea';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { Currency } from 'src/consts';
-import { SendTokenParams } from 'src/features/send/sendToken';
+import { confirmAndSendTokenActions } from 'src/features/send/confirmAndSendToken';
+import { cancelTransaction, changeStatus, clearError } from 'src/features/send/sendSlice';
+// import { sendTokenActions } from 'src/features/send/sendToken';
+import { SendTokenParams } from 'src/features/send/types';
 import { Stylesheet } from 'src/styles/types';
 import { useCustomForm } from 'src/utils/useCustomForm';
 
@@ -25,75 +29,60 @@ const initialValues: SendTokenParams = {
   comment: '',
 }
 
-type FieldError = {
-  error: boolean;
-  helpText: string;
-}
-type ErrorState = {
-  [field: string]: FieldError;
-}
-
-function validate(values: SendTokenParams): [boolean, ErrorState]{
-  let hasErrors = false;
-  const errors: ErrorState = {};
-  if(!values.amount || isNaN(parseFloat(values.amount.toString())) || values.amount <= 0){
-    hasErrors = true;
-    errors["amount"] = {error: true, helpText: "Must be greater than 0"};
-  }
-  if(!values.recipient){
-    hasErrors = true;
-    errors["recipient"] = {error: true, helpText: "Recipient is required"};
-  }
-  
-  return [hasErrors, errors];
-}
-
 export function SendFormScreen() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [errors, setErrors] = useState<ErrorState>({});
-  // const dispatch = useDispatch()
+  const [errCount, setErrCount] = useState<number>(0);
+  const {transaction, status, errors } = useSelector((state: RootState) => state.send);
 
+  useEffect(() => {
+    if(status === "needs-confirm"){
+      dispatch(changeStatus("confirming"));
+      navigate("/send-review");
+    }
+    else if(status === "confirming"){
+      //they must have navigated back to here
+      dispatch(cancelTransaction());
+    }
+  }, [status]);
 
-  const onSubmit = (values: SendTokenParams) => {
-    const [hasErrors, fieldErrors] = validate(values);
-    if(hasErrors){
-      setErrors(fieldErrors);
-      return;
-    }
-    else{
-      setErrors({});
-      navigate("/send-review", { state: values });
-    // dispatch(sendTokenActions.trigger(values))
-    }
+  const onSubmit = async (values: SendTokenParams) => {
+    await dispatch(confirmAndSendTokenActions.trigger(values));
   }
 
   const { values, touched, handleChange, handleBlur, handleSubmit } = useCustomForm<SendTokenParams, any>(
-    initialValues,
+    transaction ?? initialValues,
     onSubmit
   )
 
+  // Watch the touched fields, and clear any errors that need clearing
   useEffect(() => {
-    const updated = {...errors};
-    for(const propertyName in touched){
-      if((touched as any)[propertyName] === true){
-        delete updated[propertyName];
-      }
+    if(!errors || Object.keys(errors).length === 0) return;
+
+    const fields = Object.keys(touched).reduce((output: string[], key: string) => {
+      return (touched as any)[key] === true ? [...output, key] : output;
+    }, []);
+
+    if(fields.length > 0 && fields.length !== errCount){
+      dispatch(clearError(fields));
+      setErrCount(fields.length);
     }
-    if(!shallowEqual(errors, updated)) setErrors(updated);
+    else setErrCount(0);
+    
   }, [touched]);
 
   const onRequest = () => {
-    const [hasErrors, fieldErrors] = validate(values);
-    if(hasErrors){
-      setErrors(fieldErrors);
-      return;
-    }
-    else{
-      setErrors({});
-      const requestValues = {...values, isRequest: true};
-      navigate("/send-review", { state: requestValues });
-    // dispatch(sendTokenActions.trigger(values))
-    }
+    // const [hasErrors, fieldErrors] = validate(values);
+    // if(hasErrors){
+    //   setErrors(fieldErrors);
+    //   return;
+    // }
+    // else{
+    //   setErrors({});
+    //   const requestValues = {...values, isRequest: true};
+    //   navigate("/send-review", { state: requestValues });
+    // // dispatch(sendTokenActions.trigger(values))
+    // }
   }
   
   return (
@@ -134,7 +123,6 @@ export function SendFormScreen() {
                 value={values.amount.toString()}
                 {...errors["amount"]}
               />
-              
             </Box>
             <Box direction="column" align="start" styles={{width: "50%"}}>
               <label css={style.inputLabel}>Currency</label>

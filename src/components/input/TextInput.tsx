@@ -13,11 +13,12 @@ export interface TextInputProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   error?: boolean
   helpText?: string
+  autoComplete?: string //default to "off"
   // TODO add validation hook
 }
 
 export function TextInput(props: PropsWithChildren<TextInputProps>) {
-  const { name, width, height, margin, value, onBlur, onChange, error, helpText } = props
+  const { name, width, height, margin, value, onBlur, onChange, error, helpText, autoComplete } = props
   const inputCss = sharedInputStylesWithError(error).input
 
   return (
@@ -34,6 +35,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         value={value}
         onBlur={onBlur}
         onChange={onChange}
+        autoComplete={autoComplete || "off"}
       />
       {helpText && <span css={{
         color: Color.textError, 

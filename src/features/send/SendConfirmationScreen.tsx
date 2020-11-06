@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { RootState } from 'src/app/rootReducer';
 import { Button } from 'src/components/Button';
 import ArrowBackIcon from 'src/components/icons/arrow_back_white.svg';
 import Curve from 'src/components/icons/curve.svg';
@@ -11,7 +13,7 @@ import { Identicon } from 'src/components/Identicon';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { Currency } from 'src/consts';
-import { SendTokenParams } from 'src/features/send/sendToken';
+import { sendTransaction } from 'src/features/send/sendSlice';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { formatAmount } from 'src/utils/amount';
@@ -20,19 +22,30 @@ function currencyLabel(curr: Currency){
   return curr === Currency.CELO ? "CELO" : "cUSD";
 }
 
-
 export function SendConfirmationScreen() {
-  const location = useLocation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const state = (location.state as SendTokenParams);
-  const isRequest = useMemo(() => { return (location.state as any).isRequest === true; }, [state]);
+  const { transaction: txn, status } = useSelector((state: RootState) => state.send);
+  const isRequest = useMemo(() => { return false; }, [txn]); //(location.state as any).isRequest === true; }, [state]);
   const [fee] = useState(0.02);
-  const total = useMemo(() => { return parseFloat(state.amount.toString()) + fee; }, [fee, state.amount]);
+  const total = useMemo(() => { return txn ? parseFloat(txn?.amount.toString()) + fee : 0; }, [fee, txn?.amount]);
+
+  useEffect(() => {
+    if(status !== "confirming"){  //shouldn't be on the confirm screen
+      navigate("/send");
+    }
+  }, [status]);
 
   function onGoBack(){
     navigate(-1);
   }
 
+  async function onSend(){
+    await dispatch(sendTransaction());
+  }
+
+  if(!txn) return null;
+  
   return (
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
@@ -41,15 +54,15 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Amount</label>
           <Box direction="row" align="end">
-            <label css={style.currencyLabel}>{currencyLabel(state.currency)}</label>
-            <label css={style.valueLabel}>{formatAmount(state.amount)}</label>
+            <label css={style.currencyLabel}>{currencyLabel(txn.currency)}</label>
+            <label css={style.valueLabel}>{formatAmount(txn.amount)}</label>
           </Box>
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Security Fee</label>
           <Box direction="row" align="end">
-            <label css={style.currencyLabel}>{currencyLabel(state.currency)}</label>
+            <label css={style.currencyLabel}>{currencyLabel(txn.currency)}</label>
             <label css={style.valueLabel}>{formatAmount(fee)}</label>
             <img src={QuestionIcon} css={style.iconRight}/>
           </Box>
@@ -58,7 +71,7 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow}>
           <label css={{...style.inputLabel, fontWeight: "bolder"}}>Total</label>
           <Box direction="row" align="end">
-            <label css={style.currencyLabel}>{currencyLabel(state.currency)}</label>
+            <label css={style.currencyLabel}>{currencyLabel(txn.currency)}</label>
             <label css={{...style.valueLabel, fontWeight: "bolder"}}>{formatAmount(total)}</label>
           </Box>
         </Box>
@@ -66,10 +79,10 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Recipient</label>
           <Box direction="row" align="center">
-            <Identicon address={state.recipient}/>
+            <Identicon address={txn.recipient}/>
             <img src={Curve} css={{marginLeft: -4, marginTop: -4}}/>
             <Box direction="row" align="center" styles={{marginLeft: -8, marginTop: -4, backgroundColor: Color.fillLight, height: 34}}>
-              <label css={style.recipientLabel}>{state.recipient}</label>
+              <label css={style.recipientLabel}>{txn.recipient}</label>
               <Button type="button" size="icon" margin={"0 -8px 0 8px"}>
                 <img src={PlusIcon} height={18} width={18}/>
               </Button>
@@ -79,7 +92,7 @@ export function SendConfirmationScreen() {
 
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Comment</label>
-          <label css={style.valueLabel}>{state.comment}</label>
+          <label css={style.valueLabel}>{txn.comment}</label>
         </Box>
 
         <Box direction="row" justify="between">
@@ -92,7 +105,7 @@ export function SendConfirmationScreen() {
             </Button>
           </Box>
           <Box styles={{width: "48%"}}>
-            <Button type="submit" size="m">
+            <Button type="submit" size="m" onClick={onSend}>
               <Box align="center" justify="center">
                 <img src={isRequest ? RequestPaymentIcon : SendPaymentIcon} css={style.iconLeft} color="white"/>
                 Send {isRequest ? "Request" : "Payment"}
