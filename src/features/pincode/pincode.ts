@@ -1,6 +1,6 @@
 import { RootState } from 'src/app/rootReducer'
 import { saveWallet } from 'src/features/wallet/storage'
-import { createSaga } from 'src/utils/saga'
+import { createMonitoredSaga } from 'src/utils/saga'
 import { call, select } from 'typed-redux-saga'
 
 const CACHE_TIMEOUT = 300000 // 5 minutes
@@ -69,7 +69,8 @@ function* setPin(pin: string) {
   yield* call(saveWallet, pin)
 }
 
-export const { wrappedSaga: setPinSaga, actions: setPinActions } = createSaga<string>(
-  setPin,
-  'setPin'
-)
+export const {
+  wrappedSaga: setPinSaga,
+  reducer: setPinReducer,
+  actions: setPinActions,
+} = createMonitoredSaga<string>(setPin, { name: 'setPin' })
