@@ -25,7 +25,8 @@ export function ExchangeFormScreen() {
     //TODO: validation
 
     // dispatch(exchangeTokenActions.trigger(values))
-    navigate("/exchange-review", {state: values});
+    const safeValues = { ...values, amount: parseFloat(values.amount.toString())};
+    navigate("/exchange-review", {state: safeValues});
   }
 
   const { values, handleChange, handleSubmit } = useCustomForm<ExchangeTokenParams, any>(

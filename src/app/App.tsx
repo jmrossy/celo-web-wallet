@@ -7,7 +7,6 @@ import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletS
 import { NewWalletScreen } from 'src/features/onboarding/new/NewWalletScreen'
 import { SetPinScreen } from 'src/features/onboarding/pincode/SetPinScreen'
 import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
-import { RequestConfirmationScreen } from 'src/features/send/RequestConfirmationScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 
@@ -21,7 +20,6 @@ export class App extends Component {
           {/* TODO use route nesting when react-router v6 bugs are fixed */}
           <Route path="send" element={<SendFormScreen />} />
           <Route path="send-review" element={<SendConfirmationScreen />} />
-          <Route path="request-review" element={<RequestConfirmationScreen/>} />
           <Route path="exchange" element={<ExchangeFormScreen />} />
           <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
           <Route path="welcome" element={<WelcomeScreen />} />

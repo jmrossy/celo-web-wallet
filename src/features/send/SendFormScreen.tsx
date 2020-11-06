@@ -90,7 +90,8 @@ export function SendFormScreen() {
     }
     else{
       setErrors({});
-      navigate("/request-review", { state: values });
+      const requestValues = {...values, isRequest: true};
+      navigate("/send-review", { state: requestValues });
     // dispatch(sendTokenActions.trigger(values))
     }
   }
