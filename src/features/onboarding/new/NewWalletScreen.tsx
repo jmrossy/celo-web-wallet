@@ -9,7 +9,7 @@ export function NewWalletScreen() {
   const navigate = useNavigate()
 
   const onClickContinue = () => {
-    navigate('/pin')
+    navigate('/set-pin')
   }
 
   return (

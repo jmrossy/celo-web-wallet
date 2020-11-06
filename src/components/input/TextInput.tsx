@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { Color } from 'src/styles/Color'
+import { sharedInputStyles } from 'src/components/input/styles'
 
 export interface TextInputProps {
   name: string
@@ -20,17 +20,10 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
       type="text"
       name={name}
       css={{
+        ...sharedInputStyles.input,
         width,
         height: height ?? 40,
         margin,
-        borderRadius: 3,
-        outline: 'none',
-        border: `2px solid ${Color.borderInactive}`,
-        // TODO css transition
-        ':focus': {
-          borderColor: Color.borderActive,
-        },
-        padding: '2px 6px',
       }}
       value={value}
       onBlur={onBlur}
