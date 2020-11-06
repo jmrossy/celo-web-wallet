@@ -8,7 +8,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
-export function PincodeForm() {
+export function SetPincodeForm() {
   const [pin1, setPin1] = useState<string>('')
   const [pin2, setPin2] = useState<string>('')
   const dispatch = useDispatch()

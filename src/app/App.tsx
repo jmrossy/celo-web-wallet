@@ -5,7 +5,7 @@ import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { HomeScreen } from 'src/features/home/HomeScreen'
 import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletScreen'
 import { NewWalletScreen } from 'src/features/onboarding/new/NewWalletScreen'
-import { SetPinScreen } from 'src/features/onboarding/pincode/SetPinScreen'
+import { SetPincodeScreen } from 'src/features/onboarding/pincode/SetPincodeScreen'
 import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
@@ -24,7 +24,7 @@ export class App extends Component {
           <Route path="welcome" element={<WelcomeScreen />} />
           <Route path="new" element={<NewWalletScreen />} />
           <Route path="import" element={<ImportWalletScreen />} />
-          <Route path="pin" element={<SetPinScreen />} />
+          <Route path="pin" element={<SetPincodeScreen />} />
         </Routes>
       </BrowserRouter>
     )
