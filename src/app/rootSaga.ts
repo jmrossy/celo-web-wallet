@@ -5,8 +5,8 @@ import { config } from 'src/config'
 import { exchangeTokenReducer, exchangeTokenSaga } from 'src/features/exchange/exchangeToken'
 import { feedFetchPoller, fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
 import { setPinSaga } from 'src/features/pincode/pincode'
-import { confirmAndSendTokenReducer, confirmAndSendTokenSaga } from 'src/features/send/confirmAndSendToken'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
+// import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken-old'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
 import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
 import { importWallet, importWalletSaga } from 'src/features/wallet/importWallet'
@@ -39,10 +39,10 @@ export const monitoredSagas: {
     saga: sendTokenSaga,
     reducer: sendTokenReducer,
   },
-  confirmAndSendToken: {
-    saga: confirmAndSendTokenSaga,
-    reducer: confirmAndSendTokenReducer,
-  },
+  // confirmAndSendToken: {
+  //   saga: confirmAndSendTokenSaga,
+  //   reducer: confirmAndSendTokenReducer,
+  // },
   fetchFeed: {
     saga: fetchFeedSaga,
     reducer: fetchFeedReducer,

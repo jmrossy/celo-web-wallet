@@ -1,35 +1,28 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from 'src/app/rootReducer';
+import { Address } from 'src/components/Address';
 import { Button } from 'src/components/Button';
 import ArrowBackIcon from 'src/components/icons/arrow_back_white.svg';
-import Curve from 'src/components/icons/curve.svg';
-import PlusIcon from 'src/components/icons/plus_white.svg';
 import QuestionIcon from 'src/components/icons/question_mark.svg';
 import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg';
 import SendPaymentIcon from 'src/components/icons/send_payment_white.svg';
-import { Identicon } from 'src/components/Identicon';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
-import { Currency } from 'src/consts';
+import { MoneyValue } from 'src/components/MoneyValue';
 import { sendTransaction } from 'src/features/send/sendSlice';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
-import { formatAmount } from 'src/utils/amount';
-
-function currencyLabel(curr: Currency){
-  return curr === Currency.CELO ? "CELO" : "cUSD";
-}
+import { useWeiTransaction } from 'src/utils/amount';
 
 export function SendConfirmationScreen() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { transaction: txn, status } = useSelector((state: RootState) => state.send);
-  const isRequest = useMemo(() => { return false; }, [txn]); //(location.state as any).isRequest === true; }, [state]);
-  const [fee] = useState(0.02);
-  const total = useMemo(() => { return txn ? parseFloat(txn?.amount.toString()) + fee : 0; }, [fee, txn?.amount]);
-
+  const isRequest = useMemo(() => { return false; }, [txn]);
+  const { wei } = useWeiTransaction(txn?.amount ?? 0, 0.02);
+  
   useEffect(() => {
     if(status !== "confirming"){  //shouldn't be on the confirm screen
       navigate("/send");
@@ -54,16 +47,14 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Amount</label>
           <Box direction="row" align="end">
-            <label css={style.currencyLabel}>{currencyLabel(txn.currency)}</label>
-            <label css={style.valueLabel}>{formatAmount(txn.amount)}</label>
+            <MoneyValue amountInWei={wei.amount} currency={txn.currency} baseFontSize={1.2}/>
           </Box>
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Security Fee</label>
           <Box direction="row" align="end">
-            <label css={style.currencyLabel}>{currencyLabel(txn.currency)}</label>
-            <label css={style.valueLabel}>{formatAmount(fee)}</label>
+            <MoneyValue amountInWei={wei.fee} currency={txn.currency} baseFontSize={1.2}/>
             <img src={QuestionIcon} css={style.iconRight}/>
           </Box>
         </Box>
@@ -71,22 +62,14 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow}>
           <label css={{...style.inputLabel, fontWeight: "bolder"}}>Total</label>
           <Box direction="row" align="end">
-            <label css={style.currencyLabel}>{currencyLabel(txn.currency)}</label>
-            <label css={{...style.valueLabel, fontWeight: "bolder"}}>{formatAmount(total)}</label>
+            <MoneyValue amountInWei={wei.total} currency={txn.currency} baseFontSize={1.2} classes={{amount: {fontWeight: "bolder"}}}/>
           </Box>
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Recipient</label>
           <Box direction="row" align="center">
-            <Identicon address={txn.recipient}/>
-            <img src={Curve} css={{marginLeft: -4, marginTop: -4}}/>
-            <Box direction="row" align="center" styles={{marginLeft: -8, marginTop: -4, backgroundColor: Color.fillLight, height: 34}}>
-              <label css={style.recipientLabel}>{txn.recipient}</label>
-              <Button type="button" size="icon" margin={"0 -8px 0 8px"}>
-                <img src={PlusIcon} height={18} width={18}/>
-              </Button>
-            </Box>
+            <Address address={txn.recipient} />
           </Box>
         </Box>
 
@@ -97,19 +80,13 @@ export function SendConfirmationScreen() {
 
         <Box direction="row" justify="between">
           <Box styles={{width: "48%"}}>
-            <Button type="button" size="m" color={Color.primaryGrey} onClick={onGoBack}>
-              <Box justify="center" align="center">
-                <img src={ArrowBackIcon} css={style.iconLeft} color="white"/>
-                Edit {isRequest ? "Request" : "Payment"}
-              </Box>
+            <Button type="button" size="m" color={Color.primaryGrey} onClick={onGoBack} icon={ArrowBackIcon}>
+              Edit {isRequest ? "Request" : "Payment"}
             </Button>
           </Box>
           <Box styles={{width: "48%"}}>
-            <Button type="submit" size="m" onClick={onSend}>
-              <Box align="center" justify="center">
-                <img src={isRequest ? RequestPaymentIcon : SendPaymentIcon} css={style.iconLeft} color="white"/>
-                Send {isRequest ? "Request" : "Payment"}
-              </Box>
+            <Button type="submit" size="m" onClick={onSend} icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}>
+              Send {isRequest ? "Request" : "Payment"}  
             </Button>
           </Box>
         </Box>
@@ -140,46 +117,14 @@ const style: Stylesheet = {
   inputLabel: {
     fontWeight: 300,
     fontSize: 18,
-    // marginBottom: 8,
     width: 150,
     minWidth: 150,
-  },
-  currencyLabel: {
-    marginRight: 4,
-    color: Color.primaryGreen,
-    fontSize: 16,
-    fontWeight: 400,
   },
   valueLabel: {
     color: Color.primaryBlack,
     fontSize: 20,
     fontWeight: 400,
-  },
-  recipientLabel: {
-    color: Color.accentBlue,
-    marginLeft: -8,
-  },
-  button: {
-    marginLeft: 8,
-    marginRight: 8,
-    background: "transparent",
-    borderWidth: 0,
-    cursor: "pointer",
-    "&:focus": {
-      outline: "none",
-    }
-  },
-  copyIcon: {
-    height: 14,
-    width: 18,
-  },
-  radioBox: {
-    height: "100%", 
-    width: "100%",
-  },
-  iconLeft: {
-    marginRight: 8,
-  },
+  },  
   iconRight: {
     marginLeft: 8,
   }

@@ -1,6 +1,6 @@
 import { Color } from 'src/styles/Color'
 
-interface ButtonProps {
+interface IconButtonProps {
   size?: 'xs' | 's' | 'm' | 'l' // defaults to 'm'
   type?: 'submit' | 'reset' | 'button'
   color?: Color // defaults to primaryGreen
@@ -8,7 +8,7 @@ interface ButtonProps {
   onClick?: () => void
 }
 
-export function IconButton(props: React.PropsWithChildren<ButtonProps>) {
+export function IconButton(props: React.PropsWithChildren<IconButtonProps>) {
   const { size, type, color, margin, onClick } = props
   const { height, width } = getDimensions(size)
   return (

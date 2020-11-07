@@ -6,10 +6,13 @@ interface ButtonProps {
   color?: Color // defaults to primaryGreen
   margin?: string | number
   onClick?: () => void
+  icon?: string
+  iconColor?: Color
+  iconPosition?: "start" | "end" //defualts to start //TODO: add top / bottom if necessary
 }
 
 export function Button(props: React.PropsWithChildren<ButtonProps>) {
-  const { size, type, color, margin, onClick } = props
+  const { size, type, color, margin, onClick, icon, iconColor, iconPosition } = props
   const { height, width } = getDimensions(size)
   const iconLayout = size === 'icon' ? {display: 'flex', alignItems: 'center', justifyContent: 'center' } : null;
 
@@ -36,7 +39,14 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
       onClick={onClick}
       type={type}
     >
-      {props.children}
+      {icon && 
+        <div css={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+          {(!iconPosition || iconPosition === "start") && <img src={icon} css={{marginRight: 8}} color={iconColor || Color.primaryWhite}/>}
+          {props.children}
+          {(iconPosition === "end") && <img src={icon} css={{marginLeft: 8}} color={iconColor || Color.primaryWhite}/>}
+        </div>
+      }
+      {!icon && props.children}
     </button>
   )
 }

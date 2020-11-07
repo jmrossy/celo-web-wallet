@@ -14,10 +14,10 @@ import { TextArea } from 'src/components/input/TextArea';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { Currency } from 'src/consts';
-import { confirmAndSendTokenActions } from 'src/features/send/confirmAndSendToken';
 import { cancelTransaction, changeStatus, clearError } from 'src/features/send/sendSlice';
-// import { sendTokenActions } from 'src/features/send/sendToken';
+import { sendTokenActions } from 'src/features/send/sendToken';
 import { SendTokenParams } from 'src/features/send/types';
+import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { useCustomForm } from 'src/utils/useCustomForm';
 
@@ -47,13 +47,31 @@ export function SendFormScreen() {
   }, [status]);
 
   const onSubmit = async (values: SendTokenParams) => {
-    await dispatch(confirmAndSendTokenActions.trigger(values));
+    await dispatch(sendTokenActions.trigger(values));
   }
 
   const { values, touched, handleChange, handleBlur, handleSubmit } = useCustomForm<SendTokenParams, any>(
     transaction ?? initialValues,
     onSubmit
   )
+
+  const onRequest = () => {
+    // const [hasErrors, fieldErrors] = validate(values);
+    // if(hasErrors){
+    //   setErrors(fieldErrors);
+    //   return;
+    // }
+    // else{
+    //   setErrors({});
+    //   const requestValues = {...values, isRequest: true};
+    //   navigate("/send-review", { state: requestValues });
+    // // dispatch(sendTokenActions.trigger(values))
+    // }
+  }
+
+  const onCopyAddress = async () => {
+    await navigator.clipboard.writeText(values.recipient);
+  }
 
   // Watch the touched fields, and clear any errors that need clearing
   useEffect(() => {
@@ -71,20 +89,6 @@ export function SendFormScreen() {
     
   }, [touched]);
 
-  const onRequest = () => {
-    // const [hasErrors, fieldErrors] = validate(values);
-    // if(hasErrors){
-    //   setErrors(fieldErrors);
-    //   return;
-    // }
-    // else{
-    //   setErrors({});
-    //   const requestValues = {...values, isRequest: true};
-    //   navigate("/send-review", { state: requestValues });
-    // // dispatch(sendTokenActions.trigger(values))
-    // }
-  }
-  
   return (
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
@@ -93,36 +97,20 @@ export function SendFormScreen() {
 
           <Box direction="column" styles={style.inputRow}>
             <label css={style.inputLabel}>Recipient Address or Phone Number</label>
-            <Box direction="row" justify="start">
-              {/* <Box direction="column"> */}
-                <AddressInput
-                  width={346}
-                  name="recipient"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.recipient}
-                  {...errors["recipient"]}
-                />
-                {/* {errors["recipient"] && <span css={style.errorLabel}>{errors["recipient"].helpText}</span>} */}
-              {/* </Box> */}
-              <button css={style.button}>
+
+            <Box direction="row" justify="start" align="end">
+              <AddressInput width={346} name="recipient" onChange={handleChange} onBlur={handleBlur} value={values.recipient} {...errors["recipient"]} />
+              <Button size="icon" type="button" color={Color.fillLight} margin="0 8px" onClick={onCopyAddress}>
                 <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon}/>
-              </button>
+              </Button>
               <Identicon address={values.recipient} />
             </Box>
           </Box>
 
           <Box direction="row" styles={style.inputRow}>
-            <Box direction="column" justify="end" align="start" styles={{width: "50%"}}>
+            <Box direction="column" justify="end" align="start">
               <label css={style.inputLabel}>Amount</label>
-              <MoneyValueInput
-                width={173}
-                name="amount"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.amount.toString()}
-                {...errors["amount"]}
-              />
+              <MoneyValueInput width={173} name="amount" onChange={handleChange} onBlur={handleBlur} value={values.amount.toString()} {...errors["amount"]} />
             </Box>
             <Box direction="column" align="start" styles={{width: "50%"}}>
               <label css={style.inputLabel}>Currency</label>
@@ -140,20 +128,10 @@ export function SendFormScreen() {
 
           <Box direction="row" justify="between">
             <Box styles={{width: "48%"}}>
-              <Button type="submit" size="m">
-                <Box justify="center" align="center">
-                  <img src={SendPaymentIcon} css={style.iconLeft} color="white"/>
-                  Send Payment
-                </Box>
-              </Button>
+              <Button type="submit" size="m" icon={SendPaymentIcon}>Send Payment</Button>
             </Box>
             <Box styles={{width: "48%"}}>
-              <Button type="button" size="m" onClick={onRequest}>
-                <Box align="center" justify="center">
-                  <img src={RequestPaymentIcon} css={style.iconLeft} color="white"/>
-                  Request Payment
-                </Box>
-              </Button>
+              <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>Request Payment</Button>
             </Box>
           </Box>
         </form>
@@ -185,16 +163,6 @@ const style: Stylesheet = {
     fontSize: 18,
     marginBottom: 8,
   },
-  button: {
-    marginLeft: 8,
-    marginRight: 8,
-    background: "transparent",
-    borderWidth: 0,
-    cursor: "pointer",
-    "&:focus": {
-      outline: "none",
-    }
-  },
   copyIcon: {
     height: 14,
     width: 18,
@@ -202,8 +170,6 @@ const style: Stylesheet = {
   radioBox: {
     height: "100%", 
     width: "100%",
-  },
-  iconLeft: {
-    marginRight: 8,
+    marginLeft: 8,
   },
 }
