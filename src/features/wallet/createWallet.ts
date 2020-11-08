@@ -20,4 +20,4 @@ export const {
   wrappedSaga: createWalletSaga,
   reducer: createWalletReducer,
   actions: createWalletActions,
-} = createMonitoredSaga(createWallet, { name: 'createWallet' })
+} = createMonitoredSaga(createWallet, 'createWallet')

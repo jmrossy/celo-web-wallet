@@ -51,7 +51,6 @@ export interface SagaState {
 }
 
 interface MonitoredSagaOptions {
-  name: string
   timeoutDuration?: number // in milliseconds
   // TODO add retry option
 }
@@ -65,9 +64,9 @@ interface MonitoredSagaOptions {
  */
 export function createMonitoredSaga<SagaParams = void>(
   saga: (...args: any[]) => any,
-  options: MonitoredSagaOptions
+  name: string,
+  options?: MonitoredSagaOptions
 ) {
-  const { name, timeoutDuration } = options
   const triggerAction = createAction<SagaParams>(`${name}/trigger`)
   const cancelAction = createAction<void>(`${name}/cancel`)
   const statusAction = createAction<SagaStatus>(`${name}/progress`)
@@ -95,7 +94,7 @@ export function createMonitoredSaga<SagaParams = void>(
           // TODO Use fork here instead if parallelism is required for the saga
           result: call(saga, trigger.payload, statusAction),
           cancel: take(cancelAction.type),
-          timeout: delay(timeoutDuration || DEFAULT_TIMEOUT),
+          timeout: delay(options?.timeoutDuration || DEFAULT_TIMEOUT),
         })
 
         if (cancel) {

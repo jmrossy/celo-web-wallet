@@ -73,4 +73,4 @@ export const {
   wrappedSaga: setPinSaga,
   reducer: setPinReducer,
   actions: setPinActions,
-} = createMonitoredSaga<string>(setPin, { name: 'setPin' })
+} = createMonitoredSaga<string>(setPin, 'setPin')

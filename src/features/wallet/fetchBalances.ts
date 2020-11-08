@@ -59,4 +59,4 @@ export const {
   wrappedSaga: fetchBalancesSaga,
   reducer: fetchBalancesReducer,
   actions: fetchBalancesActions,
-} = createMonitoredSaga(fetchBalances, { name: 'fetchBalances' })
+} = createMonitoredSaga(fetchBalances, 'fetchBalances')

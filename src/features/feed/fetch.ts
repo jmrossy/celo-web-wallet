@@ -92,7 +92,7 @@ export const {
   wrappedSaga: fetchFeedSaga,
   reducer: fetchFeedReducer,
   actions: fetchFeedActions,
-} = createMonitoredSaga(fetchFeed, { name: 'fetchFeed' })
+} = createMonitoredSaga(fetchFeed, 'fetchFeed')
 
 async function doFetchFeed(address: string, lastBlockNumber: number | null) {
   const txListP = fetchTxsFromBlockscout(address, lastBlockNumber)

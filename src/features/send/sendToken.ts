@@ -83,4 +83,4 @@ export const {
   wrappedSaga: sendTokenSaga,
   reducer: sendTokenReducer,
   actions: sendTokenActions,
-} = createMonitoredSaga<SendTokenParams>(sendToken, { name: 'sendToken' })
+} = createMonitoredSaga<SendTokenParams>(sendToken, 'sendToken')

@@ -29,4 +29,7 @@ export const Font = {
   bold: {
     fontWeight: 500,
   },
+  extraBold: {
+    fontWeight: 600,
+  },
 }
