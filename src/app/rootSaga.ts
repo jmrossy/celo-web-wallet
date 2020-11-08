@@ -8,7 +8,11 @@ import { setPinReducer, setPinSaga } from 'src/features/pincode/pincode'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
 import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
-import { importWallet, importWalletSaga } from 'src/features/wallet/importWallet'
+import {
+  importWallet,
+  importWalletReducer,
+  importWalletSaga,
+} from 'src/features/wallet/importWallet'
 import { loadWalletSaga } from 'src/features/wallet/storage'
 import { SagaState } from 'src/utils/saga'
 
@@ -20,7 +24,7 @@ function* init() {
 }
 
 // All regular sagas must be included here
-const sagas = [importWalletSaga, loadWalletSaga, feedFetchPoller]
+const sagas = [loadWalletSaga, feedFetchPoller]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {
@@ -49,6 +53,10 @@ export const monitoredSagas: {
   setPin: {
     saga: setPinSaga,
     reducer: setPinReducer,
+  },
+  importWallet: {
+    saga: importWalletSaga,
+    reducer: importWalletReducer,
   },
 }
 

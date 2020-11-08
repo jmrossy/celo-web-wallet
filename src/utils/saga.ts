@@ -4,8 +4,8 @@ import { logger } from './logger'
 
 /**
  * A convinence utility to create a saga and trigger action
- * Use to create simple sagas, for more complex ones use createMonitoredSaga
- * @param saga the worker saga that will be wrapped
+ * Use to create simple sagas, for more complex ones use createMonitoredSaga.
+ * Note: the wrapped saga this returns must be added to rootSaga.ts
  */
 export function createSaga<SagaParams = void>(saga: (...args: any[]) => any, name: string) {
   const triggerAction = createAction<SagaParams>(`${name}/trigger`)
@@ -58,9 +58,8 @@ interface MonitoredSagaOptions {
 /**
  * A convinence utility to create a wrapped saga that handles common concerns like
  * triger watching, cancel watching, timeout, progress updates, and success/fail updates.
- * Use to create complex, risky, or long-lived sagas
- * @param saga the worker saga that will be wrapped
- * @param options configurations for the wrapper
+ * Use to create complex sagas that need more coordination with the UI.
+ * Note: the wrapped saga and reducer this returns must be added to rootSaga.ts
  */
 export function createMonitoredSaga<SagaParams = void>(
   saga: (...args: any[]) => any,

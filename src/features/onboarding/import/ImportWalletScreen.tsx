@@ -7,8 +7,8 @@ export function ImportWalletScreen() {
   return (
     <OnboardingScreenFrame>
       <h1 css={Font.h1}>Import Your Celo Account</h1>
-      <p css={style.description}>Enter your back key to import you account.</p>
-      <p css={[style.description, Font.bold]}>Only import on devices you trust.</p>
+      <p css={style.description}>Enter your backup key to import your account.</p>
+      <p css={[style.description, Font.extraBold]}>Only import on devices you trust.</p>
       <ImportWalletForm />
     </OnboardingScreenFrame>
   )

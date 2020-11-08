@@ -1,10 +1,13 @@
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
+import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
-import { importWalletActions } from 'src/features/wallet/importWallet'
+import { importWalletActions, isValidMnemonic } from 'src/features/wallet/importWallet'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
+import { SagaStatus } from 'src/utils/saga'
 
 export function ImportWalletForm() {
   const [mnemonic, setMnemonic] = useState('')
@@ -15,8 +18,26 @@ export function ImportWalletForm() {
   }
 
   const onClickImport = () => {
+    if (!isValidMnemonic(mnemonic)) {
+      // TODO
+      alert('Invalid backup phrase')
+      return
+    }
+
     dispatch(importWalletActions.trigger(mnemonic))
   }
+
+  const sagaStatus = useSelector((state: RootState) => state.saga.importWallet.status)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (sagaStatus === SagaStatus.Success) {
+      navigate('/')
+    } else if (sagaStatus === SagaStatus.Failure) {
+      //TODO
+      alert('Importing wallet failed')
+    }
+  }, [sagaStatus])
 
   return (
     <Box direction="column" styles={style.container} align="center">

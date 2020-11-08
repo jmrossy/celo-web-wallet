@@ -36,7 +36,7 @@ const style: Stylesheet = {
   },
   childrenContainer: {
     maxWidth: '46em',
-    padding: '2em',
+    padding: '2em 2em 5vh 2em',
     height: '100%',
   },
 }

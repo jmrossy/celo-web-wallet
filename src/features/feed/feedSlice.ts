@@ -38,8 +38,14 @@ const feedSlice = createSlice({
         state.openTransaction = null
       }
     },
+    clearTransactions: (state) => {
+      state.transactions = {}
+      state.lastUpdatedTime = null
+      state.lastBlockNumber = null
+      state.openTransaction = null
+    },
   },
 })
 
-export const { addTransactions, openTransaction } = feedSlice.actions
+export const { addTransactions, openTransaction, clearTransactions } = feedSlice.actions
 export const feedReducer = feedSlice.reducer
