@@ -131,4 +131,4 @@ export const {
   wrappedSaga: exchangeTokenSaga,
   reducer: exchangeTokenReducer,
   actions: exchangeTokenActions,
-} = createMonitoredSaga<ExchangeTokenParams>(exchangeToken, { name: 'exchangeToken' })
+} = createMonitoredSaga<ExchangeTokenParams>(exchangeToken, 'exchangeToken')

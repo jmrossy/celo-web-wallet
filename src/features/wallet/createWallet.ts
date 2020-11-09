@@ -3,6 +3,8 @@ import { randomBytes } from '@ethersproject/random'
 import { ethers } from 'ethers'
 import { setSigner } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH } from 'src/consts'
+import { clearTransactions } from 'src/features/feed/feedSlice'
+import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { put } from 'typed-redux-saga'
 import { setAddress } from './walletSlice'
@@ -14,10 +16,12 @@ function* createWallet() {
   const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath)
   setSigner(wallet)
   yield* put(setAddress(wallet.address))
+  yield* put(fetchBalancesActions.trigger())
+  yield* put(clearTransactions())
 }
 
 export const {
   wrappedSaga: createWalletSaga,
   reducer: createWalletReducer,
   actions: createWalletActions,
-} = createMonitoredSaga(createWallet, { name: 'createWallet' })
+} = createMonitoredSaga(createWallet, 'createWallet')

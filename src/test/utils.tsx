@@ -4,7 +4,7 @@ import configureStore from 'redux-mock-store'
 import { RootState } from 'src/app/rootReducer'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { walletInitialState } from 'src/features/wallet/walletSlice'
-import { DefaultSagaState } from 'src/utils/saga'
+import { SagaState } from 'src/utils/saga'
 import { RecursivePartial } from 'src/utils/typescript'
 
 // Needs to be kept in sync with all slices used in store
@@ -19,8 +19,8 @@ export function getFullInitialState(): RecursivePartial<RootState> {
 
 function getSagaDefaultState() {
   const sagas = Object.keys(monitoredSagas)
-  const state: { [name: string]: DefaultSagaState } = {}
-  sagas.forEach((sagaName) => (state[sagaName] = { progress: null, error: null }))
+  const state: { [name: string]: SagaState } = {}
+  sagas.forEach((sagaName) => (state[sagaName] = { status: null, error: null }))
   return state
 }
 
