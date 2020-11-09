@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SendTokenParams } from 'src/features/send/types';
+import { SendTokenParams } from 'src/features/send/sendToken';
 import { SagaError } from 'src/utils/saga';
 
 export interface SendState {

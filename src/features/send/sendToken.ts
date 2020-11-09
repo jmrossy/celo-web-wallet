@@ -4,13 +4,20 @@ import { getContract } from 'src/blockchain/contracts'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import { Currency, MAX_COMMENT_CHAR_LENGTH, MAX_SEND_TOKEN_SIZE } from 'src/consts'
-import { SendTokenParams } from 'src/features/send/types'
 import { fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call } from 'typed-redux-saga'
+
+export interface SendTokenParams {
+  recipient: string
+  amount: number
+  currency: Currency
+  comment?: string
+  isRequest?: boolean
+}
 
 export function validate(params: SendTokenParams, balances: Balances) {
   const { recipient, amount, currency, comment } = params

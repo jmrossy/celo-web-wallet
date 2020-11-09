@@ -2,13 +2,17 @@ import { BigNumber, Contract, providers, utils } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
 import { Currency, MAX_EXCHANGE_TOKEN_SIZE } from 'src/consts'
-import { ExchangeTokenParams } from 'src/features/exchange/types'
 import { fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call } from 'typed-redux-saga'
+
+export interface ExchangeTokenParams {
+  amount: number
+  fromCurrency: Currency
+}
 
 export function validate(params: ExchangeTokenParams, balances: Balances) {
   const { amount, fromCurrency } = params

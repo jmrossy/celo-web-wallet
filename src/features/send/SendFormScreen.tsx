@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from 'src/app/rootReducer';
@@ -15,8 +15,7 @@ import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { Currency } from 'src/consts';
 import { sendStarted } from 'src/features/send/sendSlice';
-import { validate } from 'src/features/send/sendToken';
-import { SendTokenParams } from 'src/features/send/types';
+import { SendTokenParams, validate } from 'src/features/send/sendToken';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { useCustomForm } from 'src/utils/useCustomForm';
@@ -37,16 +36,10 @@ export function SendFormScreen() {
   const {transaction: txn } = useSelector((state: RootState) => state.send);
 
   const onSubmit = async (values: SendTokenParams) => {
-    const inpErr = validate(values, staleBalances);
-    if(inpErr){
-      setInputErrors(inpErr);
-      return;
-    }
-    else{
-      clearInputErrors();
-      dispatch(sendStarted(values));
-      navigate("/send-review");
-    }
+    if(validateInputs()) return;
+    
+    dispatch(sendStarted(values));
+    navigate("/send-review");
   }
 
   const { 
@@ -57,7 +50,8 @@ export function SendFormScreen() {
     handleSubmit, 
     resetValues  } = useCustomForm<SendTokenParams, any>(txn ?? initialValues, onSubmit);
 
-    const { inputErrors, setInputErrors, clearInputErrors } = useInputValidation(touched);
+  const doValidation = useCallback(() => validate(values, staleBalances), [values, staleBalances]);
+  const { inputErrors, validateInputs } = useInputValidation(touched, doValidation);
 
   //-- if the transaction gets reset, reset the screen as well
   useEffect(() => {

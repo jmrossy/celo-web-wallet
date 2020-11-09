@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from 'src/app/rootReducer';
@@ -11,8 +11,7 @@ import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { MoneyValue } from 'src/components/MoneyValue';
 import { Currency } from 'src/consts';
 import { exchangeStarted } from 'src/features/exchange/exchangeSlice';
-import { validate } from 'src/features/exchange/exchangeToken';
-import { ExchangeTokenParams } from 'src/features/exchange/types';
+import { ExchangeTokenParams, validate } from 'src/features/exchange/exchangeToken';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { useWeiExchange } from 'src/utils/amount';
@@ -31,16 +30,10 @@ export function ExchangeFormScreen() {
   const {transaction: txn, toCELORate } = useSelector((state: RootState) => state.exchange);
   
   const onSubmit = async (values: ExchangeTokenParams) => {
-    const inpErr = validate(values, staleBalances);
-    if(inpErr){
-      setInputErrors(inpErr);
-      return;
-    }
-    else{
-      clearInputErrors();
-      await dispatch(exchangeStarted(values))
-      navigate("/exchange-review");
-    }    
+    if(validateInputs()) return;
+
+    await dispatch(exchangeStarted(values))
+    navigate("/exchange-review");
   }
 
   const { 
@@ -51,7 +44,8 @@ export function ExchangeFormScreen() {
     handleSubmit, 
     resetValues } = useCustomForm<ExchangeTokenParams, any>(txn ?? initialValues, onSubmit);
 
-  const { inputErrors, setInputErrors, clearInputErrors } = useInputValidation(touched);
+  const doValidation = useCallback(() => validate(values, staleBalances), [values, staleBalances]);
+  const { inputErrors, validateInputs } = useInputValidation(touched, doValidation);
 
   const safeAmount = useMemo(() => { 
     const fVal = parseFloat(values.amount.toString());

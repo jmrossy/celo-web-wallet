@@ -37,13 +37,6 @@ export function isAmountValid(
   return true
 }
 
-const numberFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2 });
-
-export function formatAmount(amt: number | BigNumber | string) {
-  const value = parseFloat(amt.toString());
-  return numberFormatter.format(value);
-}
-
 export function useWeiTransaction(amount: number, fee: number) {
   const total = useMemo(() => { return amount + fee; }, [amount, fee]);
 

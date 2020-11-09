@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ExchangeTokenParams } from 'src/features/exchange/types';
+import { ExchangeTokenParams } from 'src/features/exchange/exchangeToken';
 import { SagaError } from 'src/utils/saga';
 
 export interface ExchangeState {
