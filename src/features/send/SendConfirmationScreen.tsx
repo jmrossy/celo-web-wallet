@@ -11,46 +11,64 @@ import SendPaymentIcon from 'src/components/icons/send_payment_white.svg';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { MoneyValue } from 'src/components/MoneyValue';
-import { sendTransaction } from 'src/features/send/sendSlice';
+import { Notification } from 'src/components/Notification';
+import { sendCanceled, sendFailed, sendSucceeded } from 'src/features/send/sendSlice';
+import { sendTokenActions } from 'src/features/send/sendToken';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { useWeiTransaction } from 'src/utils/amount';
+import { SagaStatus } from 'src/utils/saga';
 
 export function SendConfirmationScreen() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { transaction: txn, status } = useSelector((state: RootState) => state.send);
-  const isRequest = useMemo(() => { return false; }, [txn]);
-  const { wei } = useWeiTransaction(txn?.amount ?? 0, 0.02);
 
-  //TODO: Wrap the following two lines into a hook to simplify getting the working state as a bool?
-  const { progress, error } = useSelector((state: RootState) => state.saga.sendToken);
-  const isWorking = useMemo(() => { return progress === "started"; }, [progress, error]);
-  
+  const { transaction: txn, transactionError: txnError } = useSelector((state: RootState) => state.send);
+  const isRequest = useMemo(() => { return false; }, [txn]);
+  const { wei } = useWeiTransaction(txn?.amount ?? 0, 0.02);  //TODO: get the actual fee
+
+  //TODO: Wrap the following in a hook to simplify?
+  const { status: sagaStatus, error: sagaError } = useSelector((state: RootState) => state.saga.sendToken);
+  const isWorking = useMemo(() => { return sagaStatus === SagaStatus.Started; }, [sagaStatus, sagaError]);
+
   //-- need to make sure we belong on this screen
   useEffect(() => {
-    if(status !== "confirming" && status !== "confirmed"){  //shouldn't be on the confirm screen
+    if(!txn){
       navigate("/send");
     }
-    else if(progress && progress !== "started"){  //the send request is no longer in progress
-      navigate("/send");
-    }
-  }, [status, progress]);
+  }, [txn]);
 
   
-  function onGoBack(){
+  async function onGoBack(){
+    await dispatch(sendTokenActions.reset());
+    await dispatch(sendCanceled());
     navigate(-1);
   }
 
   async function onSend(){
-    await dispatch(sendTransaction());
+    if(!txn) return;
+    await dispatch(sendTokenActions.trigger(txn));
   }
 
-  if(!txn) return null;
+  useEffect(() => {
+    if (sagaStatus === SagaStatus.Success) {
+      //TODO: provide a notification of the success
+      dispatch(sendTokenActions.reset());
+      dispatch(sendSucceeded());
+      navigate("/");
+    } else if (sagaStatus === SagaStatus.Failure) {
+      dispatch(sendFailed(sagaError ? sagaError.toString() : "Send failed"));
+      //TODO: in the future, redirect them back to the exchange screen to deal with the error
+    }
+  }, [sagaStatus]);
+
+  if(!txn) return null;   //to avoid having to qualify everything below
   
   return (
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
+        <Notification message={txnError ? txnError.toString() : null} color={Color.borderError} />
+        
         <h1 css={style.title}>Review {isRequest ? "Request" : "Payment"}</h1>
 
         <Box direction="row" styles={style.inputRow}>
@@ -86,6 +104,12 @@ export function SendConfirmationScreen() {
           <label css={style.inputLabel}>Comment</label>
           <label css={style.valueLabel}>{txn.comment}</label>
         </Box>
+
+        {isWorking && 
+          <Box direction="row" styles={style.inputRow}>
+            <label css={style.valueText}>Sending...</label>
+          </Box>
+        }
 
         <Box direction="row" justify="between">
           <Button type="button" size="m" color={Color.primaryGrey} css={{width: "48%"}} onClick={onGoBack} icon={ArrowBackIcon} disabled={isWorking}>

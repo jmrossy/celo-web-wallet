@@ -70,6 +70,7 @@ export function createMonitoredSaga<SagaParams = void>(
   const cancelAction = createAction<void>(`${name}/cancel`)
   const statusAction = createAction<SagaStatus>(`${name}/progress`)
   const errorAction = createAction<string>(`${name}/error`)
+  const resetAction = createAction<void>(`${name}/reset`)
 
   const reducer = createReducer<SagaState>({ status: null, error: null }, (builder) =>
     builder
@@ -80,6 +81,10 @@ export function createMonitoredSaga<SagaParams = void>(
       .addCase(errorAction, (state, action) => {
         state.status = SagaStatus.Failure
         state.error = action.payload
+      })
+      .addCase(resetAction, (state) => {
+        state.status = null;
+        state.error = null;
       })
   )
 
@@ -130,6 +135,7 @@ export function createMonitoredSaga<SagaParams = void>(
       cancel: cancelAction,
       progress: statusAction,
       error: errorAction,
+      reset: resetAction,
     },
   }
 }

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { shallowEqual } from "react-redux";
 
 export type FieldError = {
   error: boolean;
@@ -36,4 +37,33 @@ export function useErrorTracking(
 
   //Return the number of current errors
   return errCount;
+}
+
+export function useInputValidation(touched: any) {
+  const [inputErrors, setInputErrors] = useState<ErrorState>({});
+  const clearInputErrors = useCallback(() => setInputErrors({}), [setInputErrors]);
+
+  // Watch the touched fields, and clear any errors that need clearing
+  useEffect(() => {
+    if (!inputErrors || Object.keys(inputErrors).length === 0) return;
+    const nextErrors = { ...inputErrors };
+
+    //Enumerate the touched fields and create a list of fields that were touched
+    Object.keys(touched).forEach((key: string) => {
+      // return (touched as any)[key] === true ? [...output, key] : output;
+      if ((touched as any)[key] === true && nextErrors[key]) {
+        delete nextErrors[key];
+      }
+    }, []);
+
+    if (!shallowEqual(inputErrors, nextErrors)) {
+      setInputErrors(nextErrors);
+    }
+  }, [touched]);
+
+  return {
+    inputErrors,
+    setInputErrors,
+    clearInputErrors,
+  }
 }

@@ -8,12 +8,15 @@ import ExchangeIcon from 'src/components/icons/exchange_white.svg';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { MoneyValue } from 'src/components/MoneyValue';
+import { Notification } from 'src/components/Notification';
 import { Currency } from 'src/consts';
-import { sendExchange } from 'src/features/exchange/exchangeSlice';
+import { exchangeCanceled, exchangeFailed, exchangeSent } from 'src/features/exchange/exchangeSlice';
+import { exchangeTokenActions } from 'src/features/exchange/exchangeToken';
 import { ExchangeTokenParams } from 'src/features/exchange/types';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { useWeiExchange } from 'src/utils/amount';
+import { SagaStatus } from 'src/utils/saga';
 
 const emptyTransaction: ExchangeTokenParams = {
   amount: 0,
@@ -23,30 +26,49 @@ const emptyTransaction: ExchangeTokenParams = {
 export function ExchangeConfirmationScreen() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { transaction: txn, status, toCELORate, isExchanging } = useSelector((state: RootState) => state.exchange);
+  const { transaction: txn, toCELORate, transactionError: txnError } = useSelector((state: RootState) => state.exchange);
+  const { status: sagaStatus, error: sagaError } = useSelector((state: RootState) => state.saga.exchangeToken);
+  const isWorking = useMemo(() => sagaStatus === SagaStatus.Started, [sagaStatus]);
 
   const safeTxn = useMemo<ExchangeTokenParams>(() => { return txn ?? emptyTransaction }, [txn]);  //to avoid having to qualify every reference to txn
   const rate = useMemo(() => { return safeTxn.fromCurrency === Currency.cUSD ? toCELORate : (1 / toCELORate); }, [safeTxn.fromCurrency]);
   const exchange = useWeiExchange(safeTxn.amount, safeTxn.fromCurrency, rate, 0);
-
+  
   //-- need to make sure we belong on this screen
   useEffect(() => {
-    if(status !== "confirming" && status !== "confirmed"){  //shouldn't be on the confirm screen
+    if(!txn){
       navigate("/exchange");
     }
-  }, [status]);
+  }, [txn]);
 
-  function onGoBack(){
+  async function onGoBack(){
+    await dispatch(exchangeTokenActions.reset());
+    await dispatch(exchangeCanceled())
     navigate(-1);
   }
 
   async function onExchange(){
-    await dispatch(sendExchange());
+    if(!txn) return;
+    await dispatch(exchangeTokenActions.trigger(txn));
   }
+
+  useEffect(() => {
+    if (sagaStatus === SagaStatus.Success) {
+      //TODO: provide a notification of the success
+      dispatch(exchangeTokenActions.reset());
+      dispatch(exchangeSent());
+      navigate("/");
+    } else if (sagaStatus === SagaStatus.Failure) {
+      dispatch(exchangeFailed(sagaError ? sagaError.toString() : "Exchange failed"))
+      //TODO: in the future, redirect them back to the exchange screen to deal with the error
+    }
+  }, [sagaStatus]);
 
   return (
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
+        <Notification message={txnError ? txnError.toString() : null} color={Color.borderError} />
+
         <h1 css={style.title}>Review Exchange</h1>
 
         <Box direction="row" styles={style.inputRow}>
@@ -66,9 +88,15 @@ export function ExchangeConfirmationScreen() {
           <MoneyValue amountInWei={exchange.to.weiAmount} currency={exchange.to.currency} baseFontSize={1.2}/>
         </Box>
 
+        {isWorking && 
+          <Box direction="row" styles={style.inputRow}>
+            <label css={style.valueText}>Working...</label>
+          </Box>
+        }
+
         <Box direction="row" justify="between">
-          <Button type="button" onClick={onGoBack} size="m" icon={ArrowBackIcon} color={Color.primaryGrey} css={{width: "48%"}} disabled={isExchanging}>Edit Exchange</Button>
-          <Button type="button" onClick={onExchange} size="m" css={{width: "48%"}} icon={ExchangeIcon} disabled={isExchanging}>Make Exchange</Button>          
+          <Button type="button" onClick={onGoBack} size="m" icon={ArrowBackIcon} color={Color.primaryGrey} css={{width: "48%"}} disabled={isWorking}>Edit Exchange</Button>
+          <Button type="button" onClick={onExchange} size="m" css={{width: "48%"}} icon={ExchangeIcon} disabled={isWorking}>Make Exchange</Button>          
         </Box>
 
       </Box>
@@ -97,26 +125,13 @@ const style: Stylesheet = {
   inputLabel: {
     fontWeight: 300,
     fontSize: 18,
-    // marginBottom: 8,
     width: 150,
     minWidth: 150,
-  },
-  currencyLabel: {
-    marginRight: 4,
-    color: Color.primaryGreen,
-    fontSize: 16,
-    fontWeight: 400,
   },
   valueText: {
     fontSize: 20,
     fontWeight: 400,
     color: Color.primaryGrey,
     margin: "0 8px",
-  },  
-  iconLeft: {
-    marginRight: 8,
   },
-  iconRight: {
-    marginLeft: 8,
-  }
 }

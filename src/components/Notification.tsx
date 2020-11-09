@@ -5,6 +5,7 @@ interface NotificationProps {
   message?: string | null
   color?: Color
   textColor?: Color
+  margin?: string | number
 }
 
 export function Notification(props: NotificationProps){
@@ -16,6 +17,7 @@ export function Notification(props: NotificationProps){
       styles={{
         backgroundColor: props.color ?? Color.accentBlue,
         width: "100%",
+        margin: props.margin ?? "8px 0",
       }}
     >
       <Box align="center" justify="center"

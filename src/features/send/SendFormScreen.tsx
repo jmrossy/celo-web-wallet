@@ -13,15 +13,14 @@ import { RadioBox } from 'src/components/input/RadioBox';
 import { TextArea } from 'src/components/input/TextArea';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
-import { Notification } from 'src/components/Notification';
 import { Currency } from 'src/consts';
-import { cancelTransaction, changeStatus, clearError } from 'src/features/send/sendSlice';
-import { sendTokenActions } from 'src/features/send/sendToken';
+import { sendStarted } from 'src/features/send/sendSlice';
+import { validate } from 'src/features/send/sendToken';
 import { SendTokenParams } from 'src/features/send/types';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { useCustomForm } from 'src/utils/useCustomForm';
-import { useErrorTracking } from 'src/utils/validation';
+import { useInputValidation } from 'src/utils/validation';
 
 const initialValues: SendTokenParams = {
   // TODO set to empty string
@@ -34,21 +33,20 @@ const initialValues: SendTokenParams = {
 export function SendFormScreen() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {transaction, status, errors, notification } = useSelector((state: RootState) => state.send);
-
-  useEffect(() => {
-    if(status === "needs-confirm"){
-      dispatch(changeStatus("confirming"));
-      navigate("/send-review");
-    }
-    else if(status === "confirming"){
-      //they must have navigated back to here
-      dispatch(cancelTransaction());
-    }
-  }, [status]);
+  const staleBalances = useSelector((state: RootState) => state.wallet.balances);
+  const {transaction: txn } = useSelector((state: RootState) => state.send);
 
   const onSubmit = async (values: SendTokenParams) => {
-    await dispatch(sendTokenActions.trigger(values));
+    const inpErr = validate(values, staleBalances);
+    if(inpErr){
+      setInputErrors(inpErr);
+      return;
+    }
+    else{
+      clearInputErrors();
+      dispatch(sendStarted(values));
+      navigate("/send-review");
+    }
   }
 
   const { 
@@ -57,29 +55,19 @@ export function SendFormScreen() {
     handleChange, 
     handleBlur, 
     handleSubmit, 
-    resetValues  } = useCustomForm<SendTokenParams, any>(transaction ?? initialValues, onSubmit);
+    resetValues  } = useCustomForm<SendTokenParams, any>(txn ?? initialValues, onSubmit);
 
-  useErrorTracking(touched, errors, (fields) => dispatch(clearError(fields)));
+    const { inputErrors, setInputErrors, clearInputErrors } = useInputValidation(touched);
 
   //-- if the transaction gets reset, reset the screen as well
   useEffect(() => {
-    if(transaction === null){
+    if(txn === null){
       resetValues(initialValues);
     }
-  }, [transaction])
+  }, [txn])
 
   const onRequest = () => {
-    // const [hasErrors, fieldErrors] = validate(values);
-    // if(hasErrors){
-    //   setErrors(fieldErrors);
-    //   return;
-    // }
-    // else{
-    //   setErrors({});
-    //   const requestValues = {...values, isRequest: true};
-    //   navigate("/send-review", { state: requestValues });
-    // // dispatch(sendTokenActions.trigger(values))
-    // }
+    alert("Not Impelemented");
   }
 
   const onCopyAddress = async () => {
@@ -90,8 +78,6 @@ export function SendFormScreen() {
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
 
-        <Notification message={notification} />
-
         <form onSubmit={handleSubmit}>
           <h1 css={style.title}>Send or Request Payment</h1>
 
@@ -99,7 +85,7 @@ export function SendFormScreen() {
             <label css={style.inputLabel}>Recipient Address or Phone Number</label>
 
             <Box direction="row" justify="start" align="end">
-              <AddressInput width={346} name="recipient" onChange={handleChange} onBlur={handleBlur} value={values.recipient} {...errors["recipient"]} />
+              <AddressInput width={346} name="recipient" onChange={handleChange} onBlur={handleBlur} value={values.recipient} {...inputErrors["recipient"]} />
               <Button size="icon" type="button" color={Color.fillLight} margin="0 8px" onClick={onCopyAddress}>
                 <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon}/>
               </Button>
@@ -110,7 +96,7 @@ export function SendFormScreen() {
           <Box direction="row" styles={style.inputRow}>
             <Box direction="column" justify="end" align="start">
               <label css={style.inputLabel}>Amount</label>
-              <MoneyValueInput width={173} name="amount" onChange={handleChange} onBlur={handleBlur} value={values.amount.toString()} {...errors["amount"]} />
+              <MoneyValueInput width={173} name="amount" onChange={handleChange} onBlur={handleBlur} value={values.amount.toString()} {...inputErrors["amount"]} />
             </Box>
             <Box direction="column" align="start" styles={{width: "50%"}}>
               <label css={style.inputLabel}>Currency</label>

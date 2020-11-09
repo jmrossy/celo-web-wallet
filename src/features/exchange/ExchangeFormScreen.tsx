@@ -9,16 +9,15 @@ import { RadioBox } from 'src/components/input/RadioBox';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { MoneyValue } from 'src/components/MoneyValue';
-import { Notification } from 'src/components/Notification';
 import { Currency } from 'src/consts';
-import { cancelExchange, changeStatus, clearInputError } from 'src/features/exchange/exchangeSlice';
-import { exchangeTokenActions } from 'src/features/exchange/exchangeToken';
+import { exchangeStarted } from 'src/features/exchange/exchangeSlice';
+import { validate } from 'src/features/exchange/exchangeToken';
 import { ExchangeTokenParams } from 'src/features/exchange/types';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { useWeiExchange } from 'src/utils/amount';
 import { useCustomForm } from 'src/utils/useCustomForm';
-import { useErrorTracking } from 'src/utils/validation';
+import { useInputValidation } from 'src/utils/validation';
 
 const initialValues: ExchangeTokenParams = {
   amount: 0,
@@ -26,11 +25,22 @@ const initialValues: ExchangeTokenParams = {
 }
 
 export function ExchangeFormScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {transaction: txn, status, inputErrors, notification, toCELORate, transactionError } = useSelector((state: RootState) => state.exchange);
+  const staleBalances = useSelector((state: RootState) => state.wallet.balances);
+  const {transaction: txn, toCELORate } = useSelector((state: RootState) => state.exchange);
+  
   const onSubmit = async (values: ExchangeTokenParams) => {
-    await dispatch(exchangeTokenActions.trigger(values));
+    const inpErr = validate(values, staleBalances);
+    if(inpErr){
+      setInputErrors(inpErr);
+      return;
+    }
+    else{
+      clearInputErrors();
+      await dispatch(exchangeStarted(values))
+      navigate("/exchange-review");
+    }    
   }
 
   const { 
@@ -39,9 +49,9 @@ export function ExchangeFormScreen() {
     handleChange, 
     handleBlur, 
     handleSubmit, 
-    resetValues } = useCustomForm<ExchangeTokenParams, any>(initialValues, onSubmit);
+    resetValues } = useCustomForm<ExchangeTokenParams, any>(txn ?? initialValues, onSubmit);
 
-  useErrorTracking(touched, inputErrors, (fields) => dispatch(clearInputError(fields)));
+  const { inputErrors, setInputErrors, clearInputErrors } = useInputValidation(touched);
 
   const safeAmount = useMemo(() => { 
     const fVal = parseFloat(values.amount.toString());
@@ -50,18 +60,6 @@ export function ExchangeFormScreen() {
 
   const exchangeRate = useMemo(() => { return values.fromCurrency === Currency.cUSD ? toCELORate : (1/toCELORate); }, [values.fromCurrency]);
   const exchange = useWeiExchange(safeAmount, values.fromCurrency, exchangeRate, 0);
-
-  //--If the status changes, need to route the user accordingly
-  useEffect(() => {
-    if(status === "needs-confirm"){
-      dispatch(changeStatus("confirming"));
-      navigate("/exchange-review");
-    }
-    else if(status === "confirming"){
-      //they must have navigated back to here
-      dispatch(cancelExchange());
-    }
-  }, [status]);
 
   //-- If the txn gets cleared out in the slice, need to reset it in the screen
   useEffect(() => {
@@ -74,8 +72,6 @@ export function ExchangeFormScreen() {
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
         
-        <Notification message={transactionError || notification} color={transactionError ? Color.borderError : undefined} />
-
         <form onSubmit={handleSubmit}>
           <h1 css={style.title}>Make an Exchange</h1>
 
