@@ -1,7 +1,7 @@
 import { CSSObject } from '@emotion/core';
 import { PropsWithChildren, useMemo } from 'react';
+import { InputStyleConstants } from 'src/components/input/styles';
 import { Color } from 'src/styles/Color';
-import { InputStyles } from 'src/styles/inputs';
 
 export interface RadioBoxInputClasses {
   container?: CSSObject
@@ -26,15 +26,15 @@ const containerStyle: CSSObject = {
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  padding: InputStyles.padding,
-  border: InputStyles.border,
+  padding: InputStyleConstants.padding,
+  border: InputStyleConstants.border,
   borderColor: Color.primaryGrey,
-  borderRadius: InputStyles.borderRadius,
+  borderRadius: InputStyleConstants.borderRadius,
   cursor: "pointer",
   userSelect: "none",
   color: Color.primaryGrey,
   marginRight: 4,
-  height: InputStyles.defaultHeight,   //default height (may be overridden by the classes)  
+  height: InputStyleConstants.defaultHeight,   //default height (may be overridden by the classes)  
 };
 
 const containerStyleSelected: CSSObject = {

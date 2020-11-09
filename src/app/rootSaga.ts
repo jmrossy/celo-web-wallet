@@ -6,7 +6,6 @@ import { exchangeTokenReducer, exchangeTokenSaga } from 'src/features/exchange/e
 import { feedFetchPoller, fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
 import { setPinReducer, setPinSaga } from 'src/features/pincode/pincode'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
-// import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken-old'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
 import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
 import {
