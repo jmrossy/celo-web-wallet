@@ -22,13 +22,22 @@ export function SendConfirmationScreen() {
   const { transaction: txn, status } = useSelector((state: RootState) => state.send);
   const isRequest = useMemo(() => { return false; }, [txn]);
   const { wei } = useWeiTransaction(txn?.amount ?? 0, 0.02);
+
+  //TODO: Wrap the following two lines into a hook to simplify getting the working state as a bool?
+  const { progress, error } = useSelector((state: RootState) => state.saga.sendToken);
+  const isWorking = useMemo(() => { return progress === "started"; }, [progress, error]);
   
+  //-- need to make sure we belong on this screen
   useEffect(() => {
-    if(status !== "confirming"){  //shouldn't be on the confirm screen
+    if(status !== "confirming" && status !== "confirmed"){  //shouldn't be on the confirm screen
       navigate("/send");
     }
-  }, [status]);
+    else if(progress && progress !== "started"){  //the send request is no longer in progress
+      navigate("/send");
+    }
+  }, [status, progress]);
 
+  
   function onGoBack(){
     navigate(-1);
   }
@@ -79,16 +88,12 @@ export function SendConfirmationScreen() {
         </Box>
 
         <Box direction="row" justify="between">
-          <Box styles={{width: "48%"}}>
-            <Button type="button" size="m" color={Color.primaryGrey} onClick={onGoBack} icon={ArrowBackIcon}>
-              Edit {isRequest ? "Request" : "Payment"}
-            </Button>
-          </Box>
-          <Box styles={{width: "48%"}}>
-            <Button type="submit" size="m" onClick={onSend} icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}>
-              Send {isRequest ? "Request" : "Payment"}  
-            </Button>
-          </Box>
+          <Button type="button" size="m" color={Color.primaryGrey} css={{width: "48%"}} onClick={onGoBack} icon={ArrowBackIcon} disabled={isWorking}>
+            Edit {isRequest ? "Request" : "Payment"}
+          </Button>
+          <Button type="submit" size="m" css={{width: "48%"}} onClick={onSend} icon={isRequest ? RequestPaymentIcon : SendPaymentIcon} disabled={isWorking}>
+            Send {isRequest ? "Request" : "Payment"}  
+          </Button>
         </Box>
 
       </Box>

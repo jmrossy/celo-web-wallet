@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Color } from 'src/styles/Color';
 
 interface ButtonProps {
@@ -7,14 +8,15 @@ interface ButtonProps {
   margin?: string | number
   onClick?: () => void
   icon?: string
-  iconColor?: Color
   iconPosition?: "start" | "end" //defualts to start //TODO: add top / bottom if necessary
+  disabled?: boolean
 }
 
 export function Button(props: React.PropsWithChildren<ButtonProps>) {
-  const { size, type, color, margin, onClick, icon, iconColor, iconPosition } = props
+  const { size, type, color, margin, onClick, icon, iconPosition, disabled } = props
   const { height, width } = getDimensions(size)
-  const iconLayout = size === 'icon' ? {display: 'flex', alignItems: 'center', justifyContent: 'center' } : null;
+  
+  const icoLayout = useMemo(() => { return size === 'icon' ? {display: 'flex', alignItems: 'center', justifyContent: 'center' } : null; }, [size]);
 
   return (
     <button
@@ -28,22 +30,27 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
         border: 'none',
         outline: 'none',
         cursor: 'pointer',
-        ...iconLayout,
+        ...icoLayout,
         ':hover': {
           backgroundColor: '#4cdd91',
         },
         ':active': {
           backgroundColor: '#0fb972',
         },
+        ':disabled': {
+          color: Color.primaryGrey,
+          backgroundColor: Color.borderInactive,
+        }
       }}
       onClick={onClick}
       type={type}
+      disabled={disabled ?? false}
     >
       {icon && 
         <div css={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-          {(!iconPosition || iconPosition === "start") && <img src={icon} css={{marginRight: 8}} color={iconColor || Color.primaryWhite}/>}
+          {(!iconPosition || iconPosition === "start") && <img src={icon} css={{marginRight: 8}}/>}
           {props.children}
-          {(iconPosition === "end") && <img src={icon} css={{marginLeft: 8}} color={iconColor || Color.primaryWhite}/>}
+          {(iconPosition === "end") && <img src={icon} css={{marginLeft: 8}}/>}
         </div>
       }
       {!icon && props.children}

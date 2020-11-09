@@ -10,12 +10,16 @@ export function useCustomForm<V, E>(
   const [, setOnSubmitting] = useState<boolean>(false)
   const [, setOnBlur] = useState<boolean>(false)
 
-  useEffect(() => {
-    setValues(initialValues)
+  const resetValues = (resetValues: V) => {
+    setValues(resetValues)
     setErrors({})
     setTouched({})
     setOnSubmitting(false)
     setOnBlur(false)
+  }
+
+  useEffect(() => {
+    resetValues(initialValues);
   }, [])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -39,6 +43,8 @@ export function useCustomForm<V, E>(
     setTouched({})
   }
 
+
+
   return {
     values,
     errors,
@@ -46,5 +52,6 @@ export function useCustomForm<V, E>(
     handleChange,
     handleBlur,
     handleSubmit,
+    resetValues,
   }
 }

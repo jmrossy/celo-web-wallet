@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from 'src/app/rootReducer';
@@ -13,6 +13,7 @@ import { RadioBox } from 'src/components/input/RadioBox';
 import { TextArea } from 'src/components/input/TextArea';
 import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
+import { Notification } from 'src/components/Notification';
 import { Currency } from 'src/consts';
 import { cancelTransaction, changeStatus, clearError } from 'src/features/send/sendSlice';
 import { sendTokenActions } from 'src/features/send/sendToken';
@@ -20,6 +21,7 @@ import { SendTokenParams } from 'src/features/send/types';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
 import { useCustomForm } from 'src/utils/useCustomForm';
+import { useErrorTracking } from 'src/utils/validation';
 
 const initialValues: SendTokenParams = {
   // TODO set to empty string
@@ -32,8 +34,7 @@ const initialValues: SendTokenParams = {
 export function SendFormScreen() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [errCount, setErrCount] = useState<number>(0);
-  const {transaction, status, errors } = useSelector((state: RootState) => state.send);
+  const {transaction, status, errors, notification } = useSelector((state: RootState) => state.send);
 
   useEffect(() => {
     if(status === "needs-confirm"){
@@ -50,10 +51,22 @@ export function SendFormScreen() {
     await dispatch(sendTokenActions.trigger(values));
   }
 
-  const { values, touched, handleChange, handleBlur, handleSubmit } = useCustomForm<SendTokenParams, any>(
-    transaction ?? initialValues,
-    onSubmit
-  )
+  const { 
+    values, 
+    touched, 
+    handleChange, 
+    handleBlur, 
+    handleSubmit, 
+    resetValues  } = useCustomForm<SendTokenParams, any>(transaction ?? initialValues, onSubmit);
+
+  useErrorTracking(touched, errors, (fields) => dispatch(clearError(fields)));
+
+  //-- if the transaction gets reset, reset the screen as well
+  useEffect(() => {
+    if(transaction === null){
+      resetValues(initialValues);
+    }
+  }, [transaction])
 
   const onRequest = () => {
     // const [hasErrors, fieldErrors] = validate(values);
@@ -73,25 +86,12 @@ export function SendFormScreen() {
     await navigator.clipboard.writeText(values.recipient);
   }
 
-  // Watch the touched fields, and clear any errors that need clearing
-  useEffect(() => {
-    if(!errors || Object.keys(errors).length === 0) return;
-
-    const fields = Object.keys(touched).reduce((output: string[], key: string) => {
-      return (touched as any)[key] === true ? [...output, key] : output;
-    }, []);
-
-    if(fields.length > 0 && fields.length !== errCount){
-      dispatch(clearError(fields));
-      setErrCount(fields.length);
-    }
-    else setErrCount(0);
-    
-  }, [touched]);
-
   return (
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
+
+        <Notification message={notification} />
+
         <form onSubmit={handleSubmit}>
           <h1 css={style.title}>Send or Request Payment</h1>
 
@@ -147,6 +147,21 @@ const style: Stylesheet = {
     paddingTop: 30,
     maxWidth: 500,
     width: "100%",
+  },
+  notificationContainer: {
+    width: "100%",
+    margin: "16px 0",
+  },
+  notification: {
+    backgroundColor: Color.accentBlue,
+    borderRadius: 5,
+    padding: "8px 16px",
+    width: "75%",
+  },
+  notificationText: {
+    fontSize: 20,
+    fontWeight: 400,
+    color: Color.primaryWhite,
   },
   title: {
     color: "#3488EC",

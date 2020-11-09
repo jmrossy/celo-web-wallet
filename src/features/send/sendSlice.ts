@@ -1,16 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ErrorState, SendTokenParams } from 'src/features/send/types';
+import { SendTokenParams } from 'src/features/send/types';
+import { ErrorState } from 'src/utils/validation';
 
 export interface SendState {
   transaction: SendTokenParams | null
   errors: ErrorState
   status: string | null
+  notification: string | null
 }
 
 export const sendInitialState: SendState = {
   transaction: null,
   errors: {},
   status: null,
+  notification: null,
 }
 
 
@@ -49,9 +52,12 @@ const sendSlice = createSlice({
       state.status = null;
       state.transaction = null;
       state.errors = {};
-    }
+    },
+    notify: (state, action: PayloadAction<string | null>) => {
+      state.notification = action.payload;
+    },
   },
 })
 
-export const { changeStatus, setErrors, clearError, clearErrors, confirmTransaction, cancelTransaction, sendTransaction } = sendSlice.actions
+export const { changeStatus, setErrors, clearError, clearErrors, confirmTransaction, cancelTransaction, sendTransaction, transactionSent, notify } = sendSlice.actions
 export const sendReducer = sendSlice.reducer

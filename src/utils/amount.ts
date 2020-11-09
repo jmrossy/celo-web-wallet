@@ -69,3 +69,35 @@ export function useWeiTransaction(amount: number, fee: number) {
     }
   }
 }
+
+const exchangeWeiBasis = utils.parseEther('' + 1);
+
+export function useWeiExchange(fromAmount: number, fromCurrency: Currency, exchangeRate: number, feeInFromCurrency: number) {
+  const toCurrency = useMemo(() => { return fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO; }, [fromCurrency]);
+  const weiRate = useMemo(() => { return utils.parseEther('' + exchangeRate); }, [exchangeRate]);
+  const fromWeiAmount = useMemo(() => { return utils.parseEther('' + fromAmount); }, [fromAmount, fromCurrency]);
+  const toAmount = useMemo(() => { return ((fromAmount * exchangeRate) - feeInFromCurrency); }, [fromAmount, fromCurrency, exchangeRate, feeInFromCurrency]);
+  const toWeiAmount = useMemo(() => { return utils.parseEther('' + toAmount); }, [toAmount]);
+  // const exchangeLabel = useMemo(() => { return `1 ${fromCurrency} to ${exchangeRate} ${toCurrency}`; }, [fromCurrency, toCurrency, exchangeRate]);
+
+  return {
+    from: {
+      amount: fromAmount,
+      weiAmount: fromWeiAmount,
+      currency: fromCurrency,
+    },
+    to: {
+      amount: toAmount,
+      weiAmount: toWeiAmount,
+      currency: toCurrency,
+    },
+    props: {
+      rate: exchangeRate,
+      fee: feeInFromCurrency,
+      feeCurrency: fromCurrency,
+      weiBasis: exchangeWeiBasis,
+      weiRate: weiRate
+    }
+
+  }
+}

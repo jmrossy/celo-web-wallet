@@ -5,12 +5,5 @@ export interface SendTokenParams {
   amount: number
   currency: Currency
   comment?: string
-}
-
-export type FieldError = {
-  error: boolean;
-  helpText: string;
-}
-export type ErrorState = {
-  [field: string]: FieldError;
+  isRequest?: boolean
 }

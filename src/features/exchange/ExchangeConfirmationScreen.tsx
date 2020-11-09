@@ -1,5 +1,7 @@
-import { useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { RootState } from 'src/app/rootReducer';
 import { Button } from 'src/components/Button';
 import ArrowBackIcon from 'src/components/icons/arrow_back_white.svg';
 import ExchangeIcon from 'src/components/icons/exchange_white.svg';
@@ -7,37 +9,39 @@ import { Box } from 'src/components/layout/Box';
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed';
 import { MoneyValue } from 'src/components/MoneyValue';
 import { Currency } from 'src/consts';
-import { ExchangeTokenParams } from 'src/features/exchange/exchangeToken';
+import { sendExchange } from 'src/features/exchange/exchangeSlice';
+import { ExchangeTokenParams } from 'src/features/exchange/types';
 import { Color } from 'src/styles/Color';
 import { Stylesheet } from 'src/styles/types';
-import { formatAmount } from 'src/utils/amount';
+import { useWeiExchange } from 'src/utils/amount';
 
-// function currencyLabel(curr: Currency){
-//   return curr === Currency.CELO ? "CELO" : "cUSD";
-// }
-
-// function currencyColor(curr: Currency){
-//   return curr === Currency.CELO ? 
-// }
-
+const emptyTransaction: ExchangeTokenParams = {
+  amount: 0,
+  fromCurrency: Currency.cUSD,
+}
 
 export function ExchangeConfirmationScreen() {
-  const location = useLocation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const state = (location.state as ExchangeTokenParams);
+  const { transaction: txn, status, toCELORate, isExchanging } = useSelector((state: RootState) => state.exchange);
 
-  //TODO: get / calculate the exchange rate
-  const exchangeRate = useMemo(() => (1/10.24), []);
-  const exchangeLabel = useMemo(() => { return state.fromCurrency === Currency.cUSD ? `1 cUSD to ${exchangeRate.toFixed(3)} CELO` : `1 CELO to ${(1/exchangeRate).toFixed(2)} cUSD`}, [state.fromCurrency, exchangeRate]);
-  //TODO: why does the total need to be a full number for the MoneyValue to work?
-  const total = useMemo(() => { return parseInt(formatAmount(parseFloat(state.amount.toString()) * exchangeRate)); }, [exchangeRate, state.amount]);
-  const toCurrency = useMemo(() => { return state.fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO; }, [state.fromCurrency]);
+  const safeTxn = useMemo<ExchangeTokenParams>(() => { return txn ?? emptyTransaction }, [txn]);  //to avoid having to qualify every reference to txn
+  const rate = useMemo(() => { return safeTxn.fromCurrency === Currency.cUSD ? toCELORate : (1 / toCELORate); }, [safeTxn.fromCurrency]);
+  const exchange = useWeiExchange(safeTxn.amount, safeTxn.fromCurrency, rate, 0);
 
-  // const { symbol: fromSymbol, color: fromColor } = useMemo(() => { return getCurrencyProps(state.fromCurrency); }, [state.fromCurrency]);
-  // const { symbol: toSymbol, color: toColor } = useMemo(() => { return getCurrencyProps(toCurrency); }, [toCurrency]);
+  //-- need to make sure we belong on this screen
+  useEffect(() => {
+    if(status !== "confirming" && status !== "confirmed"){  //shouldn't be on the confirm screen
+      navigate("/exchange");
+    }
+  }, [status]);
 
   function onGoBack(){
     navigate(-1);
+  }
+
+  async function onExchange(){
+    await dispatch(sendExchange());
   }
 
   return (
@@ -47,44 +51,24 @@ export function ExchangeConfirmationScreen() {
 
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Amount</label>
-          <Box direction="row" align="end">
-            <MoneyValue amountInWei={state.amount} currency={state.fromCurrency} baseFontSize={1.2}/>
-          </Box>
+          <MoneyValue amountInWei={exchange.from.weiAmount} currency={exchange.from.currency} baseFontSize={1.2}/>
         </Box>
 
         <Box direction="row" align="center" styles={style.inputRow}>
-          <Box styles={style.labelCol}>
-            <label css={style.inputLabel}>Current Rate</label>
-          </Box>
-          <Box styles={style.valueCol}>
-            <span css={style.rateText}>{exchangeLabel}</span>
-          </Box>
+          <label css={style.inputLabel}>Current Rate</label>
+          <MoneyValue amountInWei={exchange.props.weiBasis} currency={exchange.from.currency} baseFontSize={1.2}/>
+            <span css={style.valueText}>to</span>
+            <MoneyValue amountInWei={exchange.props.weiRate} currency={exchange.to.currency} baseFontSize={1.2}/>
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
           <label css={{...style.inputLabel, fontWeight: "bolder"}}>Total</label>
-          <Box direction="row" align="end">
-            <MoneyValue amountInWei={total} currency={toCurrency} baseFontSize={1.2}/>
-          </Box>
+          <MoneyValue amountInWei={exchange.to.weiAmount} currency={exchange.to.currency} baseFontSize={1.2}/>
         </Box>
 
         <Box direction="row" justify="between">
-          <Box styles={{width: "48%"}}>
-            <Button type="button" size="m" color={Color.primaryGrey} onClick={onGoBack}>
-              <Box justify="center" align="center">
-                <img src={ArrowBackIcon} css={style.iconLeft}/>
-                Edit Exchange
-              </Box>
-            </Button>
-          </Box>
-          <Box styles={{width: "48%"}}>
-            <Button type="submit" size="m">
-              <Box align="center" justify="center">
-                <img src={ExchangeIcon} css={style.iconLeft}/>
-                Make Exchange
-              </Box>
-            </Button>
-          </Box>
+          <Button type="button" onClick={onGoBack} size="m" icon={ArrowBackIcon} color={Color.primaryGrey} css={{width: "48%"}} disabled={isExchanging}>Edit Exchange</Button>
+          <Button type="button" onClick={onExchange} size="m" css={{width: "48%"}} icon={ExchangeIcon} disabled={isExchanging}>Make Exchange</Button>          
         </Box>
 
       </Box>
@@ -123,38 +107,12 @@ const style: Stylesheet = {
     fontSize: 16,
     fontWeight: 400,
   },
-  valueLabel: {
-    color: Color.primaryBlack,
-    fontSize: 20,
-    fontWeight: 400,
-  },
-  rateText: {
+  valueText: {
     fontSize: 20,
     fontWeight: 400,
     color: Color.primaryGrey,
-  },
-  recipientLabel: {
-    color: Color.accentBlue,
-    marginLeft: -8,
-  },
-  button: {
-    marginLeft: 8,
-    marginRight: 8,
-    background: "transparent",
-    borderWidth: 0,
-    cursor: "pointer",
-    "&:focus": {
-      outline: "none",
-    }
-  },
-  copyIcon: {
-    height: 14,
-    width: 18,
-  },
-  radioBox: {
-    height: "100%", 
-    width: "100%",
-  },
+    margin: "0 8px",
+  },  
   iconLeft: {
     marginRight: 8,
   },
