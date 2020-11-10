@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { Color } from 'src/styles/Color';
+import { Color } from 'src/styles/Color'
 
 interface ButtonProps {
   size?: 's' | 'm' | 'l' | 'icon' // defaults to 'm'
@@ -8,15 +7,14 @@ interface ButtonProps {
   margin?: string | number
   onClick?: () => void
   icon?: string
-  iconPosition?: "start" | "end" //defualts to start //TODO: add top / bottom if necessary
+  iconPosition?: 'start' | 'end' //defaults to start //TODO: add top / bottom if necessary
   disabled?: boolean
 }
 
 export function Button(props: React.PropsWithChildren<ButtonProps>) {
   const { size, type, color, margin, onClick, icon, iconPosition, disabled } = props
   const { height, width } = getDimensions(size)
-  
-  const icoLayout = useMemo(() => { return size === 'icon' ? {display: 'flex', alignItems: 'center', justifyContent: 'center' } : null; }, [size]);
+  const icoLayout = getLayout(size)
 
   return (
     <button
@@ -40,19 +38,21 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
         ':disabled': {
           color: Color.primaryGrey,
           backgroundColor: Color.borderInactive,
-        }
+        },
       }}
       onClick={onClick}
       type={type}
       disabled={disabled ?? false}
     >
-      {icon && 
-        <div css={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-          {(!iconPosition || iconPosition === "start") && <img src={icon} css={{marginRight: 8}}/>}
+      {icon && (
+        <div css={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {(!iconPosition || iconPosition === 'start') && (
+            <img src={icon} css={{ marginRight: 8 }} />
+          )}
           {props.children}
-          {(iconPosition === "end") && <img src={icon} css={{marginLeft: 8}}/>}
+          {iconPosition === 'end' && <img src={icon} css={{ marginLeft: 8 }} />}
         </div>
-      }
+      )}
       {!icon && props.children}
     </button>
   )
@@ -67,8 +67,15 @@ function getDimensions(size?: string) {
       return { height: '3.25em', width: '12.5em' }
     case 'l':
       return { height: '4.25em', width: '16.5em' }
-    case 'icon': return { height: 24, width: 24 }
+    case 'icon':
+      return { height: 24, width: 24 }
     default:
       throw new Error(`Unsupported size: ${size}`)
   }
+}
+
+function getLayout(size?: string) {
+  return size === 'icon'
+    ? { display: 'flex', alignItems: 'center', justifyContent: 'center' }
+    : null
 }

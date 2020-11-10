@@ -26,12 +26,9 @@ export const sharedInputStylesWithError = (isError: boolean | undefined = undefi
 });
 
 export const InputStyleConstants = {
-
   defaultHeight: 40,
-
   border: `2px solid ${Color.borderInactive}`,
   borderRadius: '3px',
-
   padding: '2px 8px',
   paddingTextArea: '8px 8px',
 }

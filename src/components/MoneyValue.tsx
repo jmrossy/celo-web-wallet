@@ -10,11 +10,21 @@ interface MoneyValueProps {
   margin?: string | number
   hideSymbol?: boolean
   sign?: string // e.g. plus or minus symbol
-  classes?: {[key: string]: CSSObject}  //symbol | amount
+  symbolCss?: CSSObject
+  amountCss?: CSSObject
 }
 
 export function MoneyValue(props: MoneyValueProps) {
-  const { amountInWei, currency, baseFontSize, margin, hideSymbol, sign, classes } = props
+  const {
+    amountInWei,
+    currency,
+    baseFontSize,
+    margin,
+    hideSymbol,
+    sign,
+    symbolCss,
+    amountCss,
+  } = props
   const { symbol, decimals, color } = getCurrencyProps(currency)
   const formattedAmount = FixedNumber.from(utils.formatEther(amountInWei))
     .round(decimals)
@@ -22,9 +32,6 @@ export function MoneyValue(props: MoneyValueProps) {
 
   const symbolFontSize = baseFontSize ? `${baseFontSize * 0.8}em` : '0.8em'
   const amountFontSize = baseFontSize ? `${baseFontSize}em` : '1em'
-
-  const symbolCss = classes ? classes["symbol"] ?? {} : {};
-  const amountCss = classes ? classes["amount"] ?? {} : {};
 
   return (
     <span css={{ margin: margin }}>

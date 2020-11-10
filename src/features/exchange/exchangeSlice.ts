@@ -2,6 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ExchangeTokenParams } from 'src/features/exchange/exchangeToken';
 import { SagaError } from 'src/utils/saga';
 
+//TODO: Get the real exchange rate
+const TEMP_EXCHANGE_RATE = 10.24;
+
 export interface ExchangeState {
   transaction: ExchangeTokenParams | null
   toCELORate: number
@@ -10,7 +13,7 @@ export interface ExchangeState {
 
 export const exchangeInitialState: ExchangeState = {
   transaction: null,
-  toCELORate: (1 / 10.24),    //TODO: get a real exchange rate
+  toCELORate: (1 / TEMP_EXCHANGE_RATE),
   transactionError: null,
 }
 

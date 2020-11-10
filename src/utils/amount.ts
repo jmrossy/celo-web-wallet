@@ -1,5 +1,4 @@
 import { BigNumber, utils } from 'ethers'
-import { useMemo } from 'react'
 import { Currency } from 'src/consts'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
@@ -38,16 +37,10 @@ export function isAmountValid(
 }
 
 export function useWeiTransaction(amount: number, fee: number) {
-  const total = useMemo(() => { return amount + fee; }, [amount, fee]);
-
-  const weiFee = useMemo(() => { return utils.parseEther('' + 0.02); }, [fee]);
-  const weiAmount = useMemo(() => { return utils.parseEther('' + amount || "0"); }, [amount]);
-
-  const weiTotal = useMemo(() => {
-    const feeNum = parseFloat(utils.formatEther(weiFee));
-    const amountNum = parseFloat(utils.formatEther(weiAmount));
-    return utils.parseEther('' + (amountNum + feeNum));
-  }, [weiFee, weiAmount]);
+  const total = amount + fee;
+  const weiFee = utils.parseEther('' + fee);
+  const weiAmount = utils.parseEther('' + amount || "0");
+  const weiTotal = utils.parseEther('' + total);
 
   return {
     wei: {
@@ -66,30 +59,28 @@ export function useWeiTransaction(amount: number, fee: number) {
 const exchangeWeiBasis = utils.parseEther('' + 1);
 
 export function useWeiExchange(fromAmount: number, fromCurrency: Currency, exchangeRate: number, feeInFromCurrency: number) {
-  const toCurrency = useMemo(() => { return fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO; }, [fromCurrency]);
-  const weiRate = useMemo(() => { return utils.parseEther('' + exchangeRate); }, [exchangeRate]);
-  const fromWeiAmount = useMemo(() => { return utils.parseEther('' + fromAmount); }, [fromAmount, fromCurrency]);
-  const toAmount = useMemo(() => { return ((fromAmount * exchangeRate) - feeInFromCurrency); }, [fromAmount, fromCurrency, exchangeRate, feeInFromCurrency]);
-  const toWeiAmount = useMemo(() => { return utils.parseEther('' + toAmount); }, [toAmount]);
-  // const exchangeLabel = useMemo(() => { return `1 ${fromCurrency} to ${exchangeRate} ${toCurrency}`; }, [fromCurrency, toCurrency, exchangeRate]);
-
+  const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO;
+  const weiRate = utils.parseEther('' + exchangeRate);
+  const fromWeiAmount = utils.parseEther('' + fromAmount);
+  const weiFee = utils.parseEther('' + feeInFromCurrency);
+  const toAmount = (fromAmount * exchangeRate) - feeInFromCurrency;
+  // const toWeiAmount = fromWeiAmount.mul(exchangeRate).sub(weiFee);
+  const toWeiAmount = utils.parseEther('' +toAmount);
+  
   return {
     from: {
-      amount: fromAmount,
       weiAmount: fromWeiAmount,
       currency: fromCurrency,
     },
     to: {
-      amount: toAmount,
       weiAmount: toWeiAmount,
       currency: toCurrency,
     },
     props: {
-      rate: exchangeRate,
-      fee: feeInFromCurrency,
       feeCurrency: fromCurrency,
       weiBasis: exchangeWeiBasis,
-      weiRate: weiRate
+      weiRate: weiRate,
+      weiFee: weiFee
     }
 
   }

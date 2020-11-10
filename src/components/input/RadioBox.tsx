@@ -1,9 +1,9 @@
-import { CSSObject } from '@emotion/core';
-import { PropsWithChildren, useMemo } from 'react';
-import { InputStyleConstants } from 'src/components/input/styles';
-import { Color } from 'src/styles/Color';
+import { CSSObject } from '@emotion/core'
+import { PropsWithChildren } from 'react'
+import { InputStyleConstants } from 'src/components/input/styles'
+import { Color } from 'src/styles/Color'
 
-export interface RadioBoxInputClasses {
+export interface RadioBoxInputStyles {
   container?: CSSObject
   input?: CSSObject
   label?: CSSObject
@@ -14,7 +14,7 @@ export interface RadioBoxInputProps {
   label: string
   value: string
   checked?: boolean
-  classes?: RadioBoxInputClasses
+  classes?: RadioBoxInputStyles
   tabIndex?: number
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -22,58 +22,57 @@ export interface RadioBoxInputProps {
 }
 
 const containerStyle: CSSObject = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
   padding: InputStyleConstants.padding,
   border: InputStyleConstants.border,
   borderColor: Color.primaryGrey,
   borderRadius: InputStyleConstants.borderRadius,
-  cursor: "pointer",
-  userSelect: "none",
+  cursor: 'pointer',
+  userSelect: 'none',
   color: Color.primaryGrey,
   marginRight: 4,
-  height: InputStyleConstants.defaultHeight,   //default height (may be overridden by the classes)  
-};
+  height: InputStyleConstants.defaultHeight, //default height (may be overridden by the classes)
+}
 
 const containerStyleSelected: CSSObject = {
   ...containerStyle,
   borderColor: Color.primaryGreen,
   color: Color.primaryGreen, //Color.primaryWhite,
   // backgroundColor: Color.primaryGreen,
-};
+}
 
 const inputStyle: CSSObject = {
-  position: "absolute",
+  position: 'absolute',
   opacity: 0,
-  cursor: "pointer",
-};
+  cursor: 'pointer',
+}
 
 const labelStyle: CSSObject = {
-    color: "inherit",
-  }
+  color: 'inherit',
+}
 
 export function RadioBox(props: PropsWithChildren<RadioBoxInputProps>) {
   const { name, label, value, checked, classes, onChange, tabIndex } = props
-  
-  const containerCss = useMemo(() => { 
-    let css = checked ? containerStyleSelected : containerStyle;
-    if(classes?.container) css = {...css, ...classes.container};
-    return css;
-  }, [checked, classes?.container]);
 
-  const inputCss = useMemo(() => {
-    return {...inputStyle, ...classes?.input };
-  }, [classes?.input]);
-
-  const labelCss = useMemo(() => {
-    return {...labelStyle, ...classes?.label };
-  }, [classes?.label]);
+  const containerCss = checked
+    ? { ...containerStyleSelected, ...classes?.container }
+    : { ...containerStyle, ...classes?.container }
+  const inputCss = { ...inputStyle, ...classes?.input }
+  const labelCss = { ...labelStyle, ...classes?.label }
 
   return (
     <label css={containerCss} tabIndex={tabIndex}>
-      <input name={name} type="radio" value={value} css={inputCss} checked={checked} onChange={onChange}/>
+      <input
+        name={name}
+        type="radio"
+        value={value}
+        css={inputCss}
+        checked={checked}
+        onChange={onChange}
+      />
       <span css={labelCss}>{label}</span>
     </label>
   )
