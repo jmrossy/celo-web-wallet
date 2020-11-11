@@ -8,6 +8,7 @@ import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
+import { ErrorState } from 'src/utils/validation'
 import { call } from 'typed-redux-saga'
 
 export interface SendTokenParams {
@@ -18,41 +19,36 @@ export interface SendTokenParams {
   isRequest?: boolean
 }
 
-export function validate(params: SendTokenParams, balances: Balances) {
+export function validate(params: SendTokenParams, balances: Balances) : ErrorState {
   const { recipient, amount, currency, comment } = params
-  let hasErrors = false;
-  let errors = {};
+  let errors: ErrorState = { isValid: true };
 
   if (!amount) {
-    errors = { ...errors, amount: { error: true, helpText: "Invalid Amount" } };
-    hasErrors = true;
+    errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
   }
   else {
     const amountInWei = utils.parseEther('' + amount)
     if (!isAmountValid(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE)) {
-      errors = { ...errors, amount: { error: true, helpText: "Invalid Amount" } };
-      hasErrors = true;
+      errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
     }
   }
 
   if (!utils.isAddress(recipient)) {
     logger.error(`Invalid recipient: ${recipient}`)
-    errors = { ...errors, recipient: { error: true, helpText: "Invalid Recipient" } };
-    hasErrors = true;
+    errors = { ...errors, isValid: false, recipient: { error: true, helpText: "Invalid Recipient" } };
   }
   else if (!recipient) {
     logger.error(`Invalid recipient: ${recipient}`)
-    errors = { ...errors, recipient: { error: true, helpText: "Recipient is required" } };
-    hasErrors = true;
+    errors = { ...errors, isValid: false, recipient: { error: true, helpText: "Recipient is required" } };
   }
 
   if (comment && comment.length > MAX_COMMENT_CHAR_LENGTH) {
     logger.error(`Invalid comment: ${comment}`)
-    errors = { ...errors, comment: { error: true, helpText: "Comment is too long" } };
-    hasErrors = true;
+    errors = { ...errors, isValid: false, comment: { error: true, helpText: "Comment is too long" } };
   }
 
-  return hasErrors ? errors : null;
+  
+  return errors;
 }
 
 function* sendToken(params: SendTokenParams) {

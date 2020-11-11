@@ -7,6 +7,7 @@ import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
+import { ErrorState } from 'src/utils/validation'
 import { call } from 'typed-redux-saga'
 
 export interface ExchangeTokenParams {
@@ -14,25 +15,22 @@ export interface ExchangeTokenParams {
   fromCurrency: Currency
 }
 
-export function validate(params: ExchangeTokenParams, balances: Balances) {
+export function validate(params: ExchangeTokenParams, balances: Balances): ErrorState {
   const { amount, fromCurrency } = params
-  let hasErrors = false;
-  let errors = {};
+  let errors: ErrorState = { isValid: true};
 
   if (!amount || amount <= 0) {  //make sure there is an amount
-    errors = { ...errors, amount: { error: true, helpText: "Invalid Amount" } };
-    hasErrors = true;
+    errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
   }
   else {  //make sure they have enough...
     const amountInWei = utils.parseEther('' + amount);
 
     if (!isAmountValid(amountInWei, fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE)) {
-      errors = { ...errors, amount: { error: true, helpText: "Amount not available" } };
-      hasErrors = true;
+      errors = { ...errors, isValid: false, amount: { error: true, helpText: "Amount not available" } };
     }
   }
 
-  return hasErrors ? errors : null;
+  return errors;
 }
 
 function* exchangeToken(params: ExchangeTokenParams) {

@@ -1,5 +1,5 @@
-import { Color } from 'src/styles/Color';
-import { Stylesheet } from 'src/styles/types';
+import { Color } from 'src/styles/Color'
+import { Stylesheet } from 'src/styles/types'
 
 export const sharedInputStyles: Stylesheet = {
   input: {

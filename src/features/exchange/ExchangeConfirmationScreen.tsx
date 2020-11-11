@@ -113,15 +113,15 @@ export function ExchangeConfirmationScreen() {
           </Box>
         )}
 
-        <Box direction="row" justify="between">
+        <Box direction="row" justify="start">
           <Button
             type="button"
             onClick={onGoBack}
             size="m"
             icon={ArrowBackIcon}
             color={Color.primaryGrey}
-            css={{ width: '48%' }}
             disabled={isWorking}
+            margin="0 1em 0 0"
           >
             Edit Exchange
           </Button>
@@ -129,7 +129,6 @@ export function ExchangeConfirmationScreen() {
             type="button"
             onClick={onExchange}
             size="m"
-            css={{ width: '48%' }}
             icon={ExchangeIcon}
             disabled={isWorking}
           >
@@ -144,31 +143,30 @@ export function ExchangeConfirmationScreen() {
 const style: Stylesheet = {
   contentContainer: {
     height: '100%',
-    paddingLeft: 65,
-    paddingTop: 30,
-    maxWidth: 500,
+    paddingLeft: '4em',
+    paddingTop: '2em',
     width: '100%',
   },
   title: {
-    color: '#3488EC',
+    color: Color.accentBlue,
     fontWeight: 400,
-    fontSize: 30,
+    fontSize: '2em',
     marginTop: 0,
-    marginBottom: 20,
+    marginBottom: '1em',
   },
   inputRow: {
-    marginBottom: 30,
+    marginBottom: '2em',
   },
   inputLabel: {
     fontWeight: 300,
-    fontSize: 18,
-    width: 150,
-    minWidth: 150,
+    fontSize: '1.1em',
+    width: '6em',
+    marginRight: '1em',
   },
   valueText: {
-    fontSize: 20,
+    fontSize: '1.2em',
     fontWeight: 400,
     color: Color.primaryGrey,
-    margin: '0 8px',
+    margin: '0 0.5em',
   },
 }

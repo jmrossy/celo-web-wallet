@@ -36,7 +36,7 @@ export function SendFormScreen() {
   const { transaction: txn } = useSelector((state: RootState) => state.send)
 
   const onSubmit = async (values: SendTokenParams) => {
-    if (validateInputs() === null) {
+    if (areInputsValid()) {
       const safeValues = { ...values, amount: parseFloat(values.amount.toString()) }
       dispatch(sendStarted(safeValues))
       navigate('/send-review')
@@ -48,7 +48,7 @@ export function SendFormScreen() {
     any
   >(txn ?? initialValues, onSubmit)
 
-  const { inputErrors, validateInputs } = useInputValidation(touched, () =>
+  const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
     validate(values, staleBalances)
   )
 
@@ -89,7 +89,7 @@ export function SendFormScreen() {
                 size="icon"
                 type="button"
                 color={Color.fillLight}
-                margin="0 8px"
+                margin="0 0.5em"
                 onClick={onCopyAddress}
               >
                 <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon} />
@@ -148,17 +148,13 @@ export function SendFormScreen() {
             />
           </Box>
 
-          <Box direction="row" justify="between">
-            <Box styles={{ width: '48%' }}>
-              <Button type="submit" size="m" icon={SendPaymentIcon}>
-                Send Payment
-              </Button>
-            </Box>
-            <Box styles={{ width: '48%' }}>
-              <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
-                Request Payment
-              </Button>
-            </Box>
+          <Box direction="row" justify="start">
+            <Button type="submit" size="m" icon={SendPaymentIcon} margin="0 1em 0 0">
+              Send Payment
+            </Button>
+            <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
+              Request Payment
+            </Button>
           </Box>
         </form>
       </Box>
@@ -169,48 +165,32 @@ export function SendFormScreen() {
 const style: Stylesheet = {
   contentContainer: {
     height: '100%',
-    paddingLeft: 65,
-    paddingTop: 30,
-    maxWidth: 500,
+    paddingLeft: '4em',
+    paddingTop: '2em',
     width: '100%',
-  },
-  notificationContainer: {
-    width: '100%',
-    margin: '16px 0',
-  },
-  notification: {
-    backgroundColor: Color.accentBlue,
-    borderRadius: 5,
-    padding: '8px 16px',
-    width: '75%',
-  },
-  notificationText: {
-    fontSize: 20,
-    fontWeight: 400,
-    color: Color.primaryWhite,
   },
   title: {
-    color: '#3488EC',
+    color: Color.accentBlue,
     fontWeight: 400,
-    fontSize: 30,
+    fontSize: '2em',
     marginTop: 0,
-    marginBottom: 20,
+    marginBottom: '1em',
   },
   inputRow: {
-    marginBottom: 30,
+    marginBottom: '2em',
   },
   inputLabel: {
     fontWeight: 300,
-    fontSize: 18,
-    marginBottom: 8,
+    fontSize: '1.1em',
+    marginBottom: '0.5em',
   },
   copyIcon: {
-    height: 14,
-    width: 18,
+    height: '1em',
+    width: '1.25em',
   },
   radioBox: {
     height: '100%',
     width: '100%',
-    marginLeft: 8,
+    marginLeft: '0.5em',
   },
 }

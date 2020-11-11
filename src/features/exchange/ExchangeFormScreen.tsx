@@ -30,7 +30,7 @@ export function ExchangeFormScreen() {
   const { transaction: txn, toCELORate } = useSelector((state: RootState) => state.exchange)
 
   const onSubmit = async (values: ExchangeTokenParams) => {
-    if (validateInputs() === null) {
+    if (areInputsValid()) {
       const safeValues = { ...values, amount: parseFloat(values.amount.toString()) }
       dispatch(exchangeStarted(safeValues))
       navigate('/exchange-review')
@@ -42,7 +42,7 @@ export function ExchangeFormScreen() {
     any
   >(txn ?? initialValues, onSubmit)
 
-  const { inputErrors, validateInputs } = useInputValidation(touched, () =>
+  const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
     validate(values, staleBalances)
   )
 
@@ -136,38 +136,30 @@ export function ExchangeFormScreen() {
 const style: Stylesheet = {
   contentContainer: {
     height: '100%',
-    paddingLeft: 65,
-    paddingTop: 30,
-    maxWidth: 500,
+    paddingLeft: '4em',
+    paddingTop: '2em',
     width: '100%',
   },
   title: {
-    color: '#3488EC',
+    color: Color.accentBlue,
     fontWeight: 400,
-    fontSize: 30,
+    fontSize: '2em',
     marginTop: 0,
-    marginBottom: 20,
+    marginBottom: '1em',
   },
   inputRow: {
-    height: 48,
-    marginBottom: 30,
+    marginBottom: '2em',
   },
   inputLabel: {
     fontWeight: 300,
-    fontSize: 18,
-    marginBottom: 8,
-    width: 175,
-    marginRight: 8,
+    fontSize: '1.1em',
+    width: '9em',
+    marginRight: '1em',
   },
   valueText: {
-    fontSize: 20,
+    fontSize: '1.1em',
     fontWeight: 400,
     color: Color.primaryGrey,
-    margin: '0 8px',
-  },
-  outputText: {
-    fontSize: 20,
-    fontWeight: 400,
-    color: Color.primaryBlack,
+    margin: '0 0.5em',
   },
 }

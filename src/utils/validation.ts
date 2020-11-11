@@ -6,14 +6,15 @@ export type FieldError = {
   helpText: string;
 }
 export type ErrorState = {
-  [field: string]: FieldError;
+  [field: string]: FieldError | boolean;
+  isValid: boolean;
 }
 
 //--
 // Handles the validation of input components
-export function useInputValidation(touched: any, validateFn: () => ErrorState | null) {
-  const [inputErrors, setInputErrors] = useState<ErrorState>({});
-  const clearInputErrors = useCallback(() => setInputErrors({}), [setInputErrors]);
+export function useInputValidation(touched: any, validateFn: () => ErrorState) {
+  const [inputErrors, setInputErrors] = useState<ErrorState>({isValid: true});
+  const clearInputErrors = useCallback(() => setInputErrors({isValid: true}), [setInputErrors]);
 
   // Watch the touched fields, and clear any errors that need clearing
   useEffect(() => {
@@ -28,19 +29,20 @@ export function useInputValidation(touched: any, validateFn: () => ErrorState | 
     }, []);
 
     if (!shallowEqual(inputErrors, nextErrors)) {
-      setInputErrors(nextErrors);
+      const isValid = (Object.keys(nextErrors).length === 0);
+      setInputErrors({...nextErrors, isValid: isValid});
     }
   }, [touched]);
 
-  const validateInputs = (): ErrorState | null => {
-    const validationResult = validateFn();
-    setInputErrors(validationResult ?? {});
-    return validationResult;
+  const areInputsValid = (): boolean => {
+    const validationResult = validateFn();    
+    setInputErrors(validationResult);
+    return validationResult.isValid;
   };
 
   return {
     inputErrors,
-    validateInputs,
+    areInputsValid,
     clearInputErrors,
   }
 }

@@ -3,21 +3,17 @@ import { PropsWithChildren } from 'react'
 import { InputStyleConstants } from 'src/components/input/styles'
 import { Color } from 'src/styles/Color'
 
-export interface RadioBoxInputStyles {
-  container?: CSSObject
-  input?: CSSObject
-  label?: CSSObject
-}
-
 export interface RadioBoxInputProps {
   name: string
   label: string
   value: string
   checked?: boolean
-  classes?: RadioBoxInputStyles
   tabIndex?: number
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  containerCss?: CSSObject
+  inputCss?: CSSObject
+  labelCss?: CSSObject
   // TODO add validation hook
 }
 
@@ -55,13 +51,13 @@ const labelStyle: CSSObject = {
 }
 
 export function RadioBox(props: PropsWithChildren<RadioBoxInputProps>) {
-  const { name, label, value, checked, classes, onChange, tabIndex } = props
+  const { name, label, value, checked, onChange, tabIndex } = props
 
   const containerCss = checked
-    ? { ...containerStyleSelected, ...classes?.container }
-    : { ...containerStyle, ...classes?.container }
-  const inputCss = { ...inputStyle, ...classes?.input }
-  const labelCss = { ...labelStyle, ...classes?.label }
+    ? { ...containerStyleSelected, ...props.containerCss }
+    : { ...containerStyle, ...props.containerCss }
+  const inputCss = { ...inputStyle, ...props.inputCss }
+  const labelCss = { ...labelStyle, ...props.labelCss }
 
   return (
     <label css={containerCss} tabIndex={tabIndex}>
