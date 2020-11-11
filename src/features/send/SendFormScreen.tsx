@@ -1,11 +1,25 @@
-import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { RootState } from 'src/app/rootReducer'
+import { Button } from 'src/components/Button'
+import PasteIcon from 'src/components/icons/paste.svg'
+import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg'
+import SendPaymentIcon from 'src/components/icons/send_payment_white.svg'
+import { Identicon } from 'src/components/Identicon'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
-import { TextInput } from 'src/components/input/TextInput'
+import { RadioBox } from 'src/components/input/RadioBox'
+import { TextArea } from 'src/components/input/TextArea'
+import { Box } from 'src/components/layout/Box'
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
 import { Currency } from 'src/consts'
-import { sendTokenActions, SendTokenParams } from 'src/features/send/sendToken'
+import { sendStarted } from 'src/features/send/sendSlice'
+import { SendTokenParams, validate } from 'src/features/send/sendToken'
+import { Color } from 'src/styles/Color'
+import { Stylesheet } from 'src/styles/types'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useInputValidation } from 'src/utils/validation'
 
 const initialValues: SendTokenParams = {
   // TODO set to empty string
@@ -17,60 +31,166 @@ const initialValues: SendTokenParams = {
 
 export function SendFormScreen() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const staleBalances = useSelector((state: RootState) => state.wallet.balances)
+  const { transaction: txn } = useSelector((state: RootState) => state.send)
 
-  const onSubmit = (values: SendTokenParams) => {
-    dispatch(sendTokenActions.trigger(values))
+  const onSubmit = async (values: SendTokenParams) => {
+    if (areInputsValid()) {
+      const safeValues = { ...values, amount: parseFloat(values.amount.toString()) }
+      dispatch(sendStarted(safeValues))
+      navigate('/send-review')
+    }
   }
 
-  const { values, handleChange, handleSubmit } = useCustomForm<SendTokenParams, any>(
-    initialValues,
-    onSubmit
+  const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
+    SendTokenParams,
+    any
+  >(txn ?? initialValues, onSubmit)
+
+  const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
+    validate(values, staleBalances)
   )
+
+  //-- if the transaction gets reset, reset the screen as well
+  useEffect(() => {
+    if (txn === null) {
+      resetValues(initialValues)
+    }
+  }, [txn])
+
+  const onRequest = () => {
+    alert('Not Impelemented')
+  }
+
+  const onCopyAddress = async () => {
+    await navigator.clipboard.writeText(values.recipient)
+  }
 
   return (
     <ScreenFrameWithFeed>
-      <div>
+      <Box direction="column" styles={style.contentContainer}>
         <form onSubmit={handleSubmit}>
-          <h1>Send Payment</h1>
+          <h1 css={style.title}>Send or Request Payment</h1>
 
-          <div>
-            <label>Recipient Address</label>
-            <AddressInput
-              width={200}
-              name="recipient"
+          <Box direction="column" styles={style.inputRow}>
+            <label css={style.inputLabel}>Recipient Address or Phone Number</label>
+
+            <Box direction="row" justify="start" align="end">
+              <AddressInput
+                width={346}
+                name="recipient"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.recipient}
+                {...inputErrors['recipient']}
+              />
+              <Button
+                size="icon"
+                type="button"
+                color={Color.fillLight}
+                margin="0 0.5em"
+                onClick={onCopyAddress}
+              >
+                <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon} />
+              </Button>
+              <Identicon address={values.recipient} />
+            </Box>
+          </Box>
+
+          <Box direction="row" styles={style.inputRow}>
+            <Box direction="column" justify="end" align="start">
+              <label css={style.inputLabel}>Amount</label>
+              <MoneyValueInput
+                width={173}
+                name="amount"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.amount.toString()}
+                {...inputErrors['amount']}
+              />
+            </Box>
+            <Box direction="column" align="start" styles={{ width: '50%' }}>
+              <label css={style.inputLabel}>Currency</label>
+              <Box direction="row" justify="start" align="end" styles={style.radioBox}>
+                <RadioBox
+                  tabIndex={0}
+                  label="cUSD"
+                  value={Currency.cUSD}
+                  name="currency"
+                  checked={values.currency === Currency.cUSD}
+                  onChange={handleChange}
+                  classes={{ container: { minWidth: 52 } }}
+                />
+                <RadioBox
+                  tabIndex={1}
+                  label="CELO"
+                  value={Currency.CELO}
+                  name="currency"
+                  checked={values.currency === Currency.CELO}
+                  onChange={handleChange}
+                  classes={{ container: { minWidth: 52 } }}
+                />
+              </Box>
+            </Box>
+          </Box>
+
+          <Box direction="column" align="start" styles={style.inputRow}>
+            <label css={style.inputLabel}>Comment (optional)</label>
+            <TextArea
+              name="comment"
+              width={346}
+              rows={8}
+              height={80}
               onChange={handleChange}
-              value={values.recipient}
+              onBlur={handleBlur}
+              value={values.comment}
             />
-          </div>
+          </Box>
 
-          <div>
-            <label>Amount</label>
-            <MoneyValueInput
-              width={100}
-              name="amount"
-              onChange={handleChange}
-              value={values.amount.toString()}
-            />
-          </div>
-
-          <div>
-            <label>Currency</label>
-            <select name="currency" value={values.currency} onChange={handleChange}>
-              <option value={Currency.CELO}>CELO</option>
-              <option value={Currency.cUSD}>cUSD</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Comment</label>
-            <TextInput name="comment" width={200} onChange={handleChange} value={values.comment} />
-          </div>
-
-          <div>
-            <button type="submit">Submit</button>
-          </div>
+          <Box direction="row" justify="start">
+            <Button type="submit" size="m" icon={SendPaymentIcon} margin="0 1em 0 0">
+              Send Payment
+            </Button>
+            <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
+              Request Payment
+            </Button>
+          </Box>
         </form>
-      </div>
+      </Box>
     </ScreenFrameWithFeed>
   )
+}
+
+const style: Stylesheet = {
+  contentContainer: {
+    height: '100%',
+    paddingLeft: '4em',
+    paddingTop: '2em',
+    width: '100%',
+  },
+  title: {
+    color: Color.accentBlue,
+    fontWeight: 400,
+    fontSize: '2em',
+    marginTop: 0,
+    marginBottom: '1em',
+  },
+  inputRow: {
+    marginBottom: '2em',
+  },
+  inputLabel: {
+    fontWeight: 300,
+    fontSize: '1.1em',
+    marginBottom: '0.5em',
+  },
+  copyIcon: {
+    height: '1em',
+    width: '1.25em',
+  },
+  radioBox: {
+    height: '100%',
+    width: '100%',
+    marginLeft: '0.5em',
+  },
 }

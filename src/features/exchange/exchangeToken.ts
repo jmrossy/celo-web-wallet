@@ -7,6 +7,7 @@ import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
+import { ErrorState } from 'src/utils/validation'
 import { call } from 'typed-redux-saga'
 
 export interface ExchangeTokenParams {
@@ -14,20 +15,40 @@ export interface ExchangeTokenParams {
   fromCurrency: Currency
 }
 
-function* exchangeToken(params: ExchangeTokenParams) {
-  const balances = yield* call(fetchBalancesIfStale)
-  yield* call(_exchangeToken, params, balances)
+export function validate(params: ExchangeTokenParams, balances: Balances): ErrorState {
+  const { amount, fromCurrency } = params
+  let errors: ErrorState = { isValid: true};
+
+  if (!amount || amount <= 0) {  //make sure there is an amount
+    errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
+  }
+  else {  //make sure they have enough...
+    const amountInWei = utils.parseEther('' + amount);
+
+    if (!isAmountValid(amountInWei, fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE)) {
+      errors = { ...errors, isValid: false, amount: { error: true, helpText: "Amount not available" } };
+    }
+  }
+
+  return errors;
 }
 
-async function _exchangeToken(params: ExchangeTokenParams, balances: Balances) {
+function* exchangeToken(params: ExchangeTokenParams) {
+  const balances = yield* call(fetchBalancesIfStale)
+
+  const validateResult = yield call(validate, params, balances);
+  if (validateResult !== null) {
+    throw new Error("Invalid transaction"); //TODO: provide details of the error
+  }
+
+  yield* call(_exchangeToken, params)
+}
+
+async function _exchangeToken(params: ExchangeTokenParams) {
   const { amount, fromCurrency } = params
   logger.info(`Exchanging ${amount} ${fromCurrency}`)
 
   const amountInWei = utils.parseEther('' + amount)
-  if (!isAmountValid(amountInWei, params.fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE)) {
-    // TODO show error
-    return
-  }
 
   await approveExchange(amountInWei, fromCurrency)
   await executeExchange(amountInWei, fromCurrency)

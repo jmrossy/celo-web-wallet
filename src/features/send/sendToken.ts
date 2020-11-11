@@ -8,6 +8,7 @@ import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
+import { ErrorState } from 'src/utils/validation'
 import { call } from 'typed-redux-saga'
 
 export interface SendTokenParams {
@@ -15,32 +16,55 @@ export interface SendTokenParams {
   amount: number
   currency: Currency
   comment?: string
+  isRequest?: boolean
 }
 
-function* sendToken(params: SendTokenParams) {
-  const balances = yield* call(fetchBalancesIfStale)
-  yield* call(_sendToken, params, balances)
-}
-
-async function _sendToken(params: SendTokenParams, balances: Balances) {
+export function validate(params: SendTokenParams, balances: Balances) : ErrorState {
   const { recipient, amount, currency, comment } = params
-  const amountInWei = utils.parseEther('' + amount)
-  if (!isAmountValid(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE)) {
-    // TODO show error
-    return
+  let errors: ErrorState = { isValid: true };
+
+  if (!amount) {
+    errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
+  }
+  else {
+    const amountInWei = utils.parseEther('' + amount)
+    if (!isAmountValid(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE)) {
+      errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
+    }
   }
 
   if (!utils.isAddress(recipient)) {
     logger.error(`Invalid recipient: ${recipient}`)
-    // TODO show error
-    return
+    errors = { ...errors, isValid: false, recipient: { error: true, helpText: "Invalid Recipient" } };
+  }
+  else if (!recipient) {
+    logger.error(`Invalid recipient: ${recipient}`)
+    errors = { ...errors, isValid: false, recipient: { error: true, helpText: "Recipient is required" } };
   }
 
   if (comment && comment.length > MAX_COMMENT_CHAR_LENGTH) {
     logger.error(`Invalid comment: ${comment}`)
-    // TODO show error
-    return
+    errors = { ...errors, isValid: false, comment: { error: true, helpText: "Comment is too long" } };
   }
+
+  
+  return errors;
+}
+
+function* sendToken(params: SendTokenParams) {
+  const balances = yield* call(fetchBalancesIfStale)
+
+  const validateResult = yield call(validate, params, balances);
+  if (validateResult !== null) {
+    throw new Error("Invalid Transaction"); //TODO: provide the details of the invalid transaction
+  }
+
+  yield* call(_sendToken, params)
+}
+
+async function _sendToken(params: SendTokenParams) {
+  const { recipient, amount, currency, comment } = params
+  const amountInWei = utils.parseEther('' + amount)
 
   // TODO consider balance and gas
 

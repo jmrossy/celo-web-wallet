@@ -11,7 +11,7 @@ import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fet
 import {
   importWallet,
   importWalletReducer,
-  importWalletSaga,
+  importWalletSaga
 } from 'src/features/wallet/importWallet'
 import { loadWalletSaga } from 'src/features/wallet/storage'
 import { SagaState } from 'src/utils/saga'

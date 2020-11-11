@@ -1,3 +1,4 @@
+import { CSSObject } from '@emotion/core'
 import { BigNumberish, FixedNumber, utils } from 'ethers'
 import { Currency } from 'src/consts'
 import { Color } from 'src/styles/Color'
@@ -9,10 +10,21 @@ interface MoneyValueProps {
   margin?: string | number
   hideSymbol?: boolean
   sign?: string // e.g. plus or minus symbol
+  symbolCss?: CSSObject
+  amountCss?: CSSObject
 }
 
 export function MoneyValue(props: MoneyValueProps) {
-  const { amountInWei, currency, baseFontSize, margin, hideSymbol, sign } = props
+  const {
+    amountInWei,
+    currency,
+    baseFontSize,
+    margin,
+    hideSymbol,
+    sign,
+    symbolCss,
+    amountCss,
+  } = props
   const { symbol, decimals, color } = getCurrencyProps(currency)
   const formattedAmount = FixedNumber.from(utils.formatEther(amountInWei))
     .round(decimals)
@@ -24,8 +36,8 @@ export function MoneyValue(props: MoneyValueProps) {
   return (
     <span css={{ margin: margin }}>
       {!!sign && <span css={{ fontSize: amountFontSize }}>{sign}</span>}
-      {!hideSymbol && <span css={{ fontSize: symbolFontSize, color }}>{symbol}</span>}
-      <span css={{ fontSize: amountFontSize }}>{' ' + formattedAmount}</span>
+      {!hideSymbol && <span css={{ fontSize: symbolFontSize, color, ...symbolCss }}>{symbol}</span>}
+      <span css={{ fontSize: amountFontSize, ...amountCss }}>{' ' + formattedAmount}</span>
     </span>
   )
 }
