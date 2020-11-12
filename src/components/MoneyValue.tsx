@@ -1,7 +1,7 @@
-import { CSSObject } from '@emotion/core'
 import { BigNumberish, FixedNumber, utils } from 'ethers'
 import { Currency } from 'src/consts'
 import { Color } from 'src/styles/Color'
+import { Styles } from 'src/styles/types'
 
 interface MoneyValueProps {
   amountInWei: BigNumberish
@@ -10,8 +10,8 @@ interface MoneyValueProps {
   margin?: string | number
   hideSymbol?: boolean
   sign?: string // e.g. plus or minus symbol
-  symbolCss?: CSSObject
-  amountCss?: CSSObject
+  symbolCss?: Styles
+  amountCss?: Styles
 }
 
 export function MoneyValue(props: MoneyValueProps) {

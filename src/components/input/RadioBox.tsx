@@ -1,7 +1,7 @@
-import { CSSObject } from '@emotion/core'
 import { PropsWithChildren } from 'react'
 import { InputStyleConstants } from 'src/components/input/styles'
 import { Color } from 'src/styles/Color'
+import { Styles } from 'src/styles/types'
 
 export interface RadioBoxInputProps {
   name: string
@@ -11,43 +11,10 @@ export interface RadioBoxInputProps {
   tabIndex?: number
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  containerCss?: CSSObject
-  inputCss?: CSSObject
-  labelCss?: CSSObject
+  containerCss?: Styles
+  inputCss?: Styles
+  labelCss?: Styles
   // TODO add validation hook
-}
-
-const containerStyle: CSSObject = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: InputStyleConstants.padding,
-  border: InputStyleConstants.border,
-  borderColor: Color.primaryGrey,
-  borderRadius: InputStyleConstants.borderRadius,
-  cursor: 'pointer',
-  userSelect: 'none',
-  color: Color.primaryGrey,
-  marginRight: 4,
-  height: InputStyleConstants.defaultHeight, //default height (may be overridden by the classes)
-}
-
-const containerStyleSelected: CSSObject = {
-  ...containerStyle,
-  borderColor: Color.primaryGreen,
-  color: Color.primaryGreen, //Color.primaryWhite,
-  // backgroundColor: Color.primaryGreen,
-}
-
-const inputStyle: CSSObject = {
-  position: 'absolute',
-  opacity: 0,
-  cursor: 'pointer',
-}
-
-const labelStyle: CSSObject = {
-  color: 'inherit',
 }
 
 export function RadioBox(props: PropsWithChildren<RadioBoxInputProps>) {
@@ -72,4 +39,37 @@ export function RadioBox(props: PropsWithChildren<RadioBoxInputProps>) {
       <span css={labelCss}>{label}</span>
     </label>
   )
+}
+
+const containerStyle: Styles = {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: InputStyleConstants.padding,
+  border: InputStyleConstants.border,
+  borderColor: Color.primaryGrey,
+  borderRadius: InputStyleConstants.borderRadius,
+  cursor: 'pointer',
+  userSelect: 'none',
+  color: Color.primaryGrey,
+  marginRight: 4,
+  height: InputStyleConstants.defaultHeight, //default height (may be overridden by the classes)
+}
+
+const containerStyleSelected: Styles = {
+  ...containerStyle,
+  borderColor: Color.primaryGreen,
+  color: Color.primaryGreen, //Color.primaryWhite,
+  // backgroundColor: Color.primaryGreen,
+}
+
+const inputStyle: Styles = {
+  position: 'absolute',
+  opacity: 0,
+  cursor: 'pointer',
+}
+
+const labelStyle: Styles = {
+  color: 'inherit',
 }

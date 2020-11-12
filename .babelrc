@@ -11,10 +11,10 @@
       {
         "useBuiltIns": true,
         "useSpread": true,
-        "runtime": "automatic"
+        "runtime": "automatic",
+        "importSource": "@emotion/react"
       }
-    ],
-    "@emotion/babel-preset-css-prop"
+    ]
   ],
   // Override preset-env for test because tests run on Node 
   // and Node needs commonJS imports
@@ -33,16 +33,18 @@
           "@babel/preset-react",
           {
             "useBuiltIns": true,
-            "useSpread": true
+            "useSpread": true,
+            "runtime": "automatic",
+            "importSource": "@emotion/react"
           }
         ],
-        "@emotion/babel-preset-css-prop",
         // For testing, we use babel's TS compiler instead of tsc
         // The alternative would be hacking ts-node into the flow which 
         // hasn't worked so far.
         "@babel/preset-typescript"
       ],
       "plugins": [
+        "@emotion",
         [
           "module-name-mapper",
           {
@@ -54,5 +56,5 @@
       ]
     }
   },
-  "plugins": ["@babel/plugin-transform-runtime"]
+  "plugins": ["@emotion", "@babel/plugin-transform-runtime"]
 }

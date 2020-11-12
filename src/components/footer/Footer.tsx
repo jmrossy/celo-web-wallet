@@ -1,8 +1,7 @@
-import { CSSObject } from '@emotion/core'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import { Styles, Stylesheet } from 'src/styles/types'
 
 interface FooterProps {
   isOnboarding?: boolean // Use onboarding screen style
@@ -40,7 +39,7 @@ export function Footer(props: FooterProps) {
   )
 }
 
-const textStyle: CSSObject = {
+const textStyle: Styles = {
   padding: '0 0.8em',
   fontSize: '0.8em',
   fontWeight: 300,

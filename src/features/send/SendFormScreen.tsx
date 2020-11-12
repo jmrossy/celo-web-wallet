@@ -74,7 +74,7 @@ export function SendFormScreen() {
           <h1 css={style.title}>Send or Request Payment</h1>
 
           <Box direction="column" styles={style.inputRow}>
-            <label css={style.inputLabel}>Recipient Address or Phone Number</label>
+            <label css={style.inputLabel}>Recipient Address</label>
 
             <Box direction="row" justify="start" align="end">
               <AddressInput
