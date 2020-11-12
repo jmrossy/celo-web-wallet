@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react'
+import { PropsWithChildren } from 'react'
 import { sharedInputStylesWithError } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
