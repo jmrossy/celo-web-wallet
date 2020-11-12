@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
@@ -16,20 +18,29 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { chunk } from 'src/utils/string'
 
-interface Props {
-  txHash: string
-}
+export function TransactionReview() {
+  const navigate = useNavigate()
+  const { transactions, openTransaction: openTx } = useSelector((s: RootState) => s.feed)
 
-export function TransactionReview(props: Props) {
-  const { txHash } = props
+  // Make sure this is the correct screen
+  useEffect(() => {
+    if (!openTx) {
+      navigate('/')
+    }
+  }, [openTx])
 
   const dispatch = useDispatch()
+
   const onCloseClick = () => {
     dispatch(openTransaction(null))
+    navigate('/')
   }
 
-  const transactions = useSelector((s: RootState) => s.feed.transactions)
-  const tx = transactions[txHash]
+  if (!openTx) {
+    return <TransactionNotFound />
+  }
+
+  const tx = transactions[openTx]
   if (!tx) {
     return <TransactionNotFound />
   }

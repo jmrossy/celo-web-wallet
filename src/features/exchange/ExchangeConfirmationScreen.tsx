@@ -6,7 +6,6 @@ import { Button } from 'src/components/Button'
 import ArrowBackIcon from 'src/components/icons/arrow_back_white.svg'
 import ExchangeIcon from 'src/components/icons/exchange_white.svg'
 import { Box } from 'src/components/layout/Box'
-import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
 import { Currency } from 'src/consts'
@@ -68,75 +67,73 @@ export function ExchangeConfirmationScreen() {
   }, [sagaStatus])
 
   return (
-    <ScreenFrameWithFeed>
-      <Box direction="column" styles={style.contentContainer}>
-        {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
+    <Box direction="column" styles={style.contentContainer}>
+      {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
 
-        <h1 css={style.title}>Review Exchange</h1>
+      <h1 css={style.title}>Review Exchange</h1>
 
-        <Box direction="row" styles={style.inputRow}>
-          <label css={style.inputLabel}>Amount</label>
-          <MoneyValue
-            amountInWei={exchange.from.weiAmount}
-            currency={exchange.from.currency}
-            baseFontSize={1.2}
-          />
-        </Box>
-
-        <Box direction="row" align="center" styles={style.inputRow}>
-          <label css={style.inputLabel}>Current Rate</label>
-          <MoneyValue
-            amountInWei={exchange.props.weiBasis}
-            currency={exchange.from.currency}
-            baseFontSize={1.2}
-          />
-          <span css={style.valueText}>to</span>
-          <MoneyValue
-            amountInWei={exchange.props.weiRate}
-            currency={exchange.to.currency}
-            baseFontSize={1.2}
-          />
-        </Box>
-
-        <Box direction="row" styles={style.inputRow}>
-          <label css={{ ...style.inputLabel, fontWeight: 'bolder' }}>Total</label>
-          <MoneyValue
-            amountInWei={exchange.to.weiAmount}
-            currency={exchange.to.currency}
-            baseFontSize={1.2}
-          />
-        </Box>
-
-        {isWorking && (
-          <Box direction="row" styles={style.inputRow}>
-            <label css={style.valueText}>Working...</label>
-          </Box>
-        )}
-
-        <Box direction="row" justify="start">
-          <Button
-            type="button"
-            onClick={onGoBack}
-            size="m"
-            icon={ArrowBackIcon}
-            color={Color.primaryGrey}
-            disabled={isWorking}
-            margin="0 1em 0 0"
-          >
-            Edit Exchange
-          </Button>
-          <Button
-            type="button"
-            onClick={onExchange}
-            size="m"
-            icon={ExchangeIcon}
-            disabled={isWorking}
-          >
-            Make Exchange
-          </Button>
-        </Box>
+      <Box direction="row" styles={style.inputRow}>
+        <label css={style.inputLabel}>Amount</label>
+        <MoneyValue
+          amountInWei={exchange.from.weiAmount}
+          currency={exchange.from.currency}
+          baseFontSize={1.2}
+        />
       </Box>
-    </ScreenFrameWithFeed>
+
+      <Box direction="row" align="center" styles={style.inputRow}>
+        <label css={style.inputLabel}>Current Rate</label>
+        <MoneyValue
+          amountInWei={exchange.props.weiBasis}
+          currency={exchange.from.currency}
+          baseFontSize={1.2}
+        />
+        <span css={style.valueText}>to</span>
+        <MoneyValue
+          amountInWei={exchange.props.weiRate}
+          currency={exchange.to.currency}
+          baseFontSize={1.2}
+        />
+      </Box>
+
+      <Box direction="row" styles={style.inputRow}>
+        <label css={{ ...style.inputLabel, fontWeight: 'bolder' }}>Total</label>
+        <MoneyValue
+          amountInWei={exchange.to.weiAmount}
+          currency={exchange.to.currency}
+          baseFontSize={1.2}
+        />
+      </Box>
+
+      {isWorking && (
+        <Box direction="row" styles={style.inputRow}>
+          <label css={style.valueText}>Working...</label>
+        </Box>
+      )}
+
+      <Box direction="row" justify="start">
+        <Button
+          type="button"
+          onClick={onGoBack}
+          size="m"
+          icon={ArrowBackIcon}
+          color={Color.primaryGrey}
+          disabled={isWorking}
+          margin="0 1em 0 0"
+        >
+          Edit Exchange
+        </Button>
+        <Button
+          type="button"
+          onClick={onExchange}
+          size="m"
+          icon={ExchangeIcon}
+          disabled={isWorking}
+        >
+          Make Exchange
+        </Button>
+      </Box>
+    </Box>
   )
 }
 
