@@ -23,16 +23,6 @@ export async function sendTransaction(tx: CeloTransactionRequest, feeEstimate?: 
   const feeCurrencyAddress =
     currency === Currency.cUSD ? config.contractAddresses[CeloContract.StableToken] : undefined
 
-  // if (!feeCurrency || feeCurrency === Currency.CELO) {
-  //   const txResponse = await signer.sendTransaction(tx)
-  //   return txResponse.wait()
-  // } else {
-  //   const stableTokenAddress = config.contractAddresses[CeloContract.StableToken]
-  //   const gasPrice = await signer.getGasPrice(stableTokenAddress)
-  //   const gasLimit = await signer.estimateGas(tx)
-
-  //   const adjustedGasLimit = gasLimit.mul(STABLE_TOKEN_GAS_MULTIPLIER)
-
   const txResponse = await signer.sendTransaction({
     ...tx,
     gasPrice: BigNumber.from(gasPrice),
