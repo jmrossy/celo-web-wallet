@@ -26,6 +26,7 @@ export function MoneyValue(props: MoneyValueProps) {
     amountCss,
   } = props
   const { symbol, decimals, color } = getCurrencyProps(currency)
+  // TODO fix decimals for 0 values and have min amount of 1 penny show
   const formattedAmount = FixedNumber.from(utils.formatEther(amountInWei))
     .round(decimals)
     .toString()

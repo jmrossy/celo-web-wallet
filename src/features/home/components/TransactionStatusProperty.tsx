@@ -1,5 +1,5 @@
-import { CeloTransaction } from 'src/features/feed/types'
 import { TransactionProperty } from 'src/features/home/components/TransactionPropertyGroup'
+import { CeloTransaction } from 'src/features/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 

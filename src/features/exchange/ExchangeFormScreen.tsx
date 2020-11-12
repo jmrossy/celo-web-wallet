@@ -88,7 +88,7 @@ export function ExchangeFormScreen() {
               name="fromCurrency"
               checked={values.fromCurrency === Currency.cUSD}
               onChange={handleChange}
-              classes={{ container: { minWidth: 52 } }}
+              containerCss={{ minWidth: 52 }}
             />
             <RadioBox
               tabIndex={1}
@@ -97,7 +97,7 @@ export function ExchangeFormScreen() {
               name="fromCurrency"
               checked={values.fromCurrency === Currency.CELO}
               onChange={handleChange}
-              classes={{ container: { minWidth: 52 } }}
+              containerCss={{ minWidth: 52 }}
             />
           </Box>
           <Box direction="row" align="center" styles={style.inputRow}>

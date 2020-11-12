@@ -18,10 +18,22 @@ interface Transaction {
 
 export enum TransactionType {
   StableTokenTransfer,
+  StableTokenTransferWithComment,
+  StableTokenApprove,
   CeloTokenTransfer,
+  CeloTokenTransferWithComment,
+  CeloTokenApprove,
   CeloNativeTransfer,
   TokenExchange,
   Other,
+}
+
+export function isCeloTransfer(type: TransactionType) {
+  return (
+    type === TransactionType.CeloTokenTransfer ||
+    type === TransactionType.CeloTokenTransferWithComment ||
+    type === TransactionType.CeloNativeTransfer
+  )
 }
 
 export interface StableTokenTransferTx extends Transaction {

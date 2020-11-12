@@ -17,28 +17,33 @@ export interface ExchangeTokenParams {
 
 export function validate(params: ExchangeTokenParams, balances: Balances): ErrorState {
   const { amount, fromCurrency } = params
-  let errors: ErrorState = { isValid: true};
+  let errors: ErrorState = { isValid: true }
 
-  if (!amount || amount <= 0) {  //make sure there is an amount
-    errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
-  }
-  else {  //make sure they have enough...
-    const amountInWei = utils.parseEther('' + amount);
+  if (!amount || amount <= 0) {
+    //make sure there is an amount
+    errors = { ...errors, isValid: false, amount: { error: true, helpText: 'Invalid Amount' } }
+  } else {
+    //make sure they have enough...
+    const amountInWei = utils.parseEther('' + amount)
 
     if (!isAmountValid(amountInWei, fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE)) {
-      errors = { ...errors, isValid: false, amount: { error: true, helpText: "Amount not available" } };
+      errors = {
+        ...errors,
+        isValid: false,
+        amount: { error: true, helpText: 'Amount not available' },
+      }
     }
   }
 
-  return errors;
+  return errors
 }
 
 function* exchangeToken(params: ExchangeTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
 
-  const validateResult = yield call(validate, params, balances);
-  if (validateResult !== null) {
-    throw new Error("Invalid transaction"); //TODO: provide details of the error
+  const validateResult = yield* call(validate, params, balances)
+  if (!validateResult.isValid) {
+    throw new Error('Invalid transaction') //TODO: provide details of the error
   }
 
   yield* call(_exchangeToken, params)
