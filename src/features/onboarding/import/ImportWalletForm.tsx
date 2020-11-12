@@ -3,10 +3,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
+import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { importWalletActions, isValidMnemonic } from 'src/features/wallet/importWallet'
-import { Color } from 'src/styles/Color'
-import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 
 export function ImportWalletForm() {
@@ -40,33 +39,20 @@ export function ImportWalletForm() {
   }, [sagaStatus])
 
   return (
-    <Box direction="column" styles={style.container} align="center">
-      <textarea
+    <Box direction="column" margin="2em 0 0 0" align="center">
+      <TextArea
+        name="mnemonic"
         value={mnemonic}
-        onChange={onInputChange}
         placeholder="fish boot jump hand..."
-        css={style.input}
+        onChange={onInputChange}
+        minWidth="20em"
+        maxWidth="25em"
+        minHeight="5em"
+        maxHeight="7em"
       />
       <Button onClick={onClickImport} margin="2em 0 0 0">
         Import Account
       </Button>
     </Box>
   )
-}
-
-const style: Stylesheet = {
-  container: { marginTop: '2em' },
-  input: {
-    padding: '0.5em',
-    borderRadius: 3,
-    outline: 'none',
-    border: `2px solid ${Color.borderInactive}`,
-    ':focus': {
-      borderColor: Color.borderActive,
-    },
-    minWidth: '20em',
-    maxWidth: '30em',
-    minHeight: '5em',
-    maxHeight: '8em',
-  },
 }

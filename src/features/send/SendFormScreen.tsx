@@ -139,12 +139,14 @@ export function SendFormScreen() {
             <label css={style.inputLabel}>Comment (optional)</label>
             <TextArea
               name="comment"
-              width={346}
-              rows={8}
-              height={80}
+              value={values.comment}
+              placeholder={'Thanks for lunch!'}
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values.comment}
+              minWidth="22em"
+              maxWidth="26em"
+              minHeight="5em"
+              maxHeight="7em"
             />
           </Box>
 

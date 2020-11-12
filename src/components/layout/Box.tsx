@@ -4,6 +4,7 @@ interface BoxProps {
   direction?: 'column' | 'row'
   align?: 'start' | 'end' | 'center' | 'stretch'
   justify?: 'start' | 'end' | 'center' | 'around' | 'between' | 'evenly'
+  margin?: string | number
   // Other css styles to be applied
   // Can't call it 'css' or Emotion will pre-parse it out
   styles?: CSSObject
@@ -17,6 +18,7 @@ export function Box(props: React.PropsWithChildren<BoxProps>) {
       css={{
         display: 'flex',
         boxSizing: 'border-box',
+        margin: props.margin,
         ...styles,
       }}
     >
