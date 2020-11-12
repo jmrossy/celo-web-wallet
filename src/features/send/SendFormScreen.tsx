@@ -33,7 +33,7 @@ export function SendFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const staleBalances = useSelector((state: RootState) => state.wallet.balances)
-  const { transaction: txn } = useSelector((state: RootState) => state.send)
+  const tx = useSelector((state: RootState) => state.send.transaction)
 
   const onSubmit = async (values: SendTokenParams) => {
     if (areInputsValid()) {
@@ -46,7 +46,7 @@ export function SendFormScreen() {
   const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
     SendTokenParams,
     any
-  >(txn ?? initialValues, onSubmit)
+  >(tx ?? initialValues, onSubmit)
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
     validate(values, staleBalances)
@@ -54,13 +54,13 @@ export function SendFormScreen() {
 
   //-- if the transaction gets reset, reset the screen as well
   useEffect(() => {
-    if (txn === null) {
+    if (tx === null) {
       resetValues(initialValues)
     }
-  }, [txn])
+  }, [tx])
 
   const onRequest = () => {
-    alert('Not Impelemented')
+    alert('Not Implemented')
   }
 
   const onCopyAddress = async () => {
@@ -120,7 +120,7 @@ export function SendFormScreen() {
                   name="currency"
                   checked={values.currency === Currency.cUSD}
                   onChange={handleChange}
-                  classes={{ container: { minWidth: 52 } }}
+                  containerCss={{ minWidth: 52 }}
                 />
                 <RadioBox
                   tabIndex={1}
@@ -129,7 +129,7 @@ export function SendFormScreen() {
                   name="currency"
                   checked={values.currency === Currency.CELO}
                   onChange={handleChange}
-                  classes={{ container: { minWidth: 52 } }}
+                  containerCss={{ minWidth: 52 }}
                 />
               </Box>
             </Box>

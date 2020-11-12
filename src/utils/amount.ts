@@ -36,11 +36,11 @@ export function isAmountValid(
   return true
 }
 
-export function useWeiTransaction(amount: number, fee: number) {
-  const total = amount + fee;
-  const weiFee = utils.parseEther('' + fee);
-  const weiAmount = utils.parseEther('' + amount || "0");
-  const weiTotal = utils.parseEther('' + total);
+export function useWeiAmounts(amount: number, fee: number) {
+  const total = amount + fee
+  const weiFee = utils.parseEther('' + fee)
+  const weiAmount = utils.parseEther('' + amount || '0')
+  const weiTotal = utils.parseEther('' + total)
 
   return {
     wei: {
@@ -52,21 +52,26 @@ export function useWeiTransaction(amount: number, fee: number) {
       amount: amount,
       fee: fee,
       total: total,
-    }
+    },
   }
 }
 
-const exchangeWeiBasis = utils.parseEther('' + 1);
+const exchangeWeiBasis = utils.parseEther('' + 1)
 
-export function useWeiExchange(fromAmount: number, fromCurrency: Currency, exchangeRate: number, feeInFromCurrency: number) {
-  const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO;
-  const weiRate = utils.parseEther('' + exchangeRate);
-  const fromWeiAmount = utils.parseEther('' + fromAmount);
-  const weiFee = utils.parseEther('' + feeInFromCurrency);
-  const toAmount = (fromAmount * exchangeRate) - feeInFromCurrency;
+export function useWeiExchange(
+  fromAmount: number,
+  fromCurrency: Currency,
+  exchangeRate: number,
+  feeInFromCurrency: number
+) {
+  const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
+  const weiRate = utils.parseEther('' + exchangeRate)
+  const fromWeiAmount = utils.parseEther('' + fromAmount)
+  const weiFee = utils.parseEther('' + feeInFromCurrency)
+  const toAmount = fromAmount * exchangeRate - feeInFromCurrency
   // const toWeiAmount = fromWeiAmount.mul(exchangeRate).sub(weiFee);
-  const toWeiAmount = utils.parseEther('' +toAmount);
-  
+  const toWeiAmount = utils.parseEther('' + toAmount)
+
   return {
     from: {
       weiAmount: fromWeiAmount,
@@ -80,8 +85,7 @@ export function useWeiExchange(fromAmount: number, fromCurrency: Currency, excha
       feeCurrency: fromCurrency,
       weiBasis: exchangeWeiBasis,
       weiRate: weiRate,
-      weiFee: weiFee
-    }
-
+      weiFee: weiFee,
+    },
   }
 }

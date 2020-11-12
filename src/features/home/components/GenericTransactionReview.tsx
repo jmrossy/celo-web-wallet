@@ -1,13 +1,13 @@
-import { getTransactionFee } from 'src/blockchain/gas'
 import { Address } from 'src/components/Address'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/consts'
-import { CeloTransaction } from 'src/features/feed/types'
+import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/home/components/TransactionPropertyGroup'
 import { TransactionStatusProperty } from 'src/features/home/components/TransactionStatusProperty'
+import { CeloTransaction } from 'src/features/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function GenericTransactionReview({ tx }: Props) {
-  const { feeValue, feeCurrency } = getTransactionFee(tx)
+  const { feeValue, feeCurrency } = getFeeFromConfirmedTx(tx)
 
   return (
     <TransactionPropertyGroup>

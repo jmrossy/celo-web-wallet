@@ -1,12 +1,12 @@
-import { getTransactionFee } from 'src/blockchain/gas'
 import { Address } from 'src/components/Address'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { TokenTransfer } from 'src/features/feed/types'
+import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/home/components/TransactionPropertyGroup'
 import { TransactionStatusProperty } from 'src/features/home/components/TransactionStatusProperty'
+import { TokenTransfer } from 'src/features/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
@@ -19,7 +19,7 @@ export function TokenTransferReview({ tx }: Props) {
   const addressLabel = tx.isOutgoing ? 'Recipient' : 'Sender'
   const address = tx.isOutgoing ? tx.to : tx.from
 
-  const { feeValue, feeCurrency } = getTransactionFee(tx)
+  const { feeValue, feeCurrency } = getFeeFromConfirmedTx(tx)
 
   return (
     <TransactionPropertyGroup>

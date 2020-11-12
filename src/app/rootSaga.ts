@@ -4,6 +4,7 @@ import { connectToForno } from 'src/blockchain/provider'
 import { config } from 'src/config'
 import { exchangeTokenReducer, exchangeTokenSaga } from 'src/features/exchange/exchangeToken'
 import { feedFetchPoller, fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
+import { estimateFeeReducer, estimateFeeSaga } from 'src/features/fees/estimateFee'
 import { setPinReducer, setPinSaga } from 'src/features/pincode/pincode'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
@@ -11,7 +12,7 @@ import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fet
 import {
   importWallet,
   importWalletReducer,
-  importWalletSaga
+  importWalletSaga,
 } from 'src/features/wallet/importWallet'
 import { loadWalletSaga } from 'src/features/wallet/storage'
 import { SagaState } from 'src/utils/saga'
@@ -57,6 +58,10 @@ export const monitoredSagas: {
   importWallet: {
     saga: importWalletSaga,
     reducer: importWalletReducer,
+  },
+  estimateFee: {
+    saga: estimateFeeSaga,
+    reducer: estimateFeeReducer,
   },
 }
 

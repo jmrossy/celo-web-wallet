@@ -62,7 +62,7 @@ interface MonitoredSagaOptions {
  * Note: the wrapped saga and reducer this returns must be added to rootSaga.ts
  */
 export function createMonitoredSaga<SagaParams = void>(
-  saga: (...args: any[]) => any,
+  saga: (params: SagaParams) => any,
   name: string,
   options?: MonitoredSagaOptions
 ) {
@@ -83,8 +83,8 @@ export function createMonitoredSaga<SagaParams = void>(
         state.error = action.payload
       })
       .addCase(resetAction, (state) => {
-        state.status = null;
-        state.error = null;
+        state.status = null
+        state.error = null
       })
   )
 
@@ -96,7 +96,7 @@ export function createMonitoredSaga<SagaParams = void>(
         yield put(statusAction(SagaStatus.Started))
         const { result, cancel, timeout } = yield race({
           // TODO Use fork here instead if parallelism is required for the saga
-          result: call(saga, trigger.payload, statusAction),
+          result: call(saga, trigger.payload),
           cancel: take(cancelAction.type),
           timeout: delay(options?.timeoutDuration || DEFAULT_TIMEOUT),
         })

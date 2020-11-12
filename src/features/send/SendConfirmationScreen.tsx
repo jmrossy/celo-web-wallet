@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from 'react'
+import { utils } from 'ethers'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -12,48 +13,66 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
+import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { sendCanceled, sendFailed, sendSucceeded } from 'src/features/send/sendSlice'
 import { sendTokenActions } from 'src/features/send/sendToken'
+import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
-import { useWeiTransaction } from 'src/utils/amount'
+import { useWeiAmounts } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 
 export function SendConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { transaction: txn, transactionError: txnError } = useSelector(
+  const { transaction: tx, transactionError: txError } = useSelector(
     (state: RootState) => state.send
   )
-  const isRequest = useMemo(() => {
-    return false
-  }, [txn])
-  const { wei } = useWeiTransaction(txn?.amount ?? 0, 0.02) //TODO: get the actual fee
 
-  //TODO: Wrap the following in a hook to simplify?
-  const { status: sagaStatus, error: sagaError } = useSelector(
-    (state: RootState) => state.saga.sendToken
-  )
-  const isWorking = sagaStatus === SagaStatus.Started
+  const feeEstimate = useSelector((state: RootState) => state.fees.estimate)
+
+  // TODO support requets
+  const isRequest = false
+
+  // TODO sort out inconsistency in format btwn amount and fee
+  const feeInStd = parseFloat(utils.formatEther(feeEstimate?.fee ?? 0))
+  const { wei } = useWeiAmounts(tx?.amount ?? 0, feeInStd)
 
   //-- need to make sure we belong on this screen
   useEffect(() => {
-    if (!txn) {
+    if (!tx) {
       navigate('/send')
     }
-  }, [txn])
+  }, [tx])
 
-  async function onGoBack() {
+  useEffect(() => {
+    if (!tx) {
+      return
+    }
+    const type = tx.comment
+      ? TransactionType.StableTokenTransferWithComment
+      : TransactionType.StableTokenTransfer
+    dispatch(estimateFeeActions.trigger({ type }))
+  }, [tx])
+
+  const onGoBack = () => {
     dispatch(sendTokenActions.reset())
     dispatch(sendCanceled())
     navigate(-1)
   }
 
-  async function onSend() {
-    if (!txn) return
-    dispatch(sendTokenActions.trigger(txn))
+  const onSend = () => {
+    if (!tx || !feeEstimate) return
+    dispatch(sendTokenActions.trigger({ ...tx, feeEstimate }))
   }
+
+  //TODO: Wrap the following in a hook to simplify?
+  const { status: sagaStatus, error: sagaError } = useSelector(
+    (state: RootState) => state.saga.sendToken
+  )
+
+  const isSagaWorking = sagaStatus === SagaStatus.Started
 
   useEffect(() => {
     if (sagaStatus === SagaStatus.Success) {
@@ -67,28 +86,33 @@ export function SendConfirmationScreen() {
     }
   }, [sagaStatus])
 
-  if (!txn) return null //to avoid having to qualify everything below
+  if (!tx) return null
 
   return (
     <ScreenFrameWithFeed>
       <Box direction="column" styles={style.contentContainer}>
-        {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
+        {txError && <Notification message={txError.toString()} color={Color.borderError} />}
 
         <h1 css={style.title}>Review {isRequest ? 'Request' : 'Payment'}</h1>
 
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Amount</label>
           <Box direction="row" align="end">
-            <MoneyValue amountInWei={wei.amount} currency={txn.currency} baseFontSize={1.2} />
+            <MoneyValue amountInWei={wei.amount} currency={tx.currency} baseFontSize={1.2} />
           </Box>
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Security Fee</label>
-          <Box direction="row" align="end">
-            <MoneyValue amountInWei={wei.fee} currency={txn.currency} baseFontSize={1.2} />
-            <img src={QuestionIcon} css={style.iconRight} />
-          </Box>
+          {feeEstimate ? (
+            <Box direction="row" align="end">
+              <MoneyValue amountInWei={wei.fee} currency={tx.currency} baseFontSize={1.2} />
+              <img src={QuestionIcon} css={style.iconRight} />
+            </Box>
+          ) : (
+            // TODO a proper loader (need to update mocks)
+            <div>Loading...</div>
+          )}
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
@@ -96,7 +120,7 @@ export function SendConfirmationScreen() {
           <Box direction="row" align="end">
             <MoneyValue
               amountInWei={wei.total}
-              currency={txn.currency}
+              currency={tx.currency}
               baseFontSize={1.2}
               amountCss={{ fontWeight: 'bolder' }}
             />
@@ -106,16 +130,16 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Recipient</label>
           <Box direction="row" align="center">
-            <Address address={txn.recipient} />
+            <Address address={tx.recipient} />
           </Box>
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
           <label css={style.inputLabel}>Comment</label>
-          <label css={style.valueLabel}>{txn.comment}</label>
+          <label css={style.valueLabel}>{tx.comment}</label>
         </Box>
 
-        {isWorking && (
+        {isSagaWorking && (
           <Box direction="row" styles={style.inputRow}>
             <label css={style.valueText}>Sending...</label>
           </Box>
@@ -128,7 +152,7 @@ export function SendConfirmationScreen() {
             color={Color.primaryGrey}
             onClick={onGoBack}
             icon={ArrowBackIcon}
-            disabled={isWorking}
+            disabled={isSagaWorking || !feeEstimate}
             margin="0 1em 0 0"
           >
             Edit {isRequest ? 'Request' : 'Payment'}
@@ -138,7 +162,7 @@ export function SendConfirmationScreen() {
             size="m"
             onClick={onSend}
             icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}
-            disabled={isWorking}
+            disabled={isSagaWorking || !feeEstimate}
           >
             Send {isRequest ? 'Request' : 'Payment'}
           </Button>

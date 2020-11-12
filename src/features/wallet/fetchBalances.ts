@@ -3,9 +3,9 @@ import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { CeloContract } from 'src/config'
+import { updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
-import { updateBalances } from './walletSlice'
 
 const BALANCE_STALE_TIME = 15000 // 15 seconds
 
@@ -51,7 +51,7 @@ async function fetchCeloBalance(address: string) {
 
 async function fetchDollarBalance(address: string) {
   const stableToken = await getContract(CeloContract.StableToken)
-  const balance = await stableToken.balanceOf(address)
+  const balance: BigNumber = await stableToken.balanceOf(address)
   return balance.toString()
 }
 

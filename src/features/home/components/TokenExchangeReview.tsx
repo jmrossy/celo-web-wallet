@@ -1,11 +1,11 @@
-import { getTransactionFee } from 'src/blockchain/gas'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { TokenExchangeTx } from 'src/features/feed/types'
+import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/home/components/TransactionPropertyGroup'
 import { TransactionStatusProperty } from 'src/features/home/components/TransactionStatusProperty'
+import { TokenExchangeTx } from 'src/features/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function TokenExchangeReview({ tx }: Props) {
-  const { feeValue, feeCurrency } = getTransactionFee(tx)
+  const { feeValue, feeCurrency } = getFeeFromConfirmedTx(tx)
 
   return (
     <TransactionPropertyGroup>

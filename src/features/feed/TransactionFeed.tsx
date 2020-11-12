@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { FeedItem } from 'src/features/feed/FeedItem'
 import { openTransaction } from 'src/features/feed/feedSlice'
-import { TransactionMap } from 'src/features/feed/types'
+import { TransactionMap } from 'src/features/types'
 import { Stylesheet } from 'src/styles/types'
 
 export function TransactionFeed() {

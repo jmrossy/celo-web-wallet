@@ -13,7 +13,7 @@ import {
   TokenExchangeTx,
   TransactionMap,
   TransactionType,
-} from 'src/features/feed/types'
+} from 'src/features/types'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'

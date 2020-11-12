@@ -1,8 +1,10 @@
-import { BigNumber, providers, utils } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import { Currency, MAX_COMMENT_CHAR_LENGTH, MAX_SEND_TOKEN_SIZE } from 'src/consts'
+import { FeeEstimate } from 'src/features/fees/types'
+import { validateFeeEstimate } from 'src/features/fees/utils'
 import { fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
@@ -16,91 +18,108 @@ export interface SendTokenParams {
   amount: number
   currency: Currency
   comment?: string
-  isRequest?: boolean
+  feeEstimate?: FeeEstimate
 }
 
-export function validate(params: SendTokenParams, balances: Balances) : ErrorState {
-  const { recipient, amount, currency, comment } = params
-  let errors: ErrorState = { isValid: true };
+export function validate(
+  params: SendTokenParams,
+  balances: Balances,
+  validateFee = false
+): ErrorState {
+  const { recipient, amount, currency, comment, feeEstimate } = params
+  let errors: ErrorState = { isValid: true }
 
   if (!amount) {
-    errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
-  }
-  else {
+    errors = { ...errors, isValid: false, amount: { error: true, helpText: 'Invalid Amount' } }
+  } else {
     const amountInWei = utils.parseEther('' + amount)
     if (!isAmountValid(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE)) {
-      errors = { ...errors, isValid: false, amount: { error: true, helpText: "Invalid Amount" } };
+      errors = { ...errors, isValid: false, amount: { error: true, helpText: 'Invalid Amount' } }
     }
   }
 
   if (!utils.isAddress(recipient)) {
     logger.error(`Invalid recipient: ${recipient}`)
-    errors = { ...errors, isValid: false, recipient: { error: true, helpText: "Invalid Recipient" } };
-  }
-  else if (!recipient) {
+    errors = {
+      ...errors,
+      isValid: false,
+      recipient: { error: true, helpText: 'Invalid Recipient' },
+    }
+  } else if (!recipient) {
     logger.error(`Invalid recipient: ${recipient}`)
-    errors = { ...errors, isValid: false, recipient: { error: true, helpText: "Recipient is required" } };
+    errors = {
+      ...errors,
+      isValid: false,
+      recipient: { error: true, helpText: 'Recipient is required' },
+    }
   }
 
   if (comment && comment.length > MAX_COMMENT_CHAR_LENGTH) {
     logger.error(`Invalid comment: ${comment}`)
-    errors = { ...errors, isValid: false, comment: { error: true, helpText: "Comment is too long" } };
+    errors = {
+      ...errors,
+      isValid: false,
+      comment: { error: true, helpText: 'Comment is too long' },
+    }
   }
 
-  
-  return errors;
+  if (validateFee) {
+    errors = {
+      ...validateFeeEstimate(feeEstimate),
+      ...errors,
+    }
+  }
+
+  return errors
 }
 
 function* sendToken(params: SendTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
 
-  const validateResult = yield call(validate, params, balances);
-  if (validateResult !== null) {
-    throw new Error("Invalid Transaction"); //TODO: provide the details of the invalid transaction
+  const validateResult = yield* call(validate, params, balances, true)
+  if (!validateResult.isValid) {
+    throw new Error('Invalid Transaction') //TODO: provide the details of the invalid transaction
   }
 
   yield* call(_sendToken, params)
 }
 
 async function _sendToken(params: SendTokenParams) {
-  const { recipient, amount, currency, comment } = params
+  const { recipient, amount, currency, comment, feeEstimate } = params
   const amountInWei = utils.parseEther('' + amount)
 
-  // TODO consider balance and gas
+  const tx = await getTokenTransferTx(currency, recipient, amountInWei, comment)
+  logger.info(`Sending ${amountInWei} ${currency} to ${recipient}`)
+  const txReceipt = await sendTransaction(tx, feeEstimate)
+  logger.info(`Token transfer hash received: ${txReceipt.transactionHash}`)
+}
 
+async function getTokenTransferTx(
+  currency: Currency,
+  recipient: string,
+  amountInWei: BigNumber,
+  comment?: string
+) {
   if (currency === Currency.CELO) {
-    return sendCeloToken(recipient, amountInWei)
+    if (comment) {
+      const goldToken = await getContract(CeloContract.GoldToken)
+      return goldToken.populateTransaction.transferWithComment(recipient, amountInWei, comment)
+    } else {
+      return {
+        to: recipient,
+        value: amountInWei,
+      }
+    }
   } else if (currency === Currency.cUSD) {
-    return sendDollarToken(recipient, amountInWei, comment)
+    const stableToken = await getContract(CeloContract.StableToken)
+    if (comment) {
+      return stableToken.populateTransaction.transferWithComment(recipient, amountInWei, comment)
+    } else {
+      return stableToken.populateTransaction.transfer(recipient, amountInWei)
+    }
   } else {
     throw new Error(`Unsupported currency: ${currency}`)
   }
-}
-
-async function sendCeloToken(recipient: string, amountInWei: BigNumber) {
-  logger.info(`Sending ${amountInWei} CELO`)
-  const txReceipt = await sendTransaction({
-    to: recipient,
-    value: amountInWei,
-  })
-
-  logger.info(`CELO payment hash received: ${txReceipt.transactionHash}`)
-}
-
-async function sendDollarToken(recipient: string, amountInWei: BigNumber, comment?: string) {
-  const stableToken = await getContract(CeloContract.StableToken)
-  let txResponse: providers.TransactionResponse
-
-  if (comment && comment.length && comment.length <= MAX_COMMENT_CHAR_LENGTH) {
-    logger.info(`Sending ${amountInWei} cUSD with comment`)
-    txResponse = await stableToken.transferWithComment(recipient, amountInWei, comment)
-  } else {
-    logger.info(`Sending ${amountInWei} cUSD without comment`)
-    txResponse = await stableToken.transfer(recipient, amountInWei)
-  }
-
-  const txReceipt = await txResponse.wait()
-  logger.info(`cUSD payment hash received: ${txReceipt.transactionHash}`)
 }
 
 export const {

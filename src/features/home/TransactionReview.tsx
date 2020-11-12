@@ -3,7 +3,6 @@ import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
 import { openTransaction } from 'src/features/feed/feedSlice'
-import { CeloTransaction, TransactionType } from 'src/features/feed/types'
 import { GenericTransactionReview } from 'src/features/home/components/GenericTransactionReview'
 import { TokenExchangeReview } from 'src/features/home/components/TokenExchangeReview'
 import { TokenTransferReview } from 'src/features/home/components/TokenTransferReview'
@@ -11,6 +10,7 @@ import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/home/components/TransactionPropertyGroup'
+import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
