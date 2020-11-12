@@ -25,18 +25,24 @@ export function MoneyValue(props: MoneyValueProps) {
     symbolCss,
     amountCss,
   } = props
-  const { symbol, decimals, color } = getCurrencyProps(currency)
-  // TODO fix decimals for 0 values and have min amount of 1 penny show
-  const formattedAmount = FixedNumber.from(utils.formatEther(amountInWei))
-    .round(decimals)
-    .toString()
+  const { symbol, decimals, color, minValue } = getCurrencyProps(currency)
+
+  const amount = FixedNumber.from(utils.formatEther(amountInWei))
+  let formattedAmount: string
+  if (amount.isZero()) {
+    formattedAmount = '0'
+  } else if (amount.subUnsafe(minValue).isNegative()) {
+    formattedAmount = minValue.toString()
+  } else {
+    formattedAmount = amount.round(decimals).toString()
+  }
 
   const symbolFontSize = baseFontSize ? `${baseFontSize * 0.8}em` : '0.8em'
   const amountFontSize = baseFontSize ? `${baseFontSize}em` : '1em'
 
   return (
     <span css={{ margin: margin }}>
-      {!!sign && <span css={{ fontSize: amountFontSize }}>{sign}</span>}
+      {!!sign && !amount.isZero() && <span css={{ fontSize: amountFontSize }}>{sign}</span>}
       {!hideSymbol && <span css={{ fontSize: symbolFontSize, color, ...symbolCss }}>{symbol}</span>}
       <span css={{ fontSize: amountFontSize, ...amountCss }}>{' ' + formattedAmount}</span>
     </span>
@@ -45,10 +51,24 @@ export function MoneyValue(props: MoneyValueProps) {
 
 export function getCurrencyProps(currency: Currency) {
   if (currency === Currency.cUSD) {
-    return { symbol: 'cUSD', decimals: 2, color: Color.primaryGreen }
+    return cUsdProps
   }
   if (currency === Currency.CELO) {
-    return { symbol: 'CELO', decimals: 3, color: Color.primaryGold }
+    return celoProps
   }
   throw new Error(`Unsupported currency ${currency}`)
+}
+
+const cUsdProps = {
+  symbol: 'cUSD',
+  decimals: 2,
+  minValue: FixedNumber.from('0.01'),
+  color: Color.primaryGreen,
+}
+
+const celoProps = {
+  symbol: 'CELO',
+  decimals: 3,
+  minValue: FixedNumber.from('0.001'),
+  color: Color.primaryGold,
 }

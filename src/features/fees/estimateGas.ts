@@ -12,7 +12,7 @@ const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.CeloTokenTransferWithComment]: 66000,
   [TransactionType.CeloTokenApprove]: 52000,
   [TransactionType.CeloNativeTransfer]: 25000,
-  [TransactionType.TokenExchange]: 250000,
+  [TransactionType.TokenExchange]: 300000,
 }
 
 const STABLE_TOKEN_GAS_MULTIPLIER = 10

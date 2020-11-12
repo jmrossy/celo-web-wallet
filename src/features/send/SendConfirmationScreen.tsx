@@ -18,6 +18,7 @@ import { sendCanceled, sendFailed, sendSucceeded } from 'src/features/send/sendS
 import { sendTokenActions } from 'src/features/send/sendToken'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
+import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { useWeiAmounts } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
@@ -106,7 +107,11 @@ export function SendConfirmationScreen() {
           <label css={style.inputLabel}>Security Fee</label>
           {feeEstimate ? (
             <Box direction="row" align="end">
-              <MoneyValue amountInWei={wei.fee} currency={tx.currency} baseFontSize={1.2} />
+              <MoneyValue
+                amountInWei={wei.fee}
+                currency={feeEstimate.currency}
+                baseFontSize={1.2}
+              />
               <img src={QuestionIcon} css={style.iconRight} />
             </Box>
           ) : (
@@ -116,13 +121,13 @@ export function SendConfirmationScreen() {
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
-          <label css={{ ...style.inputLabel, fontWeight: 'bolder' }}>Total</label>
+          <label css={{ ...style.inputLabel, ...Font.bold }}>Total</label>
           <Box direction="row" align="end">
             <MoneyValue
               amountInWei={wei.total}
               currency={tx.currency}
               baseFontSize={1.2}
-              amountCss={{ fontWeight: 'bolder' }}
+              amountCss={Font.bold}
             />
           </Box>
         </Box>

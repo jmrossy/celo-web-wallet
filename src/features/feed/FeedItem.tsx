@@ -49,7 +49,7 @@ export function FeedItem(props: FeedItemProps) {
             amountInWei={value}
             currency={currency}
             hideSymbol={true}
-            sign={isPositive ? '-' : '+'}
+            sign={isPositive ? '+' : '-'}
           />
           <div css={[style.currency, { color }]}>{symbol}</div>
         </div>
