@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { SplashScreen } from 'src/app/SplashScreen'
+import { Loading } from 'src/app/Loading'
 import { ExchangeConfirmationScreen } from 'src/features/exchange/ExchangeConfirmationScreen'
 import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { HomeFrame } from 'src/features/home/HomeFrame'
@@ -36,7 +36,7 @@ export class App extends Component {
 
           {/* TODO: For Splashscreen Testing */}
           <Route path="wallet" element={<WalletHome />} />
-          <Route path="splash" element={<SplashScreen />} />
+          <Route path="loading" element={<Loading />} />
         </Routes>
       </BrowserRouter>
     )

@@ -7,7 +7,7 @@ import { Box } from 'src/components/layout/Box'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
-export function SplashScreen() {
+export function Loading() {
   return (
     <Box styles={style.container}>
       <img src={elipse} css={style.elipse} />

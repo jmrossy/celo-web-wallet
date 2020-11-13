@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from 'src/app/rootReducer'
 import insights from 'src/components/icons/insights.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -12,7 +14,9 @@ import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function WalletHome() {
-  const [hasWallet, setHasWallet] = useState(false)
+  const walletAddress = useSelector((state: RootState) => state.wallet.address)
+  //TODO: Temp so we can toggle back and forth
+  const [hasWallet, setHasWallet] = useState(Boolean(walletAddress))
 
   return (
     <ScreenContentFrame>
@@ -30,7 +34,7 @@ export function WalletHome() {
         <PriceChartCelo containerCss={style.chart} />
       </div>
 
-      <button css={{ marginTop: '3em', maxWidth: '10em' }} onClick={() => setHasWallet(!hasWallet)}>
+      <button css={{ marginTop: '3em', maxWidth: '8em' }} onClick={() => setHasWallet(!hasWallet)}>
         toggle wallet
       </button>
     </ScreenContentFrame>
@@ -38,11 +42,6 @@ export function WalletHome() {
 }
 
 const style: Stylesheet = {
-  header: {
-    ...Font.h1,
-    marginBottom: '2em',
-    color: Color.primaryGreen,
-  },
   icon: {
     marginRight: '0.5em',
     height: '2em',

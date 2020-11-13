@@ -41,7 +41,10 @@ export function DevTools() {
       </div>
       <button onClick={onClickFetchFeed}>Fetch Transaction Feed</button>
       <p>
-        <a href="/splash">Splash Screen</a>
+        <a href="/loading">Loading Screen</a>
+      </p>
+      <p>
+        <a href="/wallet">Wallet Home / Empty</a>
       </p>
       <ImportWalletForm />
     </div>
