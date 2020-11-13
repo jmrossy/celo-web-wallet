@@ -1,3 +1,5 @@
-import { CSSObject } from '@emotion/core'
+import { CSSPropertiesWithMultiValues, CSSPseudos } from '@emotion/serialize'
 
-export type Stylesheet = Record<string, CSSObject>
+export type Styles = CSSPropertiesWithMultiValues & CSSPseudos
+
+export type Stylesheet = Record<string, Styles>

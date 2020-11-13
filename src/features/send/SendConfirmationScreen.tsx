@@ -10,7 +10,6 @@ import QuestionIcon from 'src/components/icons/question_mark.svg'
 import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment_white.svg'
 import { Box } from 'src/components/layout/Box'
-import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
@@ -90,90 +89,84 @@ export function SendConfirmationScreen() {
   if (!tx) return null
 
   return (
-    <ScreenFrameWithFeed>
-      <Box direction="column" styles={style.contentContainer}>
-        {txError && <Notification message={txError.toString()} color={Color.borderError} />}
+    <Box direction="column" styles={style.contentContainer}>
+      {txError && <Notification message={txError.toString()} color={Color.borderError} />}
 
-        <h1 css={style.title}>Review {isRequest ? 'Request' : 'Payment'}</h1>
+      <h1 css={style.title}>Review {isRequest ? 'Request' : 'Payment'}</h1>
 
-        <Box direction="row" styles={style.inputRow}>
-          <label css={style.inputLabel}>Amount</label>
-          <Box direction="row" align="end">
-            <MoneyValue amountInWei={wei.amount} currency={tx.currency} baseFontSize={1.2} />
-          </Box>
-        </Box>
-
-        <Box direction="row" styles={style.inputRow}>
-          <label css={style.inputLabel}>Security Fee</label>
-          {feeEstimate ? (
-            <Box direction="row" align="end">
-              <MoneyValue
-                amountInWei={wei.fee}
-                currency={feeEstimate.currency}
-                baseFontSize={1.2}
-              />
-              <img src={QuestionIcon} css={style.iconRight} />
-            </Box>
-          ) : (
-            // TODO a proper loader (need to update mocks)
-            <div>Loading...</div>
-          )}
-        </Box>
-
-        <Box direction="row" styles={style.inputRow}>
-          <label css={{ ...style.inputLabel, ...Font.bold }}>Total</label>
-          <Box direction="row" align="end">
-            <MoneyValue
-              amountInWei={wei.total}
-              currency={tx.currency}
-              baseFontSize={1.2}
-              amountCss={Font.bold}
-            />
-          </Box>
-        </Box>
-
-        <Box direction="row" styles={style.inputRow}>
-          <label css={style.inputLabel}>Recipient</label>
-          <Box direction="row" align="center">
-            <Address address={tx.recipient} />
-          </Box>
-        </Box>
-
-        <Box direction="row" styles={style.inputRow}>
-          <label css={style.inputLabel}>Comment</label>
-          <label css={style.valueLabel}>{tx.comment}</label>
-        </Box>
-
-        {isSagaWorking && (
-          <Box direction="row" styles={style.inputRow}>
-            <label css={style.valueText}>Sending...</label>
-          </Box>
-        )}
-
-        <Box direction="row" justify="start">
-          <Button
-            type="button"
-            size="m"
-            color={Color.primaryGrey}
-            onClick={onGoBack}
-            icon={ArrowBackIcon}
-            disabled={isSagaWorking || !feeEstimate}
-            margin="0 1em 0 0"
-          >
-            Edit {isRequest ? 'Request' : 'Payment'}
-          </Button>
-          <Button
-            type="submit"
-            size="m"
-            onClick={onSend}
-            icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}
-            disabled={isSagaWorking || !feeEstimate}
-          >
-            Send {isRequest ? 'Request' : 'Payment'}
-          </Button>
+      <Box direction="row" styles={style.inputRow}>
+        <label css={style.inputLabel}>Amount</label>
+        <Box direction="row" align="end">
+          <MoneyValue amountInWei={wei.amount} currency={tx.currency} baseFontSize={1.2} />
         </Box>
       </Box>
-    </ScreenFrameWithFeed>
+
+      <Box direction="row" styles={style.inputRow}>
+        <label css={style.inputLabel}>Security Fee</label>
+        {feeEstimate ? (
+          <Box direction="row" align="end">
+            <MoneyValue amountInWei={wei.fee} currency={feeEstimate.currency} baseFontSize={1.2} />
+            <img src={QuestionIcon} css={style.iconRight} />
+          </Box>
+        ) : (
+          // TODO a proper loader (need to update mocks)
+          <div>Loading...</div>
+        )}
+      </Box>
+
+      <Box direction="row" styles={style.inputRow}>
+        <label css={{ ...style.inputLabel, ...Font.bold }}>Total</label>
+        <Box direction="row" align="end">
+          <MoneyValue
+            amountInWei={wei.total}
+            currency={tx.currency}
+            baseFontSize={1.2}
+            amountCss={Font.bold}
+          />
+        </Box>
+      </Box>
+
+      <Box direction="row" styles={style.inputRow}>
+        <label css={style.inputLabel}>Recipient</label>
+        <Box direction="row" align="center">
+          <Address address={tx.recipient} />
+        </Box>
+      </Box>
+
+      <Box direction="row" styles={style.inputRow}>
+        <label css={style.inputLabel}>Comment</label>
+        <label css={style.valueLabel}>{tx.comment}</label>
+      </Box>
+
+      {isSagaWorking && (
+        <Box direction="row" styles={style.inputRow}>
+          <label css={style.valueText}>Sending...</label>
+        </Box>
+      )}
+
+      <Box direction="row" justify="start">
+        <Button
+          type="button"
+          size="m"
+          color={Color.primaryGrey}
+          onClick={onGoBack}
+          icon={ArrowBackIcon}
+          disabled={isSagaWorking || !feeEstimate}
+          margin="0 1em 0 0"
+        >
+          Edit {isRequest ? 'Request' : 'Payment'}
+        </Button>
+        <Button
+          type="submit"
+          size="m"
+          onClick={onSend}
+          icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}
+          disabled={isSagaWorking || !feeEstimate}
+        >
+          Send {isRequest ? 'Request' : 'Payment'}
+        </Button>
+      </Box>
+    </Box>
   )
 }
 

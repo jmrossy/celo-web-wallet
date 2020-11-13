@@ -1,4 +1,4 @@
-import { CSSObject } from '@emotion/core'
+import { Styles } from 'src/styles/types'
 
 interface BoxProps {
   direction?: 'column' | 'row'
@@ -7,7 +7,7 @@ interface BoxProps {
   margin?: string | number
   // Other css styles to be applied
   // Can't call it 'css' or Emotion will pre-parse it out
-  styles?: CSSObject
+  styles?: Styles
 }
 
 // Just a handy component for a display: flex wrapper
@@ -27,7 +27,7 @@ export function Box(props: React.PropsWithChildren<BoxProps>) {
   )
 }
 
-function transformPropStyles(props: BoxProps): CSSObject {
+function transformPropStyles(props: BoxProps): Styles {
   const { direction, align, justify, styles: passThroughStyles } = props
 
   let alignItems: string | undefined

@@ -1,4 +1,4 @@
-import { CSSObject, keyframes } from '@emotion/core'
+import { css, keyframes } from '@emotion/react'
 import elipse from 'src/components/icons/celo_elipse.svg'
 import echo1 from 'src/components/icons/elipse_echo_1.svg'
 import echo2 from 'src/components/icons/elipse_echo_2.svg'
@@ -30,6 +30,7 @@ const style: Stylesheet = {
     minHeight: '-webkit-fill-available',
   },
   elipse: {
+    opacity: 0,
     position: 'fixed',
     margin: 'auto',
     top: 0,
@@ -39,6 +40,7 @@ const style: Stylesheet = {
     animation: `${pulse} 3s infinite`,
   },
   echo: {
+    opacity: 0,
     position: 'fixed',
     margin: 'auto',
     top: 0,
@@ -49,29 +51,29 @@ const style: Stylesheet = {
   },
 }
 
-const echoStyle = (index: number): CSSObject => {
+const echoStyle = (index: number) => {
   const delay = `${0.25 * index}s`
   switch (index) {
     case 1:
-      return {
+      return css({
         left: 30,
         bottom: 30,
         animationDelay: delay,
-      }
+      })
     case 2:
-      return {
+      return css({
         left: 60,
         bottom: 120,
         animationDelay: delay,
-      }
+      })
     case 3:
-      return {
+      return css({
         left: -40,
         bottom: 90,
         animationDelay: delay,
         [mq[480]]: { left: 60 },
-      }
+      })
     default:
-      return {}
+      return css({})
   }
 }

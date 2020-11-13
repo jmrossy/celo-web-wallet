@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { FeedItem } from 'src/features/feed/FeedItem'
 import { openTransaction } from 'src/features/feed/feedSlice'
@@ -11,8 +12,11 @@ export function TransactionFeed() {
   const sortedTransaction = getSortedTransactions(transactions)
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const onFeedItemClick = (hash: string) => {
     dispatch(openTransaction(hash))
+    navigate('/tx')
   }
 
   return (

@@ -12,7 +12,6 @@ import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
 import { RadioBox } from 'src/components/input/RadioBox'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
-import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
 import { Currency } from 'src/consts'
 import { sendStarted } from 'src/features/send/sendSlice'
 import { SendTokenParams, validate } from 'src/features/send/sendToken'
@@ -68,99 +67,97 @@ export function SendFormScreen() {
   }
 
   return (
-    <ScreenFrameWithFeed>
-      <Box direction="column" styles={style.contentContainer}>
-        <form onSubmit={handleSubmit}>
-          <h1 css={style.title}>Send or Request Payment</h1>
+    <Box direction="column" styles={style.contentContainer}>
+      <form onSubmit={handleSubmit}>
+        <h1 css={style.title}>Send or Request Payment</h1>
 
-          <Box direction="column" styles={style.inputRow}>
-            <label css={style.inputLabel}>Recipient Address or Phone Number</label>
+        <Box direction="column" styles={style.inputRow}>
+          <label css={style.inputLabel}>Recipient Address</label>
 
-            <Box direction="row" justify="start" align="end">
-              <AddressInput
-                width={346}
-                name="recipient"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.recipient}
-                {...inputErrors['recipient']}
-              />
-              <Button
-                size="icon"
-                type="button"
-                color={Color.fillLight}
-                margin="0 0.5em"
-                onClick={onCopyAddress}
-              >
-                <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon} />
-              </Button>
-              <Identicon address={values.recipient} />
-            </Box>
-          </Box>
-
-          <Box direction="row" styles={style.inputRow}>
-            <Box direction="column" justify="end" align="start">
-              <label css={style.inputLabel}>Amount</label>
-              <MoneyValueInput
-                width={173}
-                name="amount"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.amount.toString()}
-                {...inputErrors['amount']}
-              />
-            </Box>
-            <Box direction="column" align="start" styles={{ width: '50%' }}>
-              <label css={style.inputLabel}>Currency</label>
-              <Box direction="row" justify="start" align="end" styles={style.radioBox}>
-                <RadioBox
-                  tabIndex={0}
-                  label="cUSD"
-                  value={Currency.cUSD}
-                  name="currency"
-                  checked={values.currency === Currency.cUSD}
-                  onChange={handleChange}
-                  containerCss={{ minWidth: 52 }}
-                />
-                <RadioBox
-                  tabIndex={1}
-                  label="CELO"
-                  value={Currency.CELO}
-                  name="currency"
-                  checked={values.currency === Currency.CELO}
-                  onChange={handleChange}
-                  containerCss={{ minWidth: 52 }}
-                />
-              </Box>
-            </Box>
-          </Box>
-
-          <Box direction="column" align="start" styles={style.inputRow}>
-            <label css={style.inputLabel}>Comment (optional)</label>
-            <TextArea
-              name="comment"
-              value={values.comment}
-              placeholder={'Thanks for lunch!'}
+          <Box direction="row" justify="start" align="end">
+            <AddressInput
+              width={346}
+              name="recipient"
               onChange={handleChange}
               onBlur={handleBlur}
-              minWidth="22em"
-              maxWidth="26em"
-              minHeight="5em"
-              maxHeight="7em"
+              value={values.recipient}
+              {...inputErrors['recipient']}
+            />
+            <Button
+              size="icon"
+              type="button"
+              color={Color.fillLight}
+              margin="0 0.5em"
+              onClick={onCopyAddress}
+            >
+              <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon} />
+            </Button>
+            <Identicon address={values.recipient} />
+          </Box>
+        </Box>
+
+        <Box direction="row" styles={style.inputRow}>
+          <Box direction="column" justify="end" align="start">
+            <label css={style.inputLabel}>Amount</label>
+            <MoneyValueInput
+              width={173}
+              name="amount"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.amount.toString()}
+              {...inputErrors['amount']}
             />
           </Box>
-
-          <Box direction="row" justify="start">
-            <Button type="submit" size="m" icon={SendPaymentIcon} margin="0 1em 0 0">
-              Send Payment
-            </Button>
-            <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
-              Request Payment
-            </Button>
+          <Box direction="column" align="start" styles={{ width: '50%' }}>
+            <label css={style.inputLabel}>Currency</label>
+            <Box direction="row" justify="start" align="end" styles={style.radioBox}>
+              <RadioBox
+                tabIndex={0}
+                label="cUSD"
+                value={Currency.cUSD}
+                name="currency"
+                checked={values.currency === Currency.cUSD}
+                onChange={handleChange}
+                containerCss={{ minWidth: 52 }}
+              />
+              <RadioBox
+                tabIndex={1}
+                label="CELO"
+                value={Currency.CELO}
+                name="currency"
+                checked={values.currency === Currency.CELO}
+                onChange={handleChange}
+                containerCss={{ minWidth: 52 }}
+              />
+            </Box>
           </Box>
-        </form>
-      </Box>
-    </ScreenFrameWithFeed>
+        </Box>
+
+        <Box direction="column" align="start" styles={style.inputRow}>
+          <label css={style.inputLabel}>Comment (optional)</label>
+          <TextArea
+            name="comment"
+            value={values.comment}
+            placeholder={'Thanks for lunch!'}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            minWidth="22em"
+            maxWidth="26em"
+            minHeight="5em"
+            maxHeight="7em"
+          />
+        </Box>
+
+        <Box direction="row" justify="start">
+          <Button type="submit" size="m" icon={SendPaymentIcon} margin="0 1em 0 0">
+            Send Payment
+          </Button>
+          <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
+            Request Payment
+          </Button>
+        </Box>
+      </form>
+    </Box>
   )
 }
 
