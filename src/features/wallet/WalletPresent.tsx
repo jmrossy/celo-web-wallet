@@ -1,4 +1,4 @@
-import lightbulb from 'src/components/icons/tip.svg'
+import tip from 'src/components/icons/tip.svg'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -11,7 +11,7 @@ export function WalletPresent() {
 
       <Box direction="column">
         <Box direction="row" align="end">
-          <img src={lightbulb} css={style.icon} />
+          <img src={tip} css={style.icon} />
           <label css={[Font.body, Font.bold]}>Tip of the day</label>
         </Box>
         <p css={Font.body}>
