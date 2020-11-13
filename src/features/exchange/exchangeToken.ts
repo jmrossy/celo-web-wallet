@@ -2,26 +2,33 @@ import { BigNumber, Contract, providers, utils } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
 import { Currency, MAX_EXCHANGE_TOKEN_SIZE } from 'src/consts'
+import { FeeEstimate } from 'src/features/fees/types'
+import { validateFeeEstimate } from 'src/features/fees/utils'
 import { fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { ErrorState } from 'src/utils/validation'
+import { ErrorState, invalidInput } from 'src/utils/validation'
 import { call } from 'typed-redux-saga'
 
 export interface ExchangeTokenParams {
   amount: number
   fromCurrency: Currency
+  feeEstimate?: FeeEstimate
 }
 
-export function validate(params: ExchangeTokenParams, balances: Balances): ErrorState {
-  const { amount, fromCurrency } = params
+export function validate(
+  params: ExchangeTokenParams,
+  balances: Balances,
+  validateFee = false
+): ErrorState {
+  const { amount, fromCurrency, feeEstimate } = params
   let errors: ErrorState = { isValid: true }
 
   if (!amount || amount <= 0) {
     //make sure there is an amount
-    errors = { ...errors, isValid: false, amount: { error: true, helpText: 'Invalid Amount' } }
+    errors = { ...errors, ...invalidInput('amount', 'Invalid amount') }
   } else {
     //make sure they have enough...
     const amountInWei = utils.parseEther('' + amount)
@@ -29,9 +36,15 @@ export function validate(params: ExchangeTokenParams, balances: Balances): Error
     if (!isAmountValid(amountInWei, fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE)) {
       errors = {
         ...errors,
-        isValid: false,
-        amount: { error: true, helpText: 'Amount not available' },
+        ...invalidInput('amount', 'Amount not available'),
       }
+    }
+  }
+
+  if (validateFee) {
+    errors = {
+      ...validateFeeEstimate(feeEstimate),
+      ...errors,
     }
   }
 
@@ -50,6 +63,7 @@ function* exchangeToken(params: ExchangeTokenParams) {
 }
 
 async function _exchangeToken(params: ExchangeTokenParams) {
+  //TODO: determine how feeEstimate affects an exchange
   const { amount, fromCurrency } = params
   logger.info(`Exchanging ${amount} ${fromCurrency}`)
 

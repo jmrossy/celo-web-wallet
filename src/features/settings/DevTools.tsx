@@ -40,6 +40,9 @@ export function DevTools() {
         <button onClick={onClickLoadWallet}>Load Wallet</button>
       </div>
       <button onClick={onClickFetchFeed}>Fetch Transaction Feed</button>
+      <p>
+        <a href="/splash">Splash Screen</a>
+      </p>
       <ImportWalletForm />
     </div>
   )
