@@ -7,6 +7,7 @@ import ExchangeIcon from 'src/components/icons/exchange_white.svg'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
 import { RadioBox } from 'src/components/input/RadioBox'
 import { Box } from 'src/components/layout/Box'
+import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/consts'
 import { exchangeStarted } from 'src/features/exchange/exchangeSlice'
@@ -62,7 +63,7 @@ export function ExchangeFormScreen() {
   }, [txn])
 
   return (
-    <Box direction="column" styles={style.contentContainer}>
+    <ScreenContentFrame>
       <form onSubmit={handleSubmit}>
         <h1 css={style.title}>Make an Exchange</h1>
 
@@ -126,7 +127,7 @@ export function ExchangeFormScreen() {
           Make Exchange
         </Button>
       </form>
-    </Box>
+    </ScreenContentFrame>
   )
 }
 
