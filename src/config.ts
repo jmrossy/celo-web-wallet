@@ -26,7 +26,7 @@ const debugMode = __DEBUG__ ?? false
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configMainnet: Config = {
   debug: debugMode,
-  fornoUrl: 'https://rc1-forno.celo-testnet.org',
+  fornoUrl: 'https://forno.celo.org',
   blockscoutUrl: 'https://explorer.celo.org',
   chainId: 42220,
   contractAddresses: {
