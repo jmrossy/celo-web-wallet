@@ -10,7 +10,7 @@ import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { ErrorState } from 'src/utils/validation'
+import { ErrorState, invalidInput } from 'src/utils/validation'
 import { call } from 'typed-redux-saga'
 
 export interface SendTokenParams {
@@ -30,11 +30,11 @@ export function validate(
   let errors: ErrorState = { isValid: true }
 
   if (!amount) {
-    errors = { ...errors, isValid: false, amount: { error: true, helpText: 'Invalid Amount' } }
+    errors = { ...errors, ...invalidInput('amount', 'Invalid Amount') }
   } else {
     const amountInWei = utils.parseEther('' + amount)
     if (!isAmountValid(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE)) {
-      errors = { ...errors, isValid: false, amount: { error: true, helpText: 'Invalid Amount' } }
+      errors = { ...errors, ...invalidInput('amount', 'Invalid Amount') }
     }
   }
 
@@ -42,15 +42,13 @@ export function validate(
     logger.error(`Invalid recipient: ${recipient}`)
     errors = {
       ...errors,
-      isValid: false,
-      recipient: { error: true, helpText: 'Invalid Recipient' },
+      ...invalidInput('recipient', 'Invalid Recipient'),
     }
   } else if (!recipient) {
     logger.error(`Invalid recipient: ${recipient}`)
     errors = {
       ...errors,
-      isValid: false,
-      recipient: { error: true, helpText: 'Recipient is required' },
+      ...invalidInput('recipient', 'Recipient is required'),
     }
   }
 
@@ -58,8 +56,7 @@ export function validate(
     logger.error(`Invalid comment: ${comment}`)
     errors = {
       ...errors,
-      isValid: false,
-      comment: { error: true, helpText: 'Comment is too long' },
+      ...invalidInput('comment', 'Comment is too long'),
     }
   }
 

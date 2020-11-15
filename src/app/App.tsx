@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Loading } from 'src/app/Loading'
 import { ExchangeConfirmationScreen } from 'src/features/exchange/ExchangeConfirmationScreen'
 import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { HomeFrame } from 'src/features/home/HomeFrame'
@@ -31,6 +32,10 @@ export class App extends Component {
           <Route path="import" element={<ImportWalletScreen />} />
           <Route path="set-pin" element={<SetPincodeScreen />} />
           <Route path="pin" element={<EnterPincodeScreen />} />
+
+          {/* TODO: For Splashscreen Testing */}
+          <Route path="home" element={<HomeScreen />} />
+          <Route path="loading" element={<Loading />} />
         </Routes>
       </BrowserRouter>
     )

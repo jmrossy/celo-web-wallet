@@ -12,6 +12,7 @@ import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
 import { RadioBox } from 'src/components/input/RadioBox'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
+import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Currency } from 'src/consts'
 import { sendStarted } from 'src/features/send/sendSlice'
 import { SendTokenParams, validate } from 'src/features/send/sendToken'
@@ -67,7 +68,7 @@ export function SendFormScreen() {
   }
 
   return (
-    <Box direction="column" styles={style.contentContainer}>
+    <ScreenContentFrame>
       <form onSubmit={handleSubmit}>
         <h1 css={style.title}>Send or Request Payment</h1>
 
@@ -157,7 +158,7 @@ export function SendFormScreen() {
           </Button>
         </Box>
       </form>
-    </Box>
+    </ScreenContentFrame>
   )
 }
 

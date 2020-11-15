@@ -62,14 +62,13 @@ export function useWeiExchange(
   fromAmount: number,
   fromCurrency: Currency,
   exchangeRate: number,
-  feeInFromCurrency: number
+  feeInStd: number
 ) {
   const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
   const weiRate = utils.parseEther('' + exchangeRate)
   const fromWeiAmount = utils.parseEther('' + fromAmount)
-  const weiFee = utils.parseEther('' + feeInFromCurrency)
-  const toAmount = fromAmount * exchangeRate - feeInFromCurrency
-  // const toWeiAmount = fromWeiAmount.mul(exchangeRate).sub(weiFee);
+  const weiFee = utils.parseEther('' + feeInStd)
+  const toAmount = fromAmount * exchangeRate - feeInStd
   const toWeiAmount = utils.parseEther('' + toAmount)
 
   return {
