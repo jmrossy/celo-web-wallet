@@ -4,7 +4,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
-export function WalletPresent() {
+export function HeaderSection() {
   return (
     <Box direction="column">
       <h1 css={style.header}>Welcome back!</h1>
