@@ -1,10 +1,10 @@
 import { MoneyValue } from 'src/components/MoneyValue'
-import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
-} from 'src/features/home/components/TransactionPropertyGroup'
-import { TransactionStatusProperty } from 'src/features/home/components/TransactionStatusProperty'
+} from 'src/features/feed/components/TransactionPropertyGroup'
+import { TransactionStatusProperty } from 'src/features/feed/components/TransactionStatusProperty'
+import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { TokenExchangeTx } from 'src/features/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'

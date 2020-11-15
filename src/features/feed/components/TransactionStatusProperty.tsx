@@ -1,4 +1,4 @@
-import { TransactionProperty } from 'src/features/home/components/TransactionPropertyGroup'
+import { TransactionProperty } from 'src/features/feed/components/TransactionPropertyGroup'
 import { CeloTransaction } from 'src/features/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
