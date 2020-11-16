@@ -208,6 +208,11 @@ function parseTransaction(
     return null
   }
 
+  if (tx.isError === '1') {
+    // TODO handle failed txs
+    return null
+  }
+
   if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.Exchange])) {
     return parseExchangeTx(tx, address)
   }
@@ -340,7 +345,7 @@ function parseOtherTokenTx(tx: BlockscoutTx, abiInterface: utils.Interface) {
   try {
     const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
     if (txDescription.name === 'transfer' || txDescription.name === 'transferWithComment') {
-      throw new Error(
+      logger.warn(
         'Tx should have been parsed by parseTokenTransfer: ' + JSON.stringify(txDescription)
       )
     }

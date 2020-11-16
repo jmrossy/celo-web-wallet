@@ -1,4 +1,6 @@
 import { BigNumber } from 'ethers'
+import { useSelector } from 'react-redux'
+import { RootState } from 'src/app/rootReducer'
 import { Currency, MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
 import { FeeEstimate } from 'src/features/fees/types'
 import { CeloTransaction } from 'src/features/types'
@@ -42,4 +44,41 @@ export function getFeeFromConfirmedTx(tx: CeloTransaction) {
     .mul(tx.gasUsed)
     .add(tx.gatewayFee ?? 0)
   return { feeValue, feeCurrency: Currency.CELO }
+}
+
+// Gets fee from state and returns amount, fee, and total, all in wei
+export function useFee(amountInWei: string | null | undefined, txCount = 1) {
+  const feeEstimates = useSelector((state: RootState) => state.fees.estimates)
+
+  if (!feeEstimates || !amountInWei) {
+    return {
+      amount: amountInWei ?? '',
+      total: amountInWei ?? '',
+      feeAmount: null,
+      feeCurrency: null,
+      feeEstimates,
+    }
+  }
+
+  let total = BigNumber.from(amountInWei)
+  let feeAmount = BigNumber.from(0)
+  const feeCurrency = feeEstimates[0].currency // all estimates use the same currency
+  for (let i = 0; i < txCount; i++) {
+    const estimate = feeEstimates[i]
+    if (!estimate) {
+      logger.error(`Attempting to use fee number ${i} but it's missing in state`)
+      continue
+    }
+    // TODO handle case where fee currency !== amount currency
+    total = total.add(estimate.fee)
+    feeAmount = feeAmount.add(estimate.fee)
+  }
+
+  return {
+    amount: amountInWei,
+    total: total.toString(),
+    feeAmount: feeAmount.toString(),
+    feeCurrency,
+    feeEstimates,
+  }
 }

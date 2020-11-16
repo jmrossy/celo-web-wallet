@@ -1,21 +1,22 @@
-import { BigNumber, utils } from 'ethers'
+import { BigNumber, BigNumberish, utils } from 'ethers'
 import { Currency } from 'src/consts'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 
 export function isAmountValid(
-  amountInWei: BigNumber,
+  amountInWei: BigNumberish,
   currency: Currency,
   balances: Balances,
   max: string
 ) {
-  if (amountInWei.lte(0)) {
-    logger.warn(`Invalid amount, too small: ${amountInWei.toString()}`)
+  const _amountInWei = BigNumber.from(amountInWei)
+  if (_amountInWei.lte(0)) {
+    logger.warn(`Invalid amount, too small: ${_amountInWei.toString()}`)
     return false
   }
 
-  if (amountInWei.gte(max)) {
-    logger.warn(`Invalid amount, too big: ${amountInWei.toString()}`)
+  if (_amountInWei.gte(max)) {
+    logger.warn(`Invalid amount, too big: ${_amountInWei.toString()}`)
     return false
   }
 
@@ -23,68 +24,73 @@ export function isAmountValid(
     throw new Error('Checking amount validity without fresh balances')
   }
 
-  if (currency === Currency.cUSD && amountInWei.gt(balances.cUsd)) {
-    logger.warn(`Exceeds cUSD balance: ${amountInWei.toString()}`)
+  if (currency === Currency.cUSD && _amountInWei.gt(balances.cUsd)) {
+    logger.warn(`Exceeds cUSD balance: ${_amountInWei.toString()}`)
     return false
   }
 
-  if (currency === Currency.CELO && amountInWei.gt(balances.celo)) {
-    logger.warn(`Exceeds CELO balance: ${amountInWei.toString()}`)
+  if (currency === Currency.CELO && _amountInWei.gt(balances.celo)) {
+    logger.warn(`Exceeds CELO balance: ${_amountInWei.toString()}`)
     return false
   }
 
   return true
 }
 
-export function useWeiAmounts(amount: number, fee: number) {
-  const total = amount + fee
-  const weiFee = utils.parseEther('' + fee)
-  const weiAmount = utils.parseEther('' + amount || '0')
-  const weiTotal = utils.parseEther('' + total)
-
-  return {
-    wei: {
-      amount: weiAmount,
-      fee: weiFee,
-      total: weiTotal,
-    },
-    std: {
-      amount: amount,
-      fee: fee,
-      total: total,
-    },
-  }
+export function fromWei(value: BigNumberish | null | undefined): number {
+  if (!value) return 0
+  return parseFloat(utils.formatEther(value))
 }
 
-const exchangeWeiBasis = utils.parseEther('' + 1)
+export function toWei(value: BigNumberish | null | undefined): BigNumber {
+  if (!value) return BigNumber.from(0)
+  return utils.parseEther('' + value)
+}
 
-export function useWeiExchange(
-  fromAmount: number,
-  fromCurrency: Currency,
-  exchangeRate: number,
-  feeInStd: number
+export function useExchangeValues(
+  fromAmount: number | string | null | undefined,
+  fromCurrency: Currency | null | undefined,
+  toCELORate: number | null | undefined,
+  isFromAmountWei: boolean
 ) {
+  if (!fromAmount || !fromCurrency || !toCELORate) {
+    // Return some defaults when values are missing
+    return {
+      from: {
+        weiAmount: '0',
+        currency: Currency.CELO,
+      },
+      to: {
+        weiAmount: '0',
+        currency: Currency.cUSD,
+      },
+      rate: {
+        weiBasis: '1000000000000000000',
+        weiRate: '0',
+      },
+    }
+  }
+
   const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
-  const weiRate = utils.parseEther('' + exchangeRate)
-  const fromWeiAmount = utils.parseEther('' + fromAmount)
-  const weiFee = utils.parseEther('' + feeInStd)
-  const toAmount = fromAmount * exchangeRate - feeInStd
-  const toWeiAmount = utils.parseEther('' + toAmount)
+  const exchangeRate = fromCurrency === Currency.cUSD ? toCELORate : 1 / toCELORate
+  const exchangeRateWei = toWei(exchangeRate)
+
+  const fromAmountWei = isFromAmountWei ? BigNumber.from(fromAmount) : toWei(fromAmount)
+  const fromAmountNum = isFromAmountWei ? fromWei(fromAmount) : parseFloat('' + fromAmount)
+  const toAmountWei = toWei(fromAmountNum * exchangeRate)
 
   return {
     from: {
-      weiAmount: fromWeiAmount,
+      weiAmount: fromAmountWei.toString(),
       currency: fromCurrency,
     },
     to: {
-      weiAmount: toWeiAmount,
+      weiAmount: toAmountWei.toString(),
       currency: toCurrency,
     },
-    props: {
-      feeCurrency: fromCurrency,
-      weiBasis: exchangeWeiBasis,
-      weiRate: weiRate,
-      weiFee: weiFee,
+    rate: {
+      weiBasis: '1000000000000000000',
+      weiRate: exchangeRateWei.toString(),
     },
   }
 }

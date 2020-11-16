@@ -12,7 +12,7 @@ const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.CeloTokenTransferWithComment]: 66000,
   [TransactionType.CeloTokenApprove]: 52000,
   [TransactionType.CeloNativeTransfer]: 25000,
-  [TransactionType.TokenExchange]: 300000,
+  [TransactionType.TokenExchange]: 250000,
 }
 
 const STABLE_TOKEN_GAS_MULTIPLIER = 10
@@ -28,7 +28,17 @@ export async function estimateGas(
     return computeGasEstimate(tx, feeCurrency)
   }
 
-  return BigNumber.from(PRECOMPUTED_GAS_ESTIMATES[type])
+  const gasLimit = BigNumber.from(PRECOMPUTED_GAS_ESTIMATES[type])
+  if (!feeCurrency || feeCurrency === Currency.CELO) {
+    return gasLimit
+  } else if (feeCurrency === Currency.cUSD) {
+    // TODO find a more scientific was to fix the gas estimation issue.
+    // Since txs paid with cUSD also involve token transfers, the gas needed
+    // is more than what estimateGas returns
+    return gasLimit.mul(STABLE_TOKEN_GAS_MULTIPLIER)
+  } else {
+    throw new Error(`Unsupported fee currency ${feeCurrency}`)
+  }
 }
 
 async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: Currency) {

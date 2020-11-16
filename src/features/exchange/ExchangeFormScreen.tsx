@@ -14,11 +14,15 @@ import { exchangeStarted } from 'src/features/exchange/exchangeSlice'
 import { ExchangeTokenParams, validate } from 'src/features/exchange/exchangeToken'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
-import { useWeiExchange } from 'src/utils/amount'
+import { fromWei, toWei, useExchangeValues } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
-const initialValues: ExchangeTokenParams = {
+interface ExchangeTokenForm extends Omit<ExchangeTokenParams, 'amountInWei'> {
+  amount: number
+}
+
+const initialValues: ExchangeTokenForm = {
   amount: 0,
   fromCurrency: Currency.cUSD,
 }
@@ -26,41 +30,38 @@ const initialValues: ExchangeTokenParams = {
 export function ExchangeFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const staleBalances = useSelector((state: RootState) => state.wallet.balances)
-  const { transaction: txn, toCELORate } = useSelector((state: RootState) => state.exchange)
+  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const { transaction: tx, toCELORate } = useSelector((state: RootState) => state.exchange)
 
-  const onSubmit = async (values: ExchangeTokenParams) => {
+  const onSubmit = (values: ExchangeTokenForm) => {
     if (areInputsValid()) {
-      const safeValues = { ...values, amount: parseFloat(values.amount.toString()) }
-      dispatch(exchangeStarted(safeValues))
+      dispatch(exchangeStarted(toExchangeTokenParams(values)))
       navigate('/exchange-review')
     }
   }
 
   const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
-    ExchangeTokenParams,
+    ExchangeTokenForm,
     any
-  >(txn ?? initialValues, onSubmit)
+  >(toExchangeTokenForm(tx) ?? initialValues, onSubmit)
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
-    validate(values, staleBalances)
+    validate(toExchangeTokenParams(values), balances)
   )
 
-  const fAmount = parseFloat(values.amount.toString())
-  const exchangeRate = values.fromCurrency === Currency.cUSD ? toCELORate : 1 / toCELORate
-  const exchange = useWeiExchange(
-    isNaN(fAmount) ? 0 : fAmount,
+  const { to, from, rate } = useExchangeValues(
+    values.amount,
     values.fromCurrency,
-    exchangeRate,
-    0
+    toCELORate,
+    false
   )
 
   //-- If the txn gets cleared out in the slice, need to reset it in the screen
   useEffect(() => {
-    if (txn === null) {
+    if (tx === null) {
       resetValues(initialValues)
     }
-  }, [txn])
+  }, [tx])
 
   return (
     <ScreenContentFrame>
@@ -101,26 +102,14 @@ export function ExchangeFormScreen() {
         </Box>
         <Box direction="row" align="center" styles={style.inputRow}>
           <label css={style.inputLabel}>Current Rate</label>
-          <MoneyValue
-            amountInWei={exchange.props.weiBasis}
-            currency={exchange.from.currency}
-            baseFontSize={1.2}
-          />
+          <MoneyValue amountInWei={rate.weiBasis} currency={from.currency} baseFontSize={1.2} />
           <span css={style.valueText}>to</span>
-          <MoneyValue
-            amountInWei={exchange.props.weiRate}
-            currency={exchange.to.currency}
-            baseFontSize={1.2}
-          />
+          <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
         </Box>
 
         <Box direction="row" align="center" styles={style.inputRow}>
           <label css={style.inputLabel}>Output Amount</label>
-          <MoneyValue
-            amountInWei={exchange.to.weiAmount}
-            currency={exchange.to.currency}
-            baseFontSize={1.2}
-          />
+          <MoneyValue amountInWei={to.weiAmount} currency={to.currency} baseFontSize={1.2} />
         </Box>
 
         <Button type="submit" size="m" icon={ExchangeIcon}>
@@ -129,6 +118,28 @@ export function ExchangeFormScreen() {
       </form>
     </ScreenContentFrame>
   )
+}
+
+function toExchangeTokenParams(values: ExchangeTokenForm): ExchangeTokenParams {
+  try {
+    return {
+      ...values,
+      amountInWei: toWei(values.amount).toString(),
+    }
+  } catch (error) {
+    return {
+      ...values,
+      amountInWei: '0', // TODO Makes this NaN?
+    }
+  }
+}
+
+function toExchangeTokenForm(values: ExchangeTokenParams | null): ExchangeTokenForm | null {
+  if (!values) return null
+  return {
+    ...values,
+    amount: fromWei(values.amountInWei),
+  }
 }
 
 const style: Stylesheet = {

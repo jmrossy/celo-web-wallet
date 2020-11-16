@@ -18,10 +18,15 @@ import { sendStarted } from 'src/features/send/sendSlice'
 import { SendTokenParams, validate } from 'src/features/send/sendToken'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
+import { fromWei, toWei } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
-const initialValues: SendTokenParams = {
+interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
+  amount: number
+}
+
+const initialValues: SendTokenForm = {
   // TODO set to empty string
   recipient: '0xa2972a33550c33ecfa4a02a0ea212ac98e77fa55',
   amount: 0,
@@ -32,24 +37,23 @@ const initialValues: SendTokenParams = {
 export function SendFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const staleBalances = useSelector((state: RootState) => state.wallet.balances)
+  const balances = useSelector((state: RootState) => state.wallet.balances)
   const tx = useSelector((state: RootState) => state.send.transaction)
 
-  const onSubmit = async (values: SendTokenParams) => {
+  const onSubmit = (values: SendTokenForm) => {
     if (areInputsValid()) {
-      const safeValues = { ...values, amount: parseFloat(values.amount.toString()) }
-      dispatch(sendStarted(safeValues))
+      dispatch(sendStarted(toSendTokenParams(values)))
       navigate('/send-review')
     }
   }
 
   const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
-    SendTokenParams,
+    SendTokenForm,
     any
-  >(tx ?? initialValues, onSubmit)
+  >(toSendTokenForm(tx) ?? initialValues, onSubmit)
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
-    validate(values, staleBalances)
+    validate(toSendTokenParams(values), balances)
   )
 
   //-- if the transaction gets reset, reset the screen as well
@@ -160,6 +164,28 @@ export function SendFormScreen() {
       </form>
     </ScreenContentFrame>
   )
+}
+
+function toSendTokenParams(values: SendTokenForm): SendTokenParams {
+  try {
+    return {
+      ...values,
+      amountInWei: toWei(values.amount).toString(),
+    }
+  } catch (error) {
+    return {
+      ...values,
+      amountInWei: '0', // TODO Makes this NaN?
+    }
+  }
+}
+
+function toSendTokenForm(values: SendTokenParams | null): SendTokenForm | null {
+  if (!values) return null
+  return {
+    ...values,
+    amount: fromWei(values.amountInWei),
+  }
 }
 
 const style: Stylesheet = {

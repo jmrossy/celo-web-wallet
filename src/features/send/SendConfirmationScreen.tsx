@@ -1,4 +1,3 @@
-import { utils } from 'ethers'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -13,13 +12,13 @@ import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
+import { useFee } from 'src/features/fees/utils'
 import { sendCanceled, sendFailed, sendSucceeded } from 'src/features/send/sendSlice'
 import { sendTokenActions } from 'src/features/send/sendToken'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { useWeiAmounts } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 
 export function SendConfirmationScreen() {
@@ -29,15 +28,6 @@ export function SendConfirmationScreen() {
   const { transaction: tx, transactionError: txError } = useSelector(
     (state: RootState) => state.send
   )
-
-  const feeEstimate = useSelector((state: RootState) => state.fees.estimate)
-
-  // TODO support requets
-  const isRequest = false
-
-  // TODO sort out inconsistency in format btwn amount and fee
-  const feeInStd = parseFloat(utils.formatEther(feeEstimate?.fee ?? 0))
-  const { wei } = useWeiAmounts(tx?.amount ?? 0, feeInStd)
 
   //-- need to make sure we belong on this screen
   useEffect(() => {
@@ -53,8 +43,10 @@ export function SendConfirmationScreen() {
     const type = tx.comment
       ? TransactionType.StableTokenTransferWithComment
       : TransactionType.StableTokenTransfer
-    dispatch(estimateFeeActions.trigger({ type }))
+    dispatch(estimateFeeActions.trigger({ txs: [{ type }] }))
   }, [tx])
+
+  const { amount, total, feeAmount, feeCurrency, feeEstimates } = useFee(tx?.amountInWei)
 
   const onGoBack = () => {
     dispatch(sendTokenActions.reset())
@@ -63,9 +55,12 @@ export function SendConfirmationScreen() {
   }
 
   const onSend = () => {
-    if (!tx || !feeEstimate) return
-    dispatch(sendTokenActions.trigger({ ...tx, feeEstimate }))
+    if (!tx || !feeEstimates) return
+    dispatch(sendTokenActions.trigger({ ...tx, feeEstimate: feeEstimates[0] }))
   }
+
+  // TODO support requets
+  const isRequest = false
 
   //TODO: Wrap the following in a hook to simplify?
   const { status: sagaStatus, error: sagaError } = useSelector(
@@ -97,15 +92,15 @@ export function SendConfirmationScreen() {
       <Box direction="row" styles={style.inputRow}>
         <label css={style.inputLabel}>Amount</label>
         <Box direction="row" align="end">
-          <MoneyValue amountInWei={wei.amount} currency={tx.currency} baseFontSize={1.2} />
+          <MoneyValue amountInWei={amount} currency={tx.currency} baseFontSize={1.2} />
         </Box>
       </Box>
 
       <Box direction="row" styles={style.inputRow}>
         <label css={style.inputLabel}>Security Fee</label>
-        {feeEstimate ? (
+        {feeAmount && feeCurrency ? (
           <Box direction="row" align="end">
-            <MoneyValue amountInWei={wei.fee} currency={feeEstimate.currency} baseFontSize={1.2} />
+            <MoneyValue amountInWei={feeAmount} currency={feeCurrency} baseFontSize={1.2} />
             <img src={QuestionIcon} css={style.iconRight} />
           </Box>
         ) : (
@@ -118,7 +113,7 @@ export function SendConfirmationScreen() {
         <label css={{ ...style.inputLabel, ...Font.bold }}>Total</label>
         <Box direction="row" align="end">
           <MoneyValue
-            amountInWei={wei.total}
+            amountInWei={total}
             currency={tx.currency}
             baseFontSize={1.2}
             amountCss={Font.bold}
@@ -151,7 +146,7 @@ export function SendConfirmationScreen() {
           color={Color.primaryGrey}
           onClick={onGoBack}
           icon={ArrowBackIcon}
-          disabled={isSagaWorking || !feeEstimate}
+          disabled={isSagaWorking || !feeAmount}
           margin="0 1em 0 0"
         >
           Edit {isRequest ? 'Request' : 'Payment'}
@@ -161,7 +156,7 @@ export function SendConfirmationScreen() {
           size="m"
           onClick={onSend}
           icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}
-          disabled={isSagaWorking || !feeEstimate}
+          disabled={isSagaWorking || !feeAmount}
         >
           Send {isRequest ? 'Request' : 'Payment'}
         </Button>
