@@ -70,7 +70,7 @@ export function SendConfirmationScreen() {
 
   const isSagaWorking = sagaStatus === SagaStatus.Started
 
-  const { showModal, showLoadingModal, showErrorModal } = useModal()
+  const { showModal, showWorkingModal, showErrorModal } = useModal()
 
   const confirm = async () => {
     await showModal('Payment Succeeded', 'Your payment has been successfully sent')
@@ -84,7 +84,7 @@ export function SendConfirmationScreen() {
   }
 
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Started) void showLoadingModal('Sending Payment...')
+    if (sagaStatus === SagaStatus.Started) void showWorkingModal('Sending Payment...')
     else if (sagaStatus === SagaStatus.Success) void confirm()
     else if (sagaStatus === SagaStatus.Failure) void failure(sagaError?.toString())
   }, [sagaStatus, sagaError])

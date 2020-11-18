@@ -7,11 +7,6 @@ import { LoadingIndicator } from 'src/components/LoadingIndicator'
 import { Color } from 'src/styles/Color'
 import { Styles, Stylesheet } from 'src/styles/types'
 
-// export interface ModalDialogProps extends ModalProps {
-//   onActionClick?: (action: ModalAction) => void
-//   onClose?: () => void
-// }
-
 export type ModalActionCallback = (action: ModalAction) => void
 
 export interface ModalAction {
@@ -42,19 +37,8 @@ export const ModalOkAction: ModalAction = {
 }
 
 export function Modal(props: PropsWithChildren<ModalProps>) {
-  const {
-    // isOpen,
-    head,
-    subHead,
-    body,
-    onClose,
-    actions,
-    onActionClick,
-    isLoading,
-    children,
-  } = props
+  const { head, subHead, body, onClose, actions, onActionClick, isLoading, children } = props
 
-  // if (!isOpen) return null
   const allActions = actions ? (Array.isArray(actions) ? actions : [actions]) : []
 
   const backdropClick = (e: React.MouseEvent<any>) => {
@@ -67,12 +51,12 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
     <>
       <div css={[style.background, style.modalBackdrop]} />
       <div css={[style.background, style.modalContainer]} onClick={backdropClick}>
-        <div css={[style.modal, dropShadow, propsToModalStyle(props)]}>
+        <div id="modal" css={[style.modal, dropShadow, propsToModalStyle(props)]}>
           <Box direction="column" justify="between" styles={style.modalContent}>
-            <Box direction="column" align="center">
-              <h1 css={style.modalHead}>{head}</h1>
-              {subHead && <h2 css={[style.modalSubHead, propsToSubHeadStyle(props)]}>{subHead}</h2>}
-              {!isLoading && !children && body && <p css={style.modalBody}>{body}</p>}
+            <Box direction="column" align="center" styles={style.modalBody}>
+              <h1 css={style.head}>{head}</h1>
+              {subHead && <h2 css={[style.subHead, propsToSubHeadStyle(props)]}>{subHead}</h2>}
+              {!isLoading && !children && body && <div css={style.bodyText}>{body}</div>}
               {!isLoading && children}
               {isLoading && (
                 <div css={{ maxHeight: '15em', maxWidth: '20em' }}>
@@ -128,9 +112,9 @@ const style: Stylesheet = {
   },
   modal: {
     minWidth: '20em',
-    maxWidth: '70%',
+    maxWidth: '50%',
     minHeight: '13em',
-    maxHeight: '70%',
+    maxHeight: '50%',
     border: `1px solid ${Color.borderInactive}`,
     backgroundColor: 'white',
     borderRadius: 5,
@@ -143,24 +127,29 @@ const style: Stylesheet = {
     right: 0,
     bottom: 0,
     padding: '1em',
+    overflow: 'hidden',
   },
   modalContent: {
     width: '100%',
     height: '100%',
     position: 'relative',
   },
-  modalHead: {
+  modalBody: {
+    // maxHeight: '72%',
+  },
+  head: {
     margin: 0,
     fontSize: '1.5em',
     fontWeight: 400,
   },
-  modalSubHead: {
+  subHead: {
     margin: '1em 0 0 0',
     fontSize: '1.15em',
     fontWeight: 400,
   },
-  modalBody: {
+  bodyText: {
     margin: '2em 0 0 0',
+    // overflowY: 'auto',
   },
   closeIcon: {
     position: 'absolute',
@@ -177,33 +166,27 @@ const dropShadow = css`
 `
 
 const propsToSubHeadStyle = (props: ModalProps): Styles => {
-  const css: Styles = {}
-
-  if (props.severity?.toLowerCase() === 'error') {
-    css.color = Color.textError
-  }
-
+  const css: Styles = props.severity?.toLowerCase() === 'error' ? { color: Color.textError } : {}
   return css
 }
 
 const propsToModalStyle = (props: ModalProps): Styles => {
-  const css: Styles = {}
-
-  if (props.size) {
-    switch (props.size) {
-      case 's': {
-        css.maxWidth = '25%'
-        css.maxHeight = '25%'
-        break
-      }
-      //m is the default, so no need to do anything here
-      case 'l': {
-        css.maxWidth = '70%'
-        css.maxHeight = '70%'
-        break
-      }
-    }
-  }
-
+  const css: Styles =
+    props.size === 's' ? { maxWidth: '25%' } : props.size === 'l' ? { maxWidth: '65%' } : {}
   return css
 }
+
+// const propsToBodyStyle = (props: ModalProps): Styles => {
+//   const css: Styles = {}
+
+//   if (props.size) {
+//     switch (props.size) {
+//       case 's': {
+//         // css.overflowY = 'auto'
+//         break
+//       }
+//     }
+//   }
+
+//   return css
+// }

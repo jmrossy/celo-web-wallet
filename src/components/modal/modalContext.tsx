@@ -1,40 +1,33 @@
 import { createContext, useState } from 'react'
 import { Modal, ModalAction, ModalProps } from 'src/components/modal/modal'
 
-type showAsyncFunc = (props: ModalProps) => Promise<ModalAction | null>
-
-export interface IModalContext {
-  showModal: showAsyncFunc
-  showLoadingModal: (head: string) => void
+interface IModalContext {
+  showModal: (props: ModalProps, content?: any) => Promise<ModalAction | null>
   closeModal: () => void
-  setModalContent: (value: any) => void
   modalProps: ModalProps | null
 }
 
-//The context in question.  Values
+//Create and Export the context
 export const ModalContext = createContext<IModalContext>({
   showModal: () => {
-    throw Error('Missing modal context')
-  },
-  showLoadingModal: () => {
     throw Error('Missing modal context')
   },
   closeModal: () => {
     throw Error('Missing modal context')
   },
-  setModalContent: () => {
-    throw Error('Missing modal context')
-  },
   modalProps: null,
 })
 
+//A provider that will supply modal functionality to all children
 export const ModalProvider = ({ children }: any) => {
   const [modal, setModal] = useState<ModalProps | null>(null)
   const [content, setContent] = useState<any>(null)
 
-  const showModal = async (props: ModalProps) => {
-    const isDismissable = !props.isLoading && Boolean(props.onClose || !props.onActionClick)
-    return new Promise<ModalAction | null>((resolve) => {
+  const showModal = async (props: ModalProps, content: any = null) => {
+    const isDismissable = !props.isLoading && Boolean(props.onClose)
+    if (content) setContent(content)
+
+    const modalPromise = new Promise<ModalAction | null>((resolve) => {
       const asyncProps = {
         ...props,
         onClose: isDismissable
@@ -44,33 +37,27 @@ export const ModalProvider = ({ children }: any) => {
             }
           : undefined,
         onActionClick: (action: ModalAction) => {
-          if (props.onActionClick) {
-            props.onActionClick(action)
-          } else {
-            closeModal()
-          }
+          props.onActionClick ? props.onActionClick(action) : closeModal()
           resolve(action)
         },
       }
+
       setModal(asyncProps)
+      if (!isDismissable) resolve(null) //Since there's no way for a user to dismiss, don't leave the promise hanging around
     })
+
+    return modalPromise
   }
 
   const closeModal = () => {
     setModal(null)
-  }
-
-  const showLoadingModal = (head: string) => {
-    const props: ModalProps = { head: head, isLoading: true }
-    setModal(props)
+    setContent(null) //clear out content for next time
   }
 
   const myContext: IModalContext = {
     modalProps: modal,
     showModal,
-    showLoadingModal,
     closeModal,
-    setModalContent: setContent,
   }
 
   return (

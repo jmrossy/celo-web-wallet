@@ -8,92 +8,103 @@ import {
 } from 'src/components/modal/modal'
 import { ModalContext } from 'src/components/modal/modalContext'
 
-export function useModal(
-  onActionClick: ModalActionCallback | null = null
-  // onClose: (() => void) | null = null
-) {
+export function useModal() {
   const context = useContext(ModalContext)
 
-  const showLoadingModal = (
-    head: string,
-    subHead: string | undefined = undefined,
-    dismissable = false
-  ) => {
-    const modalProps = {
+  const showWorkingModal = (head: string, subHead: string | undefined | null = undefined) => {
+    const modalProps: ModalProps = {
       isLoading: true,
       head: head,
-      subHead: subHead,
-      onClose: dismissable ? closeModal : undefined,
+      subHead: subHead ?? undefined,
     }
-    context.setModalContent(null) //clear out any content when it's closing
     return context.showModal(modalProps)
   }
 
-  const showErrorModal = (head: string, error: string, body: string | undefined = undefined) => {
+  const showErrorModal = (
+    head: string,
+    error: string,
+    body: string | null | undefined = undefined
+  ) => {
     const modalProps: ModalProps = {
       head,
       subHead: error,
-      body,
+      body: body ?? undefined,
       severity: 'error',
       actions: ModalOkAction,
-      onClose: closeModal,
-      onActionClick: () => closeModal(),
+      onClose: context.closeModal,
+      onActionClick: context.closeModal,
     }
-    context.setModalContent(null) //clear out any content when it's closing
     return context.showModal(modalProps)
   }
 
   const showModalWithContent = (
     head: string,
     content: any,
-    actions: ModalAction | ModalAction[] | undefined,
-    subHead: string | undefined = undefined,
+    actions: ModalAction | ModalAction[] | undefined | null,
+    subHead: string | undefined | null = undefined,
+    onActionClick: ModalActionCallback | undefined | null = undefined,
     dismissable = true
   ) => {
     const modalProps: ModalProps = {
       head,
-      subHead,
-      onClose: dismissable ? closeModal : undefined,
-      actions: actions,
+      subHead: subHead ?? undefined,
+      onClose: dismissable ? context.closeModal : undefined,
+      actions: actions ?? undefined,
       onActionClick: onActionClick,
     }
-    context.setModalContent(content)
-    return context.showModal(modalProps)
+    return context.showModal(modalProps, content)
   }
 
-  const closeModal = () => {
-    context.closeModal()
-    context.setModalContent(null) //clear out any content when it's closing
-    // if (onClose) onClose()
-  }
-
-  const showModal = (
+  const showActionsModal = (
     head: string,
     body: string,
     actions: ModalAction | ModalAction[] | undefined = undefined,
-    subHead: string | undefined = undefined,
-    size: ModalSize = undefined,
+    onActionClick: ModalActionCallback | undefined | null = undefined,
+    subHead: string | undefined | null = undefined,
+    size: ModalSize | null = undefined,
     dismissable = true
   ) => {
     const modalProps: ModalProps = {
       head,
       body,
       actions: actions ?? ModalOkAction, //default to an ok button
-      subHead,
-      size,
-      onActionClick: actions ? onActionClick : () => closeModal(), //default to close for the Ok button
-      onClose: dismissable ? closeModal : undefined,
+      subHead: subHead ?? undefined,
+      size: size ?? undefined,
+      onActionClick: actions ? onActionClick : context.closeModal, //default to close for the Ok button
+      onClose: dismissable ? context.closeModal : undefined,
     }
 
-    context.setModalContent(null)
+    return context.showModal(modalProps)
+  }
+
+  const showModal = (
+    head: string,
+    body: string,
+    actions: ModalAction | ModalAction[] | undefined | null = undefined,
+    subHead: string | undefined | null = undefined,
+    size: ModalSize | null = undefined,
+    onActionClick: ModalActionCallback | undefined | null = undefined,
+    dismissable = true
+  ) => {
+    const modalProps: ModalProps = {
+      head,
+      body,
+      actions: actions ?? ModalOkAction, //default to an ok button
+      subHead: subHead ?? undefined,
+      size: size ?? undefined,
+      onActionClick: actions ? onActionClick : context.closeModal, //default to close for the Ok button
+      onClose: dismissable ? context.closeModal : undefined,
+    }
+
     return context.showModal(modalProps)
   }
 
   return {
     showModal,
-    showLoadingModal,
+    showWorkingModal,
     showErrorModal,
+    showActionsModal,
     showModalWithContent,
-    closeModal,
+    closeModal: context.closeModal,
   }
 }

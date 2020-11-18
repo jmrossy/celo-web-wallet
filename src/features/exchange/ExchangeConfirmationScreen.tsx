@@ -73,7 +73,7 @@ export function ExchangeConfirmationScreen() {
     dispatch(exchangeTokenActions.trigger({ ...tx, feeEstimates }))
   }
 
-  const { showModal, showLoadingModal, showErrorModal } = useModal()
+  const { showModal, showWorkingModal, showErrorModal } = useModal()
 
   const confirm = async () => {
     await showModal('Exchange Succeeded', 'Your exchange has been completed successfully')
@@ -87,7 +87,7 @@ export function ExchangeConfirmationScreen() {
   }
 
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Started) void showLoadingModal('Sending Payment...')
+    if (sagaStatus === SagaStatus.Started) void showWorkingModal('Making exchange...')
     else if (sagaStatus === SagaStatus.Success) void confirm()
     else if (sagaStatus === SagaStatus.Failure) void failure(sagaError?.toString())
   }, [sagaStatus, sagaError])
