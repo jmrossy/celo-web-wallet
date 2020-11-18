@@ -39,11 +39,10 @@ export function validateFeeEstimate(estimate?: FeeEstimate): ErrorState {
 
 // Looks at the tx properties to infer what its fee was
 export function getFeeFromConfirmedTx(tx: CeloTransaction) {
-  // TODO support cUSD fees, assumes CELO for now
   const feeValue = BigNumber.from(tx.gasPrice)
     .mul(tx.gasUsed)
     .add(tx.gatewayFee ?? 0)
-  return { feeValue, feeCurrency: Currency.CELO }
+  return { feeValue, feeCurrency: tx.feeToken ?? Currency.CELO }
 }
 
 // Gets fee from state and returns amount, fee, and total, all in wei

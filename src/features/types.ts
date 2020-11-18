@@ -11,7 +11,7 @@ interface Transaction {
   timestamp: number
   gasPrice: string
   gasUsed: string
-  feeToken?: string
+  feeToken?: Currency
   gatewayFee?: string
   gatewayFeeRecipient?: string
 }
@@ -35,6 +35,13 @@ export interface StableTokenTransferTx extends Transaction {
   currency: Currency.cUSD
 }
 
+export interface StableTokenApproveTx extends Transaction {
+  type: TransactionType.StableTokenApprove
+  currency: Currency.cUSD
+  approvedValue: string
+  spender: string
+}
+
 export interface CeloTokenTransferTx extends Transaction {
   type: TransactionType.CeloTokenTransfer
   comment?: string
@@ -49,6 +56,13 @@ export interface CeloNativeTransferTx extends Transaction {
   currency: Currency.CELO
 }
 
+export interface CeloTokenApproveTx extends Transaction {
+  type: TransactionType.CeloTokenApprove
+  currency: Currency.CELO
+  approvedValue: string
+  spender: string
+}
+
 export interface TokenExchangeTx extends Transaction {
   type: TransactionType.TokenExchange
   fromToken: Currency
@@ -61,12 +75,13 @@ export interface OtherTx extends Transaction {
   type: TransactionType.Other
 }
 
-export type CeloTransaction =
+export type TokenTransaction =
   | StableTokenTransferTx
   | CeloTokenTransferTx
-  | CeloNativeTransferTx
-  | TokenExchangeTx
-  | OtherTx
+  | StableTokenApproveTx
+  | CeloTokenApproveTx
+
+export type CeloTransaction = TokenTransaction | CeloNativeTransferTx | TokenExchangeTx | OtherTx
 
 export type TokenTransfer = StableTokenTransferTx | CeloTokenTransferTx | CeloNativeTransferTx
 

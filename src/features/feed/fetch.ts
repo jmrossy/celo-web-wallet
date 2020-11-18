@@ -1,4 +1,4 @@
-import { BigNumber, utils } from 'ethers'
+import { BigNumber, BigNumberish, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
@@ -6,11 +6,14 @@ import { Currency } from 'src/consts'
 import { addTransactions } from 'src/features/feed/feedSlice'
 import {
   CeloNativeTransferTx,
+  CeloTokenApproveTx,
   CeloTokenTransferTx,
   CeloTransaction,
   OtherTx,
+  StableTokenApproveTx,
   StableTokenTransferTx,
   TokenExchangeTx,
+  TokenTransaction,
   TransactionMap,
   TransactionType,
 } from 'src/features/types'
@@ -103,16 +106,17 @@ async function doFetchFeed(address: string, lastBlockNumber: number | null) {
   let newLastBlockNumber = lastBlockNumber || 0
 
   for (const tx of txList) {
-    const parsedTx = parseTransaction(tx, address, abiInterfaces)
-    if (!parsedTx) continue
-    newTransactions[parsedTx.hash] = parsedTx
+    if (!isValidTransaction(tx)) continue
     newLastBlockNumber = Math.max(BigNumber.from(tx.blockNumber).toNumber(), newLastBlockNumber)
+    const parsedTx = parseTransaction(tx, address, abiInterfaces)
+    if (parsedTx) {
+      newTransactions[parsedTx.hash] = parsedTx
+    }
   }
 
   return { newTransactions, newLastBlockNumber }
 }
 
-// TODO confirm this works for txs with fees paid in cUSD
 async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number | null) {
   // TODO consider pagination here
 
@@ -140,13 +144,12 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
     txMap.set(tx.hash, tx)
   }
 
-  //  Add the token transfers to the map but under the normal txs from the first list
+  //  Attach the token transfers to their parent txs in the first list
   for (const tx of tokenTxList) {
     // If transfer doesn't have a corresponding tx from the first list, make a placeholder
     // Most common reason would be incoming token transfer
     if (!txMap.has(tx.hash)) {
       txMap.set(tx.hash, copyTx(tx))
-      continue
     }
 
     const parentTx = txMap.get(tx.hash)!
@@ -173,19 +176,69 @@ async function queryBlockscout<P>(url: string) {
   return json.result
 }
 
-type AbiInterfaceMap = Record<Currency, utils.Interface>
+type AbiInterfaceMap = Partial<Record<CeloContract, utils.Interface>>
 
 async function getAbiInterfacesForParsing(): Promise<AbiInterfaceMap> {
   const goldTokenContractP = getContract(CeloContract.GoldToken)
   const stableTokenContractP = getContract(CeloContract.StableToken)
-  const [goldTokenContract, stableTokenContract] = await Promise.all([
+  const exchangeContractP = getContract(CeloContract.Exchange)
+  const [goldTokenContract, stableTokenContract, exchangeContract] = await Promise.all([
     goldTokenContractP,
     stableTokenContractP,
+    exchangeContractP,
   ])
   return {
-    [Currency.CELO]: goldTokenContract.interface,
-    [Currency.cUSD]: stableTokenContract.interface,
+    [CeloContract.GoldToken]: goldTokenContract.interface,
+    [CeloContract.StableToken]: stableTokenContract.interface,
+    [CeloContract.Exchange]: exchangeContract.interface,
   }
+}
+
+function isValidTransaction(tx: BlockscoutTx) {
+  if (!tx) {
+    logger.warn('Empty tx is invalid')
+    return false
+  }
+
+  if (!tx.hash) {
+    logger.warn(`Invalid tx; has no hash`)
+    return false
+  }
+
+  if (!tx.to || !utils.isAddress(tx.to)) {
+    logger.warn(`tx ${tx.hash} has invalid to field`)
+    return false
+  }
+
+  if (!tx.from || !utils.isAddress(tx.from)) {
+    logger.warn(`tx ${tx.hash} has invalid from field`)
+    return false
+  }
+
+  if (!tx.blockNumber || BigNumber.from(tx.blockNumber).lte(0)) {
+    logger.warn(`tx ${tx.hash} has invalid block number`)
+    return false
+  }
+
+  return true
+}
+
+function isValidTokenTransfer(tx: BlockscoutTokenTransfer) {
+  if (!isValidTransaction(tx)) {
+    return
+  }
+
+  if (!tx.value || BigNumber.from(tx.value).lte(0)) {
+    logger.warn(`tx ${tx.hash} has invalid value`)
+    return false
+  }
+
+  if (!tx.tokenSymbol) {
+    logger.warn(`tx ${tx.hash} has invalid token symbol`)
+    return false
+  }
+
+  return true
 }
 
 function parseTransaction(
@@ -193,49 +246,21 @@ function parseTransaction(
   address: string,
   abiInterfaces: AbiInterfaceMap
 ): CeloTransaction | null {
-  if (!tx || !tx.hash) {
-    logger.warn('Ignoring invalid tx', JSON.stringify(tx))
-    return null
-  }
-
-  if (!tx.to || !utils.isAddress(tx.to)) {
-    logger.warn(`tx ${tx.hash} has invalid to field, ignoring`)
-    return null
-  }
-
-  if (!tx.from || !utils.isAddress(tx.from)) {
-    logger.warn(`tx ${tx.hash} has invalid from field, ignoring`)
-    return null
-  }
-
   if (tx.isError === '1') {
     // TODO handle failed txs
     return null
   }
 
   if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.Exchange])) {
-    return parseExchangeTx(tx, address)
-  }
-
-  if (tx.tokenTransfers && tx.tokenTransfers.length) {
-    // TODO support txs with multiple token transfers
-    const tokenTx = tx.tokenTransfers[0]
-    const currency = tokenSymbolToCurrency(tokenTx.tokenSymbol)
-
-    if (currency === Currency.cUSD) {
-      return parseStableTokenTransfer(tokenTx, address, abiInterfaces[Currency.cUSD])
-    }
-    if (currency === Currency.CELO) {
-      return parseCeloTokenTransfer(tokenTx, address, abiInterfaces[Currency.CELO])
-    }
+    return parseExchangeTx(tx, address, abiInterfaces[CeloContract.Exchange]!)
   }
 
   if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.StableToken])) {
-    return parseOtherTokenTx(tx, abiInterfaces[Currency.cUSD])
+    return parseOutgoingTokenTx(tx, Currency.cUSD, abiInterfaces[CeloContract.StableToken]!)
   }
 
   if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.GoldToken])) {
-    return parseOtherTokenTx(tx, abiInterfaces[Currency.CELO])
+    return parseOutgoingTokenTx(tx, Currency.CELO, abiInterfaces[CeloContract.GoldToken]!)
   }
 
   if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.Escrow])) {
@@ -246,6 +271,10 @@ function parseTransaction(
     // TODO parse escrow incoming
   }
 
+  if (tx.tokenTransfers && tx.tokenTransfers.length && !isTxInputEmpty(tx)) {
+    return parseTxWithTokenTransfers(tx, address, abiInterfaces)
+  }
+
   if (tx.value && BigNumber.from(tx.value).gt(0)) {
     return parseNativeTransferTx(tx, address)
   }
@@ -253,108 +282,226 @@ function parseTransaction(
   return parseOtherTx(tx)
 }
 
-function parseStableTokenTransfer(
-  tx: BlockscoutTokenTransfer,
+function parseExchangeTx(
+  tx: BlockscoutTx,
   address: string,
-  abiInterface: utils.Interface
-): StableTokenTransferTx | null {
-  const transfer = parseTokenTransfer(tx, address, abiInterface)
-  if (!transfer) return null
-  return {
-    ...transfer,
-    type: TransactionType.StableTokenTransfer,
-    currency: Currency.cUSD,
-  }
-}
 
-function parseCeloTokenTransfer(
-  tx: BlockscoutTokenTransfer,
-  address: string,
   abiInterface: utils.Interface
-): CeloTokenTransferTx | null {
-  const transfer = parseTokenTransfer(tx, address, abiInterface)
-  if (!transfer) return null
-  return {
-    ...transfer,
-    type: TransactionType.CeloTokenTransfer,
-    currency: Currency.CELO,
-  }
-}
-
-function parseTokenTransfer(
-  tx: BlockscoutTokenTransfer,
-  address: string,
-  abiInterface: utils.Interface
-) {
+): TokenExchangeTx | OtherTx {
   try {
-    let comment: string | undefined
-
-    if (tx.input && tx.input.toLowerCase() !== '0x' && !BigNumber.from(tx.input).isZero()) {
-      // Blockscout does most of the heavy lifting in decoding these
-      // Still need to manually decode with ethers though because blockscout
-      // doesn't include the comment
-      const txDescription = abiInterface.parseTransaction({ data: tx.input })
-      if (txDescription.name !== 'transfer' && txDescription.name !== 'transferWithComment') {
-        throw new Error('Not a valid token transfer tx: ' + JSON.stringify(txDescription))
-      }
-      comment = txDescription.args.comment
+    const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
+    const name = txDescription.name
+    if (name === 'exchange' || name === 'sell') {
+      return parseTokenExchange(
+        tx,
+        address,
+        txDescription.args.sellAmount,
+        txDescription.args.minBuyAmount,
+        txDescription.args.sellGold
+      )
     }
 
-    return {
-      ...parseOtherTx(tx),
-      isOutgoing: areAddressesEqual(tx.from, address),
-      comment,
-    }
+    logger.warn(`Parsing exchange tx with unsupported tx description name: ${name}`, tx)
+    return parseOtherTx(tx)
   } catch (error) {
-    logger.error('Failed to parse tx data', error, tx)
-    return null
+    logger.error('Failed to parse exchange tx data', error, tx)
+    return parseOtherTx(tx)
   }
 }
 
-function parseExchangeTx(tx: BlockscoutTx, address: string): TokenExchangeTx | null {
-  if (!tx.tokenTransfers || tx.tokenTransfers.length !== 2) {
-    logger.error('Expected exchange tx to have two token transfers', tx)
-    return null
+function parseTokenExchange(
+  tx: BlockscoutTx,
+  address: string,
+  sellAmount: string | undefined,
+  minBuyAmount: string | undefined,
+  sellGold: boolean | undefined
+): TokenExchangeTx | OtherTx {
+  if (!sellAmount || !minBuyAmount) {
+    throw new Error('Invalid exchange args')
   }
 
-  const transfer1 = tx.tokenTransfers[0]
-  const transfer2 = tx.tokenTransfers[1]
-  let fromTransfer: BlockscoutTokenTransfer
-  let toTransfer: BlockscoutTokenTransfer
-  if (areAddressesEqual(address, transfer1.from)) {
-    fromTransfer = transfer1
-    toTransfer = transfer2
-  } else {
-    fromTransfer = transfer2
-    toTransfer = transfer1
+  if (!tx.tokenTransfers || tx.tokenTransfers.length < 2) {
+    throw new Error('Expected exchange tx to have at least two token transfers')
+  }
+
+  // Find largest incoming transfer, we assume that's the received exchange funds
+  // Normally there would only be one incoming transfer. This is to handle the
+  // rare case where there are more (like a validator exchanging and also receiving fees)
+  let largestIncomingTransfer: BlockscoutTokenTransfer | null = null
+  for (const transfer of tx.tokenTransfers) {
+    if (!isValidTokenTransfer(transfer)) continue
+    const isIncoming = areAddressesEqual(transfer.to, address)
+    if (!isIncoming) continue
+    const value = BigNumber.from(transfer.value)
+    if (!largestIncomingTransfer || value.gt(largestIncomingTransfer.value)) {
+      largestIncomingTransfer = transfer
+    }
+  }
+
+  if (!largestIncomingTransfer) {
+    throw new Error('No incoming transfers found')
   }
 
   return {
     ...parseOtherTx(tx),
     type: TransactionType.TokenExchange,
-    fromToken: tokenSymbolToCurrency(fromTransfer.tokenSymbol),
-    toToken: tokenSymbolToCurrency(toTransfer.tokenSymbol),
-    fromValue: fromTransfer.value,
-    toValue: toTransfer.value,
+    fromToken: sellGold ? Currency.CELO : Currency.cUSD,
+    toToken: sellGold ? Currency.cUSD : Currency.CELO,
+    fromValue: BigNumber.from(sellAmount).toString(),
+    toValue: largestIncomingTransfer.value,
   }
 }
 
-// Parse token transactions other than transfers
-// The most common would probably be 'approve' calls
-function parseOtherTokenTx(tx: BlockscoutTx, abiInterface: utils.Interface) {
+// Parse transactions to the token contracts
+function parseOutgoingTokenTx(
+  tx: BlockscoutTx,
+  currency: Currency,
+  abiInterface: utils.Interface
+): TokenTransaction | OtherTx {
   try {
     const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
-    if (txDescription.name === 'transfer' || txDescription.name === 'transferWithComment') {
-      logger.warn(
-        'Tx should have been parsed by parseTokenTransfer: ' + JSON.stringify(txDescription)
+    const name = txDescription.name
+    if (name === 'transfer' || name === 'transferWithComment') {
+      return parseOutgoingTokenTransfer(
+        tx,
+        currency,
+        txDescription.args.to,
+        txDescription.args.value,
+        txDescription.args.comment
       )
     }
 
-    // TODO identify more tx types here, jut proxying to generic parse for now
+    if (name === 'approve' || name === 'increaseAllowance') {
+      return parseTokenApproveTx(tx, currency, txDescription.args.spender, txDescription.args.value)
+    }
+
+    logger.warn(`Parsing token tx with unsupported tx description name: ${name}`, tx)
     return parseOtherTx(tx)
   } catch (error) {
-    logger.error('Failed to parse tx data', error, tx)
+    logger.error('Failed to parse token tx data', error, tx)
+    return parseOtherTx(tx)
+  }
+}
+
+function parseOutgoingTokenTransfer(
+  tx: BlockscoutTx,
+  currency: Currency,
+  to: string,
+  value: BigNumberish,
+  comment: string | undefined
+): StableTokenTransferTx | CeloTokenTransferTx | OtherTx {
+  const valueBn = BigNumber.from(value)
+  if (!to || !utils.isAddress(to) || !value || valueBn.isNegative()) {
+    throw new Error('Transfer tx has invalid properties')
+  }
+
+  const result = { ...parseOtherTx(tx), to, value: valueBn.toString(), comment, isOutgoing: true }
+
+  if (currency === Currency.CELO) {
+    return { ...result, type: TransactionType.CeloTokenTransfer, currency: Currency.CELO }
+  } else {
+    return { ...result, type: TransactionType.StableTokenTransfer, currency: Currency.cUSD }
+  }
+}
+
+function parseTokenApproveTx(
+  tx: BlockscoutTx,
+  currency: Currency,
+  spender: string,
+  approvedValue: BigNumberish
+): StableTokenApproveTx | CeloTokenApproveTx | OtherTx {
+  const approvedValueBn = BigNumber.from(approvedValue)
+  if (!spender || !utils.isAddress(spender) || !approvedValue || approvedValueBn.isNegative()) {
+    throw new Error('Approve tx has invalid properties')
+  }
+
+  const result = { ...parseOtherTx(tx), spender, approvedValue: approvedValueBn.toString() }
+
+  if (currency === Currency.CELO) {
+    return { ...result, type: TransactionType.CeloTokenApprove, currency: Currency.CELO }
+  } else {
+    return { ...result, type: TransactionType.StableTokenApprove, currency: Currency.cUSD }
+  }
+}
+
+function parseTxWithTokenTransfers(
+  tx: BlockscoutTx,
+  address: string,
+  abiInterfaces: AbiInterfaceMap
+): StableTokenTransferTx | CeloTokenTransferTx | OtherTx | null {
+  if (!tx.tokenTransfers || !tx.tokenTransfers.length) {
+    logger.error('Parent tx does not have any token transfers', tx)
     return null
+  }
+
+  // If tx is outgoing
+  if (areAddressesEqual(tx.from, address)) {
+    logger.error(
+      'Outgoing token transfers should have been handled by parseOutgoingTokenTransfer',
+      tx
+    )
+    return null
+  }
+
+  const totals = {
+    [Currency.CELO]: BigNumber.from(0),
+    [Currency.cUSD]: BigNumber.from(0),
+  }
+  for (const transfer of tx.tokenTransfers) {
+    if (!isValidTokenTransfer(transfer)) continue
+
+    const currency = tokenSymbolToCurrency(transfer.tokenSymbol)
+
+    if (areAddressesEqual(transfer.to, address)) {
+      totals[currency] = totals[currency].add(transfer.value)
+    } else if (areAddressesEqual(transfer.from, address)) {
+      totals[currency] = totals[currency].sub(transfer.value)
+    } else {
+      continue
+    }
+  }
+
+  // This logic assumes blockscout puts the main transfer (i.e. not gas
+  // transfers) first the list. If that changes this needs to be smarter.
+  const mainTransfer = tx.tokenTransfers[0]
+  const currency = tokenSymbolToCurrency(mainTransfer.tokenSymbol)
+  const comment = tryParseTransferComment(mainTransfer, currency, abiInterfaces)
+
+  const result = {
+    ...parseOtherTx(tx),
+    from: mainTransfer.from,
+    to: mainTransfer.to,
+    value: totals[currency].toString(),
+    comment,
+    isOutgoing: false,
+  }
+
+  if (currency === Currency.CELO) {
+    return { ...result, type: TransactionType.CeloTokenTransfer, currency: Currency.CELO }
+  } else {
+    return { ...result, type: TransactionType.StableTokenTransfer, currency: Currency.cUSD }
+  }
+}
+
+function tryParseTransferComment(
+  tx: BlockscoutTokenTransfer,
+  currency: Currency,
+  abiInterfaces: AbiInterfaceMap
+): string | undefined {
+  try {
+    const abiInterface =
+      currency === Currency.CELO
+        ? abiInterfaces[CeloContract.GoldToken]
+        : abiInterfaces[CeloContract.StableToken]
+    const txDescription = abiInterface!.parseTransaction({ data: tx.input })
+    if (txDescription.name === 'transferWithComment') {
+      return txDescription.args.comment
+    } else {
+      return undefined
+    }
+  } catch (error) {
+    logger.warn('Could not parse transfer comment', tx)
+    return undefined
   }
 }
 
@@ -384,6 +531,8 @@ function parseOtherTx(tx: BlockscoutTx): OtherTx {
 }
 
 function copyTx(tx: BlockscoutTxBase): BlockscoutTx {
+  // Don't just use destructuring here because extra fields
+  // should be filtered out
   return {
     hash: tx.hash,
     value: tx.value,
@@ -411,4 +560,8 @@ function tokenSymbolToCurrency(symbol: string) {
   } else {
     return Currency.CELO
   }
+}
+
+function isTxInputEmpty(tx: BlockscoutTx) {
+  return !tx.input || tx.input.toLowerCase() === '0x' || BigNumber.from(tx.input).isZero()
 }
