@@ -65,7 +65,8 @@ export const requiredFeatures: IBrowserFeature[] = [
   { key: 'crypto', check: () => Boolean(window.crypto) },
 ]
 
-export const invalidFeatures: IBrowserFeature[] = [
+//For testing purposes, to demonstrate how it works with unsupported features
+export const testInvalidFeatures: IBrowserFeature[] = [
   { key: 'crypto', check: () => Boolean(window.crypto) },
   { key: 'test', check: () => false },
 ]
