@@ -4,10 +4,14 @@ import Elipse from 'src/components/icons/celo_elipse.svg'
 import { Box } from 'src/components/layout/Box'
 import { ModalAction, ModalOkAction, ModalSize } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
+import { Notification } from 'src/components/Notification'
 import { Color } from 'src/styles/Color'
+import { invalidFeatures, useFeatureValidation } from 'src/utils/validation'
 
 export function ModalTestScreen() {
   const [isLoading, setLoading] = useState<boolean>(false)
+  const [isInvalid, setInvalid] = useState(false)
+  const isBrowserValid = useFeatureValidation(isInvalid ? invalidFeatures : null)
 
   const actionClick = (action: ModalAction) => {
     if (action.key === 'ok' || action.key === 'close') closeModal()
@@ -112,6 +116,30 @@ export function ModalTestScreen() {
 
   return (
     <div>
+      <Notification
+        message={
+          isBrowserValid
+            ? 'Your browser is valid'
+            : 'Your browser does not support required features'
+        }
+        color={isBrowserValid ? Color.fillLight : Color.fillError}
+        textColor={isBrowserValid ? Color.primaryGreen : Color.textError}
+      />
+
+      <Box direction="column" align="center">
+        <h1 css={{ width: '100%', textAlign: 'center' }}>Browser Feature Testing</h1>
+        {isInvalid && (
+          <Button onClick={() => setInvalid(false)} margin="0 0 2em 0">
+            Test Required Features
+          </Button>
+        )}
+        {!isInvalid && (
+          <Button onClick={() => setInvalid(true)} margin="0 0 2em 0">
+            Test Invalid Features
+          </Button>
+        )}
+      </Box>
+
       <Box direction="row" justify="center" styles={{ flexWrap: 'wrap' }}>
         <h1 css={{ width: '100%', textAlign: 'center' }}>Modal Testing</h1>
         <Button onClick={standard} margin="1em">

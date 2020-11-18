@@ -55,3 +55,45 @@ export function useInputValidation(touched: any, validateFn: () => ErrorState) {
     clearInputErrors,
   }
 }
+
+interface IBrowserFeature {
+  key: string
+  check: () => boolean
+}
+
+export const requiredFeatures: IBrowserFeature[] = [
+  { key: 'crypto', check: () => Boolean(window.crypto) },
+]
+
+export const invalidFeatures: IBrowserFeature[] = [
+  { key: 'crypto', check: () => Boolean(window.crypto) },
+  { key: 'test', check: () => false },
+]
+
+export function useFeatureValidation(features: IBrowserFeature[] | null = null) {
+  const [isValid, setValid] = useState(true) //assume valid to start
+  const toValidate = features ?? requiredFeatures
+
+  useEffect(() => {
+    try {
+      //enumerate the required features and determine if they are available
+      const result = toValidate.reduce((valid: boolean, feature: IBrowserFeature) => {
+        try {
+          const available = feature.check()
+          if (!available)
+            console.error(`The following browser feature is not available: ${feature.key}`)
+          return valid && available
+        } catch {
+          console.error(`The following browser feature is not available: ${feature.key}`)
+          return false
+        }
+      }, true)
+
+      setValid(result)
+    } catch {
+      setValid(false)
+    }
+  }, [toValidate])
+
+  return isValid
+}
