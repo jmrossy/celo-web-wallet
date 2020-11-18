@@ -2,6 +2,7 @@ import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
 import { connectToForno } from 'src/blockchain/provider'
 import { config } from 'src/config'
+import { fetchExchangeRateReducer, fetchExchangeRateSaga } from 'src/features/exchange/exchangeRate'
 import { exchangeTokenReducer, exchangeTokenSaga } from 'src/features/exchange/exchangeToken'
 import { feedFetchPoller, fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
 import { estimateFeeReducer, estimateFeeSaga } from 'src/features/fees/estimateFee'
@@ -62,6 +63,10 @@ export const monitoredSagas: {
   estimateFee: {
     saga: estimateFeeSaga,
     reducer: estimateFeeReducer,
+  },
+  fetchExchangeRate: {
+    saga: fetchExchangeRateSaga,
+    reducer: fetchExchangeRateReducer,
   },
 }
 

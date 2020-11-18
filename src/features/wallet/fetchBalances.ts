@@ -3,11 +3,11 @@ import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { CeloContract } from 'src/config'
+import { BALANCE_STALE_TIME } from 'src/consts'
 import { updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
+import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
-
-const BALANCE_STALE_TIME = 15000 // 15 seconds
 
 function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
@@ -27,8 +27,7 @@ export function* fetchBalancesIfStale() {
   const { lastUpdated, cUsd, celo } = balances
 
   if (
-    !lastUpdated ||
-    Date.now() - lastUpdated > BALANCE_STALE_TIME ||
+    isStale(lastUpdated, BALANCE_STALE_TIME) ||
     BigNumber.from(cUsd).isZero() ||
     BigNumber.from(celo).isZero()
   ) {

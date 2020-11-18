@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -10,12 +10,14 @@ import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
 import { Currency } from 'src/consts'
+import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { exchangeCanceled, exchangeFailed, exchangeSent } from 'src/features/exchange/exchangeSlice'
 import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
+import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { useExchangeValues } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
@@ -24,7 +26,7 @@ export function ExchangeConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { transaction: tx, toCELORate, transactionError: txnError } = useSelector(
+  const { transaction: tx, cUsdToCelo, transactionError: txnError } = useSelector(
     (state: RootState) => state.exchange
   )
 
@@ -32,10 +34,20 @@ export function ExchangeConfirmationScreen() {
     if (!tx) {
       return
     }
+
+    dispatch(
+      fetchExchangeRateActions.trigger({
+        sellGold: tx.fromCurrency === Currency.CELO,
+        sellAmount: tx.amountInWei,
+        force: true,
+      })
+    )
+
     const approveType =
       tx.fromCurrency === Currency.CELO
         ? TransactionType.CeloTokenApprove
         : TransactionType.StableTokenApprove
+
     dispatch(
       estimateFeeActions.trigger({
         preferredCurrency: tx.fromCurrency,
@@ -47,7 +59,12 @@ export function ExchangeConfirmationScreen() {
   // TODO show totalIn as shown in new designs
   const { total: totalIn, feeAmount, feeCurrency, feeEstimates } = useFee(tx?.amountInWei, 2)
 
-  const { from, to, rate } = useExchangeValues(tx?.amountInWei, tx?.fromCurrency, toCELORate, true)
+  const { from, to, rate } = useExchangeValues(
+    tx?.amountInWei,
+    tx?.fromCurrency,
+    cUsdToCelo?.rate,
+    true
+  )
 
   const { status: sagaStatus, error: sagaError } = useSelector(
     (state: RootState) => state.saga.exchangeToken
@@ -68,8 +85,8 @@ export function ExchangeConfirmationScreen() {
   }
 
   async function onExchange() {
-    if (!tx || !feeEstimates) return
-    dispatch(exchangeTokenActions.trigger({ ...tx, feeEstimates }))
+    if (!tx || !cUsdToCelo || !feeEstimates) return
+    dispatch(exchangeTokenActions.trigger({ ...tx, exchangeRate: cUsdToCelo, feeEstimates }))
   }
 
   useEffect(() => {
@@ -90,7 +107,7 @@ export function ExchangeConfirmationScreen() {
     <Box direction="column" styles={style.contentContainer}>
       {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
 
-      <h1 css={style.title}>Review Exchange</h1>
+      <h1 css={Font.h2Green}>Review Exchange</h1>
 
       <Box direction="row" styles={style.inputRow} align="end">
         <label css={style.inputLabel}>Amount</label>
@@ -99,9 +116,16 @@ export function ExchangeConfirmationScreen() {
 
       <Box direction="row" align="end" styles={style.inputRow}>
         <label css={style.inputLabel}>Current Rate</label>
-        <MoneyValue amountInWei={rate.weiBasis} currency={from.currency} baseFontSize={1.2} />
-        <span css={style.valueText}>to</span>
-        <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
+        {cUsdToCelo ? (
+          <Fragment>
+            <MoneyValue amountInWei={rate.weiBasis} currency={from.currency} baseFontSize={1.2} />
+            <span css={style.valueText}>to</span>
+            <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
+          </Fragment>
+        ) : (
+          // TODO a proper loader (need to update mocks)
+          <span css={style.valueText}>...</span>
+        )}
       </Box>
 
       <Box direction="row" styles={style.inputRow} align="end">
@@ -113,7 +137,7 @@ export function ExchangeConfirmationScreen() {
           </Box>
         ) : (
           // TODO a proper loader (need to update mocks)
-          <div>Loading...</div>
+          <div>...</div>
         )}
       </Box>
 
@@ -145,7 +169,7 @@ export function ExchangeConfirmationScreen() {
           onClick={onExchange}
           size="m"
           icon={ExchangeIcon}
-          disabled={isWorking}
+          disabled={isWorking || !feeAmount || !cUsdToCelo}
         >
           Make Exchange
         </Button>
@@ -160,13 +184,6 @@ const style: Stylesheet = {
     paddingLeft: '4em',
     paddingTop: '2em',
     width: '100%',
-  },
-  title: {
-    color: Color.accentBlue,
-    fontWeight: 400,
-    fontSize: '2em',
-    marginTop: 0,
-    marginBottom: '1em',
   },
   inputRow: {
     marginBottom: '2em',

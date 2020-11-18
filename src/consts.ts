@@ -3,6 +3,7 @@ export enum Currency {
   CELO = 'celo',
 }
 
+export const WEI_PER_UNIT = '1000000000000000000' // 1 'Celo' or 'Ether'
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const TEST_ADDRESS = '0x35b74Ed5038bf0488Ff33bD9819b9D12D10A7560'
 export const ETHEREUM_DERIVATION_PATH = "m/44'/60'/0'/0"
@@ -15,3 +16,9 @@ export const MAX_COMMENT_CHAR_LENGTH = 70 // Chosen to match max length in Valor
 export const MAX_FEE_SIZE = '1000000000000000000' // 1 Token
 export const MAX_GAS_PRICE = '5000000000' // 5 Gwei
 export const MAX_GAS_LIMIT = '10000000' // 10 million
+
+export const MIN_EXCHANGE_RATE = 0.01 // 100 cUSD per Celo
+
+export const BALANCE_STALE_TIME = 15000 // 15 seconds
+export const GAS_PRICE_STALE_TIME = 10000 // 10 seconds
+export const EXCHANGE_RATE_STALE_TIME = 15000 // 15 seconds
