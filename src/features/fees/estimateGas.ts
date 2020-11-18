@@ -15,7 +15,7 @@ const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.TokenExchange]: 250000,
 }
 
-const STABLE_TOKEN_GAS_MULTIPLIER = 10
+const STABLE_TOKEN_GAS_MULTIPLIER = 5
 
 export async function estimateGas(
   type: TransactionType,

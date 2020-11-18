@@ -67,7 +67,7 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     tx.type === TransactionType.CeloTokenTransfer
   ) {
     // TODO support comment encryption
-    const description = tx.comment ?? (tx.isOutgoing ? 'Payment Sent' : 'Payment Received')
+    const description = tx.comment || (tx.isOutgoing ? 'Payment Sent' : 'Payment Received')
     const icon = <Identicon address={tx.isOutgoing ? tx.to : tx.from} />
 
     return {
@@ -79,11 +79,32 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
       isPositive: !tx.isOutgoing,
     }
   }
+
+  if (
+    tx.type === TransactionType.StableTokenApprove ||
+    tx.type === TransactionType.CeloTokenApprove
+  ) {
+    // TODO support comment encryption
+    const description = 'Transfer Approval'
+    // TODO create an approve tx icon
+    const icon = <Identicon address={tx.to} />
+
+    return {
+      icon,
+      description,
+      subDescription,
+      currency: tx.currency,
+      value: '0',
+      isPositive: true,
+    }
+  }
+
   if (tx.type === TransactionType.TokenExchange) {
-    // TODO create an exchange tx  icon
+    // TODO create an exchange tx icon
     const icon = <Identicon address={tx.to} />
     let description: string
     let currency: Currency
+
     if (tx.fromToken === Currency.CELO) {
       description = 'CELO to cUSD Exchange'
       currency = Currency.cUSD
