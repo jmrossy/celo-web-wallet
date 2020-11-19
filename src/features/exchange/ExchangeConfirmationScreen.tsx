@@ -82,8 +82,8 @@ export function ExchangeConfirmationScreen() {
     navigate('/')
   }
 
-  const failure = async (error: string | undefined) => {
-    await showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
+  const failure = (error: string | undefined) => {
+    void showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
   }
 
   useEffect(() => {

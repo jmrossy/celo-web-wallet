@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { shallowEqual } from 'react-redux'
+import { logger } from 'src/utils/logger'
 
 export type FieldError = {
   error: boolean
@@ -82,10 +83,10 @@ export function useFeatureValidation(features: IBrowserFeature[] | null = null) 
         try {
           const available = feature.check()
           if (!available)
-            console.error(`The following browser feature is not available: ${feature.key}`)
+            logger.error(`The following browser feature is not available: ${feature.key}`)
           return valid && available
         } catch {
-          console.error(`The following browser feature is not available: ${feature.key}`)
+          logger.error(`The following browser feature is not available: ${feature.key}`)
           return false
         }
       }, true)

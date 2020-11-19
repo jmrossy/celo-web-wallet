@@ -59,7 +59,7 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
               {!isLoading && !children && body && <div css={style.bodyText}>{body}</div>}
               {!isLoading && children}
               {isLoading && (
-                <div css={{ maxHeight: '15em', maxWidth: '20em' }}>
+                <div css={style.loadingContainer}>
                   <LoadingIndicator />
                 </div>
               )}
@@ -156,6 +156,10 @@ const style: Stylesheet = {
     top: 0,
     right: 0,
     backgroundColor: 'transparent',
+  },
+  loadingContainer: {
+    maxHeight: '15em',
+    maxWidth: '20em',
   },
 }
 
