@@ -55,13 +55,13 @@ const containerStyle: Styles = {
   color: Color.primaryGrey,
   marginRight: 4,
   height: InputStyleConstants.defaultHeight, //default height (may be overridden by the classes)
+  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
 }
 
 const containerStyleSelected: Styles = {
   ...containerStyle,
   borderColor: Color.primaryGreen,
-  color: Color.primaryGreen, //Color.primaryWhite,
-  // backgroundColor: Color.primaryGreen,
+  color: Color.primaryGreen,
 }
 
 const inputStyle: Styles = {

@@ -1,18 +1,21 @@
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import ExchangeIcon from 'src/components/icons/exchange_white.svg'
+import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
-import { RadioBox } from 'src/components/input/RadioBox'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/consts'
+import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { exchangeStarted } from 'src/features/exchange/exchangeSlice'
-import { ExchangeTokenParams, validate } from 'src/features/exchange/exchangeToken'
+import { validate } from 'src/features/exchange/exchangeToken'
+import { ExchangeTokenParams } from 'src/features/exchange/types'
 import { Color } from 'src/styles/Color'
+import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei, useExchangeValues } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -31,7 +34,11 @@ export function ExchangeFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
-  const { transaction: tx, toCELORate } = useSelector((state: RootState) => state.exchange)
+  const { transaction: tx, cUsdToCelo } = useSelector((state: RootState) => state.exchange)
+
+  useEffect(() => {
+    dispatch(fetchExchangeRateActions.trigger({}))
+  }, [])
 
   const onSubmit = (values: ExchangeTokenForm) => {
     if (areInputsValid()) {
@@ -52,7 +59,7 @@ export function ExchangeFormScreen() {
   const { to, from, rate } = useExchangeValues(
     values.amount,
     values.fromCurrency,
-    toCELORate,
+    cUsdToCelo?.rate,
     false
   )
 
@@ -66,7 +73,7 @@ export function ExchangeFormScreen() {
   return (
     <ScreenContentFrame>
       <form onSubmit={handleSubmit}>
-        <h1 css={style.title}>Make an Exchange</h1>
+        <h1 css={Font.h2Green}>Make an Exchange</h1>
 
         <Box direction="row" align="center" styles={style.inputRow}>
           <label css={style.inputLabel}>Amount to Exchange</label>
@@ -81,30 +88,34 @@ export function ExchangeFormScreen() {
         </Box>
         <Box direction="row" align="center" styles={style.inputRow}>
           <label css={style.inputLabel}>Currency</label>
-          <RadioBox
+          <CurrencyRadioBox
             tabIndex={0}
             label="cUSD"
             value={Currency.cUSD}
             name="fromCurrency"
             checked={values.fromCurrency === Currency.cUSD}
             onChange={handleChange}
-            containerCss={{ minWidth: 52 }}
           />
-          <RadioBox
+          <CurrencyRadioBox
             tabIndex={1}
             label="CELO"
             value={Currency.CELO}
             name="fromCurrency"
             checked={values.fromCurrency === Currency.CELO}
             onChange={handleChange}
-            containerCss={{ minWidth: 52 }}
           />
         </Box>
         <Box direction="row" align="center" styles={style.inputRow}>
           <label css={style.inputLabel}>Current Rate</label>
-          <MoneyValue amountInWei={rate.weiBasis} currency={from.currency} baseFontSize={1.2} />
-          <span css={style.valueText}>to</span>
-          <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
+          {cUsdToCelo ? (
+            <Fragment>
+              <MoneyValue amountInWei={rate.weiBasis} currency={from.currency} baseFontSize={1.2} />
+              <span css={style.valueText}>to</span>
+              <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
+            </Fragment>
+          ) : (
+            <span css={style.valueText}>Loading...</span>
+          )}
         </Box>
 
         <Box direction="row" align="center" styles={style.inputRow}>
@@ -148,13 +159,6 @@ const style: Stylesheet = {
     paddingLeft: '4em',
     paddingTop: '2em',
     width: '100%',
-  },
-  title: {
-    color: Color.accentBlue,
-    fontWeight: 400,
-    fontSize: '2em',
-    marginTop: 0,
-    marginBottom: '1em',
   },
   inputRow: {
     marginBottom: '2em',

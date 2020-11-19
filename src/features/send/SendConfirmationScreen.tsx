@@ -95,7 +95,7 @@ export function SendConfirmationScreen() {
     <Box direction="column" styles={style.contentContainer}>
       {txError && <Notification message={txError.toString()} color={Color.borderError} />}
 
-      <h1 css={style.title}>Review {isRequest ? 'Request' : 'Payment'}</h1>
+      <h1 css={Font.h2Green}>Review {isRequest ? 'Request' : 'Payment'}</h1>
 
       <Box direction="row" styles={style.inputRow}>
         <label css={style.inputLabel}>Amount</label>
@@ -113,7 +113,7 @@ export function SendConfirmationScreen() {
           </Box>
         ) : (
           // TODO a proper loader (need to update mocks)
-          <div>Loading...</div>
+          <div>...</div>
         )}
       </Box>
 
@@ -179,13 +179,6 @@ const style: Stylesheet = {
     paddingLeft: '4em',
     paddingTop: '2em',
     width: '100%',
-  },
-  title: {
-    color: Color.accentBlue,
-    fontWeight: 400,
-    fontSize: '2em',
-    marginTop: 0,
-    marginBottom: '1em',
   },
   inputRow: {
     marginBottom: '2em',

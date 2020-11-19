@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
-import { Currency } from 'src/consts'
+import { Currency, WEI_PER_UNIT } from 'src/consts'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 
@@ -50,10 +50,10 @@ export function toWei(value: BigNumberish | null | undefined): BigNumber {
 export function useExchangeValues(
   fromAmount: number | string | null | undefined,
   fromCurrency: Currency | null | undefined,
-  toCELORate: number | null | undefined,
+  cUsdToCelo: number | null | undefined,
   isFromAmountWei: boolean
 ) {
-  if (!fromAmount || !fromCurrency || !toCELORate) {
+  if (!fromCurrency || !cUsdToCelo) {
     // Return some defaults when values are missing
     return {
       from: {
@@ -65,14 +65,14 @@ export function useExchangeValues(
         currency: Currency.cUSD,
       },
       rate: {
-        weiBasis: '1000000000000000000',
+        weiBasis: WEI_PER_UNIT,
         weiRate: '0',
       },
     }
   }
 
   const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
-  const exchangeRate = fromCurrency === Currency.cUSD ? toCELORate : 1 / toCELORate
+  const exchangeRate = fromCurrency === Currency.cUSD ? cUsdToCelo : 1 / cUsdToCelo
   const exchangeRateWei = toWei(exchangeRate)
 
   const fromAmountWei = isFromAmountWei ? BigNumber.from(fromAmount) : toWei(fromAmount)
@@ -89,7 +89,7 @@ export function useExchangeValues(
       currency: toCurrency,
     },
     rate: {
-      weiBasis: '1000000000000000000',
+      weiBasis: WEI_PER_UNIT,
       weiRate: exchangeRateWei.toString(),
     },
   }

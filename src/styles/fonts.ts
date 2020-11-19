@@ -17,8 +17,14 @@ export const Font = {
     marginBottom: '1em',
   },
   h2: {
-    fontSize: '1.1em',
+    fontSize: '1.4em',
     fontWeight: 400,
+  },
+  h2Green: {
+    fontSize: '1.4em',
+    fontWeight: 400,
+    color: Color.primaryGreen,
+    marginBottom: '1em',
   },
   label: {
     fontSize: '0.9em',

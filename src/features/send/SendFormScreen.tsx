@@ -4,12 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
-import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment_white.svg'
 import { Identicon } from 'src/components/Identicon'
 import { AddressInput } from 'src/components/input/AddressInput'
+import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
-import { RadioBox } from 'src/components/input/RadioBox'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -17,6 +16,7 @@ import { Currency } from 'src/consts'
 import { sendStarted } from 'src/features/send/sendSlice'
 import { SendTokenParams, validate } from 'src/features/send/sendToken'
 import { Color } from 'src/styles/Color'
+import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -63,10 +63,6 @@ export function SendFormScreen() {
     }
   }, [tx])
 
-  const onRequest = () => {
-    alert('Not Implemented')
-  }
-
   const onCopyAddress = async () => {
     await navigator.clipboard.writeText(values.recipient)
   }
@@ -74,7 +70,7 @@ export function SendFormScreen() {
   return (
     <ScreenContentFrame>
       <form onSubmit={handleSubmit}>
-        <h1 css={style.title}>Send or Request Payment</h1>
+        <h1 css={Font.h2Green}>Send Payment</h1>
 
         <Box direction="column" styles={style.inputRow}>
           <label css={style.inputLabel}>Recipient Address</label>
@@ -116,23 +112,21 @@ export function SendFormScreen() {
           <Box direction="column" align="start" styles={{ width: '50%' }}>
             <label css={style.inputLabel}>Currency</label>
             <Box direction="row" justify="start" align="end" styles={style.radioBox}>
-              <RadioBox
+              <CurrencyRadioBox
                 tabIndex={0}
                 label="cUSD"
                 value={Currency.cUSD}
                 name="currency"
                 checked={values.currency === Currency.cUSD}
                 onChange={handleChange}
-                containerCss={{ minWidth: 52 }}
               />
-              <RadioBox
+              <CurrencyRadioBox
                 tabIndex={1}
                 label="CELO"
                 value={Currency.CELO}
                 name="currency"
                 checked={values.currency === Currency.CELO}
                 onChange={handleChange}
-                containerCss={{ minWidth: 52 }}
               />
             </Box>
           </Box>
@@ -157,9 +151,9 @@ export function SendFormScreen() {
           <Button type="submit" size="m" icon={SendPaymentIcon} margin="0 1em 0 0">
             Send Payment
           </Button>
-          <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
+          {/* <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
             Request Payment
-          </Button>
+          </Button> */}
         </Box>
       </form>
     </ScreenContentFrame>
@@ -194,13 +188,6 @@ const style: Stylesheet = {
     paddingLeft: '4em',
     paddingTop: '2em',
     width: '100%',
-  },
-  title: {
-    color: Color.accentBlue,
-    fontWeight: 400,
-    fontSize: '2em',
-    marginTop: 0,
-    marginBottom: '1em',
   },
   inputRow: {
     marginBottom: '2em',
