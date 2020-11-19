@@ -79,8 +79,8 @@ export function SendConfirmationScreen() {
     navigate('/')
   }
 
-  const failure = async (error: string | undefined) => {
-    await showErrorModal('Payment Failed', 'Your payment could not be processed', error)
+  const failure = (error: string | undefined) => {
+    void showErrorModal('Payment Failed', 'Your payment could not be processed', error)
   }
 
   useEffect(() => {
