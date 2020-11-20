@@ -20,6 +20,7 @@ import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
+import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 
 export function SendConfirmationScreen() {
@@ -80,13 +81,16 @@ export function SendConfirmationScreen() {
   }
 
   const failure = (error: string | undefined) => {
-    void showErrorModal('Payment Failed', 'Your payment could not be processed', error)
+    showErrorModal('Payment Failed', 'Your payment could not be processed', error).catch((err) =>
+      logger.error(err)
+    )
   }
 
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Started) void showWorkingModal('Sending Payment...')
-    else if (sagaStatus === SagaStatus.Success) void confirm()
-    else if (sagaStatus === SagaStatus.Failure) void failure(sagaError?.toString())
+    if (sagaStatus === SagaStatus.Started)
+      showWorkingModal('Sending Payment...').catch((err) => logger.error(err))
+    else if (sagaStatus === SagaStatus.Success) confirm().catch((err) => logger.error(err))
+    else if (sagaStatus === SagaStatus.Failure) failure(sagaError?.toString())
   }, [sagaStatus, sagaError])
 
   if (!tx) return null

@@ -21,6 +21,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { useExchangeValues } from 'src/utils/amount'
+import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 
 export function ExchangeConfirmationScreen() {
@@ -100,13 +101,16 @@ export function ExchangeConfirmationScreen() {
   }
 
   const failure = (error: string | undefined) => {
-    void showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
+    showErrorModal('Exchange Failed', 'Your exchange could not be processed', error).catch((err) =>
+      logger.error(err)
+    )
   }
 
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Started) void showWorkingModal('Making exchange...')
-    else if (sagaStatus === SagaStatus.Success) void confirm()
-    else if (sagaStatus === SagaStatus.Failure) void failure(sagaError?.toString())
+    if (sagaStatus === SagaStatus.Started)
+      showWorkingModal('Making exchange...').catch((err) => logger.error(err))
+    else if (sagaStatus === SagaStatus.Success) confirm().catch((err) => logger.error(err))
+    else if (sagaStatus === SagaStatus.Failure) failure(sagaError?.toString())
   }, [sagaStatus, sagaError])
 
   if (!tx) return null

@@ -1,5 +1,6 @@
-import { createContext, useState } from 'react'
+import { createContext, useRef, useState } from 'react'
 import { Modal, ModalAction, ModalProps } from 'src/components/modal/modal'
+import { logger } from 'src/utils/logger'
 
 interface IModalContext {
   showModal: (props: ModalProps, content?: any) => Promise<ModalAction | null>
@@ -18,46 +19,44 @@ export const ModalContext = createContext<IModalContext>({
   modalProps: null,
 })
 
+//A fallback close func that will warn if close is called when nothing is open
+const closeFallback = (action?: ModalAction | null) =>
+  logger.warn('attempted to close modal when no modal was open. action: ', action)
+
 //A provider that will supply modal functionality to all children
 export const ModalProvider = ({ children }: any) => {
   const [modal, setModal] = useState<ModalProps | null>(null)
   const [content, setContent] = useState<any>(null)
+  const closeRef = useRef<(action?: ModalAction | null) => void>(closeFallback)
 
   const showModal = async (props: ModalProps, content: any = null) => {
     const isDismissable = !props.isLoading && Boolean(props.onClose)
     if (content) setContent(content)
 
     const modalPromise = new Promise<ModalAction | null>((resolve) => {
+      closeRef.current = (action?: ModalAction | null) => {
+        setModal(null)
+        setContent(null)
+        closeRef.current = closeFallback //reset the ref
+        resolve(action)
+      }
+
       const asyncProps = {
         ...props,
-        onClose: isDismissable
-          ? () => {
-              closeModal()
-              resolve(null)
-            }
-          : undefined,
-        onActionClick: (action: ModalAction) => {
-          props.onActionClick ? props.onActionClick(action) : closeModal()
-          resolve(action)
-        },
+        onClose: isDismissable ? closeRef.current : undefined,
+        onActionClick: props.onActionClick ? props.onActionClick : closeRef.current, //if there are actions, and no onActionClick, have the action close the modal
       }
 
       setModal(asyncProps)
-      if (!isDismissable) resolve(null) //Since there's no way for a user to dismiss, don't leave the promise hanging around
     })
 
     return modalPromise
   }
 
-  const closeModal = () => {
-    setModal(null)
-    setContent(null) //clear out content for next time
-  }
-
   const myContext: IModalContext = {
     modalProps: modal,
     showModal,
-    closeModal,
+    closeModal: () => closeRef.current(),
   }
 
   return (

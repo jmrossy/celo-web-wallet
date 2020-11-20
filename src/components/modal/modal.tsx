@@ -27,7 +27,7 @@ export interface ModalProps {
   size?: ModalSize
   isLoading?: boolean
   onActionClick?: ModalActionCallback | null
-  onClose?: () => void | null
+  onClose?: (action?: ModalAction | null) => void | null
 }
 
 export const ModalOkAction: ModalAction = {
@@ -53,7 +53,7 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
       <div css={[style.background, style.modalContainer]} onClick={backdropClick}>
         <div id="modal" css={[style.modal, dropShadow, propsToModalStyle(props)]}>
           <Box direction="column" justify="between" styles={style.modalContent}>
-            <Box direction="column" align="center" styles={style.modalBody}>
+            <Box direction="column" align="center">
               <h1 css={style.head}>{head}</h1>
               {subHead && <h2 css={[style.subHead, propsToSubHeadStyle(props)]}>{subHead}</h2>}
               {!isLoading && !children && body && <div css={style.bodyText}>{body}</div>}
@@ -134,9 +134,6 @@ const style: Stylesheet = {
     height: '100%',
     position: 'relative',
   },
-  modalBody: {
-    // maxHeight: '72%',
-  },
   head: {
     margin: 0,
     fontSize: '1.5em',
@@ -149,7 +146,6 @@ const style: Stylesheet = {
   },
   bodyText: {
     margin: '2em 0 0 0',
-    // overflowY: 'auto',
   },
   closeIcon: {
     position: 'absolute',
@@ -179,18 +175,3 @@ const propsToModalStyle = (props: ModalProps): Styles => {
     props.size === 's' ? { maxWidth: '25%' } : props.size === 'l' ? { maxWidth: '65%' } : {}
   return css
 }
-
-// const propsToBodyStyle = (props: ModalProps): Styles => {
-//   const css: Styles = {}
-
-//   if (props.size) {
-//     switch (props.size) {
-//       case 's': {
-//         // css.overflowY = 'auto'
-//         break
-//       }
-//     }
-//   }
-
-//   return css
-// }

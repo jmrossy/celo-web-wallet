@@ -6,6 +6,7 @@ import { ModalAction, ModalOkAction, ModalSize } from 'src/components/modal/moda
 import { useModal } from 'src/components/modal/useModal'
 import { Notification } from 'src/components/Notification'
 import { Color } from 'src/styles/Color'
+import { logger } from 'src/utils/logger'
 import { testInvalidFeatures, useFeatureValidation } from 'src/utils/validation'
 
 export function ModalTestScreen() {
@@ -16,7 +17,7 @@ export function ModalTestScreen() {
   const actionClick = (action: ModalAction) => {
     if (action.key === 'ok' || action.key === 'close') closeModal()
     else {
-      console.log('Modal Action Clicked: ', action.key)
+      logger.info('Modal Action Clicked: ', action.key)
     }
   }
 
@@ -39,7 +40,7 @@ export function ModalTestScreen() {
   }
 
   const notDismissable = () => {
-    void showModal(
+    showModal(
       'Modal Head',
       'This modal cannot be dismissed by clicking on the background (and no x)',
       ModalOkAction,
@@ -47,17 +48,17 @@ export function ModalTestScreen() {
       null,
       null,
       false
-    )
+    ).catch((err) => logger.error(err))
   }
 
   const withContent = () => {
     const content = <img src={Elipse} />
-    void showModalWithContent(
+    showModalWithContent(
       'Modal with Content',
       content,
       ModalOkAction,
       'This modal has an image for content'
-    )
+    ).catch((err) => logger.error(err))
   }
 
   const withActions = async () => {
@@ -68,18 +69,18 @@ export function ModalTestScreen() {
     ]
     await showActionsModal(
       'Modal with Actions',
-      'This modal has multiple actions, and stays active unless you click close',
+      'This modal has multiple actions, and stays active unless you click close (check console for clicked actions)',
       actions,
       actionClick
     )
   }
 
   const withError = () => {
-    void showErrorModal(
+    showErrorModal(
       'Error Modal',
       'Oops!  Something went wrong',
       "Please don't do that again, it hurt!"
-    )
+    ).catch((err) => logger.error(err))
   }
 
   const withSize = (size: ModalSize) => () => {
@@ -106,12 +107,20 @@ export function ModalTestScreen() {
       actions
     )
 
-    void showModal('Your Choice', `You chose ${result?.label} in the previous modal`)
+    showModal('Your Choice', `You chose ${result?.label} in the previous modal`).catch((err) =>
+      logger.error(err)
+    )
   }
 
   const working = () => {
     setLoading(true)
-    void showWorkingModal('Please wait...', 'Click the button at bottom right to dismiss')
+    showWorkingModal('Please wait...', 'Click the button at bottom right to dismiss').catch((err) =>
+      logger.error(err)
+    )
+  }
+
+  const badClose = () => {
+    closeModal() //attempt to close the modal when there isn't one open.  This will log a warning in the console
   }
 
   return (
@@ -171,6 +180,9 @@ export function ModalTestScreen() {
         </Button>
         <Button onClick={withSize('l')} margin="1em">
           Large Modal
+        </Button>
+        <Button onClick={badClose} margin="1em">
+          Close when not open (watch console)
         </Button>
       </Box>
 
