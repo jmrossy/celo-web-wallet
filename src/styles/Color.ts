@@ -5,14 +5,16 @@ export enum Color {
   primaryWhite = '#FFFFFF',
   primaryGrey = '#9CA4A9',
 
+  altGrey = '#B2B7BC',
+  accentBlue = '#6A9EDC',
+
   textGrey = '#8A8A8A',
   textError = '#e53935',
-
-  accentBlue = '#6A9EDC',
 
   borderInactive = '#DDDDDD',
   borderActive = 'rgba(46, 51, 56, 0.8)',
   borderLight = '#F5F5F5',
   borderError = '#e53935',
+
   fillLight = '#F4F5F6',
 }

@@ -18,7 +18,7 @@ export const Font: Stylesheet = {
     color: Color.textGrey,
   },
   h1: {
-    fontSize: '1.5em',
+    fontSize: '1.6em',
     fontWeight: 400,
     marginBottom: '1em',
   },

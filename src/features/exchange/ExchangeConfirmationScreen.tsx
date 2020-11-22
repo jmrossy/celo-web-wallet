@@ -158,7 +158,7 @@ export function ExchangeConfirmationScreen() {
           onClick={onGoBack}
           size="m"
           icon={ArrowBackIcon}
-          color={Color.primaryGrey}
+          color={Color.altGrey}
           disabled={isWorking}
           margin="0 1em 0 0"
         >

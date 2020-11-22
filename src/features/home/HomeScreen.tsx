@@ -20,28 +20,36 @@ export function HomeScreen() {
 
   return (
     <ScreenContentFrame>
-      {hasWallet && <HeaderSection />}
-      {!hasWallet && <HeaderSectionEmpty />}
+      <div css={style.container}>
+        {hasWallet && <HeaderSection />}
+        {!hasWallet && <HeaderSectionEmpty />}
 
-      <hr css={style.divider} />
-      <Box direction="row" align="end" styles={{ marginBottom: '2em' }}>
-        <img src={insights} css={style.icon} />
-        <label css={[Font.body, Font.bold]}>Celo Prices</label>
-      </Box>
+        <hr css={style.divider} />
+        <Box direction="row" align="end" styles={{ marginBottom: '2em' }}>
+          <img src={insights} css={style.icon} />
+          <label css={[Font.body, Font.bold]}>Celo Prices</label>
+        </Box>
 
-      <div css={style.chartContainer}>
-        <PriceChartCusd containerCss={{ ...style.chart, marginRight: '2em' }} />
-        <PriceChartCelo containerCss={style.chart} />
+        <div css={style.chartContainer}>
+          <PriceChartCusd containerCss={{ ...style.chart, marginRight: '2em' }} />
+          <PriceChartCelo containerCss={style.chart} />
+        </div>
+
+        <button
+          css={{ marginTop: '3em', maxWidth: '8em' }}
+          onClick={() => setHasWallet(!hasWallet)}
+        >
+          toggle wallet
+        </button>
       </div>
-
-      <button css={{ marginTop: '3em', maxWidth: '8em' }} onClick={() => setHasWallet(!hasWallet)}>
-        toggle wallet
-      </button>
     </ScreenContentFrame>
   )
 }
 
 const style: Stylesheet = {
+  container: {
+    maxWidth: '55rem',
+  },
   icon: {
     marginRight: '0.5em',
     height: '2em',
@@ -49,29 +57,27 @@ const style: Stylesheet = {
   },
   divider: {
     width: '100%',
-    height: '0.2em',
+    height: 1,
     border: 'none',
-    backgroundColor: Color.borderLight,
-    color: Color.borderLight, //for IE
-    marginBottom: '2em',
+    backgroundColor: Color.altGrey,
+    color: Color.altGrey, //for IE
+    margin: '3em 0',
   },
   chartContainer: {
     display: 'flex',
     boxSizing: 'border-box',
     flexDirection: 'column',
-    [mq[480]]: {
+    [mq[768]]: {
       flexDirection: 'row',
+      justifyContent: 'space-between',
     },
   },
   chart: {
     width: '100%',
     marginBottom: '2em',
-    [mq[480]]: {
+    [mq[768]]: {
       width: '48%',
       marginBottom: 0,
-    },
-    [mq[1200]]: {
-      width: '33%',
     },
   },
 }
