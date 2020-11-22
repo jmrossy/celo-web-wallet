@@ -15,9 +15,14 @@ export function HeaderSectionEmpty() {
           <label css={[Font.body, Font.bold]}>Get started</label>
         </Box>
         <p css={Font.body}>
-          To fund your account you can <a href="#">buy currency</a> from an exchange,{' '}
-          <a href="#">redeem an invite code</a>, or ask a friend on Celo to send a payment to{' '}
-          <a href="#">your address.</a>
+          To fund your account you can{' '}
+          <a href="#" css={Font.linkLight}>
+            buy Celo currency
+          </a>{' '}
+          from an exchange, or ask a friend on Celo to send a payment to{' '}
+          <a href="#" css={Font.linkLight}>
+            your address.
+          </a>
         </p>
       </Box>
     </Box>

@@ -13,23 +13,25 @@ function addressToSeed(address: string) {
 
 export class Identicon extends PureComponent<Props> {
   render() {
-    const { address, size } = this.props
+    const { address, size: _size } = this.props
+    const size = _size ?? 34
 
     if (!address || !utils.isAddress(address) || BigNumber.from(address).isZero()) {
       return null
     }
 
-    const jazziconResult = jazzicon(size ?? 34, addressToSeed(address))
+    const jazziconResult = jazzicon(size, addressToSeed(address))
 
     return (
-      <span
+      <div
+        css={{ height: size }}
         ref={(nodeElement) => {
           if (nodeElement) {
             nodeElement.innerHTML = ''
             nodeElement.appendChild(jazziconResult)
           }
         }}
-      ></span>
+      ></div>
     )
   }
 }

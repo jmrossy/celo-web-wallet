@@ -8,7 +8,6 @@ import {
 import { TransactionStatusProperty } from 'src/features/feed/components/TransactionStatusProperty'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { CeloTransaction } from 'src/features/types'
-import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
 interface Props {
@@ -42,7 +41,6 @@ export function GenericTransactionReview({ tx }: Props) {
 
 const style: Stylesheet = {
   value: {
-    ...Font.body,
     marginTop: '0.75em',
   },
 }

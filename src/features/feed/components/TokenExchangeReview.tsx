@@ -36,7 +36,6 @@ export function TokenExchangeReview({ tx }: Props) {
 
 const style: Stylesheet = {
   value: {
-    ...Font.body,
     marginTop: '0.75em',
   },
 }

@@ -5,7 +5,7 @@ export enum Color {
   primaryWhite = '#FFFFFF',
   primaryGrey = '#9CA4A9',
 
-  textGrey = '#8B8D8E',
+  textGrey = '#8A8A8A',
   textError = '#e53935',
 
   accentBlue = '#6A9EDC',
@@ -15,5 +15,4 @@ export enum Color {
   borderLight = '#F5F5F5',
   borderError = '#e53935',
   fillLight = '#F4F5F6',
-  fillLighter = '#F8FAF9',
 }

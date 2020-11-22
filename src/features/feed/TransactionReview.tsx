@@ -16,7 +16,6 @@ import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { chunk } from 'src/utils/string'
 
 export function TransactionReview() {
   const navigate = useNavigate()
@@ -97,36 +96,24 @@ function TransactionNotFound() {
 
 function TransactionAdvancedDetails({ tx }: { tx: CeloTransaction }) {
   // TODO make this collapsible
-  const hashChunks = chunk(tx.hash, 4)
+  const hash = tx.hash
 
   return (
     <div css={style.contentContainer}>
       <div css={style.sectionHeader}>Advanced Details</div>
       <TransactionPropertyGroup>
         <TransactionProperty label="Transaction Hash">
-          <div css={style.value}>
-            {hashChunks.slice(0, 6).map((c) => (
-              <span key={`tx-hash-chunk-${c}`}>{c}</span>
-            ))}
-          </div>
-          <div css={style.value}>
-            {hashChunks.slice(6, 12).map((c) => (
-              <span key={`tx-hash-chunk-${c}`}>{c}</span>
-            ))}
-          </div>
-          <div css={style.value}>
-            {hashChunks.slice(12).map((c) => (
-              <span key={`tx-hash-chunk-${c}`}>{c}</span>
-            ))}
-          </div>
+          <div css={style.value}>{hash.substring(0, hash.length / 2)}</div>
+          <div css={style.value}>{hash.substring(hash.length / 2)}</div>
         </TransactionProperty>
         <TransactionProperty label="Explore">
           <div css={style.value}>
             {' '}
             <a
-              href={config.blockscoutUrl + `/tx/${tx.hash}`}
+              href={config.blockscoutUrl + `/tx/${hash}`}
               target="_blank"
               rel="noopener noreferrer"
+              css={Font.linkLight}
             >
               View on Blockscout
             </a>
@@ -151,7 +138,7 @@ const style: Stylesheet = {
     ...Font.h2,
     background: Color.accentBlue,
     color: Color.primaryWhite,
-    padding: '0.9em 1.5em',
+    padding: '0.8rem 2rem',
   },
   closeButton: {
     ...Font.h2,
@@ -160,10 +147,11 @@ const style: Stylesheet = {
     cursor: 'pointer',
   },
   contentContainer: {
-    padding: '1.5em',
+    padding: '2rem',
   },
   sectionHeader: {
     ...Font.h2,
-    marginBottom: '2em',
+    color: Color.textGrey,
+    marginBottom: '1.5em',
   },
 }
