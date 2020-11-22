@@ -6,6 +6,7 @@ export interface TransactionFeed {
   lastUpdatedTime: number | null
   lastBlockNumber: number | null
   openTransaction: string | null // hash of transaction selected from the feed
+  showAdvancedDetails: boolean
 }
 
 export const feedInitialState: TransactionFeed = {
@@ -13,6 +14,7 @@ export const feedInitialState: TransactionFeed = {
   lastUpdatedTime: null,
   lastBlockNumber: null,
   openTransaction: null,
+  showAdvancedDetails: false,
 }
 
 const feedSlice = createSlice({
@@ -44,8 +46,16 @@ const feedSlice = createSlice({
       state.lastBlockNumber = null
       state.openTransaction = null
     },
+    toggleAdvancedDetails: (state) => {
+      state.showAdvancedDetails = !state.showAdvancedDetails
+    },
   },
 })
 
-export const { addTransactions, openTransaction, clearTransactions } = feedSlice.actions
+export const {
+  addTransactions,
+  openTransaction,
+  clearTransactions,
+  toggleAdvancedDetails,
+} = feedSlice.actions
 export const feedReducer = feedSlice.reducer

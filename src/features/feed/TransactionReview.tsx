@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
+import Chevron from 'src/components/icons/chevron.svg'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
 import { GenericTransactionReview } from 'src/features/feed/components/GenericTransactionReview'
@@ -11,11 +12,11 @@ import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/feed/components/TransactionPropertyGroup'
-import { openTransaction } from 'src/features/feed/feedSlice'
+import { openTransaction, toggleAdvancedDetails } from 'src/features/feed/feedSlice'
 import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
+import { Styles, Stylesheet } from 'src/styles/types'
 
 export function TransactionReview() {
   const navigate = useNavigate()
@@ -56,7 +57,7 @@ export function TransactionReview() {
         </a>
       </Box>
       <div css={style.contentContainer}>
-        <div css={style.sectionHeader}>Transaction Details</div>
+        <h2 css={style.sectionHeader}>Transaction Details</h2>
         {content}
       </div>
       <TransactionAdvancedDetails tx={tx} />
@@ -95,37 +96,50 @@ function TransactionNotFound() {
 }
 
 function TransactionAdvancedDetails({ tx }: { tx: CeloTransaction }) {
-  // TODO make this collapsible
   const hash = tx.hash
+
+  const showContent = useSelector((s: RootState) => s.feed.showAdvancedDetails)
+  const dispatch = useDispatch()
+
+  const onClickHeader = () => {
+    dispatch(toggleAdvancedDetails())
+  }
+
+  const chevronStyle = showContent ? chevronRotated : style.chevron
 
   return (
     <div css={style.contentContainer}>
-      <div css={style.sectionHeader}>Advanced Details</div>
-      <TransactionPropertyGroup>
-        <TransactionProperty label="Transaction Hash">
-          <div css={style.value}>{hash.substring(0, hash.length / 2)}</div>
-          <div css={style.value}>{hash.substring(hash.length / 2)}</div>
-        </TransactionProperty>
-        <TransactionProperty label="Explore">
-          <div css={style.value}>
-            {' '}
-            <a
-              href={config.blockscoutUrl + `/tx/${hash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              css={Font.linkLight}
-            >
-              View on Blockscout
-            </a>
-          </div>
-        </TransactionProperty>
-        <TransactionProperty label="Block Number">
-          <div css={style.value}>{tx.blockNumber}</div>
-        </TransactionProperty>
-        <TransactionProperty label="Nonce">
-          <div css={style.value}>{tx.nonce}</div>
-        </TransactionProperty>
-      </TransactionPropertyGroup>
+      <h2 css={sectionHeaderAdvanced} onClick={onClickHeader}>
+        Advanced Details
+        <img width={'18em'} src={Chevron} alt="chevron" css={chevronStyle} />
+      </h2>
+      <div css={showContent ? null : style.contentHidden}>
+        <TransactionPropertyGroup>
+          <TransactionProperty label="Transaction Hash">
+            <div css={style.value}>{hash.substring(0, hash.length / 2)}</div>
+            <div css={style.value}>{hash.substring(hash.length / 2)}</div>
+          </TransactionProperty>
+          <TransactionProperty label="Explore">
+            <div css={style.value}>
+              {' '}
+              <a
+                href={config.blockscoutUrl + `/tx/${hash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                css={Font.linkLight}
+              >
+                View on Blockscout
+              </a>
+            </div>
+          </TransactionProperty>
+          <TransactionProperty label="Block Number">
+            <div css={style.value}>{tx.blockNumber}</div>
+          </TransactionProperty>
+          <TransactionProperty label="Nonce">
+            <div css={style.value}>{tx.nonce}</div>
+          </TransactionProperty>
+        </TransactionPropertyGroup>
+      </div>
     </div>
   )
 }
@@ -147,11 +161,31 @@ const style: Stylesheet = {
     cursor: 'pointer',
   },
   contentContainer: {
-    padding: '2rem',
+    padding: '1rem 2rem',
+  },
+  contentHidden: {
+    maxHeight: 0,
+    opacity: 0,
+    overflow: 'hidden',
   },
   sectionHeader: {
     ...Font.h2,
     color: Color.textGrey,
     marginBottom: '1.5em',
+    cursor: 'pointer',
   },
+  chevron: {
+    opacity: 0.5,
+    padding: '0 0.6em',
+  },
+}
+
+const chevronRotated: Styles = {
+  ...style.chevron,
+  transform: 'rotate(180deg)',
+}
+
+const sectionHeaderAdvanced: Styles = {
+  ...style.sectionHeader,
+  width: 'fit-content',
 }

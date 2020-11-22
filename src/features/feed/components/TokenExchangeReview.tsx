@@ -6,7 +6,6 @@ import {
 import { TransactionStatusProperty } from 'src/features/feed/components/TransactionStatusProperty'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { TokenExchangeTx } from 'src/features/types'
-import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
 interface Props {
@@ -20,7 +19,7 @@ export function TokenExchangeReview({ tx }: Props) {
     <TransactionPropertyGroup>
       <TransactionStatusProperty tx={tx} />
       <TransactionProperty label="Amount">
-        <div css={[style.value, Font.bold]}>
+        <div css={style.value}>
           <MoneyValue amountInWei={tx.fromValue} currency={tx.fromToken} />
           <span> to </span>
           <MoneyValue amountInWei={tx.toValue} currency={tx.toToken} />

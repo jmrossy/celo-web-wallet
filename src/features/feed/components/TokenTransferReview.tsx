@@ -55,6 +55,6 @@ const style: Stylesheet = {
   },
   amountLabel: {
     display: 'inline-block',
-    minWidth: '4em',
+    minWidth: '5em',
   },
 }
