@@ -21,7 +21,6 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { useExchangeValues } from 'src/utils/amount'
-import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 
 export function ExchangeConfirmationScreen() {
@@ -91,25 +90,24 @@ export function ExchangeConfirmationScreen() {
     dispatch(exchangeTokenActions.trigger({ ...tx, exchangeRate: cUsdToCelo, feeEstimates }))
   }
 
-  const { showModal, showWorkingModal, showErrorModal } = useModal()
+  const modal = useModal()
 
-  const confirm = async () => {
-    await showModal('Exchange Succeeded', 'Your exchange has been completed successfully')
+  const confirm = () => {
+    modal.closeModal()
+    modal.showModal('Exchange Succeeded', 'Your exchange has been completed successfully')
     dispatch(exchangeTokenActions.reset())
     dispatch(exchangeSent())
     navigate('/')
   }
 
   const failure = (error: string | undefined) => {
-    showErrorModal('Exchange Failed', 'Your exchange could not be processed', error).catch((err) =>
-      logger.error(err)
-    )
+    modal.closeModal()
+    modal.showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
   }
 
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Started)
-      showWorkingModal('Making exchange...').catch((err) => logger.error(err))
-    else if (sagaStatus === SagaStatus.Success) confirm().catch((err) => logger.error(err))
+    if (sagaStatus === SagaStatus.Started) modal.showWorkingModal('Making exchange...')
+    else if (sagaStatus === SagaStatus.Success) confirm()
     else if (sagaStatus === SagaStatus.Failure) failure(sagaError?.toString())
   }, [sagaStatus, sagaError])
 

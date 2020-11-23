@@ -17,7 +17,7 @@ export function useModal() {
       head: head,
       subHead: subHead ?? undefined,
     }
-    return context.showModal(modalProps)
+    context.showModalAndForget(modalProps)
   }
 
   const showErrorModal = (
@@ -34,7 +34,7 @@ export function useModal() {
       onClose: context.closeModal,
       onActionClick: context.closeModal,
     }
-    return context.showModal(modalProps)
+    context.showModalAndForget(modalProps)
   }
 
   const showModalWithContent = (
@@ -52,7 +52,7 @@ export function useModal() {
       actions: actions ?? undefined,
       onActionClick: onActionClick,
     }
-    return context.showModal(modalProps, content)
+    context.showModalAndForget(modalProps, content)
   }
 
   const showActionsModal = (
@@ -62,6 +62,28 @@ export function useModal() {
     onActionClick: ModalActionCallback | undefined | null = undefined,
     subHead: string | undefined | null = undefined,
     size: ModalSize | null = undefined,
+    dismissable = true
+  ) => {
+    const modalProps: ModalProps = {
+      head,
+      body,
+      actions: actions ?? ModalOkAction, //default to an ok button
+      subHead: subHead ?? undefined,
+      size: size ?? undefined,
+      onActionClick: actions ? onActionClick : context.closeModal, //default to close for the Ok button
+      onClose: dismissable ? context.closeModal : undefined,
+    }
+
+    return context.showModal(modalProps)
+  }
+
+  const showModalAsync = (
+    head: string,
+    body: string,
+    actions: ModalAction | ModalAction[] | undefined | null = undefined,
+    subHead: string | undefined | null = undefined,
+    size: ModalSize | null = undefined,
+    onActionClick: ModalActionCallback | undefined | null = undefined,
     dismissable = true
   ) => {
     const modalProps: ModalProps = {
@@ -96,11 +118,12 @@ export function useModal() {
       onClose: dismissable ? context.closeModal : undefined,
     }
 
-    return context.showModal(modalProps)
+    context.showModalAndForget(modalProps)
   }
 
   return {
     showModal,
+    showModalAsync,
     showWorkingModal,
     showErrorModal,
     showActionsModal,

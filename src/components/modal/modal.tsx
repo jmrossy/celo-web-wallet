@@ -160,8 +160,6 @@ const style: Stylesheet = {
 }
 
 const dropShadow = css`
-  -webkit-box-shadow: 3px 3px 6px 1px #ccc;
-  -moz-box-shadow: 3px 3px 6px 1px #ccc;
   box-shadow: 3px 3px 6px 1px #ccc;
 `
 

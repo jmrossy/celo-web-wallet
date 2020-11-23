@@ -20,7 +20,6 @@ import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 
 export function SendConfirmationScreen() {
@@ -71,25 +70,24 @@ export function SendConfirmationScreen() {
 
   const isSagaWorking = sagaStatus === SagaStatus.Started
 
-  const { showModal, showWorkingModal, showErrorModal } = useModal()
+  const modal = useModal()
 
-  const confirm = async () => {
-    await showModal('Payment Succeeded', 'Your payment has been successfully sent')
+  const confirm = () => {
+    modal.closeModal()
+    modal.showModal('Payment Succeeded', 'Your payment has been successfully sent')
     dispatch(sendTokenActions.reset())
     dispatch(sendSucceeded())
     navigate('/')
   }
 
   const failure = (error: string | undefined) => {
-    showErrorModal('Payment Failed', 'Your payment could not be processed', error).catch((err) =>
-      logger.error(err)
-    )
+    modal.closeModal()
+    modal.showErrorModal('Payment Failed', 'Your payment could not be processed', error)
   }
 
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Started)
-      showWorkingModal('Sending Payment...').catch((err) => logger.error(err))
-    else if (sagaStatus === SagaStatus.Success) confirm().catch((err) => logger.error(err))
+    if (sagaStatus === SagaStatus.Started) modal.showWorkingModal('Sending Payment...')
+    else if (sagaStatus === SagaStatus.Success) confirm()
     else if (sagaStatus === SagaStatus.Failure) failure(sagaError?.toString())
   }, [sagaStatus, sagaError])
 
