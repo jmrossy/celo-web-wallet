@@ -7,11 +7,12 @@ import ArrowBackIcon from 'src/components/icons/arrow_back_white.svg'
 import ExchangeIcon from 'src/components/icons/exchange_white.svg'
 import QuestionIcon from 'src/components/icons/question_mark.svg'
 import { Box } from 'src/components/layout/Box'
+import { useModal } from 'src/components/modal/useModal'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
 import { Currency } from 'src/consts'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
-import { exchangeCanceled, exchangeFailed, exchangeSent } from 'src/features/exchange/exchangeSlice'
+import { exchangeCanceled, exchangeSent } from 'src/features/exchange/exchangeSlice'
 import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
@@ -89,17 +90,26 @@ export function ExchangeConfirmationScreen() {
     dispatch(exchangeTokenActions.trigger({ ...tx, exchangeRate: cUsdToCelo, feeEstimates }))
   }
 
+  const modal = useModal()
+
+  const confirm = () => {
+    modal.closeModal()
+    modal.showModal('Exchange Succeeded', 'Your exchange has been completed successfully')
+    dispatch(exchangeTokenActions.reset())
+    dispatch(exchangeSent())
+    navigate('/')
+  }
+
+  const failure = (error: string | undefined) => {
+    modal.closeModal()
+    modal.showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
+  }
+
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Success) {
-      //TODO: provide a notification of the success
-      dispatch(exchangeTokenActions.reset())
-      dispatch(exchangeSent())
-      navigate('/')
-    } else if (sagaStatus === SagaStatus.Failure) {
-      dispatch(exchangeFailed(sagaError ? sagaError.toString() : 'Exchange failed'))
-      //TODO: in the future, redirect them back to the exchange screen to deal with the error
-    }
-  }, [sagaStatus])
+    if (sagaStatus === SagaStatus.Started) modal.showWorkingModal('Making exchange...')
+    else if (sagaStatus === SagaStatus.Success) confirm()
+    else if (sagaStatus === SagaStatus.Failure) failure(sagaError?.toString())
+  }, [sagaStatus, sagaError])
 
   if (!tx) return null
 
