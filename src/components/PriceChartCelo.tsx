@@ -17,12 +17,14 @@ const data: DataValue[] = [
 
 interface PriceChartProps {
   containerCss?: Styles
+  height?: number | string
 }
 
-export function PriceChartCelo({ containerCss }: PriceChartProps) {
+export function PriceChartCelo({ containerCss, height }: PriceChartProps) {
   //TODO: Get the real exchange rate
   const celoPrice = 1.6
   const dummyData = prepareChartData(data)
+  const chartHeight = height || 250
 
   return (
     <Box direction="column" styles={containerCss}>
@@ -34,7 +36,7 @@ export function PriceChartCelo({ containerCss }: PriceChartProps) {
         <ReactFrappeChart
           type="line"
           colors={[Color.primaryGold]}
-          height={250}
+          height={chartHeight}
           axisOptions={{ xAxisMode: 'tick' }}
           tooltipOptions={{ formatTooltipY: (d: number) => `$${d.toFixed(2)} (USD)` }}
           data={dummyData}
