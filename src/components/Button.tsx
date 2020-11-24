@@ -11,11 +11,23 @@ interface ButtonProps {
   iconPosition?: 'start' | 'end' //defaults to start //TODO: add top / bottom if necessary
   disabled?: boolean
   styles?: Styles
+  width?: number | string
 }
 
 export function Button(props: React.PropsWithChildren<ButtonProps>) {
-  const { size, type, color, margin, onClick, icon, iconPosition, disabled, styles } = props
-  const { height, width } = getDimensions(size)
+  const {
+    size,
+    width: widthOverride,
+    type,
+    color,
+    margin,
+    onClick,
+    icon,
+    iconPosition,
+    disabled,
+    styles,
+  } = props
+  const { height, width } = getDimensions(size, widthOverride)
   const icoLayout = getLayout(size)
 
   return (
@@ -63,17 +75,17 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
   )
 }
 
-function getDimensions(size?: string) {
+function getDimensions(size?: string, width?: number | string) {
   switch (size) {
     case 's':
-      return { height: '2.25em', width: '9em' }
+      return { height: '2.25em', width: width ?? '9em' }
     case 'm':
     case undefined:
-      return { height: '3.25em', width: '12.5em' }
+      return { height: '3.25em', width: width ?? '12.5em' }
     case 'l':
-      return { height: '4.25em', width: '16.5em' }
+      return { height: '4.25em', width: width ?? '16.5em' }
     case 'icon':
-      return { height: 24, width: 24 }
+      return { height: 27, width: 27 }
     default:
       throw new Error(`Unsupported size: ${size}`)
   }

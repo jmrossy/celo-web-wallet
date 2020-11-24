@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
-import ExchangeIcon from 'src/components/icons/exchange_white.svg'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
 import { Box } from 'src/components/layout/Box'
@@ -113,8 +112,8 @@ export function ExchangeFormScreen() {
               <MoneyValue amountInWei={to.weiAmount} currency={to.currency} baseFontSize={1.2} />
             </Box>
 
-            <Button type="submit" size="m" icon={ExchangeIcon}>
-              Make Exchange
+            <Button type="submit" size="m">
+              Continue
             </Button>
           </form>
         </Box>
@@ -173,12 +172,6 @@ const style: Stylesheet = {
   },
   pageTitle: {
     marginTop: 0,
-  },
-  contentContainer: {
-    height: '100%',
-    paddingLeft: '2em',
-    paddingTop: '2em',
-    width: '100%',
   },
   inputRow: {
     marginBottom: '2em',

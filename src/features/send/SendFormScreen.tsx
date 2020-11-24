@@ -6,7 +6,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
-import SendPaymentIcon from 'src/components/icons/send_payment_white.svg'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
@@ -24,12 +23,12 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
 interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
-  amount: number
+  amount: number | string
 }
 
 const initialValues: SendTokenForm = {
   recipient: '',
-  amount: 0,
+  amount: '',
   currency: Currency.CELO,
   comment: '',
 }
@@ -70,92 +69,96 @@ export function SendFormScreen() {
 
   return (
     <ScreenContentFrame>
-      <form onSubmit={handleSubmit}>
-        <h1 css={Font.h2Green}>Send Payment</h1>
+      <div css={style.content}>
+        <form onSubmit={handleSubmit}>
+          <h1 css={[Font.h2Green, style.pageTitle]}>Send Payment</h1>
 
-        <Box direction="column" styles={style.inputRow}>
-          <label css={style.inputLabel}>Recipient Address</label>
+          <Box direction="column" styles={style.inputRow}>
+            <label css={style.inputLabel}>Recipient Address</label>
 
-          <Box direction="row" justify="start" align="end">
-            <AddressInput
-              width={346}
-              name="recipient"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.recipient}
-              {...inputErrors['recipient']}
-            />
-            <Button
-              size="icon"
-              type="button"
-              color={Color.fillLight}
-              margin="0 0.5em"
-              onClick={onCopyAddress}
-            >
-              <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon} />
-            </Button>
-          </Box>
-        </Box>
-
-        <Box direction="row" styles={style.inputRow}>
-          <Box direction="column" justify="end" align="start">
-            <label css={style.inputLabel}>Amount</label>
-            <MoneyValueInput
-              width={173}
-              name="amount"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.amount.toString()}
-              {...inputErrors['amount']}
-            />
-          </Box>
-          <Box direction="column" align="start" styles={{ width: '50%' }}>
-            <label css={style.inputLabel}>Currency</label>
-            <Box direction="row" justify="start" align="end" styles={style.radioBox}>
-              <CurrencyRadioBox
-                tabIndex={0}
-                label="cUSD"
-                value={Currency.cUSD}
-                name="currency"
-                checked={values.currency === Currency.cUSD}
+            <Box direction="row" justify="start" align="end">
+              <AddressInput
+                width="22em"
+                name="recipient"
                 onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.recipient}
+                {...inputErrors['recipient']}
+                placeholder="0x1234..."
               />
-              <CurrencyRadioBox
-                tabIndex={1}
-                label="CELO"
-                value={Currency.CELO}
-                name="currency"
-                checked={values.currency === Currency.CELO}
-                onChange={handleChange}
-              />
+              <Button
+                size="icon"
+                type="button"
+                color={Color.primaryGreen}
+                margin="0 0.5em"
+                onClick={onCopyAddress}
+              >
+                <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon} />
+              </Button>
             </Box>
           </Box>
-        </Box>
 
-        <Box direction="column" align="start" styles={style.inputRow}>
-          <label css={style.inputLabel}>Comment (optional)</label>
-          <TextArea
-            name="comment"
-            value={values.comment}
-            placeholder={'Thanks for lunch!'}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            minWidth="22em"
-            maxWidth="26em"
-            minHeight="5em"
-            maxHeight="7em"
-          />
-        </Box>
+          <Box direction="row" styles={style.inputRow} justify="between">
+            <Box direction="column" justify="end" align="start">
+              <label css={style.inputLabel}>Amount to Send</label>
+              <MoneyValueInput
+                width="10em"
+                name="amount"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.amount.toString()}
+                {...inputErrors['amount']}
+                placeholder="1.00"
+              />
+            </Box>
+            <Box direction="column" align="start" styles={{ width: '50%', marginLeft: '2em' }}>
+              <label css={style.inputLabel}>Currency</label>
+              <Box direction="row" justify="start" align="end" styles={style.radioBox}>
+                <CurrencyRadioBox
+                  tabIndex={0}
+                  label="cUSD"
+                  value={Currency.cUSD}
+                  name="currency"
+                  checked={values.currency === Currency.cUSD}
+                  onChange={handleChange}
+                />
+                <CurrencyRadioBox
+                  tabIndex={1}
+                  label="CELO"
+                  value={Currency.CELO}
+                  name="currency"
+                  checked={values.currency === Currency.CELO}
+                  onChange={handleChange}
+                />
+              </Box>
+            </Box>
+          </Box>
 
-        <Box direction="row" justify="start">
-          <Button type="submit" size="m" icon={SendPaymentIcon} margin="0 1em 0 0">
-            Send Payment
-          </Button>
-          {/* <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
-            Request Payment
-          </Button> */}
-        </Box>
-      </form>
+          <Box direction="column" align="start" styles={style.inputRow}>
+            <label css={style.inputLabel}>Comment (optional)</label>
+            <TextArea
+              name="comment"
+              value={values.comment}
+              placeholder="Dinner on Tuesday"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              minWidth="22em"
+              maxWidth="26em"
+              minHeight="5em"
+              maxHeight="7em"
+            />
+          </Box>
+
+          <Box direction="row" justify="start">
+            <Button type="submit" size="m" margin="0 1em 0 0">
+              Continue
+            </Button>
+            {/* <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
+              Request Payment
+            </Button> */}
+          </Box>
+        </form>
+      </div>
     </ScreenContentFrame>
   )
 }
@@ -195,11 +198,12 @@ function toSendTokenForm(values: SendTokenParams | null): SendTokenForm | null {
 }
 
 const style: Stylesheet = {
-  contentContainer: {
-    height: '100%',
-    paddingLeft: '4em',
-    paddingTop: '2em',
+  pageTitle: {
+    marginTop: 0,
+  },
+  content: {
     width: '100%',
+    maxWidth: '28em',
   },
   inputRow: {
     marginBottom: '2em',
@@ -216,6 +220,5 @@ const style: Stylesheet = {
   radioBox: {
     height: '100%',
     width: '100%',
-    marginLeft: '0.5em',
   },
 }
