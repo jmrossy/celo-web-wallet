@@ -4,13 +4,11 @@ import { RootState } from 'src/app/rootReducer'
 import insights from 'src/components/icons/insights.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { PriceChartCelo } from 'src/components/PriceChartCelo'
-import { PriceChartCusd } from 'src/components/PriceChartCusd'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
+import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function HomeScreen() {
@@ -30,10 +28,7 @@ export function HomeScreen() {
           <label css={[Font.body, Font.bold]}>Celo Prices</label>
         </Box>
 
-        <div css={style.chartContainer}>
-          <PriceChartCusd containerCss={{ ...style.chart, marginRight: '2em' }} />
-          <PriceChartCelo containerCss={style.chart} />
-        </div>
+        <PriceChartCelo />
 
         <button
           css={{ marginTop: '3em', maxWidth: '8em' }}
@@ -62,22 +57,5 @@ const style: Stylesheet = {
     backgroundColor: Color.altGrey,
     color: Color.altGrey, //for IE
     margin: '3em 0',
-  },
-  chartContainer: {
-    display: 'flex',
-    boxSizing: 'border-box',
-    flexDirection: 'column',
-    [mq[768]]: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-  },
-  chart: {
-    width: '100%',
-    marginBottom: '2em',
-    [mq[768]]: {
-      width: '48%',
-      marginBottom: 0,
-    },
   },
 }

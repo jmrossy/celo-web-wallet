@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish, utils } from 'ethers'
+import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
 import { Currency, WEI_PER_UNIT } from 'src/consts'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
@@ -45,6 +45,13 @@ export function fromWei(value: BigNumberish | null | undefined): number {
 export function toWei(value: BigNumberish | null | undefined): BigNumber {
   if (!value) return BigNumber.from(0)
   return utils.parseEther('' + value)
+}
+
+export function fromFixidity(value: BigNumberish | null | undefined): number {
+  if (!value) return 0
+  return FixedNumber.from(value)
+    .divUnsafe(FixedNumber.from('1000000000000000000000000'))
+    .toUnsafeFloat()
 }
 
 export function useExchangeValues(

@@ -18,6 +18,7 @@ import {
   TransactionType,
 } from 'src/features/types'
 import { areAddressesEqual } from 'src/utils/addresses'
+import { queryBlockscout } from 'src/utils/blockscout'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, delay, put, select } from 'typed-redux-saga'
@@ -54,12 +55,6 @@ interface BlockscoutTokenTransfer extends BlockscoutTxBase {
   tokenName: string
   tokenDecimal: string
   logIndex: string
-}
-
-interface BlockscoutResponse<R> {
-  status: string
-  result: R
-  message: string
 }
 
 // Triggers polling of feed fetching
@@ -159,21 +154,6 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
     parentTx.tokenTransfers.push(tx)
   }
   return txMap.values()
-}
-
-async function queryBlockscout<P>(url: string) {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Fetch Response not okay: ${response.status}`)
-  }
-  const json = (await response.json()) as BlockscoutResponse<P>
-
-  if (!json.result) {
-    const responseText = await response.text()
-    throw new Error(`Invalid result format: ${responseText}`)
-  }
-
-  return json.result
 }
 
 type AbiInterfaceMap = Partial<Record<CeloContract, utils.Interface>>
@@ -285,7 +265,6 @@ function parseTransaction(
 function parseExchangeTx(
   tx: BlockscoutTx,
   address: string,
-
   abiInterface: utils.Interface
 ): TokenExchangeTx | OtherTx {
   try {

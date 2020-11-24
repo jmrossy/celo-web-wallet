@@ -23,7 +23,7 @@ export const walletInitialState: Wallet = {
 }
 
 const walletSlice = createSlice({
-  name: 'account',
+  name: 'wallet',
   initialState: walletInitialState,
   reducers: {
     setAddress: (state, action: PayloadAction<string>) => {
