@@ -8,6 +8,7 @@ import { feedFetchPoller, fetchFeedReducer, fetchFeedSaga } from 'src/features/f
 import { estimateFeeReducer, estimateFeeSaga } from 'src/features/fees/estimateFee'
 import { setPinReducer, setPinSaga } from 'src/features/pincode/pincode'
 import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
+import { fetchTokenPriceReducer, fetchTokenPriceSaga } from 'src/features/tokenPrice/fetchPrices'
 import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
 import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
 import {
@@ -67,6 +68,10 @@ export const monitoredSagas: {
   fetchExchangeRate: {
     saga: fetchExchangeRateSaga,
     reducer: fetchExchangeRateReducer,
+  },
+  fetchTokenPrice: {
+    saga: fetchTokenPriceSaga,
+    reducer: fetchTokenPriceReducer,
   },
 }
 

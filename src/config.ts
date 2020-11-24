@@ -8,6 +8,7 @@ export enum CeloContract {
   Governance = 'Governance',
   LockedGold = 'LockedGold',
   Reserve = 'Reserve',
+  SortedOracles = 'SortedOracles',
   StableToken = 'StableToken',
 }
 
@@ -40,10 +41,14 @@ const configMainnet: Config = {
     [CeloContract.Governance]: '0xD533Ca259b330c7A88f74E000a3FaEa2d63B7972',
     [CeloContract.LockedGold]: '0x6cC083Aed9e3ebe302A6336dBC7c921C9f03349E',
     [CeloContract.Reserve]: '0x9380fA34Fd9e4Fd14c06305fd7B6199089eD4eb9',
+    [CeloContract.SortedOracles]: '0xefB84935239dAcdecF7c5bA76d8dE40b077B7b33',
     [CeloContract.StableToken]: '0x765DE816845861e75A25fCA122bb6898B8B1282a',
   },
+  defaultAccount:
+    'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configAlfajores: Config = {
   debug: true,
   fornoUrl: 'https://alfajores-forno.celo-testnet.org',
@@ -59,13 +64,14 @@ const configAlfajores: Config = {
     [CeloContract.Governance]: '0xAA963FC97281d9632d96700aB62A4D1340F9a28a',
     [CeloContract.LockedGold]: '0x6a4CC5693DC5BFA3799C699F3B941bA2Cb00c341',
     [CeloContract.Reserve]: '0xa7ed835288Aa4524bB6C73DD23c0bF4315D9Fe3e',
+    [CeloContract.SortedOracles]: '0xFdd8bD58115FfBf04e47411c1d228eCC45E93075',
     [CeloContract.StableToken]: '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1',
   },
   defaultAccount:
     'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
-export const config = Object.freeze(configAlfajores)
+export const config = Object.freeze(configMainnet)
 
 export function getVersion(): string | null {
   // @ts-ignore Defined by webpack define plugin
