@@ -9,11 +9,12 @@ import QuestionIcon from 'src/components/icons/question_mark.svg'
 import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment_white.svg'
 import { Box } from 'src/components/layout/Box'
+import { useModal } from 'src/components/modal/useModal'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
-import { sendCanceled, sendFailed, sendSucceeded } from 'src/features/send/sendSlice'
+import { sendCanceled, sendSucceeded } from 'src/features/send/sendSlice'
 import { sendTokenActions } from 'src/features/send/sendToken'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
@@ -69,17 +70,26 @@ export function SendConfirmationScreen() {
 
   const isSagaWorking = sagaStatus === SagaStatus.Started
 
+  const modal = useModal()
+
+  const confirm = () => {
+    modal.closeModal()
+    modal.showModal('Payment Succeeded', 'Your payment has been successfully sent')
+    dispatch(sendTokenActions.reset())
+    dispatch(sendSucceeded())
+    navigate('/')
+  }
+
+  const failure = (error: string | undefined) => {
+    modal.closeModal()
+    modal.showErrorModal('Payment Failed', 'Your payment could not be processed', error)
+  }
+
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Success) {
-      //TODO: provide a notification of the success
-      dispatch(sendTokenActions.reset())
-      dispatch(sendSucceeded())
-      navigate('/')
-    } else if (sagaStatus === SagaStatus.Failure) {
-      dispatch(sendFailed(sagaError ? sagaError.toString() : 'Send failed'))
-      //TODO: in the future, redirect them back to the exchange screen to deal with the error
-    }
-  }, [sagaStatus])
+    if (sagaStatus === SagaStatus.Started) modal.showWorkingModal('Sending Payment...')
+    else if (sagaStatus === SagaStatus.Success) confirm()
+    else if (sagaStatus === SagaStatus.Failure) failure(sagaError?.toString())
+  }, [sagaStatus, sagaError])
 
   if (!tx) return null
 

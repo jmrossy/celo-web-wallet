@@ -17,4 +17,6 @@ export enum Color {
   borderError = '#e53935',
 
   fillLight = '#F4F5F6',
+  fillLighter = '#F8FAF9',
+  fillError = '#ffcdd2',
 }

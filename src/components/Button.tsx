@@ -1,4 +1,5 @@
 import { Color } from 'src/styles/Color'
+import { Styles } from 'src/styles/types'
 
 interface ButtonProps {
   size?: 's' | 'm' | 'l' | 'icon' // defaults to 'm'
@@ -9,10 +10,11 @@ interface ButtonProps {
   icon?: string
   iconPosition?: 'start' | 'end' //defaults to start //TODO: add top / bottom if necessary
   disabled?: boolean
+  styles?: Styles
 }
 
 export function Button(props: React.PropsWithChildren<ButtonProps>) {
-  const { size, type, color, margin, onClick, icon, iconPosition, disabled } = props
+  const { size, type, color, margin, onClick, icon, iconPosition, disabled, styles } = props
   const { height, width } = getDimensions(size)
   const icoLayout = getLayout(size)
 
@@ -39,6 +41,7 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
           color: Color.primaryGrey,
           backgroundColor: Color.borderInactive,
         },
+        ...styles,
       }}
       onClick={onClick}
       type={type}
@@ -47,10 +50,12 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
       {icon && (
         <div css={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {(!iconPosition || iconPosition === 'start') && (
-            <img src={icon} css={{ marginRight: 8 }} />
+            <img src={icon} css={props.children ? { marginRight: 8 } : undefined} />
           )}
           {props.children}
-          {iconPosition === 'end' && <img src={icon} css={{ marginLeft: 8 }} />}
+          {iconPosition === 'end' && (
+            <img src={icon} css={props.children ? { marginLeft: 8 } : undefined} />
+          )}
         </div>
       )}
       {!icon && props.children}

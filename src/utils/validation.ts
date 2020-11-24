@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { shallowEqual } from 'react-redux'
+import { logger } from 'src/utils/logger'
 
 export type FieldError = {
   error: boolean
@@ -54,4 +55,47 @@ export function useInputValidation(touched: any, validateFn: () => ErrorState) {
     areInputsValid,
     clearInputErrors,
   }
+}
+
+interface IBrowserFeature {
+  key: string
+  check: () => boolean
+}
+
+export const requiredFeatures: IBrowserFeature[] = [
+  { key: 'crypto', check: () => Boolean(window.crypto) },
+]
+
+//For testing purposes, to demonstrate how it works with unsupported features
+export const testInvalidFeatures: IBrowserFeature[] = [
+  { key: 'crypto', check: () => Boolean(window.crypto) },
+  { key: 'test', check: () => false },
+]
+
+export function useFeatureValidation(features: IBrowserFeature[] | null = null) {
+  const [isValid, setValid] = useState(true) //assume valid to start
+  const toValidate = features ?? requiredFeatures
+
+  useEffect(() => {
+    try {
+      //enumerate the required features and determine if they are available
+      const result = toValidate.reduce((valid: boolean, feature: IBrowserFeature) => {
+        try {
+          const available = feature.check()
+          if (!available)
+            logger.error(`The following browser feature is not available: ${feature.key}`)
+          return valid && available
+        } catch {
+          logger.error(`The following browser feature is not available: ${feature.key}`)
+          return false
+        }
+      }, true)
+
+      setValid(result)
+    } catch {
+      setValid(false)
+    }
+  }, [toValidate])
+
+  return isValid
 }
