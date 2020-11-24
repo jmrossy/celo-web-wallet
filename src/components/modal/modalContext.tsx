@@ -3,8 +3,8 @@ import { Modal, ModalAction, ModalProps } from 'src/components/modal/modal'
 import { logger } from 'src/utils/logger'
 
 interface IModalContext {
-  showModal: (props: ModalProps, content?: any) => Promise<ModalAction | null>
-  showModalAndForget: (props: ModalProps, content?: any) => void
+  showModal: (props: ModalProps, content?: any) => void
+  showModalAsync: (props: ModalProps, content?: any) => Promise<ModalAction | null>
   closeModal: () => void
   modalProps: ModalProps | null
 }
@@ -14,7 +14,7 @@ export const ModalContext = createContext<IModalContext>({
   showModal: () => {
     throw Error('Missing modal context')
   },
-  showModalAndForget: () => {
+  showModalAsync: () => {
     throw Error('Missing modal context')
   },
   closeModal: () => {
@@ -33,7 +33,7 @@ export const ModalProvider = ({ children }: any) => {
   const [content, setContent] = useState<any>(null)
   const closeRef = useRef<(action?: ModalAction | null) => void>(closeFallback)
 
-  const showModalAndForget = (props: ModalProps, content: any = null) => {
+  const showModal = (props: ModalProps, content: any = null) => {
     const isDismissable = !props.isLoading && Boolean(props.onClose)
     if (content) setContent(content)
     closeRef.current = () => {
@@ -51,7 +51,7 @@ export const ModalProvider = ({ children }: any) => {
     setModal(modalProps)
   }
 
-  const showModal = async (props: ModalProps, content: any = null) => {
+  const showModalAsync = async (props: ModalProps, content: any = null) => {
     const isDismissable = !props.isLoading && Boolean(props.onClose)
     if (content) setContent(content)
 
@@ -78,7 +78,7 @@ export const ModalProvider = ({ children }: any) => {
   const myContext: IModalContext = {
     modalProps: modal,
     showModal,
-    showModalAndForget,
+    showModalAsync,
     closeModal: () => closeRef.current(),
   }
 

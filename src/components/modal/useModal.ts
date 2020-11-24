@@ -17,7 +17,7 @@ export function useModal() {
       head: head,
       subHead: subHead ?? undefined,
     }
-    context.showModalAndForget(modalProps)
+    context.showModal(modalProps)
   }
 
   const showErrorModal = (
@@ -34,7 +34,7 @@ export function useModal() {
       onClose: context.closeModal,
       onActionClick: context.closeModal,
     }
-    context.showModalAndForget(modalProps)
+    context.showModal(modalProps)
   }
 
   const showModalWithContent = (
@@ -52,7 +52,7 @@ export function useModal() {
       actions: actions ?? undefined,
       onActionClick: onActionClick,
     }
-    context.showModalAndForget(modalProps, content)
+    context.showModal(modalProps, content)
   }
 
   const showActionsModal = (
@@ -74,7 +74,7 @@ export function useModal() {
       onClose: dismissable ? context.closeModal : undefined,
     }
 
-    return context.showModal(modalProps)
+    return context.showModalAsync(modalProps)
   }
 
   const showModalAsync = (
@@ -96,7 +96,7 @@ export function useModal() {
       onClose: dismissable ? context.closeModal : undefined,
     }
 
-    return context.showModal(modalProps)
+    return context.showModalAsync(modalProps)
   }
 
   const showModal = (
@@ -118,7 +118,7 @@ export function useModal() {
       onClose: dismissable ? context.closeModal : undefined,
     }
 
-    context.showModalAndForget(modalProps)
+    context.showModal(modalProps)
   }
 
   return {
