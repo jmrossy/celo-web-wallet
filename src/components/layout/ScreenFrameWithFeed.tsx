@@ -61,6 +61,7 @@ const style: Stylesheet = {
   },
   childContent: {
     display: 'none',
+    overflow: 'auto',
     [mq[768]]: {
       display: 'block',
       flex: 1,

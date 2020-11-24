@@ -25,4 +25,7 @@ const style: Stylesheet = {
     ...Font.label,
     marginBottom: '0.8em',
   },
+  value: {
+    ...Font.body,
+  },
 }

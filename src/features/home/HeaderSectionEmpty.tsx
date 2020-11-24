@@ -14,10 +14,16 @@ export function HeaderSectionEmpty() {
           <img src={liftoff} css={style.icon} />
           <label css={[Font.body, Font.bold]}>Get started</label>
         </Box>
-        <p css={Font.body}>
-          To fund your account you can <a href="#">buy currency</a> from an exchange,{' '}
-          <a href="#">redeem an invite code</a>, or ask a friend on Celo to send a payment to{' '}
-          <a href="#">your address.</a>
+        <p css={style.tip}>All new wallets start empty. Add funds to start using Celo.</p>
+        <p css={style.tip}>
+          You can{' '}
+          <a href="#" css={Font.linkLight}>
+            buy currency
+          </a>{' '}
+          from an exchange or ask a friend on Celo to send a payment to{' '}
+          <a href="#" css={Font.linkLight}>
+            your address.
+          </a>
         </p>
       </Box>
     </Box>
@@ -27,12 +33,16 @@ export function HeaderSectionEmpty() {
 const style: Stylesheet = {
   header: {
     ...Font.h1,
-    marginBottom: '1em',
+    marginBottom: '1.2em',
     color: Color.primaryGreen,
   },
   icon: {
     marginRight: '0.5em',
     height: '2em',
     width: '2em',
+  },
+  tip: {
+    ...Font.body,
+    margin: '1em 0 0 0',
   },
 }

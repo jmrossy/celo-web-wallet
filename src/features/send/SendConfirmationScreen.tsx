@@ -153,7 +153,7 @@ export function SendConfirmationScreen() {
         <Button
           type="button"
           size="m"
-          color={Color.primaryGrey}
+          color={Color.altGrey}
           onClick={onGoBack}
           icon={ArrowBackIcon}
           disabled={isSagaWorking || !feeAmount}

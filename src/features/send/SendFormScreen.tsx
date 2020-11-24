@@ -1,11 +1,12 @@
+import { utils } from 'ethers'
+import { Location } from 'history'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment_white.svg'
-import { Identicon } from 'src/components/Identicon'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
@@ -27,8 +28,7 @@ interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
 }
 
 const initialValues: SendTokenForm = {
-  // TODO set to empty string
-  recipient: '0xa2972a33550c33ecfa4a02a0ea212ac98e77fa55',
+  recipient: '',
   amount: 0,
   currency: Currency.CELO,
   comment: '',
@@ -37,6 +37,7 @@ const initialValues: SendTokenForm = {
 export function SendFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const tx = useSelector((state: RootState) => state.send.transaction)
 
@@ -50,7 +51,7 @@ export function SendFormScreen() {
   const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
     SendTokenForm,
     any
-  >(toSendTokenForm(tx) ?? initialValues, onSubmit)
+  >(toSendTokenForm(tx) ?? getFormInitialValues(location), onSubmit)
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
     validate(toSendTokenParams(values), balances)
@@ -59,7 +60,7 @@ export function SendFormScreen() {
   //-- if the transaction gets reset, reset the screen as well
   useEffect(() => {
     if (tx === null) {
-      resetValues(initialValues)
+      resetValues(getFormInitialValues(location))
     }
   }, [tx])
 
@@ -93,7 +94,6 @@ export function SendFormScreen() {
             >
               <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon} />
             </Button>
-            <Identicon address={values.recipient} />
           </Box>
         </Box>
 
@@ -158,6 +158,18 @@ export function SendFormScreen() {
       </form>
     </ScreenContentFrame>
   )
+}
+
+function getFormInitialValues(location: Location<any>) {
+  const recipient = location?.state?.recipient
+  if (recipient && utils.isAddress(recipient)) {
+    return {
+      ...initialValues,
+      recipient,
+    }
+  } else {
+    return initialValues
+  }
 }
 
 function toSendTokenParams(values: SendTokenForm): SendTokenParams {

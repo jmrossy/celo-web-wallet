@@ -1,6 +1,5 @@
 import { TransactionProperty } from 'src/features/feed/components/TransactionPropertyGroup'
 import { CeloTransaction } from 'src/features/types'
-import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
 export function TransactionStatusProperty({ tx }: { tx: CeloTransaction }) {
@@ -8,7 +7,7 @@ export function TransactionStatusProperty({ tx }: { tx: CeloTransaction }) {
 
   return (
     <TransactionProperty label="Status">
-      <div css={style.value}>{`Confirmed: ${time}`} </div>
+      <div css={style.value}>{`Confirmed at ${time}`} </div>
       <div css={style.value}>{date} </div>
     </TransactionProperty>
   )
@@ -16,12 +15,19 @@ export function TransactionStatusProperty({ tx }: { tx: CeloTransaction }) {
 
 function getFormattedTime(timestamp: number) {
   const date = new Date(timestamp * 1000)
-  return { time: date.toLocaleTimeString(), date: date.toDateString() }
+  return {
+    time: date.toLocaleTimeString(),
+    date: date.toLocaleDateString(undefined, {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+  }
 }
 
 const style: Stylesheet = {
   value: {
-    ...Font.body,
     marginTop: '0.75em',
   },
 }

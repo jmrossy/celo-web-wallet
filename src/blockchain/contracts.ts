@@ -1,6 +1,7 @@
 import { Contract, ethers } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
+import { areAddressesEqual } from 'src/utils/addresses'
 
 const contractCache: Partial<Record<CeloContract, Contract>> = {}
 
@@ -28,4 +29,16 @@ async function getContractAbi(c: CeloContract) {
     default:
       throw new Error(`No ABI for contract ${c}`)
   }
+}
+
+export function getContractName(address: string): string | null {
+  if (!address) return null
+
+  for (const [name, cAddress] of Object.entries(config.contractAddresses)) {
+    if (areAddressesEqual(address, cAddress)) {
+      return name
+    }
+  }
+
+  return null
 }

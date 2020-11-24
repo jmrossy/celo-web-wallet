@@ -1,7 +1,13 @@
 import { Color } from 'src/styles/Color'
+import { Stylesheet } from 'src/styles/types'
 
-export const Font = {
+export const Font: Stylesheet = {
   body: {
+    fontSize: '1.1em',
+    fontWeight: 400,
+    color: Color.primaryBlack,
+  },
+  body2: {
     fontSize: '1em',
     fontWeight: 400,
     color: Color.primaryBlack,
@@ -12,7 +18,7 @@ export const Font = {
     color: Color.textGrey,
   },
   h1: {
-    fontSize: '1.5em',
+    fontSize: '1.6em',
     fontWeight: 400,
     marginBottom: '1em',
   },
@@ -27,10 +33,17 @@ export const Font = {
     marginBottom: '1em',
   },
   label: {
-    fontSize: '0.9em',
+    fontSize: '1em',
     fontWeight: 500,
-    letterSpacing: '0.06em',
+    letterSpacing: '0.04em',
     color: Color.textGrey,
+  },
+  linkLight: {
+    textDecoration: 'underline',
+    color: Color.textGrey,
+    ':hover': {
+      color: Color.primaryBlack,
+    },
   },
   bold: {
     fontWeight: 500,

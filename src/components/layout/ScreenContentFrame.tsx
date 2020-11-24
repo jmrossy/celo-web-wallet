@@ -13,6 +13,6 @@ export function ScreenContentFrame(props: PropsWithChildren<unknown>) {
 const style: Stylesheet = {
   contentContainer: {
     height: '100%',
-    padding: '2em 2em 2em 4em',
+    padding: '2em 4em 2em 4em',
   },
 }
