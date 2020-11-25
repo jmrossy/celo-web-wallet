@@ -70,7 +70,10 @@ const config = {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [{ from: './src/index.html', to: 'index.html' }],
+      patterns: [
+        { from: './src/index.html', to: 'index.html' },
+        { from: './static/*', to: 'static/[name].[ext]' },
+      ],
     }),
     new webpack.DefinePlugin({
       __VERSION__: JSON.stringify(packageJson.version),

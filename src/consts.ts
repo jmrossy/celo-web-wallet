@@ -23,3 +23,6 @@ export const MIN_EXCHANGE_RATE = 0.01 // 100 cUSD per Celo
 export const BALANCE_STALE_TIME = 15000 // 15 seconds
 export const GAS_PRICE_STALE_TIME = 10000 // 10 seconds
 export const EXCHANGE_RATE_STALE_TIME = 15000 // 15 seconds
+
+export const PLACEHOLDER_MNEMONIC =
+  'wage bitter silk coin door shine orphan quote witness ticket venture undo grief sense write limit famous always wage pink fresh gold carpet adult'

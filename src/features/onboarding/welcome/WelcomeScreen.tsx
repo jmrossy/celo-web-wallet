@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
-import { Footer } from 'src/components/footer/Footer'
+import { OnboardingFooter } from 'src/components/footer/OnboardingFooter'
 import Logo from 'src/components/icons/logoWithWallet.svg'
 import { Box } from 'src/components/layout/Box'
+import { mq } from 'src/styles/mediaQueries'
+import { Stylesheet } from 'src/styles/types'
 
 export function WelcomeScreen() {
   const navigate = useNavigate()
@@ -16,17 +18,44 @@ export function WelcomeScreen() {
   }
 
   return (
-    <Box direction="column" justify="between" align="center" styles={{ minHeight: '100vh' }}>
-      <Box direction="column" justify="center" align="center" styles={{ marginTop: '30vh' }}>
-        <img width={'500rem'} src={Logo} alt="Celo Logo" css={{ maxWidth: '80%' }} />
-        <Button size={'m'} onClick={onClickCreateNew} margin={'2.5em 0 0 0'}>
-          Create New Account
-        </Button>
-        <Button size={'m'} onClick={onClickUseExisting} margin={'2em 0 0 0'}>
-          Use Existing Account
-        </Button>
+    <Box direction="column" justify="between" align="center" styles={style.frame}>
+      <Box direction="column" justify="center" align="center" styles={style.container}>
+        <img width={'500rem'} src={Logo} alt="Celo Logo" css={style.logo} />
+        <div css={style.buttonContainer}>
+          <Button size={'l'} onClick={onClickCreateNew} margin={'1em 1.5em'}>
+            Create New Account
+          </Button>
+          <Button size={'l'} onClick={onClickUseExisting} margin={'1em 1.5em'}>
+            Use Existing Account
+          </Button>
+        </div>
       </Box>
-      <Footer isOnboarding={true} />
+      <OnboardingFooter />
     </Box>
   )
+}
+
+const style: Stylesheet = {
+  frame: {
+    minHeight: '100vh',
+  },
+  container: {
+    marginTop: '30vh',
+    [mq[768]]: {
+      marginTop: '33vh',
+    },
+  },
+  logo: {
+    maxWidth: '75%',
+  },
+  buttonContainer: {
+    marginTop: '3em',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    [mq[768]]: {
+      flexDirection: 'row',
+    },
+  },
 }

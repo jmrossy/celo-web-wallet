@@ -22,6 +22,12 @@ export const Font: Stylesheet = {
     fontWeight: 400,
     marginBottom: '1em',
   },
+  h1Green: {
+    fontSize: '1.6em',
+    fontWeight: 400,
+    marginBottom: '1em',
+    color: Color.primaryGreen,
+  },
   h2: {
     fontSize: '1.4em',
     fontWeight: 400,
@@ -31,6 +37,10 @@ export const Font: Stylesheet = {
     fontWeight: 400,
     color: Color.primaryGreen,
     marginBottom: '1em',
+  },
+  h3: {
+    fontSize: '1.2em',
+    fontWeight: 400,
   },
   label: {
     fontSize: '1em',

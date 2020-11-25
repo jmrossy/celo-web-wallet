@@ -1,4 +1,5 @@
 import { css, keyframes } from '@emotion/react'
+import { memo } from 'react'
 import elipse from 'src/components/icons/celo_elipse.svg'
 import echo1 from 'src/components/icons/elipse_echo_1.svg'
 import echo2 from 'src/components/icons/elipse_echo_2.svg'
@@ -6,7 +7,7 @@ import echo3 from 'src/components/icons/elipse_echo_3.svg'
 import { Box } from 'src/components/layout/Box'
 import { Stylesheet } from 'src/styles/types'
 
-export function LoadingIndicator() {
+function _LoadingIndicator() {
   return (
     <Box styles={style.container}>
       <img src={elipse} css={style.elipse} />
@@ -16,6 +17,8 @@ export function LoadingIndicator() {
     </Box>
   )
 }
+
+export const LoadingIndicator = memo(_LoadingIndicator)
 
 const pulse = keyframes`
   0% { opacity: 0; }

@@ -3,29 +3,20 @@ import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
 
-interface FooterProps {
-  isOnboarding?: boolean // Use onboarding screen style
-}
-
-export function Footer(props: FooterProps) {
-  const { isOnboarding } = props
-  const anchorStyle = isOnboarding ? style.anchorOnboarding : textStyle
-  const containerStyle = isOnboarding ? style.containerOnboarding : style.container
-  const justify = isOnboarding ? 'center' : 'between'
-
+export function Footer() {
   return (
-    <Box align="center" justify={justify} styles={containerStyle}>
+    <Box align="center" justify="between" styles={style.container}>
       <Box align="center" justify="center">
-        <a css={anchorStyle} href="https://celo.org" target="_blank" rel="noopener noreferrer">
+        <a css={textStyle} href="https://celo.org" target="_blank" rel="noopener noreferrer">
           About Celo
         </a>
         <span>-</span>
-        <a css={anchorStyle} href="https://valoraapp.com" target="_blank" rel="noopener noreferrer">
+        <a css={textStyle} href="https://valoraapp.com" target="_blank" rel="noopener noreferrer">
           Celo Mobile Wallet
         </a>
         <span>-</span>
         <a
-          css={anchorStyle}
+          css={textStyle}
           href="https://github.com/celo-tools/celo-web-wallet"
           target="_blank"
           rel="noopener noreferrer"
@@ -34,7 +25,7 @@ export function Footer(props: FooterProps) {
         </a>
       </Box>
       {/* TODO check connected status and add icon */}
-      {!isOnboarding && <div css={style.version}>Connected</div>}
+      <div css={style.version}>Connected</div>
     </Box>
   )
 }
@@ -57,17 +48,6 @@ const style: Stylesheet = {
     width: '100%',
     opacity: 0.8,
     borderTop: `1px solid ${Color.borderLight}`,
-  },
-  containerOnboarding: {
-    padding: '2em',
-    width: '100%',
-    opacity: 0.9,
-  },
-  anchorOnboarding: {
-    ...textStyle,
-    padding: '0 1em',
-    fontSize: '1em',
-    textDecoration: 'underline',
   },
   version: {
     display: 'none',
