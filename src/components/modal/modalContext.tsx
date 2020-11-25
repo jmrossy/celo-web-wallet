@@ -60,7 +60,7 @@ export const ModalProvider = ({ children }: any) => {
         setModal(null)
         setContent(null)
         closeRef.current = closeFallback //reset the ref
-        resolve(action)
+        resolve(action ?? null)
       }
 
       const asyncProps = {
