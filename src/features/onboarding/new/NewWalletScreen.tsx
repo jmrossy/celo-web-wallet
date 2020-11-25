@@ -1,12 +1,36 @@
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
+import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
+import { Spinner } from 'src/components/Spinner'
+import { createWalletActions } from 'src/features/wallet/createWallet'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
+import { logger } from 'src/utils/logger'
+import { SagaStatus } from 'src/utils/saga'
 
 export function NewWalletScreen() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const address = useSelector((s: RootState) => s.wallet.address)
+
+  useEffect(() => {
+    if (address) {
+      logger.error('Attempting to create new address when one is already assigned')
+      return
+    }
+
+    // For smoother loading render
+    setTimeout(() => {
+      dispatch(createWalletActions.trigger())
+    }, 1000)
+  }, [])
+
+  const { status, error } = useSelector((s: RootState) => s.saga.createWallet)
 
   const onClickContinue = () => {
     navigate('/set-pin')
@@ -15,8 +39,22 @@ export function NewWalletScreen() {
   return (
     <OnboardingScreenFrame>
       <h1 css={style.header}>Your New Celo Account</h1>
-      <WalletDetails />
-      <Button size={'m'} onClick={onClickContinue} margin={'3em 0 0 0'}>
+      {(!status || status === SagaStatus.Started) && (
+        <div css={style.container}>
+          <WalletDetails />
+          <div css={style.spinnerContainer}>
+            <Spinner />
+          </div>
+        </div>
+      )}
+      {status === SagaStatus.Success && <WalletDetails />}
+      {status === SagaStatus.Failure && <div>TODO show error</div>}
+      <Button
+        size={'m'}
+        onClick={onClickContinue}
+        margin={'3em 0 0 0'}
+        disabled={status !== SagaStatus.Success && !address}
+      >
         Continue
       </Button>
     </OnboardingScreenFrame>
@@ -25,7 +63,24 @@ export function NewWalletScreen() {
 
 const style: Stylesheet = {
   header: {
-    ...Font.h1,
+    ...Font.h1Green,
     marginBottom: '2em',
+  },
+  container: {
+    position: 'relative',
+  },
+  spinnerContainer: {
+    zIndex: 100,
+    position: 'absolute',
+    left: -20,
+    right: -20,
+    top: -20,
+    bottom: -20,
+    backgroundColor: '#f5f6f7',
+    opacity: 0.4,
+    borderRadius: 4,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }

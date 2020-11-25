@@ -39,15 +39,15 @@ export function Address(props: Props) {
       )}
       <div css={addressContainerStyle}>
         <Box direction="row" align="center" justify="between">
-          {addressSections.slice(0, 5).map((chunk) => (
-            <span key={`address-chunk-${chunk}`} css={style.addressChunk}>
+          {addressSections.slice(0, 5).map((chunk, index) => (
+            <span key={`address-chunk-${index}`} css={style.addressChunk}>
               {chunk}
             </span>
           ))}
         </Box>
         <Box direction="row" align="center" justify="between">
-          {addressSections.slice(5).map((chunk) => (
-            <span key={`address-chunk-${chunk}`} css={style.addressChunk}>
+          {addressSections.slice(5).map((chunk, index) => (
+            <span key={`address-chunk-${index + 5}`} css={style.addressChunk}>
               {chunk}
             </span>
           ))}
