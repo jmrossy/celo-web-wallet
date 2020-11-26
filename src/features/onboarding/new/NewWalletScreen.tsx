@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
+import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
 import { createWalletActions } from 'src/features/wallet/createWallet'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
@@ -32,14 +33,28 @@ export function NewWalletScreen() {
 
   const { status, error } = useSelector((s: RootState) => s.saga.createWallet)
 
+  const { showErrorModal } = useModal()
+  useEffect(() => {
+    if (status === SagaStatus.Failure) {
+      showErrorModal(
+        'Error Creating Wallet',
+        error,
+        'Something went wrong when creating your new wallet, sorry! Please try again.'
+      )
+    }
+  }, [status, error])
+
   const onClickContinue = () => {
     navigate('/set-pin')
   }
 
+  const isLoading = !address && (!status || status === SagaStatus.Started)
+  const isDone = address || status === SagaStatus.Success || status === SagaStatus.Failure
+
   return (
     <OnboardingScreenFrame>
       <h1 css={style.header}>Your New Celo Account</h1>
-      {(!status || status === SagaStatus.Started) && (
+      {isLoading && (
         <div css={style.container}>
           <WalletDetails />
           <div css={style.spinnerContainer}>
@@ -47,8 +62,7 @@ export function NewWalletScreen() {
           </div>
         </div>
       )}
-      {status === SagaStatus.Success && <WalletDetails />}
-      {status === SagaStatus.Failure && <div>TODO show error</div>}
+      {isDone && <WalletDetails />}
       <Button
         size={'m'}
         onClick={onClickContinue}

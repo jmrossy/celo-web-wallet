@@ -19,7 +19,7 @@ export function ImportWalletForm() {
   const onClickImport = () => {
     if (!isValidMnemonic(mnemonic)) {
       // TODO
-      alert('Invalid backup phrase')
+      alert('Invalid account key')
       return
     }
 

@@ -25,6 +25,7 @@ const style: Stylesheet = {
   content: {
     flex: 1,
     overflow: 'auto',
+    width: '100%',
   },
   logoContainer: {
     position: 'fixed',
@@ -36,7 +37,8 @@ const style: Stylesheet = {
   },
   childrenContainer: {
     maxWidth: '46em',
-    padding: '2em 2em 5vh 2em',
-    height: '100%',
+    padding: '5em 2em 5em 2em',
+    minHeight: '100%',
+    margin: 'auto',
   },
 }

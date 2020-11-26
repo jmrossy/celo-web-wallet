@@ -22,12 +22,23 @@ export function useModal() {
 
   const showErrorModal = (
     head: string,
-    error: string,
+    error: string | number | unknown | undefined | null,
     body: string | null | undefined = undefined
   ) => {
+    let errorMsg: string
+    if (!error) {
+      errorMsg = 'Unknown Error'
+    } else if (typeof error === 'string') {
+      errorMsg = error
+    } else if (typeof error === 'number') {
+      errorMsg = `Error code: ${error}`
+    } else {
+      errorMsg = JSON.stringify(error)
+    }
+
     const modalProps: ModalProps = {
       head,
-      subHead: error,
+      subHead: errorMsg,
       body: body ?? undefined,
       severity: 'error',
       actions: ModalOkAction,

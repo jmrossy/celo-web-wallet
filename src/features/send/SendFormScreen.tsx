@@ -16,10 +16,10 @@ import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Currency } from 'src/consts'
 import { sendStarted } from 'src/features/send/sendSlice'
 import { SendTokenParams, validate } from 'src/features/send/sendToken'
-import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei } from 'src/utils/amount'
+import { tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
@@ -48,10 +48,18 @@ export function SendFormScreen() {
     }
   }
 
-  const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
-    SendTokenForm,
-    any
-  >(toSendTokenForm(tx) ?? getFormInitialValues(location), onSubmit)
+  const {
+    values,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setValues,
+    resetValues,
+  } = useCustomForm<SendTokenForm, any>(
+    toSendTokenForm(tx) ?? getFormInitialValues(location),
+    onSubmit
+  )
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
     validate(toSendTokenParams(values), balances)
@@ -64,8 +72,10 @@ export function SendFormScreen() {
     }
   }, [tx])
 
-  const onCopyAddress = async () => {
-    await navigator.clipboard.writeText(values.recipient)
+  const onPasteAddress = async () => {
+    const value = await tryClipboardGet()
+    if (!value || !utils.isAddress(value)) return
+    setValues({ ...values, recipient: value })
   }
 
   return (
@@ -85,14 +95,8 @@ export function SendFormScreen() {
               value={values.recipient}
               {...inputErrors['recipient']}
             />
-            <Button
-              size="icon"
-              type="button"
-              color={Color.fillLight}
-              margin="0 0.5em"
-              onClick={onCopyAddress}
-            >
-              <img src={PasteIcon} alt="Copy to Clipbard" css={style.copyIcon} />
+            <Button size="icon" type="button" margin="0 0.5em" onClick={onPasteAddress}>
+              <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
             </Button>
           </Box>
         </Box>

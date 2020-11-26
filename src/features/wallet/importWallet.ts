@@ -11,6 +11,10 @@ import { setAddress } from './walletSlice'
 const MNEMONIC_LENGTH = 24
 
 export function* importWallet(mnemonic: string) {
+  if (!isValidMnemonic(mnemonic)) {
+    throw new Error('Invalid mnemonic')
+  }
+
   const derivationPath = CELO_DERIVATION_PATH + '/0'
   const wallet = Wallet.fromMnemonic(mnemonic.trim(), derivationPath)
   setSigner(wallet)
@@ -21,7 +25,11 @@ export function* importWallet(mnemonic: string) {
 }
 
 export function isValidMnemonic(mnemonic: string) {
-  return utils.isValidMnemonic(mnemonic) && mnemonic.trim().split(' ').length === MNEMONIC_LENGTH
+  return (
+    mnemonic &&
+    utils.isValidMnemonic(mnemonic) &&
+    mnemonic.trim().split(' ').length === MNEMONIC_LENGTH
+  )
 }
 
 export const {

@@ -15,6 +15,7 @@ import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
 import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
+import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 export class App extends Component {
   render() {
     return (
@@ -29,11 +30,16 @@ export class App extends Component {
               <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
               <Route path="exchange" element={<ExchangeFormScreen />} />
             </Route>
+
+            {/* Onboarding */}
             <Route path="welcome" element={<WelcomeScreen />} />
             <Route path="new" element={<NewWalletScreen />} />
             <Route path="import" element={<ImportWalletScreen />} />
             <Route path="set-pin" element={<SetPincodeScreen />} />
             <Route path="pin" element={<EnterPincodeScreen />} />
+
+            {/* Account / Settings */}
+            <Route path="wallet" element={<ViewWalletScreen />} />
 
             {/* TODO: For Splashscreen Testing */}
             <Route path="home" element={<HomeScreen />} />
