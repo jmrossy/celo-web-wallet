@@ -15,6 +15,7 @@ export function ImportWalletForm() {
   const { showModalWithContent, showErrorModal, closeModal } = useModal()
   const onInputFocus = () => {
     if (hasShownWarning) return
+    // TODO lock logo in modal header
     showModalWithContent(
       'Security Warning',
       <ImportWalletWarning />,

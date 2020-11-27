@@ -55,13 +55,20 @@ export function SetPincodeForm() {
     <Box direction="column" align="center">
       <div css={style.description}>You pincode protects your account on this device.</div>
       <div css={style.description}>Use six numbers (0-9).</div>
-      <PincodeInputRow label="Enter Pin" name="pin1" value={pin1} onChange={onPinChange(setPin1)} />
-      <PincodeInputRow
-        label="Re-Enter Pin"
-        name="pin2"
-        value={pin2}
-        onChange={onPinChange(setPin2)}
-      />
+      <div css={style.inputRowContainer}>
+        <PincodeInputRow
+          label="Enter Pin"
+          name="pin1"
+          value={pin1}
+          onChange={onPinChange(setPin1)}
+        />
+        <PincodeInputRow
+          label="Re-Enter Pin"
+          name="pin2"
+          value={pin2}
+          onChange={onPinChange(setPin2)}
+        />
+      </div>
       <Button size={'m'} onClick={onClickSetPin} margin={'3em 0 0 0'}>
         Set Pin
       </Button>
@@ -73,5 +80,8 @@ const style: Stylesheet = {
   description: {
     ...Font.body,
     marginBottom: '0.75em',
+  },
+  inputRowContainer: {
+    marginLeft: '-8em',
   },
 }

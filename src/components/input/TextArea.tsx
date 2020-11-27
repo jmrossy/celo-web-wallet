@@ -28,7 +28,6 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
     value,
     placeholder,
     error,
-    helpText,
     onChange,
     onBlur,
     onFocus,
