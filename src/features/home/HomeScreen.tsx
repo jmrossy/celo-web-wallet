@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import insights from 'src/components/icons/insights.svg'
+import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { HeaderSection } from 'src/features/home/HeaderSection'
@@ -24,7 +24,7 @@ export function HomeScreen() {
 
         <hr css={style.divider} />
         <Box direction="row" align="end" styles={{ marginBottom: '2em' }}>
-          <img src={insights} css={style.icon} />
+          <img src={Chart} css={style.icon} />
           <label css={[Font.body, Font.bold]}>Celo Prices</label>
         </Box>
 
