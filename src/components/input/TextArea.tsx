@@ -1,6 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { InputStyleConstants } from 'src/components/input/styles'
-import { Color } from 'src/styles/Color'
+import { getSharedInputStyles } from 'src/components/input/styles'
 
 export interface TextAreaProps {
   name: string
@@ -11,9 +10,11 @@ export interface TextAreaProps {
   margin?: string | number
   value: string | undefined
   placeholder?: string
-  onBlur?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
+  error?: boolean
+  helpText?: string
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
-  // TODO add validation hook
+  onBlur?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
+  onFocus?: () => void
 }
 
 export function TextArea(props: PropsWithChildren<TextAreaProps>) {
@@ -26,31 +27,33 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
     margin,
     value,
     placeholder,
-    onBlur,
+    error,
+    helpText,
     onChange,
+    onBlur,
+    onFocus,
   } = props
+
+  const sharedStyles = getSharedInputStyles(error)
 
   return (
     <textarea
       name={name}
       css={{
+        ...sharedStyles,
         minWidth,
         maxWidth,
         minHeight,
         maxHeight,
         margin,
-        borderRadius: InputStyleConstants.borderRadius,
-        outline: 'none',
-        padding: InputStyleConstants.paddingTextArea,
-        border: InputStyleConstants.border,
-        ':focus': {
-          borderColor: Color.borderActive,
-        },
+        padding: '1em',
+        lineHeight: '1.4em',
       }}
       value={value}
       placeholder={placeholder}
-      onBlur={onBlur}
       onChange={onChange}
+      onBlur={onBlur}
+      onFocus={onFocus}
     />
   )
 }

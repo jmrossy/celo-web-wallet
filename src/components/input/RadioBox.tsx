@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { InputStyleConstants } from 'src/components/input/styles'
+import { sharedInputStyles } from 'src/components/input/styles'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
 
@@ -46,15 +46,15 @@ const containerStyle: Styles = {
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
-  padding: InputStyleConstants.padding,
-  border: InputStyleConstants.border,
+  padding: '0.1em 0.5em',
+  border: sharedInputStyles.border,
   borderColor: Color.primaryGrey,
-  borderRadius: InputStyleConstants.borderRadius,
+  borderRadius: sharedInputStyles.borderRadius,
   cursor: 'pointer',
   userSelect: 'none',
   color: Color.primaryGrey,
   marginRight: 4,
-  height: InputStyleConstants.defaultHeight, //default height (may be overridden by the classes)
+  height: 40, //default height (may be overridden by the classes)
   transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
 }
 

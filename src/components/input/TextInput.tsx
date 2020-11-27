@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { sharedInputStylesWithError } from 'src/components/input/styles'
+import { getSharedInputStyles } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 
@@ -30,7 +30,8 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
     helpText,
     autoComplete,
   } = props
-  const inputCss = sharedInputStylesWithError(error).input
+
+  const sharedStyles = getSharedInputStyles(error)
 
   return (
     <Box direction="column">
@@ -38,7 +39,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         type="text"
         name={name}
         css={{
-          ...inputCss,
+          ...sharedStyles,
           width,
           height: height ?? 40,
           margin,

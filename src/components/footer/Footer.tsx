@@ -12,7 +12,7 @@ export function Footer() {
         </a>
         <span>-</span>
         <a css={textStyle} href="https://valoraapp.com" target="_blank" rel="noopener noreferrer">
-          Celo Mobile Wallet
+          Valora Mobile App
         </a>
         <span>-</span>
         <a

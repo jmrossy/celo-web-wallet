@@ -58,6 +58,7 @@ export function ModalTestScreen() {
       'Modal with Content',
       content,
       ModalOkAction,
+      null,
       'This modal has an image for content'
     )
   }

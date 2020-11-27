@@ -52,8 +52,8 @@ export function useModal() {
     head: string,
     content: any,
     actions: ModalAction | ModalAction[] | undefined | null,
-    subHead: string | undefined | null = undefined,
     onActionClick: ModalActionCallback | undefined | null = undefined,
+    subHead: string | undefined | null = undefined,
     dismissable = true
   ) => {
     const modalProps: ModalProps = {

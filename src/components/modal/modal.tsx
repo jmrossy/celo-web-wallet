@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { PropsWithChildren } from 'react'
 import { Button } from 'src/components/Button'
 import CloseIcon from 'src/components/icons/close.svg'
@@ -51,7 +50,7 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
     <>
       <div css={[style.background, style.modalBackdrop]} />
       <div css={[style.background, style.modalContainer]} onClick={backdropClick}>
-        <div id="modal" css={[style.modal, dropShadow, propsToModalStyle(props)]}>
+        <div id="modal" css={[style.modal, propsToModalStyle(props)]}>
           <Box direction="column" justify="between" styles={style.modalContent}>
             <Box direction="column" align="center">
               <h1 css={style.head}>{head}</h1>
@@ -76,7 +75,7 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
                       onClick={() => onActionClick(action)}
                       color={action.color || Color.primaryGreen}
                       margin="0 1rem"
-                      size="s"
+                      size="m"
                     >
                       {action.label}
                     </Button>
@@ -117,7 +116,7 @@ const style: Stylesheet = {
     maxHeight: '50%',
     border: `1px solid ${Color.borderInactive}`,
     backgroundColor: 'white',
-    borderRadius: 5,
+    borderRadius: 4,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -126,8 +125,9 @@ const style: Stylesheet = {
     left: 0,
     right: 0,
     bottom: 0,
-    padding: '1em',
+    padding: '1.6em',
     overflow: 'hidden',
+    boxShadow: '0px 3px 4px 0px rgba(0, 0, 0, 0.15)',
   },
   modalContent: {
     width: '100%',
@@ -146,6 +146,7 @@ const style: Stylesheet = {
   },
   bodyText: {
     margin: '2em 0 0 0',
+    textAlign: 'center',
   },
   closeIcon: {
     position: 'absolute',
@@ -158,10 +159,6 @@ const style: Stylesheet = {
     maxWidth: '20em',
   },
 }
-
-const dropShadow = css`
-  box-shadow: 3px 3px 6px 1px #ccc;
-`
 
 const propsToSubHeadStyle = (props: ModalProps): Styles => {
   const css: Styles = props.severity?.toLowerCase() === 'error' ? { color: Color.textError } : {}

@@ -27,7 +27,7 @@ export function* importWallet(mnemonic: string) {
 export function isValidMnemonic(mnemonic: string) {
   return (
     mnemonic &&
-    utils.isValidMnemonic(mnemonic) &&
+    utils.isValidMnemonic(mnemonic.trim()) &&
     mnemonic.trim().split(' ').length === MNEMONIC_LENGTH
   )
 }
