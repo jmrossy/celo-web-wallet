@@ -1,5 +1,6 @@
 import { RootState } from 'src/app/rootReducer'
-import { saveWallet } from 'src/features/wallet/storage'
+import { importWallet } from 'src/features/wallet/importWallet'
+import { loadWallet, saveWallet } from 'src/features/wallet/storage'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, select } from 'typed-redux-saga'
 
@@ -31,6 +32,7 @@ interface SecretCache {
 }
 let pinCache: SecretCache = {}
 
+// TODO: Not currently used
 export function getCachedPin() {
   if (pinCache.secret && pinCache.timestamp && Date.now() - pinCache.timestamp < CACHE_TIMEOUT) {
     return pinCache.secret
@@ -41,6 +43,7 @@ export function getCachedPin() {
   }
 }
 
+// TODO: Not currently used
 export function setCachedPin(pin: string | null | undefined) {
   if (pin) {
     pinCache.timestamp = Date.now()
@@ -50,9 +53,38 @@ export function setCachedPin(pin: string | null | undefined) {
   }
 }
 
+// TODO: Not currently used
 export function clearPinCache() {
   pinCache = {}
 }
+
+export enum PincodeAction {
+  Set,
+  Unlock,
+  Change,
+}
+
+interface PincodeParams {
+  value: string
+  action: PincodeAction
+}
+
+function* pincode({ value, action }: PincodeParams) {
+  if (action === PincodeAction.Set) {
+    yield* call(setPin, value)
+  } else if (action === PincodeAction.Unlock) {
+    yield* call(unlockWallet, value)
+  } else if (action === PincodeAction.Change) {
+    throw new Error('TODO: Not yet implemented')
+  }
+}
+
+export const {
+  name: pincodeSagaName,
+  wrappedSaga: pincodeSaga,
+  reducer: pincodeReducer,
+  actions: pincodeActions,
+} = createMonitoredSaga<PincodeParams>(pincode, 'pincode')
 
 function* setPin(pin: string) {
   if (!isPinValid(pin)) {
@@ -60,18 +92,31 @@ function* setPin(pin: string) {
   }
 
   const address = yield* select((state: RootState) => state.wallet.address)
-
   if (!address) {
     throw new Error('Account not setup yet')
   }
 
-  setCachedPin(pin)
   yield* call(saveWallet, pin)
+
+  // setCachedPin(pin)
 }
 
-export const {
-  name: setPinSagaName,
-  wrappedSaga: setPinSaga,
-  reducer: setPinReducer,
-  actions: setPinActions,
-} = createMonitoredSaga<string>(setPin, 'setPin')
+function* unlockWallet(pin: string) {
+  if (!isPinValid(pin)) {
+    throw new Error('Invalid Pin')
+  }
+
+  const address = yield* select((state: RootState) => state.wallet.address)
+  if (address) {
+    throw new Error('Wallet already loaded and unlocked')
+  }
+
+  const mnemonic = yield* call(loadWallet, pin)
+  if (!mnemonic) {
+    throw new Error('No mnemonic retrieved')
+  }
+
+  yield* call(importWallet, mnemonic)
+
+  // setCachedPin(pin)
+}

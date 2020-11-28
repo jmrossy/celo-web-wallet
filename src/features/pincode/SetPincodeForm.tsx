@@ -4,7 +4,12 @@ import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
-import { isPinValid, setPinActions, setPinSagaName } from 'src/features/pincode/pincode'
+import {
+  isPinValid,
+  PincodeAction,
+  pincodeActions,
+  pincodeSagaName,
+} from 'src/features/pincode/pincode'
 import { PincodeInputRow } from 'src/features/pincode/PincodeInput'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -33,7 +38,7 @@ export function SetPincodeForm() {
       setPinError(2)
       return
     }
-    dispatch(setPinActions.trigger(pin1))
+    dispatch(pincodeActions.trigger({ action: PincodeAction.Set, value: pin1 }))
   }
 
   const navigate = useNavigate()
@@ -41,7 +46,7 @@ export function SetPincodeForm() {
     navigate('/')
   }
   const status = useSagaStatusWithErrorModal(
-    setPinSagaName,
+    pincodeSagaName,
     'Error Setting Pin',
     'Something went wrong when setting your pin, sorry! Please try again.',
     onSuccess
