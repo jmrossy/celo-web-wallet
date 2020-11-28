@@ -4,6 +4,10 @@ import { logger } from 'src/utils/logger'
 
 const MNEMONIC_STORAGE_KEY = 'wallet/mnemonic'
 
+export function isWalletInStorage() {
+  return !!localStorage.getItem(MNEMONIC_STORAGE_KEY)
+}
+
 export async function saveWallet(pincode: string) {
   try {
     const signer = getSigner()

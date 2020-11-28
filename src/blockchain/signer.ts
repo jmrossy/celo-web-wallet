@@ -5,6 +5,10 @@ import { logger } from 'src/utils/logger'
 
 let signer: CeloWallet
 
+export function isSignerSet() {
+  return !!signer
+}
+
 export function getSigner() {
   if (!signer) {
     logger.error('Signer is not yet initialized')

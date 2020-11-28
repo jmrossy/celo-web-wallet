@@ -1,10 +1,11 @@
-import { RootState } from 'src/app/rootReducer'
+import { isSignerSet } from 'src/blockchain/signer'
 import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage'
+import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { call, select } from 'typed-redux-saga'
+import { call } from 'typed-redux-saga'
 
-const CACHE_TIMEOUT = 300000 // 5 minutes
+const CACHE_TIMEOUT = 600000 // 10 minutes
 const PIN_LENGTH = 6
 
 const PIN_BLACKLIST = [
@@ -32,8 +33,7 @@ interface SecretCache {
 }
 let pinCache: SecretCache = {}
 
-// TODO: Not currently used
-export function getCachedPin() {
+function getCachedPin() {
   if (pinCache.secret && pinCache.timestamp && Date.now() - pinCache.timestamp < CACHE_TIMEOUT) {
     return pinCache.secret
   } else {
@@ -43,7 +43,6 @@ export function getCachedPin() {
   }
 }
 
-// TODO: Not currently used
 export function setCachedPin(pin: string | null | undefined) {
   if (pin) {
     pinCache.timestamp = Date.now()
@@ -53,9 +52,12 @@ export function setCachedPin(pin: string | null | undefined) {
   }
 }
 
-// TODO: Not currently used
 export function clearPinCache() {
   pinCache = {}
+}
+
+export function isAccountUnlocked() {
+  return !!getCachedPin()
 }
 
 export enum PincodeAction {
@@ -91,14 +93,14 @@ function* setPin(pin: string) {
     throw new Error('Invalid Pin')
   }
 
-  const address = yield* select((state: RootState) => state.wallet.address)
-  if (!address) {
+  if (!isSignerSet()) {
     throw new Error('Account not setup yet')
   }
 
   yield* call(saveWallet, pin)
 
-  // setCachedPin(pin)
+  setCachedPin(pin)
+  logger.info('Pin set')
 }
 
 function* unlockWallet(pin: string) {
@@ -106,17 +108,16 @@ function* unlockWallet(pin: string) {
     throw new Error('Invalid Pin')
   }
 
-  const address = yield* select((state: RootState) => state.wallet.address)
-  if (address) {
-    throw new Error('Wallet already loaded and unlocked')
-  }
-
   const mnemonic = yield* call(loadWallet, pin)
   if (!mnemonic) {
-    throw new Error('No mnemonic retrieved')
+    throw new Error('Incorrect Pin or Missing Wallet')
   }
 
-  yield* call(importWallet, mnemonic)
+  setCachedPin(pin)
+  logger.info('Account unlocked')
 
-  // setCachedPin(pin)
+  // If account has not yet been imported
+  if (!isSignerSet()) {
+    yield* call(importWallet, mnemonic)
+  }
 }

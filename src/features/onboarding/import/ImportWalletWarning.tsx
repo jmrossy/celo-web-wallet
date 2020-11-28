@@ -50,7 +50,7 @@ const style: Stylesheet = {
     margin: '0.5em 0.4em',
     lineHeight: '1.5em',
     textAlign: 'center',
-    ':first-child': {
+    ':first-of-type': {
       ...Font.bold,
       marginTop: '2em',
     },
