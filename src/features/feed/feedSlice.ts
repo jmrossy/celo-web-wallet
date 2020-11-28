@@ -29,7 +29,9 @@ const feedSlice = createSlice({
         lastBlockNumber: number
       }>
     ) => {
-      state.transactions = { ...state.transactions, ...action.payload.txs }
+      if (Object.keys(action.payload.txs).length > 0) {
+        state.transactions = { ...state.transactions, ...action.payload.txs }
+      }
       state.lastUpdatedTime = action.payload.lastUpdatedTime
       state.lastBlockNumber = action.payload.lastBlockNumber
     },

@@ -55,6 +55,7 @@ async function fetchDollarBalance(address: string) {
 }
 
 export const {
+  name: fetchBalancesSagaName,
   wrappedSaga: fetchBalancesSaga,
   reducer: fetchBalancesReducer,
   actions: fetchBalancesActions,

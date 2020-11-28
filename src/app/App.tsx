@@ -16,6 +16,7 @@ import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
+
 export class App extends Component {
   render() {
     return (

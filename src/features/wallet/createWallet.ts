@@ -21,6 +21,7 @@ function* createWallet() {
 }
 
 export const {
+  name: createWalletSagaName,
   wrappedSaga: createWalletSaga,
   reducer: createWalletReducer,
   actions: createWalletActions,

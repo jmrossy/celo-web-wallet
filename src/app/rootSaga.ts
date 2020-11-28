@@ -2,22 +2,70 @@ import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
 import { connectToForno } from 'src/blockchain/provider'
 import { config } from 'src/config'
-import { fetchExchangeRateReducer, fetchExchangeRateSaga } from 'src/features/exchange/exchangeRate'
-import { exchangeTokenReducer, exchangeTokenSaga } from 'src/features/exchange/exchangeToken'
-import { feedFetchPoller, fetchFeedReducer, fetchFeedSaga } from 'src/features/feed/fetch'
-import { estimateFeeReducer, estimateFeeSaga } from 'src/features/fees/estimateFee'
-import { setPinReducer, setPinSaga } from 'src/features/pincode/pincode'
-import { sendTokenReducer, sendTokenSaga } from 'src/features/send/sendToken'
-import { fetchTokenPriceReducer, fetchTokenPriceSaga } from 'src/features/tokenPrice/fetchPrices'
-import { createWalletReducer, createWalletSaga } from 'src/features/wallet/createWallet'
-import { fetchBalancesReducer, fetchBalancesSaga } from 'src/features/wallet/fetchBalances'
+import {
+  fetchExchangeRateActions,
+  fetchExchangeRateReducer,
+  fetchExchangeRateSaga,
+  fetchExchangeRateSagaName,
+} from 'src/features/exchange/exchangeRate'
+import {
+  exchangeTokenActions,
+  exchangeTokenReducer,
+  exchangeTokenSaga,
+  exchangeTokenSagaName,
+} from 'src/features/exchange/exchangeToken'
+import {
+  feedFetchPoller,
+  fetchFeedActions,
+  fetchFeedReducer,
+  fetchFeedSaga,
+  fetchFeedSagaName,
+} from 'src/features/feed/fetch'
+import {
+  estimateFeeActions,
+  estimateFeeReducer,
+  estimateFeeSaga,
+  estimateFeeSagaName,
+} from 'src/features/fees/estimateFee'
+import {
+  setPinActions,
+  setPinReducer,
+  setPinSaga,
+  setPinSagaName,
+} from 'src/features/pincode/pincode'
+import {
+  sendTokenActions,
+  sendTokenReducer,
+  sendTokenSaga,
+  sendTokenSagaName,
+} from 'src/features/send/sendToken'
+import {
+  fetchTokenPriceActions,
+  fetchTokenPriceReducer,
+  fetchTokenPriceSaga,
+  fetchTokenPriceSagaName,
+} from 'src/features/tokenPrice/fetchPrices'
+import {
+  createWalletActions,
+  createWalletReducer,
+  createWalletSaga,
+  createWalletSagaName,
+} from 'src/features/wallet/createWallet'
+import {
+  fetchBalancesActions,
+  fetchBalancesReducer,
+  fetchBalancesSaga,
+  fetchBalancesSagaName,
+} from 'src/features/wallet/fetchBalances'
 import {
   importWallet,
+  importWalletActions,
   importWalletReducer,
   importWalletSaga,
+  importWalletSagaName,
 } from 'src/features/wallet/importWallet'
 import { loadWalletSaga } from 'src/features/wallet/storage'
-import { SagaState } from 'src/utils/saga'
+import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
   yield call(connectToForno)
@@ -31,53 +79,62 @@ const sagas = [loadWalletSaga, feedFetchPoller]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {
-  [name: string]: { saga: any; reducer: Reducer<SagaState> }
+  [name: string]: { saga: any; reducer: Reducer<SagaState>; actions: SagaActions }
 } = {
-  createWallet: {
+  [createWalletSagaName]: {
     saga: createWalletSaga,
     reducer: createWalletReducer,
+    actions: createWalletActions,
   },
-  fetchBalances: {
+  [fetchBalancesSagaName]: {
     saga: fetchBalancesSaga,
     reducer: fetchBalancesReducer,
+    actions: fetchBalancesActions,
   },
-  sendToken: {
+  [sendTokenSagaName]: {
     saga: sendTokenSaga,
     reducer: sendTokenReducer,
+    actions: sendTokenActions,
   },
-  fetchFeed: {
+  [fetchFeedSagaName]: {
     saga: fetchFeedSaga,
     reducer: fetchFeedReducer,
+    actions: fetchFeedActions,
   },
-  exchangeToken: {
+  [exchangeTokenSagaName]: {
     saga: exchangeTokenSaga,
     reducer: exchangeTokenReducer,
+    actions: exchangeTokenActions,
   },
-  setPin: {
+  [setPinSagaName]: {
     saga: setPinSaga,
     reducer: setPinReducer,
+    actions: setPinActions,
   },
-  importWallet: {
+  [importWalletSagaName]: {
     saga: importWalletSaga,
     reducer: importWalletReducer,
+    actions: importWalletActions,
   },
-  estimateFee: {
+  [estimateFeeSagaName]: {
     saga: estimateFeeSaga,
     reducer: estimateFeeReducer,
+    actions: estimateFeeActions,
   },
-  fetchExchangeRate: {
+  [fetchExchangeRateSagaName]: {
     saga: fetchExchangeRateSaga,
     reducer: fetchExchangeRateReducer,
+    actions: fetchExchangeRateActions,
   },
-  fetchTokenPrice: {
+  [fetchTokenPriceSagaName]: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
+    actions: fetchTokenPriceActions,
   },
 }
 
-// TODO This dynamic combination of reducers causes the typings to be lost,
-// but if the reducers are listed manually, there's a circular definition causing errors.
-export const monitoredSagaReducers = combineReducers(
+type MonitoredSagaReducer = Reducer<Record<string, SagaState>>
+export const monitoredSagaReducers: MonitoredSagaReducer = combineReducers(
   Object.keys(monitoredSagas).reduce(
     (acc: { [name: string]: Reducer<SagaState> }, sagaName: string) => {
       acc[sagaName] = monitoredSagas[sagaName].reducer

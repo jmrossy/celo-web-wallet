@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
-import { useModal } from 'src/components/modal/useModal'
+import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
-import { createWalletActions } from 'src/features/wallet/createWallet'
+import { createWalletActions, createWalletSagaName } from 'src/features/wallet/createWallet'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -31,18 +31,11 @@ export function NewWalletScreen() {
     }, 1000)
   }, [])
 
-  const { status, error } = useSelector((s: RootState) => s.saga.createWallet)
-
-  const { showErrorModal } = useModal()
-  useEffect(() => {
-    if (status === SagaStatus.Failure) {
-      showErrorModal(
-        'Error Creating Wallet',
-        error,
-        'Something went wrong when creating your new wallet, sorry! Please try again.'
-      )
-    }
-  }, [status, error])
+  const status = useSagaStatusWithErrorModal(
+    createWalletSagaName,
+    'Error Creating Wallet',
+    'Something went wrong when creating your new wallet, sorry! Please try again.'
+  )
 
   const onClickContinue = () => {
     navigate('/set-pin')

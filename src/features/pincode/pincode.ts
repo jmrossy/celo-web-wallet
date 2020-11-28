@@ -70,6 +70,7 @@ function* setPin(pin: string) {
 }
 
 export const {
+  name: setPinSagaName,
   wrappedSaga: setPinSaga,
   reducer: setPinReducer,
   actions: setPinActions,

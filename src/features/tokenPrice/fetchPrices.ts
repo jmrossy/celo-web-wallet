@@ -42,6 +42,7 @@ function* fetchTokenPrice(params: FetchTokenPriceParams) {
 }
 
 export const {
+  name: fetchTokenPriceSagaName,
   wrappedSaga: fetchTokenPriceSaga,
   reducer: fetchTokenPriceReducer,
   actions: fetchTokenPriceActions,

@@ -145,6 +145,7 @@ async function executeExchange(
 }
 
 export const {
+  name: exchangeTokenSagaName,
   wrappedSaga: exchangeTokenSaga,
   reducer: exchangeTokenReducer,
   actions: exchangeTokenActions,

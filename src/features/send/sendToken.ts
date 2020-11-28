@@ -119,6 +119,7 @@ async function getTokenTransferTx(
 }
 
 export const {
+  name: sendTokenSagaName,
   wrappedSaga: sendTokenSaga,
   reducer: sendTokenReducer,
   actions: sendTokenActions,

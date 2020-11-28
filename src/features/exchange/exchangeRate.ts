@@ -41,6 +41,7 @@ function* fetchExchangeRate({ sellGold, sellAmount, force, getUsdRate }: FetchEx
 }
 
 export const {
+  name: fetchExchangeRateSagaName,
   wrappedSaga: fetchExchangeRateSaga,
   reducer: fetchExchangeRateReducer,
   actions: fetchExchangeRateActions,
