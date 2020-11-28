@@ -11,29 +11,11 @@ import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletS
 import { NewWalletScreen } from 'src/features/onboarding/new/NewWalletScreen'
 import { SetPincodeScreen } from 'src/features/onboarding/pincode/SetPincodeScreen'
 import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
-import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 
 export const App = () => {
-  // TODO: move to saga
-  // const dispatch = useDispatch()
-  // const isHydrated = useSelector((state: PersistedRootState) => state._persist.rehydrated)
-  // const walletAddress = useSelector((state: PersistedRootState) => state.wallet.address)
-  // const [lastWallet, setLastWallet] = useState<string | null>(null)
-
-  // useEffect(() => {
-  //   if (isHydrated && walletAddress) {
-  //     if (lastWallet && lastWallet !== walletAddress) {
-  //       dispatch(clearTransactions())
-  //     }
-  //     setLastWallet(walletAddress)
-  //     dispatch(fetchBalancesActions.trigger())
-  //     dispatch(fetchFeedActions.trigger())
-  //   }
-  // }, [isHydrated, walletAddress])
-
   return (
     <BrowserRouter>
       <ModalProvider>
@@ -45,6 +27,7 @@ export const App = () => {
             <Route path="send-review" element={<SendConfirmationScreen />} />
             <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
             <Route path="exchange" element={<ExchangeFormScreen />} />
+            <Route path="wallet" element={<ViewWalletScreen />} />
           </Route>
 
           {/* Onboarding */}
@@ -52,10 +35,6 @@ export const App = () => {
           <Route path="new" element={<NewWalletScreen />} />
           <Route path="import" element={<ImportWalletScreen />} />
           <Route path="set-pin" element={<SetPincodeScreen />} />
-
-          {/* Account / Settings */}
-          <Route path="pin" element={<EnterPincodeScreen />} />
-          <Route path="wallet" element={<ViewWalletScreen />} />
 
           {/* TODO: For Splashscreen Testing */}
           <Route path="home" element={<HomeScreen />} />

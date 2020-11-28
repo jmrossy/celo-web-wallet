@@ -1,11 +1,12 @@
 import { getSigner } from 'src/blockchain/signer'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
-import { importWallet } from 'src/features/wallet/importWallet'
 import { logger } from 'src/utils/logger'
-import { createSaga } from 'src/utils/saga'
-import { call } from 'typed-redux-saga'
 
 const MNEMONIC_STORAGE_KEY = 'wallet/mnemonic'
+
+export function isWalletInStorage() {
+  return !!localStorage.getItem(MNEMONIC_STORAGE_KEY)
+}
 
 export async function saveWallet(pincode: string) {
   try {
@@ -31,28 +32,7 @@ export async function saveWallet(pincode: string) {
   }
 }
 
-interface LoadWalletParams {
-  pincode: string
-  isWalletExpected?: boolean
-}
-
-export function* loadWallet({ pincode, isWalletExpected = false }: LoadWalletParams) {
-  const mnemonic = yield* call(_loadWallet, pincode)
-  if (!mnemonic) {
-    if (isWalletExpected) {
-      // TODO show  error
-    }
-    return
-  }
-
-  yield* call(importWallet, mnemonic)
-}
-
-export const { wrappedSaga: loadWalletSaga, actions: loadWalletActions } = createSaga<
-  LoadWalletParams
->(loadWallet, 'loadWallet')
-
-async function _loadWallet(pincode: string) {
+export async function loadWallet(pincode: string) {
   try {
     const encryptedMnemonic = localStorage.getItem(MNEMONIC_STORAGE_KEY)
     if (!encryptedMnemonic) {

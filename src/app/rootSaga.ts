@@ -27,10 +27,10 @@ import {
   estimateFeeSagaName,
 } from 'src/features/fees/estimateFee'
 import {
-  setPinActions,
-  setPinReducer,
-  setPinSaga,
-  setPinSagaName,
+  pincodeActions,
+  pincodeReducer,
+  pincodeSaga,
+  pincodeSagaName,
 } from 'src/features/pincode/pincode'
 import {
   sendTokenActions,
@@ -62,7 +62,6 @@ import {
   importWalletSaga,
   importWalletSagaName,
 } from 'src/features/wallet/importWallet'
-import { loadWalletSaga } from 'src/features/wallet/storage'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
@@ -70,7 +69,7 @@ function* init() {
 }
 
 // All regular sagas must be included here
-const sagas = [loadWalletSaga, feedFetchPoller]
+const sagas = [feedFetchPoller]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {
@@ -101,10 +100,10 @@ export const monitoredSagas: {
     reducer: exchangeTokenReducer,
     actions: exchangeTokenActions,
   },
-  [setPinSagaName]: {
-    saga: setPinSaga,
-    reducer: setPinReducer,
-    actions: setPinActions,
+  [pincodeSagaName]: {
+    saga: pincodeSaga,
+    reducer: pincodeReducer,
+    actions: pincodeActions,
   },
   [importWalletSagaName]: {
     saga: importWalletSaga,

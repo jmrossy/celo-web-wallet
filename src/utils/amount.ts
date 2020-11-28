@@ -62,42 +62,54 @@ export function useExchangeValues(
 ) {
   if (!fromCurrency || !cUsdToCelo) {
     // Return some defaults when values are missing
+    return getDefaultExchangeValues()
+  }
+
+  try {
+    const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
+    const exchangeRate = fromCurrency === Currency.cUSD ? cUsdToCelo : 1 / cUsdToCelo
+    const exchangeRateWei = toWei(exchangeRate)
+
+    const fromAmountWei = isFromAmountWei ? BigNumber.from(fromAmount) : toWei(fromAmount)
+    const fromAmountNum = isFromAmountWei ? fromWei(fromAmount) : parseFloat('' + fromAmount)
+    const toAmountWei = toWei(fromAmountNum * exchangeRate)
+
     return {
       from: {
-        weiAmount: '0',
-        currency: Currency.CELO,
+        weiAmount: fromAmountWei.toString(),
+        currency: fromCurrency,
       },
       to: {
-        weiAmount: '0',
-        currency: Currency.cUSD,
+        weiAmount: toAmountWei.toString(),
+        currency: toCurrency,
       },
       rate: {
         weiBasis: WEI_PER_UNIT,
-        weiRate: '0',
+        weiRate: exchangeRateWei.toString(),
       },
     }
+  } catch (error) {
+    logger.warn('Error computing exchange values')
+    return getDefaultExchangeValues(fromCurrency)
   }
+}
 
-  const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
-  const exchangeRate = fromCurrency === Currency.cUSD ? cUsdToCelo : 1 / cUsdToCelo
-  const exchangeRateWei = toWei(exchangeRate)
-
-  const fromAmountWei = isFromAmountWei ? BigNumber.from(fromAmount) : toWei(fromAmount)
-  const fromAmountNum = isFromAmountWei ? fromWei(fromAmount) : parseFloat('' + fromAmount)
-  const toAmountWei = toWei(fromAmountNum * exchangeRate)
+function getDefaultExchangeValues(fromCurrency?: Currency | null) {
+  const _fromCurrency = fromCurrency || Currency.cUSD
+  const _toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
 
   return {
     from: {
-      weiAmount: fromAmountWei.toString(),
-      currency: fromCurrency,
+      weiAmount: '0',
+      currency: _fromCurrency,
     },
     to: {
-      weiAmount: toAmountWei.toString(),
-      currency: toCurrency,
+      weiAmount: '0',
+      currency: _toCurrency,
     },
     rate: {
       weiBasis: WEI_PER_UNIT,
-      weiRate: exchangeRateWei.toString(),
+      weiRate: '0',
     },
   }
 }

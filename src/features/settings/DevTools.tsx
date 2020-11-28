@@ -2,9 +2,10 @@
 import { useDispatch } from 'react-redux'
 import { fetchFeedActions } from 'src/features/feed/fetch'
 import { ImportWalletForm } from 'src/features/onboarding/import/ImportWalletForm'
+import { PincodeAction, pincodeActions } from 'src/features/pincode/pincode'
 import { createWalletActions } from 'src/features/wallet/createWallet'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
-import { loadWalletActions, saveWallet } from 'src/features/wallet/storage'
+import { saveWallet } from 'src/features/wallet/storage'
 
 export function DevTools() {
   const dispatch = useDispatch()
@@ -22,7 +23,7 @@ export function DevTools() {
   }
 
   const onClickLoadWallet = () => {
-    dispatch(loadWalletActions.trigger({ pincode: '112233' }))
+    dispatch(pincodeActions.trigger({ value: '112233', action: PincodeAction.Unlock }))
   }
 
   const onClickFetchFeed = () => {

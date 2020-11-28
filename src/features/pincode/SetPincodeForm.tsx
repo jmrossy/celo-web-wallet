@@ -1,10 +1,15 @@
-import { useState } from 'react'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
-import { isPinValid, setPinActions, setPinSagaName } from 'src/features/pincode/pincode'
+import {
+  isPinValid,
+  PincodeAction,
+  pincodeActions,
+  pincodeSagaName,
+} from 'src/features/pincode/pincode'
 import { PincodeInputRow } from 'src/features/pincode/PincodeInput'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -17,14 +22,16 @@ export function SetPincodeForm() {
   const dispatch = useDispatch()
 
   const onPinChange = (setter: (value: string) => void) => {
-    return (event: React.ChangeEvent<HTMLInputElement>) => {
+    return (event: ChangeEvent<HTMLInputElement>) => {
       const { target } = event
       setter(target.value.substring(0, 6))
       setPinError(0)
     }
   }
 
-  const onClickSetPin = () => {
+  const onClickSetPin = (event?: FormEvent) => {
+    if (event) event.preventDefault()
+
     if (!isPinValid(pin1)) {
       setPinError(1)
       return
@@ -33,7 +40,7 @@ export function SetPincodeForm() {
       setPinError(2)
       return
     }
-    dispatch(setPinActions.trigger(pin1))
+    dispatch(pincodeActions.trigger({ action: PincodeAction.Set, value: pin1 }))
   }
 
   const navigate = useNavigate()
@@ -41,7 +48,7 @@ export function SetPincodeForm() {
     navigate('/')
   }
   const status = useSagaStatusWithErrorModal(
-    setPinSagaName,
+    pincodeSagaName,
     'Error Setting Pin',
     'Something went wrong when setting your pin, sorry! Please try again.',
     onSuccess
@@ -52,7 +59,7 @@ export function SetPincodeForm() {
       <div css={style.description}>You pincode protects your account on this device.</div>
       <div css={style.description}>Use six numbers (0-9).</div>
       <div css={style.inputRowContainer}>
-        <form>
+        <form onSubmit={onClickSetPin}>
           <PincodeInputRow
             label="Enter Pin"
             name="pin1"
