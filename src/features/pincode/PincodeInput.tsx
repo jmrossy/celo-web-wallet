@@ -33,11 +33,11 @@ const style: Stylesheet = {
     paddingRight: '1em',
   },
   input: {
-    ...sharedInputStyles.input,
-    width: '6em',
-    height: '1.6em',
+    ...sharedInputStyles,
+    width: '8.6em',
+    height: '1.8em',
     textAlign: 'center',
-    letterSpacing: '0.4em',
+    letterSpacing: '0.6em',
     fontSize: '1.4em',
   },
 }

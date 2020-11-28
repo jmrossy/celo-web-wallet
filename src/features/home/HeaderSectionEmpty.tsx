@@ -1,4 +1,4 @@
-import liftoff from 'src/components/icons/liftoff.svg'
+import Mail from 'src/components/icons/mail.svg'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -11,7 +11,7 @@ export function HeaderSectionEmpty() {
 
       <Box direction="column">
         <Box direction="row" align="end">
-          <img src={liftoff} css={style.icon} />
+          <img src={Mail} css={style.icon} />
           <label css={[Font.body, Font.bold]}>Get started</label>
         </Box>
         <p css={style.tip}>All new wallets start empty. Add funds to start using Celo.</p>

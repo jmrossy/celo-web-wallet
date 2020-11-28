@@ -1,20 +1,22 @@
 import { utils } from 'ethers'
 import { useNavigate } from 'react-router'
+import Paste from 'src/components/icons/paste.svg'
 import PlusWhite from 'src/components/icons/plus_white.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
+import { tryClipboardSet } from 'src/utils/clipboard'
 import { chunk } from 'src/utils/string'
 
 interface Props {
   address: string
   hideIdenticon?: boolean
-  showButton?: boolean
+  buttonType?: 'send' | 'copy'
 }
 
 export function Address(props: Props) {
-  const { address, hideIdenticon, showButton } = props
+  const { address, hideIdenticon, buttonType } = props
 
   const navigate = useNavigate()
 
@@ -22,13 +24,17 @@ export function Address(props: Props) {
     throw new Error('Invalid address')
   }
 
-  const onButtonClick = () => {
+  const onSendButtonClick = () => {
     navigate('/send', { state: { recipient: address } })
   }
 
-  const addressSections = chunk(utils.getAddress(address).substring(2).toUpperCase(), 4)
+  const onCopyButtonClick = async () => {
+    await tryClipboardSet(address)
+  }
 
-  const addressContainerStyle = getAddressContainerStyle(hideIdenticon, showButton)
+  const addressSections = chunk<string>(utils.getAddress(address).substring(2).toUpperCase(), 4)
+
+  const addressContainerStyle = getAddressContainerStyle(hideIdenticon, !!buttonType)
 
   return (
     <Box direction="row" align="center">
@@ -39,23 +45,28 @@ export function Address(props: Props) {
       )}
       <div css={addressContainerStyle}>
         <Box direction="row" align="center" justify="between">
-          {addressSections.slice(0, 5).map((chunk) => (
-            <span key={`address-chunk-${chunk}`} css={style.addressChunk}>
+          {addressSections.slice(0, 5).map((chunk, index) => (
+            <span key={`address-chunk-${index}`} css={style.addressChunk}>
               {chunk}
             </span>
           ))}
         </Box>
         <Box direction="row" align="center" justify="between">
-          {addressSections.slice(5).map((chunk) => (
-            <span key={`address-chunk-${chunk}`} css={style.addressChunk}>
+          {addressSections.slice(5).map((chunk, index) => (
+            <span key={`address-chunk-${index + 5}`} css={style.addressChunk}>
               {chunk}
             </span>
           ))}
         </Box>
       </div>
-      {showButton && (
-        <button css={style.button} onClick={onButtonClick}>
-          <img width={'20px'} height={'20px'} src={PlusWhite} alt="Plus" />
+      {buttonType === 'send' && (
+        <button css={style.button} onClick={onSendButtonClick}>
+          <img width={'20px'} height={'20px'} src={PlusWhite} alt="Send" />
+        </button>
+      )}
+      {buttonType === 'copy' && (
+        <button css={style.button} onClick={onCopyButtonClick}>
+          <img width={'18px'} height={'18px'} src={Paste} alt="Copy" />
         </button>
       )}
     </Box>

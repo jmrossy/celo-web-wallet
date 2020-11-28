@@ -1,4 +1,4 @@
-import Tip from 'src/components/icons/tip.svg'
+import Lightbulb from 'src/components/icons/lightbulb.svg'
 import { Box } from 'src/components/layout/Box'
 import { useDailyTip } from 'src/features/home/Tips'
 import { Color } from 'src/styles/Color'
@@ -14,7 +14,7 @@ export function HeaderSection() {
 
       <Box direction="column">
         <Box direction="row" align="end">
-          <img src={Tip} css={style.icon} />
+          <img src={Lightbulb} css={style.icon} />
           <label css={[Font.body, Font.bold]}>Tip of the day</label>
         </Box>
         {tipText.map((line, index) => (

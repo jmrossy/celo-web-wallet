@@ -20,6 +20,7 @@ import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
+import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 
 export const App = () => {
   const dispatch = useDispatch()
@@ -55,6 +56,8 @@ export const App = () => {
           <Route path="import" element={<ImportWalletScreen />} />
           <Route path="set-pin" element={<SetPincodeScreen />} />
           <Route path="pin" element={<EnterPincodeScreen />} />
+          {/* Account / Settings */}
+          <Route path="wallet" element={<ViewWalletScreen />} />
 
           {/* TODO: For Splashscreen Testing */}
           <Route path="home" element={<HomeScreen />} />

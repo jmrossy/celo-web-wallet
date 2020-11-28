@@ -25,7 +25,7 @@ export function TokenTransferReview({ tx }: Props) {
       <TransactionStatusProperty tx={tx} />
       <TransactionProperty label={addressLabel}>
         <div css={style.value}>
-          <Address address={address} showButton={true} />
+          <Address address={address} buttonType="send" />
         </div>
       </TransactionProperty>
       <TransactionProperty label="Amount">

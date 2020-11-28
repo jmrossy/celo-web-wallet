@@ -1,3 +1,4 @@
+import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
 
@@ -33,16 +34,13 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
   return (
     <button
       css={{
-        backgroundColor: color || Color.primaryGreen,
+        ...staticStyles,
+        ...icoLayout,
         margin,
         height,
         width,
-        borderRadius: 3,
-        color: Color.primaryWhite,
-        border: 'none',
-        outline: 'none',
-        cursor: 'pointer',
-        ...icoLayout,
+        fontSize: size === 'l' ? '1.1em' : undefined,
+        backgroundColor: color || Color.primaryGreen,
         ':hover': {
           backgroundColor: '#4cdd91',
         },
@@ -59,8 +57,8 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
       type={type}
       disabled={disabled ?? false}
     >
-      {icon && (
-        <div css={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {icon ? (
+        <Box align="center" justify="center">
           {(!iconPosition || iconPosition === 'start') && (
             <img src={icon} css={props.children ? { marginRight: 8 } : undefined} />
           )}
@@ -68,9 +66,10 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
           {iconPosition === 'end' && (
             <img src={icon} css={props.children ? { marginLeft: 8 } : undefined} />
           )}
-        </div>
+        </Box>
+      ) : (
+        <>{props.children}</>
       )}
-      {!icon && props.children}
     </button>
   )
 }
@@ -80,10 +79,9 @@ function getDimensions(size?: string, width?: number | string) {
     case 's':
       return { height: '2.25em', width: width ?? '9em' }
     case 'm':
+    case 'l':
     case undefined:
       return { height: '3.25em', width: width ?? '12.5em' }
-    case 'l':
-      return { height: '4.25em', width: width ?? '16.5em' }
     case 'icon':
       return { height: 27, width: 27 }
     default:
@@ -95,4 +93,13 @@ function getLayout(size?: string) {
   return size === 'icon'
     ? { display: 'flex', alignItems: 'center', justifyContent: 'center' }
     : null
+}
+
+const staticStyles: Styles = {
+  borderRadius: 3,
+  color: Color.primaryWhite,
+  border: 'none',
+  outline: 'none',
+  cursor: 'pointer',
+  fontWeight: 500,
 }

@@ -19,10 +19,12 @@ export function useCustomForm<V, E>(
   }
 
   useEffect(() => {
-    resetValues(initialValues);
+    resetValues(initialValues)
   }, [])
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { target } = event
     const { name, value } = target
     event.persist()
@@ -43,8 +45,6 @@ export function useCustomForm<V, E>(
     setTouched({})
   }
 
-
-
   return {
     values,
     errors,
@@ -52,6 +52,7 @@ export function useCustomForm<V, E>(
     handleChange,
     handleBlur,
     handleSubmit,
+    setValues,
     resetValues,
   }
 }
