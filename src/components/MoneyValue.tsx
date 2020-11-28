@@ -12,6 +12,8 @@ interface MoneyValueProps {
   sign?: string // e.g. plus or minus symbol
   symbolCss?: Styles
   amountCss?: Styles
+  spanCss?: Styles
+  fontWeight?: number
 }
 
 export function MoneyValue(props: MoneyValueProps) {
@@ -24,6 +26,8 @@ export function MoneyValue(props: MoneyValueProps) {
     sign,
     symbolCss,
     amountCss,
+    spanCss,
+    fontWeight,
   } = props
   const { symbol, decimals, color, minValue } = getCurrencyProps(currency)
 
@@ -36,15 +40,13 @@ export function MoneyValue(props: MoneyValueProps) {
   } else {
     formattedAmount = amount.round(decimals).toString()
   }
-
-  const symbolFontSize = baseFontSize ? `${baseFontSize * 0.8}em` : '0.8em'
-  const amountFontSize = baseFontSize ? `${baseFontSize}em` : '1em'
+  const fontStyles = getFonts(baseFontSize, fontWeight)
 
   return (
-    <span css={{ margin: margin }}>
-      {!!sign && !amount.isZero() && <span css={{ fontSize: amountFontSize }}>{sign}</span>}
-      {!hideSymbol && <span css={{ fontSize: symbolFontSize, color, ...symbolCss }}>{symbol}</span>}
-      <span css={{ fontSize: amountFontSize, ...amountCss }}>{' ' + formattedAmount}</span>
+    <span css={{ margin: margin, ...spanCss }}>
+      {!!sign && !amount.isZero() && <span css={fontStyles.amount}>{sign}</span>}
+      {!hideSymbol && <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{symbol}</span>}
+      <span css={{ ...fontStyles.amount, ...amountCss }}>{' ' + formattedAmount}</span>
     </span>
   )
 }
@@ -57,6 +59,19 @@ export function getCurrencyProps(currency: Currency) {
     return celoProps
   }
   throw new Error(`Unsupported currency ${currency}`)
+}
+
+const getFonts = (baseSize?: number, weight?: number) => {
+  return {
+    symbol: {
+      fontSize: baseSize ? `${baseSize * 0.8}em` : '0.8em',
+      fontWeight: weight ?? 400,
+    },
+    amount: {
+      fontSize: baseSize ? `${baseSize}em` : '1em',
+      fontWeight: weight ?? 400,
+    },
+  }
 }
 
 const cUsdProps = {
