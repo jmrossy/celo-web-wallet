@@ -1,28 +1,15 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
+import { AccountMenu } from 'src/components/header/AccountMenu'
 import Logo from 'src/components/icons/logo.svg'
-import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency, NULL_ADDRESS } from 'src/consts'
+import { Currency } from 'src/consts'
 import { Color } from 'src/styles/Color'
-import { mq, useIsMobile } from 'src/styles/mediaQueries'
-import { shortenAddress } from 'src/utils/addresses'
 
 export function Header() {
-  const { address, balances } = useSelector(
-    (s: RootState) => ({
-      address: s.wallet.address,
-      balances: s.wallet.balances,
-    }),
-    shallowEqual
-  )
-  const addressOrDefault = address || NULL_ADDRESS
-  const addressStub = '0x' + shortenAddress(addressOrDefault).substring(2).toUpperCase()
-
-  const isMobile = useIsMobile()
-  const identiconSize = isMobile ? 30 : 40
+  const balances = useSelector((s: RootState) => s.wallet.balances, shallowEqual)
 
   return (
     <Box align="center" justify="between" styles={style.container}>
@@ -43,10 +30,7 @@ export function Header() {
           baseFontSize={1.4}
         />
       </span>
-      <Box align="center" justify="between">
-        <span css={style.address}>{addressStub}</span>
-        <Identicon address={addressOrDefault} size={identiconSize} />
-      </Box>
+      <AccountMenu />
     </Box>
   )
 }
@@ -61,14 +45,5 @@ const style = {
   },
   balances: {
     letterSpacing: '0.05em',
-  },
-  address: {
-    display: 'none',
-    [mq[768]]: {
-      display: 'inline',
-      fontSize: '1.3em',
-      letterSpacing: '0.06em',
-      marginRight: '0.6em',
-    },
   },
 }

@@ -9,6 +9,7 @@ import QuestionIcon from 'src/components/icons/question_mark.svg'
 import RequestPaymentIcon from 'src/components/icons/request_payment_white.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment_white.svg'
 import { Box } from 'src/components/layout/Box'
+import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useModal } from 'src/components/modal/useModal'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
@@ -94,109 +95,134 @@ export function SendConfirmationScreen() {
   if (!tx) return null
 
   return (
-    <Box direction="column" styles={style.contentContainer}>
+    <ScreenContentFrame>
       {txError && <Notification message={txError.toString()} color={Color.borderError} />}
+      <div css={style.content}>
+        <h1 css={Font.h2Green}>Review {isRequest ? 'Request' : 'Payment'}</h1>
 
-      <h1 css={Font.h2Green}>Review {isRequest ? 'Request' : 'Payment'}</h1>
-
-      <Box direction="row" styles={style.inputRow}>
-        <label css={style.inputLabel}>Amount</label>
-        <Box direction="row" align="end">
-          <MoneyValue amountInWei={amount} currency={tx.currency} baseFontSize={1.2} />
-        </Box>
-      </Box>
-
-      <Box direction="row" styles={style.inputRow}>
-        <label css={style.inputLabel}>Security Fee</label>
-        {feeAmount && feeCurrency ? (
-          <Box direction="row" align="end">
-            <MoneyValue amountInWei={feeAmount} currency={feeCurrency} baseFontSize={1.2} />
-            <img src={QuestionIcon} css={style.iconRight} />
+        <Box align="center" styles={style.inputRow}>
+          <label css={[style.inputLabel, style.labelCol]}>Recipient</label>
+          <Box direction="row" align="center" justify="end" styles={style.valueCol}>
+            <Address address={tx.recipient} />
           </Box>
-        ) : (
-          // TODO a proper loader (need to update mocks)
-          <div>...</div>
-        )}
-      </Box>
-
-      <Box direction="row" styles={style.inputRow}>
-        <label css={{ ...style.inputLabel, ...Font.bold }}>Total</label>
-        <Box direction="row" align="end">
-          <MoneyValue
-            amountInWei={total}
-            currency={tx.currency}
-            baseFontSize={1.2}
-            amountCss={Font.bold}
-          />
         </Box>
-      </Box>
 
-      <Box direction="row" styles={style.inputRow}>
-        <label css={style.inputLabel}>Recipient</label>
-        <Box direction="row" align="center">
-          <Address address={tx.recipient} />
-        </Box>
-      </Box>
-
-      <Box direction="row" styles={style.inputRow}>
-        <label css={style.inputLabel}>Comment</label>
-        <label css={style.valueLabel}>{tx.comment}</label>
-      </Box>
-
-      {isSagaWorking && (
         <Box direction="row" styles={style.inputRow}>
-          <label css={style.valueText}>Sending...</label>
+          <label css={[style.inputLabel, style.labelCol]}>Comment</label>
+          <label css={[style.valueLabel, style.valueCol]}>{tx.comment}</label>
         </Box>
-      )}
 
-      <Box direction="row" justify="start">
-        <Button
-          type="button"
-          size="m"
-          color={Color.altGrey}
-          onClick={onGoBack}
-          icon={ArrowBackIcon}
-          disabled={isSagaWorking || !feeAmount}
-          margin="0 1em 0 0"
-        >
-          Edit {isRequest ? 'Request' : 'Payment'}
-        </Button>
-        <Button
-          type="submit"
-          size="m"
-          onClick={onSend}
-          icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}
-          disabled={isSagaWorking || !feeAmount}
-        >
-          Send {isRequest ? 'Request' : 'Payment'}
-        </Button>
-      </Box>
-    </Box>
+        <Box direction="row" styles={style.inputRow}>
+          <label css={[style.inputLabel, style.labelCol]}>Value</label>
+          <Box justify="end" align="end" styles={style.valueCol}>
+            <MoneyValue amountInWei={amount} currency={tx.currency} baseFontSize={1.2} />
+          </Box>
+        </Box>
+
+        <Box direction="row" styles={{ ...style.inputRow, ...style.bottomBorder }} align="end">
+          <Box
+            direction="row"
+            justify="between"
+            align="end"
+            styles={{ ...style.labelCol, width: '10em' }}
+          >
+            <label css={style.feeLabel}>
+              Fee <img src={QuestionIcon} css={style.icon} />
+            </label>
+          </Box>
+          {feeAmount && feeCurrency ? (
+            <Box justify="end" align="end" styles={style.valueCol}>
+              <label css={{ ...style.feeLabel, marginRight: '0.25em' }}>+</label>
+              <MoneyValue amountInWei={feeAmount} currency={feeCurrency} baseFontSize={1.2} />
+            </Box>
+          ) : (
+            // TODO a proper loader (need to update mocks)
+            <div css={style.valueCol}>...</div>
+          )}
+        </Box>
+
+        <Box direction="row" styles={style.inputRow}>
+          <label css={{ ...style.totalLabel, ...style.labelCol, ...Font.bold }}>Total</label>
+          <Box justify="end" align="end" styles={style.valueCol}>
+            <MoneyValue
+              amountInWei={total}
+              currency={tx.currency}
+              baseFontSize={1.2}
+              fontWeight={700}
+            />
+          </Box>
+        </Box>
+
+        <Box direction="row" justify="between" margin={'3em 0 0 0'}>
+          <Button
+            type="button"
+            size="m"
+            color={Color.altGrey}
+            onClick={onGoBack}
+            icon={ArrowBackIcon}
+            disabled={isSagaWorking || !feeAmount}
+            margin="0 2em 0 0"
+            width="6em"
+          >
+            Back
+          </Button>
+          <Button
+            type="submit"
+            size="m"
+            onClick={onSend}
+            icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}
+            disabled={isSagaWorking || !feeAmount}
+          >
+            Send {isRequest ? 'Request' : 'Payment'}
+          </Button>
+        </Box>
+      </div>
+    </ScreenContentFrame>
   )
 }
 
 const style: Stylesheet = {
-  contentContainer: {
-    height: '100%',
-    paddingLeft: '4em',
-    paddingTop: '2em',
+  content: {
     width: '100%',
+    maxWidth: '23em',
   },
   inputRow: {
-    marginBottom: '2em',
+    marginBottom: '1.25em',
+  },
+  labelCol: {
+    width: '9em',
+    marginRight: '1em',
+  },
+  valueCol: {
+    width: '12em',
+    textAlign: 'end',
   },
   inputLabel: {
     fontWeight: 300,
     fontSize: '1.1em',
-    width: '6em',
-    marginRight: '1em',
+  },
+  totalLabel: {
+    fontWeight: 700,
+    fontSize: '1.1em',
+    color: Color.primaryGrey,
   },
   valueLabel: {
     color: Color.primaryBlack,
     fontSize: '1.2em',
     fontWeight: 400,
   },
+  feeLabel: {
+    fontWeight: 300,
+    fontSize: '1.1em',
+  },
+  bottomBorder: {
+    paddingBottom: '0.25em',
+    borderBottom: `1px solid ${Color.borderLight}`,
+  },
   iconRight: {
     marginLeft: '0.5em',
+  },
+  icon: {
+    marginBottom: '-0.3em',
   },
 }

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
-import ExchangeIcon from 'src/components/icons/swap.svg'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
 import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
 import { Box } from 'src/components/layout/Box'
@@ -14,13 +13,14 @@ import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { exchangeStarted } from 'src/features/exchange/exchangeSlice'
 import { validate } from 'src/features/exchange/exchangeToken'
 import { ExchangeTokenParams } from 'src/features/exchange/types'
+import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei, useExchangeValues } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
-
 interface ExchangeTokenForm extends Omit<ExchangeTokenParams, 'amountInWei'> {
   amount: number
 }
@@ -72,61 +72,71 @@ export function ExchangeFormScreen() {
 
   return (
     <ScreenContentFrame>
-      <form onSubmit={handleSubmit}>
-        <h1 css={Font.h2Green}>Make an Exchange</h1>
+      <h2 css={Font.h2Green}>Make an Exchange</h2>
+      <Box styles={style.containerBox}>
+        <Box direction="column" styles={style.txnColumn}>
+          <form onSubmit={handleSubmit}>
+            <Box direction="row" align="center" styles={style.inputRow}>
+              <label css={style.inputLabel}>Amount to Exchange</label>
+              <MoneyValueInput
+                name="amount"
+                width={150}
+                onChange={handleChange}
+                value={values.amount.toString()}
+                onBlur={handleBlur}
+                {...inputErrors['amount']}
+              />
+            </Box>
+            <Box direction="row" align="center" styles={style.inputRow}>
+              <label css={style.inputLabel}>Currency</label>
+              <CurrencyRadioBox
+                tabIndex={0}
+                label="cUSD"
+                value={Currency.cUSD}
+                name="fromCurrency"
+                checked={values.fromCurrency === Currency.cUSD}
+                onChange={handleChange}
+              />
+              <CurrencyRadioBox
+                tabIndex={1}
+                label="CELO"
+                value={Currency.CELO}
+                name="fromCurrency"
+                checked={values.fromCurrency === Currency.CELO}
+                onChange={handleChange}
+              />
+            </Box>
 
-        <Box direction="row" align="center" styles={style.inputRow}>
-          <label css={style.inputLabel}>Amount to Exchange</label>
-          <MoneyValueInput
-            name="amount"
-            width={150}
-            onChange={handleChange}
-            value={values.amount.toString()}
-            onBlur={handleBlur}
-            {...inputErrors['amount']}
-          />
-        </Box>
-        <Box direction="row" align="center" styles={style.inputRow}>
-          <label css={style.inputLabel}>Currency</label>
-          <CurrencyRadioBox
-            tabIndex={0}
-            label="cUSD"
-            value={Currency.cUSD}
-            name="fromCurrency"
-            checked={values.fromCurrency === Currency.cUSD}
-            onChange={handleChange}
-          />
-          <CurrencyRadioBox
-            tabIndex={1}
-            label="CELO"
-            value={Currency.CELO}
-            name="fromCurrency"
-            checked={values.fromCurrency === Currency.CELO}
-            onChange={handleChange}
-          />
-        </Box>
-        <Box direction="row" align="center" styles={style.inputRow}>
-          <label css={style.inputLabel}>Current Rate</label>
-          {cUsdToCelo ? (
-            <Fragment>
-              <MoneyValue amountInWei={rate.weiBasis} currency={from.currency} baseFontSize={1.2} />
-              <span css={style.valueText}>to</span>
-              <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
-            </Fragment>
-          ) : (
-            <span css={style.valueText}>Loading...</span>
-          )}
-        </Box>
+            <Box direction="row" align="center" styles={style.inputRow}>
+              <label css={style.inputLabel}>Output Amount</label>
+              <MoneyValue amountInWei={to.weiAmount} currency={to.currency} baseFontSize={1.2} />
+            </Box>
 
-        <Box direction="row" align="center" styles={style.inputRow}>
-          <label css={style.inputLabel}>Output Amount</label>
-          <MoneyValue amountInWei={to.weiAmount} currency={to.currency} baseFontSize={1.2} />
+            <Button type="submit" size="m">
+              Continue
+            </Button>
+          </form>
         </Box>
-
-        <Button type="submit" size="m" icon={ExchangeIcon}>
-          Make Exchange
-        </Button>
-      </form>
+        <Box direction="column" styles={style.chartColumn}>
+          <Box direction="row" align="center" styles={style.inputRow}>
+            <label css={style.inputLabel}>Current Rate</label>
+            {cUsdToCelo ? (
+              <Fragment>
+                <MoneyValue
+                  amountInWei={rate.weiBasis}
+                  currency={from.currency}
+                  baseFontSize={1.2}
+                />
+                <span css={style.valueText}>to</span>
+                <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
+              </Fragment>
+            ) : (
+              <span css={style.valueText}>Loading...</span>
+            )}
+          </Box>
+          <PriceChartCelo containerCss={style.chartContainer} height={200} />
+        </Box>
+      </Box>
     </ScreenContentFrame>
   )
 }
@@ -154,11 +164,11 @@ function toExchangeTokenForm(values: ExchangeTokenParams | null): ExchangeTokenF
 }
 
 const style: Stylesheet = {
-  contentContainer: {
-    height: '100%',
-    paddingLeft: '4em',
-    paddingTop: '2em',
-    width: '100%',
+  containerBox: {
+    flexDirection: 'column',
+    [mq[1200]]: {
+      flexDirection: 'row',
+    },
   },
   inputRow: {
     marginBottom: '2em',
@@ -174,5 +184,18 @@ const style: Stylesheet = {
     fontWeight: 400,
     color: Color.primaryGrey,
     margin: '0 0.5em',
+  },
+  chartColumn: {
+    marginTop: '3em',
+    marginLeft: 0,
+    width: '100%',
+    [mq[1200]]: {
+      marginLeft: '3em',
+      marginTop: 0,
+      width: 'calc(100% - 150px - 10em)',
+    },
+  },
+  chartContainer: {
+    minWidth: 300,
   },
 }

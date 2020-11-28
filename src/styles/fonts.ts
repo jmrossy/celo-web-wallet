@@ -36,6 +36,7 @@ export const Font: Stylesheet = {
     fontSize: '1.4em',
     fontWeight: 400,
     color: Color.primaryGreen,
+    marginTop: 0,
     marginBottom: '1em',
   },
   h3: {

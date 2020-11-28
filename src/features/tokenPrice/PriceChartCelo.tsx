@@ -14,9 +14,10 @@ import { Styles, Stylesheet } from 'src/styles/types'
 
 interface PriceChartProps {
   containerCss?: Styles
+  height?: number | string
 }
 
-export function PriceChartCelo({ containerCss }: PriceChartProps) {
+export function PriceChartCelo({ containerCss, height }: PriceChartProps) {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(
@@ -36,6 +37,7 @@ export function PriceChartCelo({ containerCss }: PriceChartProps) {
   const celoToCusd = exchangeRate ? 1 / exchangeRate.rate : null
 
   const headerRate = celoToCusd ?? todayPrice
+  const chartHeight = height || 250
 
   return (
     <Box direction="column" styles={containerCss}>
@@ -51,7 +53,7 @@ export function PriceChartCelo({ containerCss }: PriceChartProps) {
         <ReactFrappeChart
           type="line"
           colors={chartConfig.colors}
-          height={250}
+          height={chartHeight}
           axisOptions={chartConfig.axis}
           tooltipOptions={chartConfig.tooltipOptions}
           data={chartData}

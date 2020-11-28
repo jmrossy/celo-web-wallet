@@ -14,6 +14,7 @@ export interface TextInputProps {
   error?: boolean
   helpText?: string
   autoComplete?: string //default to "off"
+  placeholder?: string
   // TODO add validation hook
 }
 
@@ -29,6 +30,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
     error,
     helpText,
     autoComplete,
+    placeholder,
   } = props
 
   const sharedStyles = getSharedInputStyles(error)
@@ -49,6 +51,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         onBlur={onBlur}
         onChange={onChange}
         autoComplete={autoComplete || 'off'}
+        placeholder={placeholder}
       />
       {helpText && (
         <span

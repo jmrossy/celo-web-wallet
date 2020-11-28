@@ -1,4 +1,3 @@
-import { Component } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Loading } from 'src/app/Loading'
 import { ModalProvider } from 'src/components/modal/modalContext'
@@ -17,38 +16,53 @@ import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 
-export class App extends Component {
-  render() {
-    return (
-      <BrowserRouter>
-        <ModalProvider>
-          <Routes>
-            <Route path="/" element={<HomeFrame />}>
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="tx" element={<TransactionReview />} />
-              <Route path="send" element={<SendFormScreen />} />
-              <Route path="send-review" element={<SendConfirmationScreen />} />
-              <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
-              <Route path="exchange" element={<ExchangeFormScreen />} />
-            </Route>
+export const App = () => {
+  // TODO: move to saga
+  // const dispatch = useDispatch()
+  // const isHydrated = useSelector((state: PersistedRootState) => state._persist.rehydrated)
+  // const walletAddress = useSelector((state: PersistedRootState) => state.wallet.address)
+  // const [lastWallet, setLastWallet] = useState<string | null>(null)
 
-            {/* Onboarding */}
-            <Route path="welcome" element={<WelcomeScreen />} />
-            <Route path="new" element={<NewWalletScreen />} />
-            <Route path="import" element={<ImportWalletScreen />} />
-            <Route path="set-pin" element={<SetPincodeScreen />} />
-            <Route path="pin" element={<EnterPincodeScreen />} />
+  // useEffect(() => {
+  //   if (isHydrated && walletAddress) {
+  //     if (lastWallet && lastWallet !== walletAddress) {
+  //       dispatch(clearTransactions())
+  //     }
+  //     setLastWallet(walletAddress)
+  //     dispatch(fetchBalancesActions.trigger())
+  //     dispatch(fetchFeedActions.trigger())
+  //   }
+  // }, [isHydrated, walletAddress])
 
-            {/* Account / Settings */}
-            <Route path="wallet" element={<ViewWalletScreen />} />
+  return (
+    <BrowserRouter>
+      <ModalProvider>
+        <Routes>
+          <Route path="/" element={<HomeFrame />}>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="tx" element={<TransactionReview />} />
+            <Route path="send" element={<SendFormScreen />} />
+            <Route path="send-review" element={<SendConfirmationScreen />} />
+            <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
+            <Route path="exchange" element={<ExchangeFormScreen />} />
+          </Route>
 
-            {/* TODO: For Splashscreen Testing */}
-            <Route path="home" element={<HomeScreen />} />
-            <Route path="loading" element={<Loading />} />
-            <Route path="modals" element={<ModalTestScreen />} />
-          </Routes>
-        </ModalProvider>
-      </BrowserRouter>
-    )
-  }
+          {/* Onboarding */}
+          <Route path="welcome" element={<WelcomeScreen />} />
+          <Route path="new" element={<NewWalletScreen />} />
+          <Route path="import" element={<ImportWalletScreen />} />
+          <Route path="set-pin" element={<SetPincodeScreen />} />
+
+          {/* Account / Settings */}
+          <Route path="pin" element={<EnterPincodeScreen />} />
+          <Route path="wallet" element={<ViewWalletScreen />} />
+
+          {/* TODO: For Splashscreen Testing */}
+          <Route path="home" element={<HomeScreen />} />
+          <Route path="loading" element={<Loading />} />
+          <Route path="modals" element={<ModalTestScreen />} />
+        </Routes>
+      </ModalProvider>
+    </BrowserRouter>
+  )
 }
