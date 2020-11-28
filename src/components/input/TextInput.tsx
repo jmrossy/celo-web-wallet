@@ -42,6 +42,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         name={name}
         css={{
           ...sharedStyles,
+          padding: '2px 10px',
           width,
           height: height ?? 40,
           margin,

@@ -33,6 +33,7 @@ export function isValidMnemonic(mnemonic: string) {
 }
 
 export const {
+  name: importWalletSagaName,
   wrappedSaga: importWalletSaga,
   actions: importWalletActions,
   reducer: importWalletReducer,

@@ -90,6 +90,7 @@ function* estimateFee(params: EstimateFeeParams) {
 }
 
 export const {
+  name: estimateFeeSagaName,
   wrappedSaga: estimateFeeSaga,
   reducer: estimateFeeReducer,
   actions: estimateFeeActions,

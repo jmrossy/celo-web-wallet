@@ -1,4 +1,4 @@
-import { createAction, createReducer } from '@reduxjs/toolkit'
+import { createAction, createReducer, PayloadActionCreator } from '@reduxjs/toolkit'
 import { call, delay, put, race, take } from 'redux-saga/effects'
 import { logger } from './logger'
 
@@ -43,6 +43,14 @@ export enum SagaError {
   Failure = 'failure',
   Timeout = 'timeout',
   Cancel = 'cancel',
+}
+
+export interface SagaActions {
+  trigger: PayloadActionCreator<any>
+  cancel: PayloadActionCreator<any>
+  progress: PayloadActionCreator<any>
+  error: PayloadActionCreator<any>
+  reset: PayloadActionCreator<any>
 }
 
 export interface SagaState {
@@ -128,6 +136,7 @@ export function createMonitoredSaga<SagaParams = void>(
   }
 
   return {
+    name,
     wrappedSaga,
     reducer,
     actions: {

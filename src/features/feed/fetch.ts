@@ -17,6 +17,7 @@ import {
   TransactionMap,
   TransactionType,
 } from 'src/features/types'
+import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { queryBlockscout } from 'src/utils/blockscout'
 import { logger } from 'src/utils/logger'
@@ -84,9 +85,14 @@ function* fetchFeed() {
       lastBlockNumber: newLastBlockNumber,
     })
   )
+
+  if (Object.keys(newTransactions).length > 0) {
+    yield* put(fetchBalancesActions.trigger())
+  }
 }
 
 export const {
+  name: fetchFeedSagaName,
   wrappedSaga: fetchFeedSaga,
   reducer: fetchFeedReducer,
   actions: fetchFeedActions,

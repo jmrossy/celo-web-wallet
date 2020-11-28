@@ -1,4 +1,4 @@
-import { sharedInputStyles } from 'src/components/input/styles'
+import { getSharedInputStyles } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
 import { Stylesheet } from 'src/styles/types'
 
@@ -6,19 +6,32 @@ interface Props {
   name: string
   value?: string
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  error?: boolean
+  helpText?: string
 }
 
 export function PincodeInput(props: Props) {
-  const { name, value, onChange } = props
-  return <input type="password" name={name} css={style.input} value={value} onChange={onChange} />
+  const { name, value, onChange, error } = props
+
+  const sharedStyles = getSharedInputStyles(error)
+  return (
+    <input
+      type="password"
+      name={name}
+      css={{ ...sharedStyles, ...style.input }}
+      value={value}
+      onChange={onChange}
+      autoComplete="one-time-code"
+    />
+  )
 }
 
 export function PincodeInputRow(props: Props & { label: string }) {
-  const { label, name, value, onChange } = props
+  const { label, ...passThroughProps } = props
   return (
     <Box align="center" styles={style.inputContainer}>
       <span css={style.inputLabel}>{label}</span>
-      <PincodeInput name={name} value={value} onChange={onChange} />
+      <PincodeInput {...passThroughProps} />
     </Box>
   )
 }
@@ -33,7 +46,6 @@ const style: Stylesheet = {
     paddingRight: '1em',
   },
   input: {
-    ...sharedInputStyles,
     width: '8.6em',
     height: '1.8em',
     textAlign: 'center',
