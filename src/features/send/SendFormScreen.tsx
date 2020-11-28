@@ -81,7 +81,7 @@ export function SendFormScreen() {
     <ScreenContentFrame>
       <div css={style.content}>
         <form onSubmit={handleSubmit}>
-          <h1 css={[Font.h2Green, style.pageTitle]}>Send Payment</h1>
+          <h1 css={Font.h2Green}>Send Payment</h1>
 
           <Box direction="column" styles={style.inputRow}>
             <label css={style.inputLabel}>Recipient Address</label>
@@ -202,9 +202,6 @@ function toSendTokenForm(values: SendTokenParams | null): SendTokenForm | null {
 }
 
 const style: Stylesheet = {
-  pageTitle: {
-    marginTop: 0,
-  },
   content: {
     width: '100%',
     maxWidth: '28em',

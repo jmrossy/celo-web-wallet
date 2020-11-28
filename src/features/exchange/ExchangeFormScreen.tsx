@@ -72,7 +72,7 @@ export function ExchangeFormScreen() {
 
   return (
     <ScreenContentFrame>
-      <h2 css={[Font.h2Green, style.pageTitle]}>Make an Exchange</h2>
+      <h2 css={Font.h2Green}>Make an Exchange</h2>
       <Box styles={style.containerBox}>
         <Box direction="column" styles={style.txnColumn}>
           <form onSubmit={handleSubmit}>
@@ -169,9 +169,6 @@ const style: Stylesheet = {
     [mq[1200]]: {
       flexDirection: 'row',
     },
-  },
-  pageTitle: {
-    marginTop: 0,
   },
   inputRow: {
     marginBottom: '2em',

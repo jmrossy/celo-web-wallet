@@ -98,7 +98,7 @@ export function SendConfirmationScreen() {
     <ScreenContentFrame>
       {txError && <Notification message={txError.toString()} color={Color.borderError} />}
       <div css={style.content}>
-        <h1 css={[Font.h2Green, style.pageTitle]}>Review {isRequest ? 'Request' : 'Payment'}</h1>
+        <h1 css={Font.h2Green}>Review {isRequest ? 'Request' : 'Payment'}</h1>
 
         <Box align="center" styles={style.inputRow}>
           <label css={[style.inputLabel, style.labelCol]}>Recipient</label>
@@ -182,9 +182,6 @@ export function SendConfirmationScreen() {
 }
 
 const style: Stylesheet = {
-  pageTitle: {
-    marginTop: 0,
-  },
   content: {
     width: '100%',
     maxWidth: '23em',

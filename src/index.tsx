@@ -1,6 +1,6 @@
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/lib/integration/react'
+import { PersistGate } from 'redux-persist/integration/react'
 import { App } from 'src/app/App'
 import { Loading } from 'src/app/Loading'
 import { persistor, store } from 'src/app/store'

@@ -1,15 +1,13 @@
-import { css } from '@emotion/react'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
-import AccountDetailsIcon from 'src/components/icons/account_details.svg'
-import AdviceIcon from 'src/components/icons/advice.svg'
-import Caret from 'src/components/icons/caret_down.svg'
-import DirectionIcon from 'src/components/icons/direction.svg'
+import ChevronIcon from 'src/components/icons/chevron.svg'
+import HelpIcon from 'src/components/icons/help.svg'
+import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
-import PhoneIcon from 'src/components/icons/phone.svg'
+import SignPostIcon from 'src/components/icons/sign_post.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
@@ -21,11 +19,10 @@ import { shortenAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
 const MenuItems = [
-  { id: 'account', label: 'Account Details', icon: AccountDetailsIcon },
+  { id: 'account', label: 'Account Details', icon: IdCardIcon },
   { id: 'pin', label: 'Change Pin', icon: LockIcon },
-  { id: 'about', label: 'About Celo', icon: PhoneIcon },
-  { id: 'help', label: 'Help', icon: AdviceIcon },
-  { id: 'logout', label: 'Logout', icon: DirectionIcon },
+  { id: 'help', label: 'Help', icon: HelpIcon },
+  { id: 'logout', label: 'Logout', icon: SignPostIcon },
 ]
 
 export const AccountMenu = () => {
@@ -53,7 +50,11 @@ export const AccountMenu = () => {
     <>
       <Box align="center" justify="end">
         <Box styles={style.chooser} align="center">
-          <img src={Caret} css={[style.caret, rotated(isOpen)]} onClick={() => setOpen(true)} />
+          <img
+            src={ChevronIcon}
+            css={[style.caret, rotated(isOpen)]}
+            onClick={() => setOpen(true)}
+          />
         </Box>
         <Box styles={style.container} align="center">
           <span css={style.address}>{addressStub}</span>
@@ -63,7 +64,7 @@ export const AccountMenu = () => {
       {isOpen && (
         <>
           <Backdrop opacity={0.01} color={Color.primaryWhite} onClick={() => setOpen(false)} />
-          <div css={[style.menu, dropShadow]}>
+          <div css={style.menu}>
             {MenuItems.map((item) => (
               <AccountMenuItem
                 key={item.id}
@@ -118,7 +119,6 @@ const style: Stylesheet = {
       display: 'inline',
       fontSize: '1.3em',
       letterSpacing: '0.06em',
-      // marginRight: '0.6em',
     },
   },
   menu: {
@@ -132,11 +132,8 @@ const style: Stylesheet = {
     borderRadius: 5,
     zIndex: backdropZIndex + 1,
     background: Color.primaryWhite,
+    boxShadow: '2px 4px 2px -2px #ccc',
   },
 }
 
 const rotated = (isOpen: boolean) => (isOpen ? { transform: 'rotate(180deg)' } : null)
-
-const dropShadow = css`
-  box-shadow: 2px 4px 2px -2px #ccc;
-`

@@ -117,7 +117,7 @@ export function ExchangeConfirmationScreen() {
   return (
     <ScreenContentFrame>
       {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
-      <h1 css={[Font.h2Green, style.pageTitle]}>Review Exchange</h1>
+      <h1 css={Font.h2Green}>Review Exchange</h1>
       <Box direction="row" align="start">
         <Box direction="column">
           <Box direction="row" styles={style.inputRow} align="end">
@@ -228,9 +228,6 @@ export function ExchangeConfirmationScreen() {
 }
 
 const style: Stylesheet = {
-  pageTitle: {
-    marginTop: 0,
-  },
   inputRow: {
     marginBottom: '1.25em',
   },
