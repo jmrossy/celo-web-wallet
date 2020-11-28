@@ -1,7 +1,7 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
-import { AccountChooser } from 'src/components/header/AccountChooser'
+import { AccountMenu } from 'src/components/header/AccountMenu'
 import Logo from 'src/components/icons/logo.svg'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
@@ -30,7 +30,7 @@ export function Header() {
           baseFontSize={1.4}
         />
       </span>
-      <AccountChooser />
+      <AccountMenu />
     </Box>
   )
 }
