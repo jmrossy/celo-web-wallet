@@ -1,4 +1,5 @@
 import { isSignerSet } from 'src/blockchain/signer'
+import { config } from 'src/config'
 import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage'
 import { logger } from 'src/utils/logger'
@@ -57,7 +58,7 @@ export function clearPinCache() {
 }
 
 export function isAccountUnlocked() {
-  return !!getCachedPin()
+  return !!config.defaultAccount || !!getCachedPin()
 }
 
 export enum PincodeAction {

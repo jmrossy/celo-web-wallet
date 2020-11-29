@@ -57,6 +57,7 @@ import {
   fetchBalancesSagaName,
 } from 'src/features/wallet/fetchBalances'
 import {
+  importDefaultAccount,
   importWalletActions,
   importWalletReducer,
   importWalletSaga,
@@ -66,6 +67,7 @@ import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
   yield call(connectToForno)
+  yield call(importDefaultAccount)
 }
 
 // All regular sagas must be included here

@@ -1,11 +1,12 @@
 import { utils, Wallet } from 'ethers'
 import { setSigner } from 'src/blockchain/signer'
+import { config } from 'src/config'
 import { CELO_DERIVATION_PATH } from 'src/consts'
 import { clearTransactions } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetch'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { put } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 import { setAddress } from './walletSlice'
 
 const MNEMONIC_LENGTH = 24
@@ -38,3 +39,9 @@ export const {
   actions: importWalletActions,
   reducer: importWalletReducer,
 } = createMonitoredSaga<string>(importWallet, 'importWallet')
+
+// Used for better dev experience, do not used in production
+export function* importDefaultAccount() {
+  if (!config.defaultAccount) return
+  yield* call(importWallet, config.defaultAccount)
+}
