@@ -6,6 +6,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenFrame } from 'src/components/layout/ScreenFrame'
 import { openTransaction } from 'src/features/feed/feedSlice'
 import { TransactionFeed } from 'src/features/feed/TransactionFeed'
+import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -13,6 +14,7 @@ import { Stylesheet } from 'src/styles/types'
 export function ScreenFrameWithFeed(props: PropsWithChildren<any>) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const isWalletEmpty = useAreBalancesEmpty()
 
   const onNewSendClick = () => {
     dispatch(openTransaction(null))
@@ -29,10 +31,15 @@ export function ScreenFrameWithFeed(props: PropsWithChildren<any>) {
       <Box direction="row" styles={style.contentContainer}>
         <Box direction="column" styles={style.feedContainer}>
           <Box direction="row" align="center" justify="around" styles={style.buttonContainer}>
-            <Button onClick={onNewSendClick} margin={'0.75em 0'} size="s">
+            <Button onClick={onNewSendClick} margin={'0.75em 0'} size="s" disabled={isWalletEmpty}>
               New Payment
             </Button>
-            <Button onClick={onNewExchangeClick} margin={'0.75em 0'} size="s">
+            <Button
+              onClick={onNewExchangeClick}
+              margin={'0.75em 0'}
+              size="s"
+              disabled={isWalletEmpty}
+            >
               New Exchange
             </Button>
           </Box>

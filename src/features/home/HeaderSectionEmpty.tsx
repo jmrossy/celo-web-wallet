@@ -11,7 +11,7 @@ export function HeaderSectionEmpty() {
 
       <Box direction="column">
         <Box direction="row" align="end">
-          <img src={Mail} css={style.icon} />
+          <img src={Mail} css={style.icon} alt="Get Started" />
           <label css={[Font.body, Font.bold]}>Get started</label>
         </Box>
         <p css={style.tip}>All new wallets start empty. Add funds to start using Celo.</p>

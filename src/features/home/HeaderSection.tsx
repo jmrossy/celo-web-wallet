@@ -14,7 +14,7 @@ export function HeaderSection() {
 
       <Box direction="column">
         <Box direction="row" align="end">
-          <img src={Lightbulb} css={style.icon} />
+          <img src={Lightbulb} css={style.icon} alt="Tip" />
           <label css={[Font.body, Font.bold]}>Tip of the day</label>
         </Box>
         {tipText.map((line, index) => (

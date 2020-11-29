@@ -24,7 +24,7 @@ export function HomeScreen() {
 
         <hr css={style.divider} />
         <Box direction="row" align="end" styles={{ marginBottom: '2em' }}>
-          <img src={Chart} css={style.icon} />
+          <img src={Chart} css={style.icon} alt="Price chart" />
           <label css={[Font.body, Font.bold]}>Celo Prices</label>
         </Box>
 
