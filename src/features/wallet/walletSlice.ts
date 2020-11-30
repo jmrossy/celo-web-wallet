@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { persistReducer } from 'redux-persist'
+import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
+import storage from 'redux-persist/lib/storage'
 import { assert } from 'src/utils/assert'
-
 export interface Balances {
   // All balances are represented in wei
   cUsd: string
@@ -11,6 +13,8 @@ export interface Balances {
 interface Wallet {
   address: string | null
   balances: Balances
+  isUnlocked: boolean
+  isChangingPin: boolean
 }
 
 export const walletInitialState: Wallet = {
@@ -20,6 +24,8 @@ export const walletInitialState: Wallet = {
     celo: '0',
     lastUpdated: null,
   },
+  isUnlocked: false,
+  isChangingPin: false,
 }
 
 const walletSlice = createSlice({
@@ -36,8 +42,25 @@ const walletSlice = createSlice({
       assert(cUsd && celo && lastUpdated, `Invalid balance`)
       state.balances = action.payload
     },
+    setChangingPin: (state, action: PayloadAction<boolean>) => {
+      state.isChangingPin = action.payload
+    },
+    setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
+      state.isUnlocked = action.payload
+    },
   },
 })
 
-export const { setAddress, updateBalances } = walletSlice.actions
+export const { setAddress, updateBalances, setChangingPin, setWalletUnlocked } = walletSlice.actions
 export const walletReducer = walletSlice.reducer
+
+const walletPersistConfig = {
+  key: 'wallet',
+  storage: storage,
+  stateReconciler: autoMergeLevel2,
+  whitelist: ['address', 'balances'], //we don't want to persist everything in the wallet store
+}
+export const persistedWalletReducer = persistReducer<ReturnType<typeof walletReducer>>(
+  walletPersistConfig,
+  walletReducer
+)

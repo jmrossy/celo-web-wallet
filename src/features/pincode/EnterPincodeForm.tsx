@@ -14,32 +14,39 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 
+const defaultPinError = { isError: false, helpText: '' }
+
 export function EnterPincodeForm() {
   const [pin, setPin] = useState<string>('')
-  const [pinError, setPinError] = useState(false)
+  const [pinError, setPinError] = useState(defaultPinError)
   const dispatch = useDispatch()
 
   const onPinChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { target } = event
     setPin(target.value.substring(0, 6))
-    setPinError(false)
+    setPinError(defaultPinError)
   }
 
   const onClickSubmit = (event?: FormEvent) => {
     if (event) event.preventDefault()
 
     if (!isPinValid(pin)) {
-      setPinError(true)
+      setPinError({ isError: true, helpText: 'Invalid pin' })
       return
     }
 
     dispatch(pincodeActions.trigger({ action: PincodeAction.Unlock, value: pin }))
   }
 
+  const onUnlocked = () => {
+    pincodeActions.reset() //need to clear this out since it's used by other screens
+  }
+
   const status = useSagaStatusWithErrorModal(
     pincodeSagaName,
     'Error Unlocking Account',
-    'Unable to unlock your account, please check your pin and try again.'
+    'Unable to unlock your account, please check your pin and try again.',
+    onUnlocked
   )
 
   // TODO add 15 tries before account nuke logic here
@@ -48,7 +55,13 @@ export function EnterPincodeForm() {
     <Box direction="column" align="center">
       <div css={style.description}>Enter your pincode to unlock your account.</div>
       <form onSubmit={onClickSubmit}>
-        <PincodeInput name="pin" value={pin} onChange={onPinChange} error={pinError} />
+        <PincodeInput
+          name="pin"
+          value={pin}
+          onChange={onPinChange}
+          error={pinError.isError}
+          helpText={pinError.helpText}
+        />
       </form>
       <Button
         size={'m'}

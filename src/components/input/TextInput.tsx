@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react'
+import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
 
 export interface TextInputProps {
   name: string
@@ -53,7 +53,8 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         autoComplete={autoComplete || 'off'}
         placeholder={placeholder}
       />
-      {helpText && (
+      {helpText && <HelpText>{helpText}</HelpText>}
+      {/* {helpText && (
         <span
           css={{
             color: Color.textError,
@@ -64,7 +65,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         >
           {helpText}
         </span>
-      )}
+      )} */}
     </Box>
   )
 }

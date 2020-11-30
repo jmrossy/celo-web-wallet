@@ -12,7 +12,7 @@ const persistConfig = {
   key: 'root',
   storage: storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['wallet', 'feed'],
+  whitelist: ['feed'], //Note, wallet is also persisted, but only partially - see rootReducer.ts
 }
 
 const persistedReducer = persistReducer<RootState>(persistConfig, rootReducer)

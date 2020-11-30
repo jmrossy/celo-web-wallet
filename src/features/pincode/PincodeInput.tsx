@@ -1,3 +1,4 @@
+import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
 import { Stylesheet } from 'src/styles/types'
@@ -11,18 +12,21 @@ interface Props {
 }
 
 export function PincodeInput(props: Props) {
-  const { name, value, onChange, error } = props
+  const { name, value, onChange, error, helpText } = props
 
   const sharedStyles = getSharedInputStyles(error)
   return (
-    <input
-      type="password"
-      name={name}
-      css={{ ...sharedStyles, ...style.input }}
-      value={value}
-      onChange={onChange}
-      autoComplete="one-time-code"
-    />
+    <Box direction="column">
+      <input
+        type="password"
+        name={name}
+        css={{ ...sharedStyles, ...style.input }}
+        value={value}
+        onChange={onChange}
+        autoComplete="one-time-code"
+      />
+      {helpText && <HelpText>{helpText}</HelpText>}
+    </Box>
   )
 }
 
@@ -42,7 +46,7 @@ const style: Stylesheet = {
     textAlign: 'right',
   },
   inputLabel: {
-    width: '7em',
+    width: '7.5em',
     paddingRight: '1em',
   },
   input: {
