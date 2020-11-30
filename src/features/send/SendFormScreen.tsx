@@ -77,8 +77,12 @@ export function SendFormScreen() {
     setValues({ ...values, recipient: value })
   }
 
+  const onClose = () => {
+    navigate('/')
+  }
+
   return (
-    <ScreenContentFrame>
+    <ScreenContentFrame onClose={onClose}>
       <div css={style.content}>
         <form onSubmit={handleSubmit}>
           <h1 css={Font.h2Green}>Send Payment</h1>

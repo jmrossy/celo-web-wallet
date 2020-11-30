@@ -91,6 +91,10 @@ export function ExchangeConfirmationScreen() {
     dispatch(exchangeTokenActions.trigger({ ...tx, exchangeRate: cUsdToCelo, feeEstimates }))
   }
 
+  const onClose = () => {
+    navigate('/')
+  }
+
   const modal = useModal()
 
   const confirm = () => {
@@ -115,7 +119,7 @@ export function ExchangeConfirmationScreen() {
   if (!tx) return null
 
   return (
-    <ScreenContentFrame>
+    <ScreenContentFrame onClose={onClose}>
       {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
       <h1 css={Font.h2Green}>Review Exchange</h1>
       <Box direction="row" align="start">
