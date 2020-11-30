@@ -1,26 +1,22 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
+import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
 export function HomeScreen() {
-  const walletAddress = useSelector((state: RootState) => state.wallet.address)
-  //TODO: Temp so we can toggle back and forth
-  const [hasWallet, setHasWallet] = useState(Boolean(walletAddress))
+  const isWalletEmpty = useAreBalancesEmpty()
 
   return (
     <ScreenContentFrame>
       <div css={style.container}>
-        {hasWallet && <HeaderSection />}
-        {!hasWallet && <HeaderSectionEmpty />}
+        {!isWalletEmpty && <HeaderSection />}
+        {isWalletEmpty && <HeaderSectionEmpty />}
 
         <hr css={style.divider} />
         <Box direction="row" align="end" styles={{ marginBottom: '2em' }}>
@@ -29,13 +25,6 @@ export function HomeScreen() {
         </Box>
 
         <PriceChartCelo />
-
-        <button
-          css={{ marginTop: '3em', maxWidth: '8em' }}
-          onClick={() => setHasWallet(!hasWallet)}
-        >
-          toggle wallet
-        </button>
       </div>
     </ScreenContentFrame>
   )

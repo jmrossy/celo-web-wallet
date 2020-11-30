@@ -51,7 +51,7 @@ export function useModal() {
   const showModalWithContent = (
     head: string,
     content: any,
-    actions: ModalAction | ModalAction[] | undefined | null,
+    actions: ModalAction | ModalAction[] | undefined | null = undefined,
     onActionClick: ModalActionCallback | undefined | null = undefined,
     subHead: string | undefined | null = undefined,
     dismissable = true
