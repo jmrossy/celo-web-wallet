@@ -70,8 +70,12 @@ export function ExchangeFormScreen() {
     }
   }, [tx])
 
+  const onClose = () => {
+    navigate('/')
+  }
+
   return (
-    <ScreenContentFrame>
+    <ScreenContentFrame onClose={onClose}>
       <h2 css={Font.h2Green}>Make an Exchange</h2>
       <Box styles={style.containerBox}>
         <Box direction="column" styles={style.txnColumn}>

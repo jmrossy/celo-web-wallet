@@ -104,6 +104,7 @@ const style: Stylesheet = {
   caret: {
     borderRadius: '50%',
     cursor: 'pointer',
+    padding: '0.5em 0.25em',
     ':hover': {
       backgroundColor: Color.borderInactive,
     },
