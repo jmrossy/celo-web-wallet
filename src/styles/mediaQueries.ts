@@ -53,7 +53,7 @@ export function useWindowSize() {
 }
 
 export function isMobile(windowWidth: number | undefined) {
-  return !!(windowWidth && windowWidth < 480)
+  return !!(windowWidth && windowWidth < 768)
 }
 
 export function useIsMobile() {

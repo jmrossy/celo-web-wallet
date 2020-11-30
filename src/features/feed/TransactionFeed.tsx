@@ -11,7 +11,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
-export function TransactionFeed() {
+export function TransactionFeed(props: { collapsed?: boolean }) {
   const openTransactionHash = useSelector((s: RootState) => s.feed.openTransaction)
   const transactions = useSelector((s: RootState) => s.feed.transactions)
   const sortedTransaction = getSortedTransactions(transactions)
@@ -49,6 +49,7 @@ export function TransactionFeed() {
               key={tx.hash}
               onClick={onFeedItemClick}
               isOpen={openTransactionHash === tx.hash}
+              collapsed={props.collapsed}
             />
           ))}
         </ol>

@@ -12,6 +12,7 @@ interface FeedItemProps {
   tx: CeloTransaction
   isOpen: boolean
   onClick: (hash: string) => void
+  collapsed?: boolean
 }
 
 interface FeedItemContent {
@@ -24,36 +25,41 @@ interface FeedItemContent {
 }
 
 export function FeedItem(props: FeedItemProps) {
-  const { tx, isOpen, onClick } = props
+  const { tx, isOpen, onClick, collapsed } = props
 
   const handleClick = () => {
     onClick(tx.hash)
   }
 
   const { icon, description, subDescription, value, currency, isPositive } = getContentByTxType(tx)
-
   const { symbol, color } = getCurrencyProps(currency)
 
   return (
     <li key={tx.hash} css={[style.li, isOpen && style.liOpen]} onClick={handleClick}>
-      <Box direction="row" align="center" justify="between">
-        <Box direction="row" align="center" justify="start">
-          {icon}
-          <div>
-            <div css={style.descriptionText}>{description}</div>
-            <div css={style.subDescriptionText}>{subDescription}</div>
+      {!collapsed ? (
+        <Box direction="row" align="center" justify="between">
+          <Box direction="row" align="center" justify="start">
+            {icon}
+            <div>
+              <div css={style.descriptionText}>{description}</div>
+              <div css={style.subDescriptionText}>{subDescription}</div>
+            </div>
+          </Box>
+          <div css={style.moneyContainer}>
+            <MoneyValue
+              amountInWei={value}
+              currency={currency}
+              hideSymbol={true}
+              sign={isPositive ? '+' : '-'}
+            />
+            <div css={[style.currency, { color }]}>{symbol}</div>
           </div>
         </Box>
-        <div css={style.moneyContainer}>
-          <MoneyValue
-            amountInWei={value}
-            currency={currency}
-            hideSymbol={true}
-            sign={isPositive ? '+' : '-'}
-          />
-          <div css={[style.currency, { color }]}>{symbol}</div>
-        </div>
-      </Box>
+      ) : (
+        <Box direction="row" align="center" justify="center">
+          {icon}
+        </Box>
+      )}
     </li>
   )
 }
