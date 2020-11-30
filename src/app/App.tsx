@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { ErrorBoundary } from 'src/app/FailScreen'
 import { Loading } from 'src/app/Loading'
 import { ModalProvider } from 'src/components/modal/modalContext'
 import { ModalTestScreen } from 'src/components/modal/ModalTestScreen'
@@ -17,31 +18,33 @@ import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 
 export const App = () => {
   return (
-    <BrowserRouter>
-      <ModalProvider>
-        <Routes>
-          <Route path="/" element={<HomeFrame />}>
-            <Route path="/" element={<HomeScreen />} />
-            <Route path="tx" element={<TransactionReview />} />
-            <Route path="send" element={<SendFormScreen />} />
-            <Route path="send-review" element={<SendConfirmationScreen />} />
-            <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
-            <Route path="exchange" element={<ExchangeFormScreen />} />
-            <Route path="wallet" element={<ViewWalletScreen />} />
-          </Route>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <ModalProvider>
+          <Routes>
+            <Route path="/" element={<HomeFrame />}>
+              <Route path="/" element={<HomeScreen />} />
+              <Route path="tx" element={<TransactionReview />} />
+              <Route path="send" element={<SendFormScreen />} />
+              <Route path="send-review" element={<SendConfirmationScreen />} />
+              <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
+              <Route path="exchange" element={<ExchangeFormScreen />} />
+              <Route path="wallet" element={<ViewWalletScreen />} />
+            </Route>
 
-          {/* Onboarding */}
-          <Route path="welcome" element={<WelcomeScreen />} />
-          <Route path="new" element={<NewWalletScreen />} />
-          <Route path="import" element={<ImportWalletScreen />} />
-          <Route path="set-pin" element={<SetPincodeScreen />} />
+            {/* Onboarding */}
+            <Route path="welcome" element={<WelcomeScreen />} />
+            <Route path="new" element={<NewWalletScreen />} />
+            <Route path="import" element={<ImportWalletScreen />} />
+            <Route path="set-pin" element={<SetPincodeScreen />} />
 
-          {/* TODO: For Splashscreen Testing */}
-          <Route path="home" element={<HomeScreen />} />
-          <Route path="loading" element={<Loading />} />
-          <Route path="modals" element={<ModalTestScreen />} />
-        </Routes>
-      </ModalProvider>
-    </BrowserRouter>
+            {/* TODO: For Splashscreen Testing */}
+            <Route path="home" element={<HomeScreen />} />
+            <Route path="loading" element={<Loading />} />
+            <Route path="modals" element={<ModalTestScreen />} />
+          </Routes>
+        </ModalProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   )
 }
