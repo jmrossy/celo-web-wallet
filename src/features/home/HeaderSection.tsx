@@ -3,6 +3,7 @@ import { Box } from 'src/components/layout/Box'
 import { useDailyTip } from 'src/features/home/Tips'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function HeaderSection() {
@@ -29,9 +30,13 @@ export function HeaderSection() {
 
 const style: Stylesheet = {
   header: {
-    ...Font.h1,
-    marginBottom: '1.2em',
-    color: Color.primaryGreen,
+    display: 'none',
+    [mq[768]]: {
+      display: 'block',
+      ...Font.h1,
+      marginBottom: '1.2em',
+      color: Color.primaryGreen,
+    },
   },
   icon: {
     marginRight: '0.5em',
