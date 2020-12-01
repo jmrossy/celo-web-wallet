@@ -54,18 +54,6 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         placeholder={placeholder}
       />
       {helpText && <HelpText>{helpText}</HelpText>}
-      {/* {helpText && (
-        <span
-          css={{
-            color: Color.textError,
-            marginTop: 4,
-            fontSize: '0.9rem',
-            marginBottom: '-1.3em', //-20,
-          }}
-        >
-          {helpText}
-        </span>
-      )} */}
     </Box>
   )
 }

@@ -6,15 +6,6 @@ import { rootSaga } from 'src/app/rootSaga'
 
 const sagaMiddleware = createSagaMiddleware()
 
-// const persistConfig = {
-//   key: 'root',
-//   storage: storage,
-//   stateReconciler: autoMergeLevel2,
-//   whitelist: ['feed'], //Note, wallet is also persisted, but only partially - see rootReducer.ts
-// }
-
-// const persistedReducer = persistReducer<RootState>(persistConfig, rootReducer)
-
 export const store = configureStore({
   reducer: rootReducer,
   // Disable thunk, use saga instead
@@ -33,5 +24,4 @@ export const store = configureStore({
 sagaMiddleware.run(rootSaga)
 
 export const persistor = persistStore(store)
-// export type PersistedRootState = ReturnType<typeof persistedReducer>
 export type AppDispatch = typeof store.dispatch
