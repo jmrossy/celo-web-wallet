@@ -2,10 +2,11 @@ import { isSignerSet } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage'
+import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput } from 'src/utils/validation'
-import { call } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 const CACHE_TIMEOUT = 600000 // 10 minutes
 const PIN_LENGTH = 6
@@ -140,6 +141,7 @@ function* setPin(pin: string) {
   }
 
   yield* call(saveWallet, pin)
+  yield* put(setWalletUnlocked(true))
 
   setCachedPin(pin)
   logger.info('Pin set')
