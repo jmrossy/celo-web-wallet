@@ -54,7 +54,7 @@ export function EnterPincodeForm() {
       'WARNING',
       warning,
       [
-        { key: 'cancel', label: 'Cancel', color: Color.primaryGreen },
+        { key: 'cancel', label: 'Cancel', color: Color.primaryGrey },
         { key: 'logout', label: 'I understand, log me out', color: Color.primaryRed },
       ],
       'YOUR FUNDS WILL BE LOST...'
