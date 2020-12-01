@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import Chevron from 'src/components/icons/chevron.svg'
+import CloseIcon from 'src/components/icons/close.svg'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
 import { GenericTransactionReview } from 'src/features/feed/components/GenericTransactionReview'
@@ -50,10 +51,9 @@ export function TransactionReview() {
   return (
     <div css={style.container}>
       <Box align="center" justify="between" styles={style.header}>
-        <span>{header}</span>
-        {/* TODO a real x icon */}
-        <a onClick={onCloseClick} css={style.closeButton}>
-          X
+        <div>{header}</div>
+        <a href="javascript:void(0);" onClick={onCloseClick} css={style.closeButtonContainer}>
+          <img src={CloseIcon} alt="Close" css={style.closeButton} />
         </a>
       </Box>
       <div css={style.contentContainer}>
@@ -152,13 +152,18 @@ const style: Stylesheet = {
     ...Font.h2,
     background: Color.accentBlue,
     color: Color.primaryWhite,
-    padding: '0.8rem 2rem',
+    padding: '0.85rem 2rem',
+  },
+  closeButtonContainer: {
+    cursor: 'pointer',
+    position: 'relative',
+    top: 2,
   },
   closeButton: {
-    ...Font.h2,
-    color: Color.primaryWhite,
-    fontWeight: 600,
-    cursor: 'pointer',
+    filter: 'brightness(0) invert(1)', // TODO consider using svg wrapper for this
+    ':hover': {
+      filter: 'brightness(0) invert(0.9)',
+    },
   },
   contentContainer: {
     padding: '1rem 2rem',
@@ -172,7 +177,6 @@ const style: Stylesheet = {
     ...Font.h2,
     color: Color.textGrey,
     marginBottom: '1.5em',
-    cursor: 'pointer',
   },
   chevron: {
     opacity: 0.5,
@@ -188,4 +192,5 @@ const chevronRotated: Styles = {
 const sectionHeaderAdvanced: Styles = {
   ...style.sectionHeader,
   width: 'fit-content',
+  cursor: 'pointer',
 }

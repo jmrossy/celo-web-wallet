@@ -1,8 +1,11 @@
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from 'src/app/rootReducer'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
+import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
@@ -13,11 +16,17 @@ import { Stylesheet } from 'src/styles/types'
 export function HomeScreen() {
   const isMobile = useIsMobile()
   const isWalletEmpty = useAreBalancesEmpty()
-
   const showGraph = !isMobile || isWalletEmpty
 
+  const isDismissed = useSelector((state: RootState) => state.settings.homeHeaderDismissed)
+  const dispatch = useDispatch()
+  const onClickDismiss = () => {
+    dispatch(toggleHomeHeaderDismissed())
+  }
+  if (isDismissed) return null
+
   return (
-    <ScreenContentFrame>
+    <ScreenContentFrame onClose={isMobile ? onClickDismiss : undefined}>
       <div css={style.container}>
         {!isWalletEmpty && <HeaderSection />}
         {isWalletEmpty && <HeaderSectionEmpty />}
@@ -53,6 +62,6 @@ const style: Stylesheet = {
     border: 'none',
     backgroundColor: Color.altGrey,
     color: Color.altGrey, //for IE
-    margin: '3em 0',
+    margin: '2.2em 0',
   },
 }

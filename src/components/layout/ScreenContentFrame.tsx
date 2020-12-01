@@ -33,7 +33,7 @@ export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
 
 const style: Stylesheet = {
   contentContainer: {
-    padding: '1.5em',
+    padding: '1.2em 1.4em',
     height: '100%',
     position: 'relative',
     [mq[768]]: {
@@ -42,7 +42,11 @@ const style: Stylesheet = {
   },
   closeButton: {
     position: 'absolute',
-    right: '2em',
-    top: '2em',
+    right: '1.4em',
+    top: '1.2em',
+    [mq[768]]: {
+      right: '2em',
+      top: '2em',
+    },
   },
 }
