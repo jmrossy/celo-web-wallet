@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
@@ -12,7 +12,6 @@ import {
   validate,
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow } from 'src/features/pincode/PincodeInput'
-import { setChangingPin } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -24,10 +23,7 @@ const initialValues = { action: PincodeAction.Change, value: '', newValue: '', v
 
 export function ChangePincodeForm() {
   const dispatch = useDispatch()
-
-  useEffect(() => {
-    pincodeActions.reset() //need to clear this out each time we enter this screen
-  }, [])
+  const navigate = useNavigate()
 
   const onSubmit = (values: PincodeParams) => {
     if (areInputsValid()) {
@@ -43,7 +39,7 @@ export function ChangePincodeForm() {
   const { inputErrors, areInputsValid } = useInputValidation(touched, () => validate(values))
 
   const onClickCancel = () => {
-    dispatch(setChangingPin(false))
+    navigate(-1)
   }
 
   const { showModalAsync } = useModal()
@@ -61,7 +57,7 @@ export function ChangePincodeForm() {
 
   return (
     <Box direction="column" align="center">
-      <div css={style.description}>You pincode protects your account on this device.</div>
+      <div css={style.description}>You Pincode protects your account on this device.</div>
       <div css={style.description}>Use six numbers (0-9).</div>
       <div>
         <form onSubmit={handleSubmit}>

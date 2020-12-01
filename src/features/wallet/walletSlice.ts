@@ -14,7 +14,6 @@ interface Wallet {
   address: string | null
   balances: Balances
   isUnlocked: boolean
-  isChangingPin: boolean
 }
 
 export const walletInitialState: Wallet = {
@@ -25,7 +24,6 @@ export const walletInitialState: Wallet = {
     lastUpdated: null,
   },
   isUnlocked: false,
-  isChangingPin: false,
 }
 
 const walletSlice = createSlice({
@@ -42,9 +40,6 @@ const walletSlice = createSlice({
       assert(cUsd && celo && lastUpdated, `Invalid balance`)
       state.balances = action.payload
     },
-    setChangingPin: (state, action: PayloadAction<boolean>) => {
-      state.isChangingPin = action.payload
-    },
     setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
       state.isUnlocked = action.payload
     },
@@ -52,18 +47,11 @@ const walletSlice = createSlice({
       state.address = walletInitialState.address
       state.balances = walletInitialState.balances
       state.isUnlocked = false
-      state.isChangingPin = false
     },
   },
 })
 
-export const {
-  setAddress,
-  updateBalances,
-  setChangingPin,
-  setWalletUnlocked,
-  clearWallet,
-} = walletSlice.actions
+export const { setAddress, updateBalances, setWalletUnlocked, clearWallet } = walletSlice.actions
 export const walletReducer = walletSlice.reducer
 
 const walletPersistConfig = {

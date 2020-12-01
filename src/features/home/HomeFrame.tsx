@@ -2,22 +2,17 @@ import { useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
-import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
 import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
 import { isAccountUnlocked } from 'src/features/pincode/pincode'
 import { isWalletInStorage } from 'src/features/wallet/storage'
 
 export function HomeFrame() {
-  const { address, isUnlocked, isChangingPin } = useSelector((s: RootState) => s.wallet)
+  const { address, isUnlocked } = useSelector((s: RootState) => s.wallet)
 
   // If pin has been entered already
   //NOTE: isAccountUnlocked is for security reasons (so they can't just change a persisted value in the local storage)
   // and isUnlocked is for flow reasons - so the pincode monitored saga gets reset after authenticating
   if (address && isUnlocked && isAccountUnlocked()) {
-    if (isChangingPin) {
-      return <ChangePincodeScreen />
-    }
-
     return (
       <ScreenFrameWithFeed>
         <Outlet />

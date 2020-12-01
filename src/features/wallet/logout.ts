@@ -5,9 +5,9 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put } from 'typed-redux-saga'
 
 export function* logout() {
-  yield put(clearWallet())
-  yield put(clearTransactions())
   yield* call(removeWallet)
+  yield* put(clearWallet())
+  yield* put(clearTransactions())
 }
 
 export const {

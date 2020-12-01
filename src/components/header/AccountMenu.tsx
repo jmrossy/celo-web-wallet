@@ -13,7 +13,6 @@ import { Box } from 'src/components/layout/Box'
 import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { NULL_ADDRESS } from 'src/consts'
 import { logoutActions } from 'src/features/wallet/logout'
-import { setChangingPin } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -44,7 +43,8 @@ export const AccountMenu = () => {
         navigate('/wallet')
         break
       case 'pin':
-        dispatch(setChangingPin(true))
+        setOpen(false)
+        navigate('/change-pin')
         break
       case 'logout':
         dispatch(logoutActions.trigger())
