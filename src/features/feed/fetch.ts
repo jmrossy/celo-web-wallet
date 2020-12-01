@@ -1,6 +1,7 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
+import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
 import { Currency } from 'src/consts'
 import { addTransactions } from 'src/features/feed/feedSlice'
@@ -63,6 +64,7 @@ export function* feedFetchPoller() {
   // TODO only do this when home screen is showing
   while (true) {
     yield* delay(POLL_DELAY)
+    if (!isSignerSet()) continue
     yield* put(fetchFeedActions.trigger())
   }
 }
@@ -72,7 +74,7 @@ function* fetchFeed() {
   const lastUpdatedTime = yield* select((state: RootState) => state.feed.lastUpdatedTime)
   const lastBlockNumber = yield* select((state: RootState) => state.feed.lastBlockNumber)
 
-  if (!address) return
+  if (!address || !isSignerSet()) return
 
   const now = Date.now()
   if (lastUpdatedTime && now - lastUpdatedTime < QUERY_DEBOUNCE_TIME) return

@@ -3,10 +3,11 @@ import { Box } from 'src/components/layout/Box'
 import { useDailyTip } from 'src/features/home/Tips'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { mq } from 'src/styles/mediaQueries'
+import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function HeaderSection() {
+  const isMobile = useIsMobile()
   const tipText = useDailyTip()
 
   return (
@@ -18,11 +19,17 @@ export function HeaderSection() {
           <img src={Lightbulb} css={style.icon} alt="Tip" />
           <label css={[Font.body, Font.bold]}>Tip of the day</label>
         </Box>
-        {tipText.map((line, index) => (
-          <p css={style.tip} key={`tip-line-${index}`}>
-            {line}
-          </p>
-        ))}
+        {isMobile ? (
+          <p css={style.tip}>{tipText.map((line) => line + ' ')}</p>
+        ) : (
+          <>
+            {tipText.map((line, index) => (
+              <p css={style.tip} key={`tip-line-${index}`}>
+                {line}
+              </p>
+            ))}
+          </>
+        )}
       </Box>
     </Box>
   )
@@ -45,6 +52,7 @@ const style: Stylesheet = {
   },
   tip: {
     ...Font.body,
+    lineHeight: '1.4em',
     margin: '1em 0 0 0',
   },
 }

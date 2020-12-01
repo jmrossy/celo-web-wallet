@@ -18,8 +18,9 @@ export function TransactionProperty(props: PropsWithChildren<{ label: string }>)
 const style: Stylesheet = {
   container: {
     display: 'grid',
-    gridTemplateColumns: '1fr 2fr',
-    gap: '3em 1em',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(20em, auto))',
+    gap: '3em 4em',
+    maxWidth: '60em',
   },
   label: {
     ...Font.label,
