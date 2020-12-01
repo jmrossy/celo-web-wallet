@@ -58,7 +58,7 @@ export function validate(params: PincodeParams): ErrorState {
   if (action === PincodeAction.Set) {
     if (!valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
-    } else if (newValue !== valueConfirm) {
+    } else if (value !== valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', "Values don't match") }
     }
   } else if (action === PincodeAction.Change) {

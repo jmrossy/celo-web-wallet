@@ -20,6 +20,8 @@ import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
+const initialValues = { action: PincodeAction.Change, value: '', newValue: '', valueConfirm: '' }
+
 export function ChangePincodeForm() {
   const dispatch = useDispatch()
 
@@ -34,7 +36,7 @@ export function ChangePincodeForm() {
   }
 
   const { values, touched, handleChange, handleSubmit } = useCustomForm<PincodeParams, any>(
-    { action: PincodeAction.Change, value: '', newValue: '', valueConfirm: '' },
+    initialValues,
     onSubmit
   )
 
@@ -101,7 +103,7 @@ export function ChangePincodeForm() {
             >
               Cancel
             </Button>
-            <Button size={'m'} type="submit" disabled={status === SagaStatus.Started}>
+            <Button size="m" type="submit" disabled={status === SagaStatus.Started}>
               Change
             </Button>
           </Box>

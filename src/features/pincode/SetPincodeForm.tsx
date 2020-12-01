@@ -1,48 +1,45 @@
-import { ChangeEvent, FormEvent, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import {
-  isPinValid,
   PincodeAction,
   pincodeActions,
+  PincodeParams,
   pincodeSagaName,
+  validate,
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow } from 'src/features/pincode/PincodeInput'
 import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
+import { useCustomForm } from 'src/utils/useCustomForm'
+import { useInputValidation } from 'src/utils/validation'
+
+const initialValues = { action: PincodeAction.Set, value: '', valueConfirm: '' }
 
 export function SetPincodeForm() {
-  const [pin1, setPin1] = useState('')
-  const [pin2, setPin2] = useState('')
-  const [pinError, setPinError] = useState(0)
   const dispatch = useDispatch()
 
-  const onPinChange = (setter: (value: string) => void) => {
-    return (event: ChangeEvent<HTMLInputElement>) => {
-      const { target } = event
-      setter(target.value.substring(0, 6))
-      setPinError(0)
+  const onSubmit = (values: PincodeParams) => {
+    if (areInputsValid()) {
+      dispatch(pincodeActions.trigger({ action: PincodeAction.Set, value: values.value }))
     }
   }
 
-  const onClickSetPin = (event?: FormEvent) => {
-    if (event) event.preventDefault()
+  const { values, touched, handleChange, handleSubmit } = useCustomForm<PincodeParams, any>(
+    initialValues,
+    onSubmit
+  )
 
-    if (!isPinValid(pin1)) {
-      setPinError(1)
-      return
-    }
-    if (pin1 !== pin2) {
-      setPinError(2)
-      return
-    }
-    dispatch(pincodeActions.trigger({ action: PincodeAction.Set, value: pin1 }))
+  const doValidation = () => {
+    const validation = validate(values)
+    return validation
   }
+
+  const { inputErrors, areInputsValid } = useInputValidation(touched, doValidation)
 
   const navigate = useNavigate()
   const onSuccess = () => {
@@ -62,31 +59,31 @@ export function SetPincodeForm() {
       <div css={style.description}>You pincode protects your account on this device.</div>
       <div css={style.description}>Use six numbers (0-9).</div>
       <div css={style.inputRowContainer}>
-        <form onSubmit={onClickSetPin}>
+        <form onSubmit={handleSubmit}>
           <PincodeInputRow
             label="Enter Pin"
-            name="pin1"
-            value={pin1}
-            onChange={onPinChange(setPin1)}
-            error={pinError === 1}
+            name="value"
+            value={values.value}
+            onChange={handleChange}
+            {...inputErrors['value']}
           />
           <PincodeInputRow
             label="Re-Enter Pin"
-            name="pin2"
-            value={pin2}
-            onChange={onPinChange(setPin2)}
-            error={pinError === 2}
+            name="valueConfirm"
+            value={values.valueConfirm}
+            onChange={handleChange}
+            {...inputErrors['valueConfirm']}
           />
+          <Button
+            size={'m'}
+            type="submit"
+            margin={'3em 0 0 8em'}
+            disabled={status === SagaStatus.Started}
+          >
+            Set Pin
+          </Button>
         </form>
       </div>
-      <Button
-        size={'m'}
-        onClick={onClickSetPin}
-        margin={'3em 0 0 0'}
-        disabled={status === SagaStatus.Started}
-      >
-        Set Pin
-      </Button>
     </Box>
   )
 }
