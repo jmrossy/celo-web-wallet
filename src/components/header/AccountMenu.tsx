@@ -12,7 +12,7 @@ import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { NULL_ADDRESS } from 'src/consts'
-import { closeWalletActions } from 'src/features/wallet/closeWallet'
+import { logoutActions } from 'src/features/wallet/logout'
 import { setChangingPin } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
@@ -47,8 +47,8 @@ export const AccountMenu = () => {
         dispatch(setChangingPin(true))
         break
       case 'logout':
-        dispatch(closeWalletActions.trigger())
-        navigate('/wallet')
+        dispatch(logoutActions.trigger())
+        navigate('/welcome')
         break
       default:
         logger.info('Menu Item Clicked: ', key)

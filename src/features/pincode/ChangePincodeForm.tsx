@@ -40,12 +40,7 @@ export function ChangePincodeForm() {
     onSubmit
   )
 
-  const doValidation = () => {
-    const validation = validate(values)
-    return validation
-  }
-
-  const { inputErrors, areInputsValid } = useInputValidation(touched, doValidation)
+  const { inputErrors, areInputsValid } = useInputValidation(touched, () => validate(values))
 
   const onClickCancel = () => {
     dispatch(setChangingPin(false))
@@ -60,7 +55,7 @@ export function ChangePincodeForm() {
   const status = useSagaStatusWithErrorModal(
     pincodeSagaName,
     'Error Changing Pin',
-    'Please correct the error and try again.',
+    'Please check your pins and try again.',
     onSuccess
   )
 
@@ -68,7 +63,7 @@ export function ChangePincodeForm() {
     <Box direction="column" align="center">
       <div css={style.description}>You pincode protects your account on this device.</div>
       <div css={style.description}>Use six numbers (0-9).</div>
-      <div css={style.inputRowContainer}>
+      <div>
         <form onSubmit={handleSubmit}>
           <PincodeInputRow
             label="Current Pin"
@@ -117,8 +112,5 @@ const style: Stylesheet = {
   description: {
     ...Font.body,
     marginBottom: '0.75em',
-  },
-  inputRowContainer: {
-    // marginLeft: '-8em',
   },
 }

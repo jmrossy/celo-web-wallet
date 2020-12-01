@@ -43,7 +43,6 @@ export function SetPincodeForm() {
 
   const navigate = useNavigate()
   const onSuccess = () => {
-    pincodeActions.reset() //need to clear this out since it's used by other screens
     dispatch(setWalletUnlocked(true))
     navigate('/')
   }

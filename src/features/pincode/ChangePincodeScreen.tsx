@@ -5,7 +5,7 @@ import { Font } from 'src/styles/fonts'
 export function ChangePincodeScreen() {
   return (
     <OnboardingScreenFrame>
-      <h1 css={Font.h1Green}>Change your pincode</h1>
+      <h1 css={Font.h1Green}>Change your Pincode</h1>
       <ChangePincodeForm />
     </OnboardingScreenFrame>
   )
