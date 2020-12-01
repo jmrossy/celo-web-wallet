@@ -11,6 +11,7 @@ import {
   pincodeSagaName,
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow } from 'src/features/pincode/PincodeInput'
+import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -45,6 +46,8 @@ export function SetPincodeForm() {
 
   const navigate = useNavigate()
   const onSuccess = () => {
+    pincodeActions.reset() //need to clear this out since it's used by other screens
+    dispatch(setWalletUnlocked(true))
     navigate('/')
   }
   const status = useSagaStatusWithErrorModal(

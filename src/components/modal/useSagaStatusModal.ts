@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { useModal } from 'src/components/modal/useModal'
@@ -13,6 +13,7 @@ export function useSagaStatusWithErrorModal(
   errorMsg?: string,
   onSuccess?: () => void
 ) {
+  const dispatch = useDispatch()
   const sagaState = useSelector((s: RootState) => s.saga[sagaName])
   if (!sagaState) {
     throw new Error(`No saga state found, is sagaName valid? Name: ${sagaName}`)
@@ -30,6 +31,7 @@ export function useSagaStatusWithErrorModal(
     if (status === SagaStatus.Success && onSuccess) {
       // Consider calling sagaAction.reset() here
       onSuccess()
+      dispatch(saga.actions.reset(null))
     } else if (status === SagaStatus.Failure) {
       showErrorModal(
         errorTitle,

@@ -10,6 +10,7 @@ import {
   pincodeSagaName,
 } from 'src/features/pincode/pincode'
 import { PincodeInput } from 'src/features/pincode/PincodeInput'
+import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -40,6 +41,7 @@ export function EnterPincodeForm() {
 
   const onUnlocked = () => {
     pincodeActions.reset() //need to clear this out since it's used by other screens
+    dispatch(setWalletUnlocked(true))
   }
 
   const status = useSagaStatusWithErrorModal(

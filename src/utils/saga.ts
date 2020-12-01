@@ -130,7 +130,7 @@ export function createMonitoredSaga<SagaParams = void>(
         yield put(statusAction(SagaStatus.Success))
       } catch (error) {
         logger.error(`${name} error`, error)
-        yield put(errorAction(SagaError.Exception))
+        yield put(errorAction(error.toString()))
       }
     }
   }

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
@@ -21,6 +22,10 @@ import { useInputValidation } from 'src/utils/validation'
 export function ChangePincodeForm() {
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    pincodeActions.reset() //need to clear this out each time we enter this screen
+  }, [])
+
   const onSubmit = (values: PincodeParams) => {
     if (areInputsValid()) {
       dispatch(pincodeActions.trigger(values))
@@ -40,7 +45,7 @@ export function ChangePincodeForm() {
   const { inputErrors, areInputsValid } = useInputValidation(touched, doValidation)
 
   const onClickCancel = () => {
-    dispatch(pincodeActions.reset()) //clear out current status
+    // dispatch(pincodeActions.reset()) //clear out current status
     dispatch(setChangingPin(false))
   }
 
@@ -51,7 +56,7 @@ export function ChangePincodeForm() {
   const status = useSagaStatusWithErrorModal(
     pincodeSagaName,
     'Error Changing Pin',
-    'Something went wrong when changing your pin, sorry! Please try again.',
+    'Please correct the error and try again.',
     onSuccess
   )
 

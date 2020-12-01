@@ -8,10 +8,12 @@ import { isAccountUnlocked } from 'src/features/pincode/pincode'
 import { isWalletInStorage } from 'src/features/wallet/storage'
 
 export function HomeFrame() {
-  const { address, isChangingPin } = useSelector((s: RootState) => s.wallet)
+  const { address, isUnlocked, isChangingPin } = useSelector((s: RootState) => s.wallet)
 
   // If pin has been entered already
-  if (address && isAccountUnlocked()) {
+  //NOTE: isAccountUnlocked is for security reasons (so they can't just change a persisted value in the local storage)
+  // and isUnlocked is for flow reasons - so the pincode monitored saga gets reset after authenticating
+  if (address && isUnlocked && isAccountUnlocked()) {
     if (isChangingPin) {
       return <ChangePincodeScreen />
     }

@@ -48,10 +48,22 @@ const walletSlice = createSlice({
     setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
       state.isUnlocked = action.payload
     },
+    clearWallet: (state) => {
+      state.address = walletInitialState.address
+      state.balances = walletInitialState.balances
+      state.isUnlocked = false
+      state.isChangingPin = false
+    },
   },
 })
 
-export const { setAddress, updateBalances, setChangingPin, setWalletUnlocked } = walletSlice.actions
+export const {
+  setAddress,
+  updateBalances,
+  setChangingPin,
+  setWalletUnlocked,
+  clearWallet,
+} = walletSlice.actions
 export const walletReducer = walletSlice.reducer
 
 const walletPersistConfig = {

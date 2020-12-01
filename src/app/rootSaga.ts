@@ -45,6 +45,12 @@ import {
   fetchTokenPriceSagaName,
 } from 'src/features/tokenPrice/fetchPrices'
 import {
+  closeWalletActions,
+  closeWalletReducer,
+  closeWalletSaga,
+  closeWalletSagaName,
+} from 'src/features/wallet/closeWallet'
+import {
   createWalletActions,
   createWalletReducer,
   createWalletSaga,
@@ -126,6 +132,11 @@ export const monitoredSagas: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
+  },
+  [closeWalletSagaName]: {
+    saga: closeWalletSaga,
+    reducer: closeWalletReducer,
+    actions: closeWalletActions,
   },
 }
 
