@@ -7,10 +7,14 @@ import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function HomeScreen() {
+  const isMobile = useIsMobile()
   const isWalletEmpty = useAreBalancesEmpty()
+
+  const showGraph = !isMobile || isWalletEmpty
 
   return (
     <ScreenContentFrame>
@@ -18,13 +22,17 @@ export function HomeScreen() {
         {!isWalletEmpty && <HeaderSection />}
         {isWalletEmpty && <HeaderSectionEmpty />}
 
-        <hr css={style.divider} />
-        <Box direction="row" align="end" styles={{ marginBottom: '2em' }}>
-          <img src={Chart} css={style.icon} alt="Price chart" />
-          <label css={[Font.body, Font.bold]}>Celo Prices</label>
-        </Box>
+        {showGraph && (
+          <>
+            <hr css={style.divider} />
+            <Box direction="row" align="end" margin="0 0 2em 0">
+              <img src={Chart} css={style.icon} alt="Price chart" />
+              <label css={[Font.body, Font.bold]}>Celo Prices</label>
+            </Box>
 
-        <PriceChartCelo />
+            <PriceChartCelo />
+          </>
+        )}
       </div>
     </ScreenContentFrame>
   )

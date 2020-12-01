@@ -3,6 +3,7 @@ import { Button } from 'src/components/Button'
 import CloseIcon from 'src/components/icons/close.svg'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 interface FrameProps {
@@ -32,9 +33,12 @@ export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
 
 const style: Stylesheet = {
   contentContainer: {
+    padding: '1.5em',
     height: '100%',
-    padding: '2em 4em 2em 4em',
     position: 'relative',
+    [mq[768]]: {
+      padding: '2em 4em 2em 4em',
+    },
   },
   closeButton: {
     position: 'absolute',
