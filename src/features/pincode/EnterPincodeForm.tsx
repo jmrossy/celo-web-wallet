@@ -40,8 +40,7 @@ export function EnterPincodeForm() {
   }
 
   const onUnlocked = () => {
-    pincodeActions.reset() //need to clear this out since it's used by other screens
-    dispatch(setWalletUnlocked(true))
+    dispatch(setWalletUnlocked(true)) //This will trigger the homeframe to show the main view, otherwise, pincode.status doesn't get reset
   }
 
   const status = useSagaStatusWithErrorModal(
@@ -63,6 +62,7 @@ export function EnterPincodeForm() {
           onChange={onPinChange}
           error={pinError.isError}
           helpText={pinError.helpText}
+          autoFocus={true}
         />
       </form>
       <Button

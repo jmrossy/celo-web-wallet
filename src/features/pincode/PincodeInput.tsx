@@ -9,10 +9,11 @@ interface Props {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   error?: boolean
   helpText?: string
+  autoFocus?: boolean
 }
 
 export function PincodeInput(props: Props) {
-  const { name, value, onChange, error, helpText } = props
+  const { name, value, onChange, error, helpText, autoFocus } = props
 
   const sharedStyles = getSharedInputStyles(error)
   return (
@@ -24,6 +25,7 @@ export function PincodeInput(props: Props) {
         value={value}
         onChange={onChange}
         autoComplete="one-time-code"
+        autoFocus={autoFocus}
       />
       {helpText && <HelpText>{helpText}</HelpText>}
     </Box>

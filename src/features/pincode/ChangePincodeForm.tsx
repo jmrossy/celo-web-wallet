@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
+import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import {
   PincodeAction,
@@ -45,11 +46,12 @@ export function ChangePincodeForm() {
   const { inputErrors, areInputsValid } = useInputValidation(touched, doValidation)
 
   const onClickCancel = () => {
-    // dispatch(pincodeActions.reset()) //clear out current status
     dispatch(setChangingPin(false))
   }
 
-  const onSuccess = () => {
+  const { showModalAsync } = useModal()
+  const onSuccess = async () => {
+    await showModalAsync('Pincode Changed', 'Your pincode has been successfully changed')
     onClickCancel()
   }
 
@@ -72,6 +74,7 @@ export function ChangePincodeForm() {
             value={values.value}
             onChange={handleChange}
             {...inputErrors['value']}
+            autoFocus={true}
           />
           <PincodeInputRow
             label="New Pin"
