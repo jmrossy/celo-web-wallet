@@ -34,23 +34,13 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
   return (
     <button
       css={{
-        ...staticStyles,
+        ...defaultButtonStyles,
         ...icoLayout,
         margin,
         height,
         width,
         fontSize: size === 'l' ? '1.1em' : undefined,
         backgroundColor: color || Color.primaryGreen,
-        ':hover': {
-          backgroundColor: '#4cdd91',
-        },
-        ':active': {
-          backgroundColor: '#0fb972',
-        },
-        ':disabled': {
-          color: Color.primaryGrey,
-          backgroundColor: Color.borderInactive,
-        },
         ...styles,
       }}
       onClick={onClick}
@@ -95,11 +85,22 @@ function getLayout(size?: string) {
     : null
 }
 
-const staticStyles: Styles = {
+export const defaultButtonStyles: Styles = {
   borderRadius: 3,
   color: Color.primaryWhite,
   border: 'none',
   outline: 'none',
   cursor: 'pointer',
+  backgroundColor: Color.primaryGreen,
   fontWeight: 500,
+  ':hover': {
+    backgroundColor: '#4cdd91',
+  },
+  ':active': {
+    backgroundColor: '#0fb972',
+  },
+  ':disabled': {
+    color: Color.primaryGrey,
+    backgroundColor: Color.borderInactive,
+  },
 }

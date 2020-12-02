@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TransactionMap } from 'src/features/types'
+import { CeloTransaction, TransactionMap } from 'src/features/types'
 
 export interface TransactionFeed {
   transactions: TransactionMap
@@ -35,6 +35,12 @@ const feedSlice = createSlice({
       state.lastUpdatedTime = action.payload.lastUpdatedTime
       state.lastBlockNumber = action.payload.lastBlockNumber
     },
+    addPlaceholderTransaction: (state, action: PayloadAction<CeloTransaction>) => {
+      const newTx = action.payload
+      if (!state.transactions[newTx.hash]) {
+        state.transactions = { ...state.transactions, [newTx.hash]: newTx }
+      }
+    },
     openTransaction: (state, action: PayloadAction<string | null>) => {
       if (action.payload && state.transactions[action.payload]) {
         state.openTransaction = action.payload
@@ -56,8 +62,10 @@ const feedSlice = createSlice({
 
 export const {
   addTransactions,
+  addPlaceholderTransaction,
   openTransaction,
   clearTransactions,
   toggleAdvancedDetails,
 } = feedSlice.actions
+
 export const feedReducer = feedSlice.reducer

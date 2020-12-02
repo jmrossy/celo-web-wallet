@@ -1,5 +1,6 @@
 import { utils } from 'ethers'
 import { useNavigate } from 'react-router'
+import { defaultButtonStyles } from 'src/components/Button'
 import Paste from 'src/components/icons/paste.svg'
 import PlusWhite from 'src/components/icons/plus_white.svg'
 import { Identicon } from 'src/components/Identicon'
@@ -108,23 +109,13 @@ const style: Stylesheet = {
     lineHeight: '22px',
   },
   button: {
+    ...defaultButtonStyles,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
-    backgroundColor: Color.primaryGreen,
     height: 27,
     width: 27,
     marginLeft: -10,
-    borderRadius: 3,
-    border: 'none',
-    outline: 'none',
-    cursor: 'pointer',
-    ':hover': {
-      backgroundColor: '#4cdd91',
-    },
-    ':active': {
-      backgroundColor: '#0fb972',
-    },
   },
 }

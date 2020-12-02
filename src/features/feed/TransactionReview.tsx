@@ -52,9 +52,9 @@ export function TransactionReview() {
     <div css={style.container}>
       <Box align="center" justify="between" styles={style.header}>
         <div>{header}</div>
-        <a href="javascript:void(0);" onClick={onCloseClick} css={style.closeButtonContainer}>
-          <img src={CloseIcon} alt="Close" css={style.closeButton} />
-        </a>
+        <button onClick={onCloseClick} css={style.closeButton}>
+          <img src={CloseIcon} alt="Close" css={style.closeButtonIcon} />
+        </button>
       </Box>
       <div css={style.contentContainer}>
         <h2 css={style.sectionHeader}>Transaction Details</h2>
@@ -154,12 +154,15 @@ const style: Stylesheet = {
     color: Color.primaryWhite,
     padding: '0.85rem 2rem',
   },
-  closeButtonContainer: {
+  closeButton: {
+    border: 'none',
+    outline: 'none',
     cursor: 'pointer',
+    backgroundColor: Color.accentBlue,
     position: 'relative',
     top: 2,
   },
-  closeButton: {
+  closeButtonIcon: {
     filter: 'brightness(0) invert(1)', // TODO consider using svg wrapper for this
     ':hover': {
       filter: 'brightness(0) invert(0.9)',

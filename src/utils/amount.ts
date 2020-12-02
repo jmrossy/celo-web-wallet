@@ -66,7 +66,7 @@ export function useExchangeValues(
   }
 
   try {
-    const toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
+    const toCurrency = getOtherCurrency(fromCurrency)
     const exchangeRate = fromCurrency === Currency.cUSD ? cUsdToCelo : 1 / cUsdToCelo
     const exchangeRateWei = toWei(exchangeRate)
 
@@ -96,7 +96,7 @@ export function useExchangeValues(
 
 function getDefaultExchangeValues(fromCurrency?: Currency | null) {
   const _fromCurrency = fromCurrency || Currency.cUSD
-  const _toCurrency = fromCurrency === Currency.CELO ? Currency.cUSD : Currency.CELO
+  const _toCurrency = getOtherCurrency(_fromCurrency)
 
   return {
     from: {
@@ -112,4 +112,8 @@ function getDefaultExchangeValues(fromCurrency?: Currency | null) {
       weiRate: '0',
     },
   }
+}
+
+export function getOtherCurrency(currency: Currency) {
+  return currency === Currency.CELO ? Currency.cUSD : Currency.CELO
 }
