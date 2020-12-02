@@ -161,6 +161,7 @@ function getPlaceholderTx(
     return {
       ...base,
       type: TransactionType.CeloTokenTransfer,
+      to: params.recipient,
       currency: Currency.CELO,
     }
   }
@@ -169,6 +170,7 @@ function getPlaceholderTx(
     return {
       ...base,
       type: TransactionType.StableTokenTransfer,
+      to: params.recipient,
       currency: Currency.cUSD,
     }
   }
