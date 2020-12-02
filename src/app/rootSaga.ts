@@ -63,6 +63,12 @@ import {
   importWalletSaga,
   importWalletSagaName,
 } from 'src/features/wallet/importWallet'
+import {
+  logoutActions,
+  logoutReducer,
+  logoutSaga,
+  logoutSagaName,
+} from 'src/features/wallet/logout'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
@@ -126,6 +132,11 @@ export const monitoredSagas: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
+  },
+  [logoutSagaName]: {
+    saga: logoutSaga,
+    reducer: logoutReducer,
+    actions: logoutActions,
   },
 }
 

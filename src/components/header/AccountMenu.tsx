@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
@@ -12,6 +12,7 @@ import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { NULL_ADDRESS } from 'src/consts'
+import { logoutActions } from 'src/features/wallet/logout'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -26,6 +27,7 @@ const MenuItems = [
 ]
 
 export const AccountMenu = () => {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const isMobile = useIsMobile()
   const address = useSelector((s: RootState) => s.wallet.address)
@@ -39,6 +41,14 @@ export const AccountMenu = () => {
       case 'account':
         setOpen(false)
         navigate('/wallet')
+        break
+      case 'pin':
+        setOpen(false)
+        navigate('/change-pin')
+        break
+      case 'logout':
+        dispatch(logoutActions.trigger())
+        navigate('/welcome')
         break
       default:
         logger.info('Menu Item Clicked: ', key)

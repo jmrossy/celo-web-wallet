@@ -31,6 +31,10 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
   const { height, width } = getDimensions(size, widthOverride)
   const icoLayout = getLayout(size)
 
+  const baseBg = color || Color.primaryGreen
+  const hoverBg =
+    baseBg === Color.primaryGreen ? '#4cdd91' : `${baseBg}${baseBg.length === 3 ? 'c' : 'cc'}`
+
   return (
     <button
       css={{
@@ -40,9 +44,9 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
         height,
         width,
         fontSize: size === 'l' ? '1.1em' : undefined,
-        backgroundColor: color || Color.primaryGreen,
+        backgroundColor: baseBg, //color || Color.primaryGreen,
         ':hover': {
-          backgroundColor: '#4cdd91',
+          backgroundColor: hoverBg, //'#4cdd91',
         },
         ':active': {
           backgroundColor: '#0fb972',

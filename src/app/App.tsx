@@ -12,6 +12,7 @@ import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletS
 import { NewWalletScreen } from 'src/features/onboarding/new/NewWalletScreen'
 import { SetPincodeScreen } from 'src/features/onboarding/pincode/SetPincodeScreen'
 import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
+import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
@@ -37,6 +38,7 @@ export const App = () => {
             <Route path="new" element={<NewWalletScreen />} />
             <Route path="import" element={<ImportWalletScreen />} />
             <Route path="set-pin" element={<SetPincodeScreen />} />
+            <Route path="change-pin" element={<ChangePincodeScreen />} />
 
             {/* TODO: For Splashscreen Testing */}
             <Route path="home" element={<HomeScreen />} />

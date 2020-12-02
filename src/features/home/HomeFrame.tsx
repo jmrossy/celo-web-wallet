@@ -3,18 +3,16 @@ import { Navigate, Outlet } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
 import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
-import { isAccountUnlocked, pincodeSagaName } from 'src/features/pincode/pincode'
+import { isAccountUnlocked } from 'src/features/pincode/pincode'
 import { isWalletInStorage } from 'src/features/wallet/storage'
 
 export function HomeFrame() {
-  const address = useSelector((s: RootState) => s.wallet.address)
-
-  // To ensure re-renders on pincode success
-  // TODO put some unlocked state in wallet slice and use that insteadc
-  useSelector((s: RootState) => s.saga[pincodeSagaName].status)
+  const { address, isUnlocked } = useSelector((s: RootState) => s.wallet)
 
   // If pin has been entered already
-  if (address && isAccountUnlocked()) {
+  //NOTE: isAccountUnlocked is for security reasons (so they can't just change a persisted value in the local storage)
+  // and isUnlocked is for flow reasons - so the pincode monitored saga gets reset after authenticating
+  if (address && isUnlocked && isAccountUnlocked()) {
     return (
       <ScreenFrameWithFeed>
         <Outlet />
