@@ -43,12 +43,7 @@ export function SetPincodeForm() {
     onSubmit
   )
 
-  const doValidation = () => {
-    const validation = validate(values)
-    return validation
-  }
-
-  const { inputErrors, areInputsValid } = useInputValidation(touched, doValidation)
+  const { inputErrors, areInputsValid } = useInputValidation(touched, () => validate(values))
 
   const onSuccess = () => {
     dispatch(setWalletUnlocked(true))

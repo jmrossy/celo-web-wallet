@@ -15,6 +15,15 @@ interface Props {
 export function PincodeInput(props: Props) {
   const { name, value, onChange, error, helpText, autoFocus } = props
 
+  // Wrap the provided onChange to enforce char length limit
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event?.target?.value
+    if (value) {
+      event.target.value = value.substring(0, 6)
+    }
+    onChange(event)
+  }
+
   const sharedStyles = getSharedInputStyles(error)
   return (
     <Box direction="column">
@@ -23,7 +32,7 @@ export function PincodeInput(props: Props) {
         name={name}
         css={{ ...sharedStyles, ...style.input }}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         autoComplete="one-time-code"
         autoFocus={autoFocus}
       />
