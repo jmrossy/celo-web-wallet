@@ -29,3 +29,21 @@ export function getProvider() {
   }
   return provider
 }
+
+export async function getLatestBlockDetails() {
+  if (!provider) {
+    logger.warn('Provider is not yet initialized')
+    return null
+  }
+
+  const block = await provider.getBlock('latest')
+  if (!block || !block.number) {
+    logger.warn('Latest block is not valid')
+    return null
+  }
+
+  return {
+    number: block.number,
+    timestamp: block.timestamp,
+  }
+}
