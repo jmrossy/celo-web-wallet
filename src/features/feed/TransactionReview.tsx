@@ -84,6 +84,13 @@ function getContentByTxType(tx: CeloTransaction) {
     }
   }
 
+  if (tx.type === TransactionType.EscrowTransfer || tx.type === TransactionType.EscrowWithdraw) {
+    return {
+      header: tx.isOutgoing ? 'Payment Sent to Escrow' : 'Funds Withdrawn from Escrow',
+      content: <TokenTransferReview tx={tx} />,
+    }
+  }
+
   return {
     header: 'Transaction Sent',
     content: <GenericTransactionReview tx={tx} />,

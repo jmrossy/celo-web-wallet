@@ -1,6 +1,7 @@
 import { Contract, ethers } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
+import { Currency } from 'src/consts'
 import { areAddressesEqual } from 'src/utils/addresses'
 
 let contractCache: Partial<Record<CeloContract, Contract>> = {}
@@ -28,6 +29,8 @@ async function getContractAbi(c: CeloContract) {
       return (await import('src/blockchain/ABIs/exchange')).ABI
     case CeloContract.SortedOracles:
       return (await import('src/blockchain/ABIs/sortedOracles')).ABI
+    case CeloContract.Escrow:
+      return (await import('src/blockchain/ABIs/escrow')).ABI
     default:
       throw new Error(`No ABI for contract ${c}`)
   }
@@ -42,6 +45,13 @@ export function getContractName(address: string): string | null {
     }
   }
 
+  return null
+}
+
+export function getCurrencyFromContract(address: string): Currency | null {
+  const name = getContractName(address)
+  if (name === CeloContract.StableToken) return Currency.cUSD
+  if (name === CeloContract.GoldToken) return Currency.CELO
   return null
 }
 

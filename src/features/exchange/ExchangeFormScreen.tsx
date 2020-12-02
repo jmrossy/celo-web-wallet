@@ -21,6 +21,7 @@ import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei, useExchangeValues } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
+
 interface ExchangeTokenForm extends Omit<ExchangeTokenParams, 'amountInWei'> {
   amount: number
 }
@@ -63,7 +64,7 @@ export function ExchangeFormScreen() {
     false
   )
 
-  //-- If the txn gets cleared out in the slice, need to reset it in the screen
+  // If the txn gets cleared out in the slice, need to reset it in the screen
   useEffect(() => {
     if (tx === null) {
       resetValues(initialValues)

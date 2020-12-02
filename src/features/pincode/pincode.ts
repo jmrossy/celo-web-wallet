@@ -96,7 +96,7 @@ function getCachedPin() {
   }
 }
 
-export function setCachedPin(pin: string | null | undefined) {
+function setCachedPin(pin: string | null | undefined) {
   if (pin) {
     pinCache.timestamp = Date.now()
     pinCache.secret = pin
@@ -105,7 +105,7 @@ export function setCachedPin(pin: string | null | undefined) {
   }
 }
 
-export function clearPinCache() {
+function clearPinCache() {
   pinCache = {}
 }
 

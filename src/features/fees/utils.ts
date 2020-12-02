@@ -42,7 +42,7 @@ export function getFeeFromConfirmedTx(tx: CeloTransaction) {
   const feeValue = BigNumber.from(tx.gasPrice)
     .mul(tx.gasUsed)
     .add(tx.gatewayFee ?? 0)
-  return { feeValue, feeCurrency: tx.feeToken ?? Currency.CELO }
+  return { feeValue, feeCurrency: tx.feeCurrency ?? Currency.CELO }
 }
 
 // Gets fee from state and returns amount, fee, and total, all in wei

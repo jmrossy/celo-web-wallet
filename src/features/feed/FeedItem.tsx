@@ -129,7 +129,22 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     }
   }
 
-  // TODO create an 'other' tx  icon
+  if (tx.type === TransactionType.EscrowTransfer || tx.type === TransactionType.EscrowWithdraw) {
+    const description = tx.isOutgoing ? 'Escrow Payment' : 'Escrow Withdrawal'
+    // TODO create an escrow icon
+    const icon = <Identicon address={tx.to} />
+
+    return {
+      icon,
+      description,
+      subDescription,
+      currency: tx.currency,
+      value: tx.value,
+      isPositive: !tx.isOutgoing,
+    }
+  }
+
+  // TODO create an 'other' tx icon
   const icon = <Identicon address={tx.to} />
   const description = `Transaction ${tx.hash.substr(0, 8)}`
 

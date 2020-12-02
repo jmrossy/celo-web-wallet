@@ -1,6 +1,6 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContract } from 'src/blockchain/contracts'
+import { getContract, getCurrencyFromContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
 import { Currency } from 'src/consts'
@@ -10,6 +10,9 @@ import {
   CeloTokenApproveTx,
   CeloTokenTransferTx,
   CeloTransaction,
+  EscrowTransaction,
+  EscrowTransferTx,
+  EscrowWithdrawTx,
   OtherTx,
   StableTokenApproveTx,
   StableTokenTransferTx,
@@ -37,6 +40,9 @@ interface BlockscoutTxBase {
   gas: string
   gasUsed: string
   gasPrice: string
+  gatewayFee: string
+  gatewayFeeRecipient: string
+  feeCurrency: string
   nonce: string
   timeStamp: string
   contractAddress: string
@@ -172,15 +178,23 @@ async function getAbiInterfacesForParsing(): Promise<AbiInterfaceMap> {
   const goldTokenContractP = getContract(CeloContract.GoldToken)
   const stableTokenContractP = getContract(CeloContract.StableToken)
   const exchangeContractP = getContract(CeloContract.Exchange)
-  const [goldTokenContract, stableTokenContract, exchangeContract] = await Promise.all([
+  const escrowContractP = getContract(CeloContract.Escrow)
+  const [
+    goldTokenContract,
+    stableTokenContract,
+    exchangeContract,
+    escrowContract,
+  ] = await Promise.all([
     goldTokenContractP,
     stableTokenContractP,
     exchangeContractP,
+    escrowContractP,
   ])
   return {
     [CeloContract.GoldToken]: goldTokenContract.interface,
     [CeloContract.StableToken]: stableTokenContract.interface,
     [CeloContract.Exchange]: exchangeContract.interface,
+    [CeloContract.Escrow]: escrowContract.interface,
   }
 }
 
@@ -219,12 +233,12 @@ function isValidTokenTransfer(tx: BlockscoutTokenTransfer) {
   }
 
   if (!tx.value || BigNumber.from(tx.value).lte(0)) {
-    logger.warn(`tx ${tx.hash} has invalid value`)
+    logger.warn(`token transfer ${tx.hash} has invalid value`)
     return false
   }
 
   if (!tx.tokenSymbol) {
-    logger.warn(`tx ${tx.hash} has invalid token symbol`)
+    logger.warn(`token transfer  ${tx.hash} has invalid token symbol`)
     return false
   }
 
@@ -254,7 +268,7 @@ function parseTransaction(
   }
 
   if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.Escrow])) {
-    // TODO parse escrow outgoing
+    return parseOutgoingEscrowTx(tx, address, abiInterfaces)
   }
 
   if (areAddressesEqual(tx.from, config.contractAddresses[CeloContract.Escrow])) {
@@ -428,53 +442,114 @@ function parseTxWithTokenTransfers(
     return null
   }
 
-  // If tx is outgoing
-  if (areAddressesEqual(tx.from, address)) {
-    logger.error(
-      'Outgoing token transfers should have been handled by parseOutgoingTokenTransfer',
-      tx
-    )
-    return null
-  }
-
-  const totals = {
-    [Currency.CELO]: BigNumber.from(0),
-    [Currency.cUSD]: BigNumber.from(0),
-  }
-  for (const transfer of tx.tokenTransfers) {
-    if (!isValidTokenTransfer(transfer)) continue
-
-    const currency = tokenSymbolToCurrency(transfer.tokenSymbol)
-
-    if (areAddressesEqual(transfer.to, address)) {
-      totals[currency] = totals[currency].add(transfer.value)
-    } else if (areAddressesEqual(transfer.from, address)) {
-      totals[currency] = totals[currency].sub(transfer.value)
-    } else {
-      continue
+  try {
+    const totals = {
+      [Currency.CELO]: BigNumber.from(0),
+      [Currency.cUSD]: BigNumber.from(0),
     }
+    for (const transfer of tx.tokenTransfers) {
+      if (!isValidTokenTransfer(transfer)) continue
+
+      const currency = tokenSymbolToCurrency(transfer.tokenSymbol)
+
+      if (areAddressesEqual(transfer.to, address)) {
+        totals[currency] = totals[currency].add(transfer.value)
+      } else if (areAddressesEqual(transfer.from, address)) {
+        totals[currency] = totals[currency].sub(transfer.value)
+      } else {
+        continue
+      }
+    }
+
+    // This logic assumes blockscout puts the main transfer (i.e. not gas
+    // transfers) first the list. If that changes this needs to be smarter.
+    const mainTransfer = tx.tokenTransfers[0]
+    const currency = tokenSymbolToCurrency(mainTransfer.tokenSymbol)
+    const comment = tryParseTransferComment(mainTransfer, currency, abiInterfaces)
+
+    const result = {
+      ...parseOtherTx(tx),
+      from: mainTransfer.from,
+      to: mainTransfer.to,
+      value: totals[currency].toString(),
+      comment,
+      isOutgoing: false,
+    }
+
+    if (currency === Currency.CELO) {
+      return { ...result, type: TransactionType.CeloTokenTransfer, currency: Currency.CELO }
+    } else {
+      return { ...result, type: TransactionType.StableTokenTransfer, currency: Currency.cUSD }
+    }
+  } catch (error) {
+    logger.error('Failed to parse tx with token transfers', error, tx)
+    return parseOtherTx(tx)
+  }
+}
+
+function parseOutgoingEscrowTx(
+  tx: BlockscoutTx,
+  address: string,
+  abiInterfaces: AbiInterfaceMap
+): EscrowTransaction | OtherTx {
+  try {
+    const abiInterface = abiInterfaces[CeloContract.Escrow]!
+    const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
+    const name = txDescription.name
+
+    if (name === 'transfer') {
+      const tokenAddress: string | undefined = txDescription.args.token
+      const value: BigNumberish | undefined = txDescription.args.value
+      return parseOutgoingEscrowTransfer(tx, tokenAddress, value)
+    }
+
+    if (name === 'withdraw') {
+      return parseEscrowWithdraw(tx, address, abiInterfaces)
+    }
+
+    logger.warn(`Unsupported escrow method: ${name}`)
+    return parseOtherTx(tx)
+  } catch (error) {
+    logger.error('Failed to parse escrow transfer', error, tx)
+    return parseOtherTx(tx)
+  }
+}
+
+function parseOutgoingEscrowTransfer(
+  tx: BlockscoutTx,
+  tokenAddress?: string,
+  value?: BigNumberish
+): EscrowTransferTx {
+  if (!tokenAddress || !value) {
+    throw new Error(`Escrow tx has invalid aruments: ${tokenAddress}, ${value}`)
   }
 
-  // This logic assumes blockscout puts the main transfer (i.e. not gas
-  // transfers) first the list. If that changes this needs to be smarter.
-  const mainTransfer = tx.tokenTransfers[0]
-  const currency = tokenSymbolToCurrency(mainTransfer.tokenSymbol)
-  const comment = tryParseTransferComment(mainTransfer, currency, abiInterfaces)
+  const currency = getCurrencyFromContract(tokenAddress)
+  if (!currency) {
+    throw new Error(`No currency found for token address: ${tokenAddress}`)
+  }
 
-  const result = {
+  return {
     ...parseOtherTx(tx),
-    from: mainTransfer.from,
-    to: mainTransfer.to,
-    value: totals[currency].toString(),
-    comment,
-    isOutgoing: false,
+    type: TransactionType.EscrowTransfer,
+    value: BigNumber.from(value).toString(),
+    isOutgoing: true,
+    currency,
+  }
+}
+
+function parseEscrowWithdraw(
+  tx: BlockscoutTx,
+  address: string,
+  abiInterfaces: AbiInterfaceMap
+): EscrowWithdrawTx {
+  const parsedTx = parseTxWithTokenTransfers(tx, address, abiInterfaces)
+
+  if (!parsedTx || parsedTx.type === TransactionType.Other) {
+    throw new Error('Escrow withdrawal has no token transfers or could not be parsed')
   }
 
-  if (currency === Currency.CELO) {
-    return { ...result, type: TransactionType.CeloTokenTransfer, currency: Currency.CELO }
-  } else {
-    return { ...result, type: TransactionType.StableTokenTransfer, currency: Currency.cUSD }
-  }
+  return { ...parsedTx, type: TransactionType.EscrowWithdraw, isOutgoing: false }
 }
 
 function tryParseTransferComment(
@@ -521,6 +596,9 @@ function parseOtherTx(tx: BlockscoutTx): OtherTx {
     timestamp: BigNumber.from(tx.timeStamp).toNumber(),
     gasPrice: tx.gasPrice,
     gasUsed: tx.gasUsed,
+    feeCurrency: tokenSymbolToCurrency(tx.feeCurrency),
+    gatewayFee: tx.gatewayFee,
+    gatewayFeeRecipient: tx.gatewayFeeRecipient,
   }
 }
 
@@ -536,6 +614,9 @@ function copyTx(tx: BlockscoutTxBase): BlockscoutTx {
     gas: tx.gas,
     gasUsed: tx.gasUsed,
     gasPrice: tx.gasPrice,
+    feeCurrency: tx.feeCurrency,
+    gatewayFee: tx.gatewayFee,
+    gatewayFeeRecipient: tx.gatewayFeeRecipient,
     nonce: tx.nonce,
     timeStamp: tx.timeStamp,
     contractAddress: tx.contractAddress,
@@ -547,9 +628,8 @@ function copyTx(tx: BlockscoutTxBase): BlockscoutTx {
   }
 }
 
-function tokenSymbolToCurrency(symbol: string) {
-  symbol = symbol.toLowerCase()
-  if (symbol === 'cusd') {
+function tokenSymbolToCurrency(symbol?: string) {
+  if (symbol && symbol.toLowerCase() === 'cusd') {
     return Currency.cUSD
   } else {
     return Currency.CELO

@@ -6,11 +6,11 @@ import {
 } from 'src/features/feed/components/TransactionPropertyGroup'
 import { TransactionStatusProperty } from 'src/features/feed/components/TransactionStatusProperty'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
-import { TokenTransfer } from 'src/features/types'
+import { EscrowTransaction, TokenTransfer } from 'src/features/types'
 import { Stylesheet } from 'src/styles/types'
 
 interface Props {
-  tx: TokenTransfer
+  tx: TokenTransfer | EscrowTransaction
 }
 
 export function TokenTransferReview({ tx }: Props) {

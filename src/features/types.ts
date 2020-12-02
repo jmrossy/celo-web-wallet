@@ -11,7 +11,7 @@ interface Transaction {
   timestamp: number
   gasPrice: string
   gasUsed: string
-  feeToken?: Currency
+  feeCurrency?: Currency
   gatewayFee?: string
   gatewayFeeRecipient?: string
 }
@@ -24,6 +24,8 @@ export enum TransactionType {
   CeloTokenTransferWithComment,
   CeloTokenApprove,
   CeloNativeTransfer,
+  EscrowTransfer,
+  EscrowWithdraw,
   TokenExchange,
   Other,
 }
@@ -56,6 +58,20 @@ export interface CeloNativeTransferTx extends Transaction {
   currency: Currency.CELO
 }
 
+export interface EscrowTransferTx extends Transaction {
+  type: TransactionType.EscrowTransfer
+  isOutgoing: true
+  currency: Currency
+  comment?: string
+}
+
+export interface EscrowWithdrawTx extends Transaction {
+  type: TransactionType.EscrowWithdraw
+  currency: Currency
+  isOutgoing: false
+  comment?: string
+}
+
 export interface CeloTokenApproveTx extends Transaction {
   type: TransactionType.CeloTokenApprove
   currency: Currency.CELO
@@ -81,7 +97,14 @@ export type TokenTransaction =
   | StableTokenApproveTx
   | CeloTokenApproveTx
 
-export type CeloTransaction = TokenTransaction | CeloNativeTransferTx | TokenExchangeTx | OtherTx
+export type EscrowTransaction = EscrowTransferTx | EscrowWithdrawTx
+
+export type CeloTransaction =
+  | TokenTransaction
+  | CeloNativeTransferTx
+  | TokenExchangeTx
+  | EscrowTransaction
+  | OtherTx
 
 export type TokenTransfer = StableTokenTransferTx | CeloTokenTransferTx | CeloNativeTransferTx
 

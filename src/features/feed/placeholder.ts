@@ -18,7 +18,7 @@ export function createPlaceholderForTx(
     timestamp: Date.now(),
     gasPrice: feeEstimate.gasPrice,
     gasUsed: txReceipt.gasUsed.toString(),
-    feeToken: feeEstimate.currency,
+    feeCurrency: feeEstimate.currency,
     gatewayFee: undefined, // TODO
     gatewayFeeRecipient: undefined, // TODO
   }
