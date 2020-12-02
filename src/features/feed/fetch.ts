@@ -301,34 +301,39 @@ function parseExchangeTx(
 function parseTokenExchange(
   tx: BlockscoutTx,
   address: string,
-  sellAmount: string | undefined,
-  minBuyAmount: string | undefined,
+  sellAmount: BigNumberish | undefined,
+  minBuyAmount: BigNumberish | undefined,
   sellGold: boolean | undefined
 ): TokenExchangeTx | OtherTx {
   if (!sellAmount || !minBuyAmount) {
     throw new Error('Invalid exchange args')
   }
 
-  if (!tx.tokenTransfers || tx.tokenTransfers.length < 2) {
-    throw new Error('Expected exchange tx to have at least two token transfers')
-  }
-
-  // Find largest incoming transfer, we assume that's the received exchange funds
-  // Normally there would only be one incoming transfer. This is to handle the
-  // rare case where there are more (like a validator exchanging and also receiving fees)
-  let largestIncomingTransfer: BlockscoutTokenTransfer | null = null
-  for (const transfer of tx.tokenTransfers) {
-    if (!isValidTokenTransfer(transfer)) continue
-    const isIncoming = areAddressesEqual(transfer.to, address)
-    if (!isIncoming) continue
-    const value = BigNumber.from(transfer.value)
-    if (!largestIncomingTransfer || value.gt(largestIncomingTransfer.value)) {
-      largestIncomingTransfer = transfer
+  let toValue: BigNumberish
+  if (tx.tokenTransfers && tx.tokenTransfers.length >= 2) {
+    // Find largest incoming transfer, we assume that's the received exchange funds
+    // Normally there would only be one incoming transfer. This is to handle the
+    // rare case where there are more (like a validator exchanging and also receiving fees)
+    let largestIncomingTransfer: BlockscoutTokenTransfer | null = null
+    for (const transfer of tx.tokenTransfers) {
+      if (!isValidTokenTransfer(transfer)) continue
+      const isIncoming = areAddressesEqual(transfer.to, address)
+      if (!isIncoming) continue
+      const value = BigNumber.from(transfer.value)
+      if (!largestIncomingTransfer || value.gt(largestIncomingTransfer.value)) {
+        largestIncomingTransfer = transfer
+      }
     }
-  }
 
-  if (!largestIncomingTransfer) {
-    throw new Error('No incoming transfers found')
+    if (largestIncomingTransfer) {
+      toValue = largestIncomingTransfer.value
+    } else {
+      logger.warn('No incoming transfers for exchange found, using minBuyAmount instead')
+      toValue = minBuyAmount
+    }
+  } else {
+    logger.warn('Exchange tx did not have two token transfers, using minBuyAmount instead')
+    toValue = minBuyAmount
   }
 
   return {
@@ -337,7 +342,7 @@ function parseTokenExchange(
     fromToken: sellGold ? Currency.CELO : Currency.cUSD,
     toToken: sellGold ? Currency.cUSD : Currency.CELO,
     fromValue: BigNumber.from(sellAmount).toString(),
-    toValue: largestIncomingTransfer.value,
+    toValue: BigNumber.from(toValue).toString(),
   }
 }
 

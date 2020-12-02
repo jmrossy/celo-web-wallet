@@ -59,7 +59,7 @@ export function ExchangeFormScreen() {
   const { to, from, rate } = useExchangeValues(
     values.amount,
     values.fromCurrency,
-    cUsdToCelo?.rate,
+    cUsdToCelo,
     false
   )
 

@@ -34,6 +34,8 @@ export function ExchangeConfirmationScreen() {
 
   useEffect(() => {
     if (!tx) {
+      // Make sure we belong on this screen
+      navigate('/exchange')
       return
     }
 
@@ -61,24 +63,12 @@ export function ExchangeConfirmationScreen() {
   // TODO show totalIn as shown in new designs
   const { total: totalIn, feeAmount, feeCurrency, feeEstimates } = useFee(tx?.amountInWei, 2)
 
-  const { from, to, rate } = useExchangeValues(
-    tx?.amountInWei,
-    tx?.fromCurrency,
-    cUsdToCelo?.rate,
-    true
-  )
+  const { from, to, rate } = useExchangeValues(tx?.amountInWei, tx?.fromCurrency, cUsdToCelo, true)
 
   const { status: sagaStatus, error: sagaError } = useSelector(
     (state: RootState) => state.saga.exchangeToken
   )
   const isWorking = sagaStatus === SagaStatus.Started
-
-  //-- need to make sure we belong on this screen
-  useEffect(() => {
-    if (!tx) {
-      navigate('/exchange')
-    }
-  }, [tx])
 
   async function onGoBack() {
     dispatch(exchangeTokenActions.reset())
@@ -88,7 +78,7 @@ export function ExchangeConfirmationScreen() {
 
   async function onExchange() {
     if (!tx || !cUsdToCelo || !feeEstimates) return
-    dispatch(exchangeTokenActions.trigger({ ...tx, exchangeRate: cUsdToCelo, feeEstimates }))
+    dispatch(exchangeTokenActions.trigger({ ...tx, exchangeRate: rate, feeEstimates }))
   }
 
   const onClose = () => {

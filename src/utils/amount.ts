@@ -1,5 +1,6 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
 import { Currency, WEI_PER_UNIT } from 'src/consts'
+import { ExchangeRate } from 'src/features/exchange/types'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 
@@ -57,7 +58,7 @@ export function fromFixidity(value: BigNumberish | null | undefined): number {
 export function useExchangeValues(
   fromAmount: number | string | null | undefined,
   fromCurrency: Currency | null | undefined,
-  cUsdToCelo: number | null | undefined,
+  cUsdToCelo: ExchangeRate | null | undefined,
   isFromAmountWei: boolean
 ) {
   if (!fromCurrency || !cUsdToCelo) {
@@ -67,7 +68,7 @@ export function useExchangeValues(
 
   try {
     const toCurrency = getOtherCurrency(fromCurrency)
-    const exchangeRate = fromCurrency === Currency.cUSD ? cUsdToCelo : 1 / cUsdToCelo
+    const exchangeRate = fromCurrency === Currency.cUSD ? cUsdToCelo.rate : 1 / cUsdToCelo.rate
     const exchangeRateWei = toWei(exchangeRate)
 
     const fromAmountWei = isFromAmountWei ? BigNumber.from(fromAmount) : toWei(fromAmount)
@@ -86,6 +87,8 @@ export function useExchangeValues(
       rate: {
         weiBasis: WEI_PER_UNIT,
         weiRate: exchangeRateWei.toString(),
+        rate: exchangeRate,
+        lastUpdated: cUsdToCelo.lastUpdated,
       },
     }
   } catch (error) {
@@ -108,6 +111,8 @@ function getDefaultExchangeValues(fromCurrency?: Currency | null) {
       currency: _toCurrency,
     },
     rate: {
+      rate: 0,
+      lastUpdated: 0,
       weiBasis: WEI_PER_UNIT,
       weiRate: '0',
     },

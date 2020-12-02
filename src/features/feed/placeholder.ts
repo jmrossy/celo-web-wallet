@@ -14,7 +14,7 @@ export function createPlaceholderForTx(
     to: txReceipt.to,
     value: value,
     blockNumber: txReceipt.blockNumber,
-    nonce: 0,
+    nonce: 0, // TODO
     timestamp: Date.now(),
     gasPrice: feeEstimate.gasPrice,
     gasUsed: txReceipt.gasUsed.toString(),
