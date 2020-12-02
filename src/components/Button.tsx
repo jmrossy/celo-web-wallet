@@ -32,28 +32,26 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
   const icoLayout = getLayout(size)
 
   const baseBg = color || Color.primaryGreen
+  // TODO make this more robust. Could use a css filter to just brighten the base color
   const hoverBg =
     baseBg === Color.primaryGreen ? '#4cdd91' : `${baseBg}${baseBg.length === 3 ? 'c' : 'cc'}`
 
   return (
     <button
       css={{
-        ...staticStyles,
+        ...defaultButtonStyles,
         ...icoLayout,
         margin,
         height,
         width,
         fontSize: size === 'l' ? '1.1em' : undefined,
-        backgroundColor: baseBg, //color || Color.primaryGreen,
+        backgroundColor: baseBg,
         ':hover': {
-          backgroundColor: hoverBg, //'#4cdd91',
+          backgroundColor: hoverBg,
         },
         ':active': {
+          // TODO make this dynamic like the other colors
           backgroundColor: '#0fb972',
-        },
-        ':disabled': {
-          color: Color.primaryGrey,
-          backgroundColor: Color.borderInactive,
         },
         ...styles,
       }}
@@ -99,11 +97,22 @@ function getLayout(size?: string) {
     : null
 }
 
-const staticStyles: Styles = {
+export const defaultButtonStyles: Styles = {
   borderRadius: 3,
   color: Color.primaryWhite,
   border: 'none',
   outline: 'none',
   cursor: 'pointer',
+  backgroundColor: Color.primaryGreen,
   fontWeight: 500,
+  ':hover': {
+    backgroundColor: '#4cdd91',
+  },
+  ':active': {
+    backgroundColor: '#0fb972',
+  },
+  ':disabled': {
+    color: Color.primaryGrey,
+    backgroundColor: Color.borderInactive,
+  },
 }

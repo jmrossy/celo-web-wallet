@@ -1,3 +1,4 @@
+import { clearContractCache } from 'src/blockchain/contracts'
 import { clearTransactions } from 'src/features/feed/feedSlice'
 import { removeWallet } from 'src/features/wallet/storage'
 import { clearWallet } from 'src/features/wallet/walletSlice'
@@ -8,6 +9,7 @@ export function* logout() {
   yield* call(removeWallet)
   yield* put(clearWallet())
   yield* put(clearTransactions())
+  clearContractCache()
 }
 
 export const {

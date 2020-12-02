@@ -1,4 +1,4 @@
-import { BigNumber, Contract } from 'ethers'
+import { BigNumber, Contract, providers } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
@@ -9,11 +9,14 @@ import {
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
+import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
+import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimate } from 'src/features/fees/utils'
+import { TokenExchangeTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/walletSlice'
-import { fromWei, isAmountValid, toWei } from 'src/utils/amount'
+import { fromWei, getOtherCurrency, isAmountValid, toWei } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -85,7 +88,8 @@ function* exchangeToken(params: ExchangeTokenParams) {
     throw new Error('Invalid transaction') //TODO: provide details of the error
   }
 
-  yield* call(_exchangeToken, params)
+  const placeholderTx = yield* call(_exchangeToken, params)
+  yield* put(addPlaceholderTransaction(placeholderTx))
   yield* put(fetchBalancesActions.trigger())
 }
 
@@ -101,8 +105,15 @@ async function _exchangeToken(params: ExchangeTokenParams) {
   }
 
   const amountInWeiBn = BigNumber.from(amountInWei)
+  // TODO create placeholder for approve as well?
   await approveExchange(amountInWeiBn, fromCurrency, feeEstimates[0])
-  await executeExchange(amountInWeiBn, fromCurrency, exchangeRate, feeEstimates[1])
+  const placeholderTx = await executeExchange(
+    amountInWeiBn,
+    fromCurrency,
+    exchangeRate,
+    feeEstimates[1]
+  )
+  return placeholderTx
 }
 
 async function approveExchange(
@@ -142,6 +153,24 @@ async function executeExchange(
   )
   const txReceipt = await sendTransaction(txRequest, feeEstimate)
   logger.info(`Exchange hash received: ${txReceipt.transactionHash}`)
+  return getExchangePlaceholderTx(amountInWei, fromCurrency, feeEstimate, txReceipt, minBuyAmount)
+}
+
+function getExchangePlaceholderTx(
+  amountInWei: BigNumber,
+  fromCurrency: Currency,
+  feeEstimate: FeeEstimate,
+  txReceipt: providers.TransactionReceipt,
+  minBuyAmount: BigNumber
+): TokenExchangeTx {
+  return {
+    ...createPlaceholderForTx(txReceipt, amountInWei.toString(), feeEstimate),
+    type: TransactionType.TokenExchange,
+    fromToken: fromCurrency,
+    toToken: getOtherCurrency(fromCurrency),
+    fromValue: amountInWei.toString(),
+    toValue: minBuyAmount.toString(),
+  }
 }
 
 export const {

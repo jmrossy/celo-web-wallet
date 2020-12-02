@@ -138,11 +138,13 @@ const style: Stylesheet = {
     margin: 0,
     fontSize: '1.5em',
     fontWeight: 400,
+    textAlign: 'center',
   },
   subHead: {
     margin: '1em 0 0 0',
     fontSize: '1.15em',
     fontWeight: 400,
+    textAlign: 'center',
   },
   bodyText: {
     margin: '2em 0 0 0',

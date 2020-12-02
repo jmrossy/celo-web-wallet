@@ -8,6 +8,7 @@ import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function HeaderSectionEmpty() {
@@ -39,9 +40,9 @@ export function HeaderSectionEmpty() {
         <p css={style.tip}>All new wallets start empty. Add funds to start using Celo.</p>
         <p css={style.tip}>
           You can{' '}
-          <a href="javascript:void(0);" css={Font.linkLight} onClick={onClickBuyCelo}>
+          <button css={style.tipButton} onClick={onClickBuyCelo}>
             buy currency
-          </a>{' '}
+          </button>{' '}
           from an exchange or ask a friend on Celo to send a payment to{' '}
           <Link to="/wallet" css={Font.linkLight}>
             your address.
@@ -62,7 +63,7 @@ export function HeaderSectionEmpty() {
 
 function ExchangesModal() {
   return (
-    <Box direction="row" align="center" justify="center" margin="2em 0">
+    <Box direction="row" align="center" justify="center" margin="1.5em 0">
       <a
         css={style.exchangeLink}
         href="https://www.coinbase.com/earn/celo"
@@ -115,6 +116,15 @@ const style: Stylesheet = {
     ...Font.body,
     margin: '1em 0 0 0',
   },
+  tipButton: {
+    ...Font.linkLight,
+    fontWeight: 300,
+    border: 'none',
+    outline: 'none',
+    cursor: 'pointer',
+    padding: 0,
+    background: 'none',
+  },
   exchangeLink: {
     marginTop: '1em',
     fontSize: '1.1em',
@@ -128,17 +138,25 @@ const style: Stylesheet = {
   exchangeLinkContent: {
     textDecoration: 'none',
     borderRadius: 3,
-    width: '8em',
-    height: '8em',
-    margin: '0 1em',
+    width: '5.6em',
+    height: '5.8em',
+    margin: '0 0.5em',
     border: `1px solid ${Color.primaryWhite}`,
     ':hover': {
       borderColor: Color.altGrey,
     },
+    [mq[768]]: {
+      width: '7em',
+      height: '7.2em',
+    },
   },
   exchangeIcon: {
-    height: '4em',
-    width: '4em',
-    marginBottom: '1em',
+    height: '2.5em',
+    width: '2.5em',
+    marginBottom: '0.7em',
+    [mq[768]]: {
+      width: '3em',
+      height: '3em',
+    },
   },
 }

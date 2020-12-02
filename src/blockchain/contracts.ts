@@ -3,7 +3,7 @@ import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
 import { areAddressesEqual } from 'src/utils/addresses'
 
-const contractCache: Partial<Record<CeloContract, Contract>> = {}
+let contractCache: Partial<Record<CeloContract, Contract>> = {}
 
 export async function getContract(c: CeloContract) {
   const cachedContract = contractCache[c]
@@ -43,4 +43,9 @@ export function getContractName(address: string): string | null {
   }
 
   return null
+}
+
+// Necessary if the signer changes, as in after a logout
+export function clearContractCache() {
+  contractCache = {}
 }

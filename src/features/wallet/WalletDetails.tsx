@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import { getSigner } from 'src/blockchain/signer'
+import { getSigner, isSignerSet } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
 import { Identicon } from 'src/components/Identicon'
 import { Mnemonic } from 'src/components/Mnemonic'
@@ -11,7 +11,8 @@ import { Stylesheet } from 'src/styles/types'
 
 export function WalletDetails() {
   const address = useSelector((s: RootState) => s.wallet.address)
-  const mnemonic = address ? getSigner().mnemonic : null
+  const isWalletReady = address && isSignerSet()
+  const mnemonic = isWalletReady ? getSigner().mnemonic : null
 
   return (
     <div css={style.container}>

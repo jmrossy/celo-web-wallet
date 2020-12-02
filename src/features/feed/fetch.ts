@@ -132,6 +132,8 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
 
   // The txlist query alone doesn't get all needed transactions
   // It excludes incoming token transfers so we need a second query to cover those
+  // TODO better handle case where tokenTx for given tx isn't available yet
+  // Blockscout tends to need more time with those
   let tokenTxQueryUrl =
     config.blockscoutUrl + '/api?module=account&action=tokentx&address=' + address
   if (lastBlockNumber) {
