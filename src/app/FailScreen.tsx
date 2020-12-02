@@ -41,7 +41,7 @@ export function FailScreen() {
         Please refresh the page. If the problem persists, you can{' '}
         <a
           css={Font.linkLight}
-          href="https://discord.com/channels/600834479145353243/600840423958904842"
+          href="https://discord.com/channels/600834479145353243/783806028629934110"
           target="_blank"
           rel="noopener noreferrer"
         >

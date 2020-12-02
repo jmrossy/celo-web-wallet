@@ -1,9 +1,14 @@
 # Celo Web Wallet
 
-A lightweight, purely client-side browser-based wallet for the Celo network.
-Ideal for conveniently handling small 'hot' wallets for day-to-day use or creating disposable wallets for one-time use.
+A browser-based, mobile-friendly, self-sovereign wallet for the Celo network.
 
-## Building and running on localhost
+Ideal for managing small 'hot' wallets or Celo wallets on Ledger hardware.
+
+## Frequently Asked Questions
+
+See the [FAQ](FAQ.md) for more details about common questions.
+
+## Building and running locally
 
 First install dependencies:
 
@@ -14,7 +19,7 @@ yarn install
 To create and run a development build:
 
 ```sh
-yarn start
+yarn dev
 ```
 
 To create a production build:
@@ -22,3 +27,12 @@ To create a production build:
 ```sh
 yarn build:prod
 ```
+
+## Contributing
+
+For small contributions such as bug fixes or style tweaks, please open a Pull Request.
+For new features, please create an issue to start a discussion on [Discord](https://discord.com/channels/600834479145353243/783806028629934110).
+
+## License
+
+This project is [MIT Licensed](LICENSE).
