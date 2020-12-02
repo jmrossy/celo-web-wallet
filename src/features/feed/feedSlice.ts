@@ -1,4 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { persistReducer } from 'redux-persist'
+import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
+import storage from 'redux-persist/lib/storage'
 import { CeloTransaction, TransactionMap } from 'src/features/types'
 
 export interface TransactionFeed {
@@ -69,3 +72,14 @@ export const {
 } = feedSlice.actions
 
 export const feedReducer = feedSlice.reducer
+
+const feedPersistConfig = {
+  key: 'feed',
+  storage: storage,
+  stateReconciler: autoMergeLevel2,
+  whitelist: ['transactions', 'lastUpdatedTime', 'lastBlockNumber'],
+}
+export const persistedFeedReducer = persistReducer<ReturnType<typeof feedReducer>>(
+  feedPersistConfig,
+  feedReducer
+)

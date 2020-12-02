@@ -31,6 +31,11 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
   const { height, width } = getDimensions(size, widthOverride)
   const icoLayout = getLayout(size)
 
+  const baseBg = color || Color.primaryGreen
+  // TODO make this more robust. Could use a css filter to just brighten the base color
+  const hoverBg =
+    baseBg === Color.primaryGreen ? '#4cdd91' : `${baseBg}${baseBg.length === 3 ? 'c' : 'cc'}`
+
   return (
     <button
       css={{
@@ -40,7 +45,14 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
         height,
         width,
         fontSize: size === 'l' ? '1.1em' : undefined,
-        backgroundColor: color || Color.primaryGreen,
+        backgroundColor: baseBg,
+        ':hover': {
+          backgroundColor: hoverBg,
+        },
+        ':active': {
+          // TODO make this dynamic like the other colors
+          backgroundColor: '#0fb972',
+        },
         ...styles,
       }}
       onClick={onClick}

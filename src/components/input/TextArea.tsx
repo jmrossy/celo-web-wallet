@@ -1,5 +1,7 @@
 import { PropsWithChildren } from 'react'
+import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
+import { Box } from 'src/components/layout/Box'
 
 export interface TextAreaProps {
   name: string
@@ -28,6 +30,7 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
     value,
     placeholder,
     error,
+    helpText,
     onChange,
     onBlur,
     onFocus,
@@ -36,23 +39,26 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
   const sharedStyles = getSharedInputStyles(error)
 
   return (
-    <textarea
-      name={name}
-      css={{
-        ...sharedStyles,
-        minWidth,
-        maxWidth,
-        minHeight,
-        maxHeight,
-        margin,
-        padding: '1em',
-        lineHeight: '1.4em',
-      }}
-      value={value}
-      placeholder={placeholder}
-      onChange={onChange}
-      onBlur={onBlur}
-      onFocus={onFocus}
-    />
+    <Box direction="column">
+      <textarea
+        name={name}
+        css={{
+          ...sharedStyles,
+          minWidth,
+          maxWidth,
+          minHeight,
+          maxHeight,
+          margin,
+          padding: '1em',
+          lineHeight: '1.4em',
+        }}
+        value={value}
+        placeholder={placeholder}
+        onChange={onChange}
+        onBlur={onBlur}
+        onFocus={onFocus}
+      />
+      {helpText && <HelpText>{helpText}</HelpText>}
+    </Box>
   )
 }
