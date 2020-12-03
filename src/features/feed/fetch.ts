@@ -3,7 +3,7 @@ import { RootState } from 'src/app/rootReducer'
 import { getContract, getCurrencyFromContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { Currency } from 'src/consts'
+import { Currency, MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
 import { addTransactions } from 'src/features/feed/feedSlice'
 import {
   CeloNativeTransferTx,
@@ -30,6 +30,7 @@ import { call, delay, put, select } from 'typed-redux-saga'
 
 const QUERY_DEBOUNCE_TIME = 2000 // 2 seconds
 const POLL_DELAY = 10000 // 10 seconds
+const SENTINEL_INVITE_COMMENT = '__CELO_INVITE_TX__'
 
 interface BlockscoutTxBase {
   hash: string
@@ -375,7 +376,7 @@ function parseOutgoingTokenTx(
         currency,
         txDescription.args.to,
         txDescription.args.value,
-        txDescription.args.comment
+        sanitizeComment(txDescription.args.comment)
       )
     }
 
@@ -564,7 +565,7 @@ function tryParseTransferComment(
         : abiInterfaces[CeloContract.StableToken]
     const txDescription = abiInterface!.parseTransaction({ data: tx.input })
     if (txDescription.name === 'transferWithComment') {
-      return txDescription.args.comment
+      return sanitizeComment(txDescription.args.comment)
     } else {
       return undefined
     }
@@ -572,6 +573,14 @@ function tryParseTransferComment(
     logger.warn('Could not parse transfer comment', tx)
     return undefined
   }
+}
+
+function sanitizeComment(comment: string | undefined) {
+  if (!comment || !comment.length) return undefined
+  if (comment === SENTINEL_INVITE_COMMENT) return 'Invite Sent'
+  // Likely an encrypted comment or some other non-human-intended text
+  if (comment.length > MAX_COMMENT_CHAR_LENGTH) return undefined
+  return comment
 }
 
 function parseNativeTransferTx(tx: BlockscoutTx, address: string): CeloNativeTransferTx {
