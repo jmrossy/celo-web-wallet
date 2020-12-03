@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { shallowEqual } from 'react-redux'
+import { isBrowserIE } from 'src/utils/browsers'
 import { logger } from 'src/utils/logger'
 
 export type FieldError = {
@@ -64,6 +65,12 @@ interface IBrowserFeature {
 
 export const requiredFeatures: IBrowserFeature[] = [
   { key: 'crypto', check: () => Boolean(window.crypto) },
+  { key: 'storage', check: () => Boolean(window.localStorage) },
+  {
+    key: 'filter',
+    check: () => CSS && CSS.supports && CSS.supports('filter', 'brightness(0) invert(1)'),
+  },
+  { key: 'notIE', check: () => !isBrowserIE() },
 ]
 
 //For testing purposes, to demonstrate how it works with unsupported features
@@ -72,6 +79,7 @@ export const testInvalidFeatures: IBrowserFeature[] = [
   { key: 'test', check: () => false },
 ]
 
+// TODO wire this into load screen
 export function useFeatureValidation(features: IBrowserFeature[] | null = null) {
   const [isValid, setValid] = useState(true) //assume valid to start
   const toValidate = features ?? requiredFeatures

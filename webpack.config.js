@@ -66,7 +66,6 @@ const config = {
   resolve: {
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
     modules: [path.resolve('./node_modules'), path.resolve('./')],
-    mainFields: ['browser', 'module', 'main'],
   },
   plugins: [
     new CopyPlugin({
