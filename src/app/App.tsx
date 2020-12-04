@@ -17,33 +17,16 @@ import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
-
-// interface AppProps {
-//   startTime: number
-//   hideLoader: () => void
-// }
-const loadingDelay = 2000
+import { getSplash } from 'src/utils/splash'
 
 export const App = () => {
   const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
-    const loader = document.querySelector('.loader')
-    const hideLoader = () => {
-      if (loader) {
-        // const app = document.getElementById('app')
-        // app?.classList.add('fade-in')
-        loader.classList.remove('.animate')
-        loader.classList.add('loader--hide')
-      }
-    }
-    const startStr = loader?.getAttribute('data-start')
-    const startTime = startStr ? parseInt(startStr) : Date.now()
-    const diff = Date.now() - startTime
-    const delay = diff > loadingDelay ? 0 : loadingDelay - diff
+    const [delay, hideSplash] = getSplash()
 
     setTimeout(() => {
-      hideLoader()
+      hideSplash()
       setLoading(false)
     }, delay)
   }, [])
