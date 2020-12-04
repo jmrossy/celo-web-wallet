@@ -25,7 +25,9 @@ export function Footer() {
         </a>
       </Box>
       {/* TODO check connected status and add icon */}
-      <div css={style.version}>Connected</div>
+      <Box align="end" styles={style.connectedBox}>
+        <div css={style.version}>Connected</div>
+      </Box>
     </Box>
   )
 }
@@ -55,5 +57,9 @@ const style: Stylesheet = {
       ...textStyle,
       display: 'inline',
     },
+  },
+  connectedBox: {
+    borderLeft: `1px solid ${Color.borderInactive}`,
+    paddingLeft: '1em',
   },
 }

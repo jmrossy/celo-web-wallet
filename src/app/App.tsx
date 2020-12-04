@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { Loading } from 'src/app/Loading'
@@ -17,7 +18,38 @@ import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 
+// interface AppProps {
+//   startTime: number
+//   hideLoader: () => void
+// }
+const loadingDelay = 2000
+
 export const App = () => {
+  const [isLoading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loader = document.querySelector('.loader')
+    const hideLoader = () => {
+      if (loader) {
+        // const app = document.getElementById('app')
+        // app?.classList.add('fade-in')
+        loader.classList.remove('.animate')
+        loader.classList.add('loader--hide')
+      }
+    }
+    const startStr = loader?.getAttribute('data-start')
+    const startTime = startStr ? parseInt(startStr) : Date.now()
+    const diff = Date.now() - startTime
+    const delay = diff > loadingDelay ? 0 : loadingDelay - diff
+
+    setTimeout(() => {
+      hideLoader()
+      setLoading(false)
+    }, delay)
+  }, [])
+
+  if (isLoading) return null //don't load the app until we're done with the loading
+
   return (
     <ErrorBoundary>
       <BrowserRouter>
