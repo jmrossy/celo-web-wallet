@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { Loading } from 'src/app/Loading'
@@ -17,21 +16,11 @@ import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
-import { getSplash } from 'src/utils/splash'
+import { useSplashScreen } from 'src/utils/splash'
 
 export const App = () => {
-  const [isLoading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const [delay, hideSplash] = getSplash()
-
-    setTimeout(() => {
-      hideSplash()
-      setLoading(false)
-    }, delay)
-  }, [])
-
-  if (isLoading) return null //don't load the app until we're done with the loading
+  const isSplash = useSplashScreen()
+  if (isSplash) return null //don't load the app until we're done with the splash screen
 
   return (
     <ErrorBoundary>
