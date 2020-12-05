@@ -1,6 +1,6 @@
 import { BigNumber, Contract } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getLatestBlockNumber, getNumBlocksPerInterval } from 'src/blockchain/blocks'
+import { getLatestBlockDetails, getNumBlocksPerInterval } from 'src/blockchain/blocks'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { Currency } from 'src/consts'
@@ -91,13 +91,17 @@ async function fetchTokenPriceFromBlockscout(
   const baseUrl = config.blockscoutUrl
   const oracleContractAddress = config.contractAddresses[CeloContract.SortedOracles]
   const oracleContract = await getContract(CeloContract.SortedOracles)
-  const latestBlock = await getLatestBlockNumber()
   const numBlocksPerDay = getNumBlocksPerInterval(86400)
   const numBlocksPerInterval = getNumBlocksPerInterval(BLOCK_FETCHING_INTERVAL_SIZE)
   const prices: TokenPriceHistory = []
 
+  const latestBlock = await getLatestBlockDetails()
+  if (!latestBlock) {
+    throw new Error('Latest block number needed for fetching prices')
+  }
+
   for (let i = 0; i < numDays; i++) {
-    const toBlock = latestBlock - numBlocksPerDay * i
+    const toBlock = latestBlock.number - numBlocksPerDay * i
     const fromBlock = toBlock - numBlocksPerInterval
     const url = `${baseUrl}/api?module=logs&action=getLogs&fromBlock=${fromBlock}&toBlock=${toBlock}&address=${oracleContractAddress}&topic0=${MEDIAN_UPDATED_TOPIC_0}`
     const txLogs = await queryBlockscout<Array<TransactionLog>>(url)

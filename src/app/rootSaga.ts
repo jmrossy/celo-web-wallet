@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
-import { connectToForno } from 'src/blockchain/provider'
+import { connectToProvider } from 'src/blockchain/provider'
 import {
   fetchExchangeRateActions,
   fetchExchangeRateReducer,
@@ -72,7 +72,7 @@ import {
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
-  yield call(connectToForno)
+  yield call(connectToProvider)
   yield call(importDefaultAccount)
 }
 

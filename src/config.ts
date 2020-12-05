@@ -14,7 +14,8 @@ export enum CeloContract {
 
 interface Config {
   debug: boolean
-  fornoUrl: string
+  jsonRpcUrlPrimary: string
+  jsonRpcUrlSecondary?: string
   blockscoutUrl: string
   chainId: number
   contractAddresses: Record<CeloContract, string>
@@ -28,7 +29,8 @@ const debugMode = __DEBUG__ ?? false
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configMainnet: Config = {
   debug: debugMode,
-  fornoUrl: 'https://forno.celo.org',
+  jsonRpcUrlPrimary: 'https://node.celowallet.app',
+  jsonRpcUrlSecondary: 'https://forno.celo.org',
   blockscoutUrl: 'https://explorer.celo.org',
   chainId: 42220,
   contractAddresses: {
@@ -44,14 +46,14 @@ const configMainnet: Config = {
     [CeloContract.SortedOracles]: '0xefB84935239dAcdecF7c5bA76d8dE40b077B7b33',
     [CeloContract.StableToken]: '0x765DE816845861e75A25fCA122bb6898B8B1282a',
   },
-  defaultAccount:
-    'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
+  // defaultAccount:
+  //   'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configAlfajores: Config = {
   debug: true,
-  fornoUrl: 'https://alfajores-forno.celo-testnet.org',
+  jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   chainId: 44787,
   contractAddresses: {

@@ -1,5 +1,6 @@
 // Temporary stuff while screens are still in development
 import { useDispatch } from 'react-redux'
+import { getLatestBlockDetails } from 'src/blockchain/blocks'
 import { fetchFeedActions } from 'src/features/feed/fetch'
 import { ImportWalletForm } from 'src/features/onboarding/import/ImportWalletForm'
 import { PincodeAction, pincodeActions } from 'src/features/pincode/pincode'
@@ -30,6 +31,13 @@ export function DevTools() {
     dispatch(fetchFeedActions.trigger())
   }
 
+  const onClickFetchBlock = async () => {
+    const block = await getLatestBlockDetails()
+    if (block) {
+      alert(block.number)
+    }
+  }
+
   return (
     <div css={{ padding: '2em' }}>
       <div>
@@ -41,6 +49,7 @@ export function DevTools() {
         <button onClick={onClickLoadWallet}>Load Wallet</button>
       </div>
       <button onClick={onClickFetchFeed}>Fetch Transaction Feed</button>
+      <button onClick={onClickFetchBlock}>Fetch Latest Block Number</button>
       <p>
         <a href="/loading">Loading Screen</a>
       </p>

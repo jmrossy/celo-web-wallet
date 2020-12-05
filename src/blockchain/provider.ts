@@ -5,10 +5,25 @@ import { sleep } from 'src/utils/sleep'
 
 let provider: CeloProvider
 
-export async function connectToForno() {
-  logger.info('Connecting to Forno provider')
-  provider = new CeloProvider(config.fornoUrl)
-  for (let i = 0; i < 5; i++) {
+export async function connectToProvider() {
+  const { jsonRpcUrlPrimary, jsonRpcUrlSecondary } = config
+
+  let connectionResult = await connectToJsonRpcProvider(jsonRpcUrlPrimary)
+
+  if (!connectionResult && jsonRpcUrlSecondary) {
+    connectionResult = await connectToJsonRpcProvider(jsonRpcUrlSecondary)
+  }
+
+  if (!connectionResult) {
+    // TODO need to force to fail screen here, errors get swallowed by saga
+    throw new Error('Provider failed to connect')
+  }
+}
+
+async function connectToJsonRpcProvider(url: string) {
+  logger.info(`Connecting to json rpc provider: ${url}`)
+  provider = new CeloProvider(url)
+  for (let i = 0; i < 3; i++) {
     const [latestBlock, network, ready] = await Promise.all([
       provider.getBlockNumber(),
       provider.getNetwork(),
@@ -16,11 +31,11 @@ export async function connectToForno() {
     ])
     if (latestBlock > 0 && network?.chainId === config.chainId && ready) {
       logger.info('Provider is connected')
-      return
+      return true
     }
     await sleep(1000)
   }
-  throw new Error('Provider failed to connect')
+  return false
 }
 
 export function getProvider() {
@@ -28,22 +43,4 @@ export function getProvider() {
     logger.warn('Provider is not yet initialized')
   }
   return provider
-}
-
-export async function getLatestBlockDetails() {
-  if (!provider) {
-    logger.warn('Provider is not yet initialized')
-    return null
-  }
-
-  const block = await provider.getBlock('latest')
-  if (!block || !block.number) {
-    logger.warn('Latest block is not valid')
-    return null
-  }
-
-  return {
-    number: block.number,
-    timestamp: block.timestamp,
-  }
 }
