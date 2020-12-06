@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
 import ChevronIcon from 'src/components/icons/chevron.svg'
+import Discord from 'src/components/icons/external/discord.svg'
+import Github from 'src/components/icons/external/github.svg'
 import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
@@ -11,6 +13,9 @@ import SignPostIcon from 'src/components/icons/sign_post.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
+import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
+import { useModal } from 'src/components/modal/useModal'
+import { config } from 'src/config'
 import { NULL_ADDRESS } from 'src/consts'
 import { logoutActions } from 'src/features/wallet/logout'
 import { Color } from 'src/styles/Color'
@@ -30,6 +35,7 @@ export const AccountMenu = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  const { showModalWithContent } = useModal()
   const address = useSelector((s: RootState) => s.wallet.address)
   const addressOrDefault = address || NULL_ADDRESS
   const addressStub = '0x' + shortenAddress(addressOrDefault).substring(2).toUpperCase()
@@ -51,8 +57,13 @@ export const AccountMenu = () => {
         navigate('/welcome')
         break
       case 'help':
-        // TODO show modal with links to Discord and FAQ,
-        // Content can be similar to ExchangesModal in HeaderSectionEmpty
+        showModalWithContent(
+          'Need some help?',
+          <HelpModal />,
+          null,
+          null,
+          'See the Frequently Asked Questions (FAQ) on Github or join Discord to chat with the Celo community.'
+        )
         break
       default:
         logger.info('Menu Item Clicked: ', key)
@@ -92,6 +103,24 @@ export const AccountMenu = () => {
       )}
     </>
   )
+}
+
+function HelpModal() {
+  const links = [
+    {
+      url: 'https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md',
+      imgSrc: Github,
+      text: 'FAQ on Github',
+      altText: 'Github',
+    },
+    {
+      url: config.discordUrl,
+      imgSrc: Discord,
+      text: 'Chat on Discord',
+      altText: 'Discord',
+    },
+  ]
+  return <ModalLinkGrid links={links} />
 }
 
 const style: Stylesheet = {
