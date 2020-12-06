@@ -12,7 +12,7 @@ interface MoneyValueProps {
   sign?: string // e.g. plus or minus symbol
   symbolCss?: Styles
   amountCss?: Styles
-  spanCss?: Styles
+  containerCss?: Styles
   fontWeight?: number
 }
 
@@ -26,7 +26,7 @@ export function MoneyValue(props: MoneyValueProps) {
     sign,
     symbolCss,
     amountCss,
-    spanCss,
+    containerCss,
     fontWeight,
   } = props
   const { symbol, decimals, color, minValue } = getCurrencyProps(currency)
@@ -43,7 +43,7 @@ export function MoneyValue(props: MoneyValueProps) {
   const fontStyles = getFonts(baseFontSize, fontWeight)
 
   return (
-    <span css={{ margin: margin, ...spanCss }}>
+    <span css={{ margin: margin, ...containerCss }}>
       {!!sign && !amount.isZero() && <span css={fontStyles.amount}>{sign}</span>}
       {!hideSymbol && <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{symbol}</span>}
       <span css={{ ...fontStyles.amount, ...amountCss }}>{' ' + formattedAmount}</span>

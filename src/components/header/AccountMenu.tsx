@@ -73,19 +73,15 @@ export const AccountMenu = () => {
 
   return (
     <>
-      <Box align="center" justify="end">
-        <Box styles={style.chooser} align="center">
-          <img
-            src={ChevronIcon}
-            css={[style.caret, rotated(isOpen)]}
-            onClick={() => setOpen(true)}
-          />
+      <div css={style.container} onClick={() => setOpen(true)}>
+        <Box styles={style.caretContainer} align="center">
+          <img src={ChevronIcon} width="15px" css={rotated(isOpen)} />
         </Box>
-        <Box styles={style.container} align="center">
+        <Box styles={style.addressContainer} align="center">
           <span css={style.address}>{addressStub}</span>
         </Box>
         <Identicon address={addressOrDefault} size={identiconSize} styles={style.identicon} />
-      </Box>
+      </div>
       {isOpen && (
         <>
           <Backdrop opacity={0.01} color={Color.primaryWhite} onClick={() => setOpen(false)} />
@@ -125,45 +121,35 @@ function HelpModal() {
 
 const style: Stylesheet = {
   container: {
-    background: Color.fillLight,
-    padding: '0.5em 0',
-    marginRight: '-0.8em',
-    height: 30,
-    paddingRight: '0.25em',
-    [mq[768]]: {
-      height: 40,
-      paddingRight: '1.4em',
-    },
-  },
-  chooser: {
-    padding: '0.5em',
-    background: Color.fillLight,
-    borderRadius: '50% 0 0 50%',
-    height: 30,
-    [mq[768]]: {
-      height: 40,
-    },
-  },
-  caret: {
-    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
     cursor: 'pointer',
-    padding: '0.5em 0.25em',
+    borderRadius: 22,
+    background: Color.fillLight,
     ':hover': {
-      backgroundColor: Color.borderInactive,
+      backgroundColor: Color.fillLighter,
     },
   },
-  identicon: {
-    border: `0.25em solid ${Color.primaryWhite}`,
-    borderRadius: '50%',
-    marginTop: '-0.25em',
-  },
-  address: {
+  addressContainer: {
     display: 'none',
     [mq[768]]: {
       display: 'inline',
-      fontSize: '1.3em',
-      letterSpacing: '0.06em',
+      paddingRight: 10,
     },
+  },
+  address: {
+    fontSize: '1.3em',
+    letterSpacing: '0.06em',
+  },
+  caretContainer: {
+    padding: '4px 9px 0 14px',
+  },
+  identicon: {
+    border: `4px solid ${Color.primaryWhite}`,
+    borderRadius: '50%',
+    marginTop: -2,
+    marginRight: -3,
   },
   menu: {
     display: 'flex',

@@ -119,7 +119,7 @@ export function ExchangeConfirmationScreen() {
               amountInWei={from.weiAmount}
               currency={from.currency}
               baseFontSize={1.2}
-              spanCss={style.valueWidth}
+              containerCss={style.valueWidth}
             />
           </Box>
 
@@ -151,7 +151,7 @@ export function ExchangeConfirmationScreen() {
               amountInWei={totalIn}
               currency={from.currency}
               baseFontSize={1.2}
-              spanCss={style.valueWidth}
+              containerCss={style.valueWidth}
               fontWeight={700}
             />
           </Box>
@@ -162,7 +162,7 @@ export function ExchangeConfirmationScreen() {
               amountInWei={to.weiAmount}
               currency={to.currency}
               baseFontSize={1.2}
-              spanCss={style.valueWidth}
+              containerCss={style.valueWidth}
               fontWeight={700}
             />
           </Box>

@@ -112,6 +112,7 @@ export const defaultButtonStyles: Styles = {
     backgroundColor: '#0fb972',
   },
   ':disabled': {
+    cursor: 'default',
     color: Color.primaryGrey,
     backgroundColor: Color.borderInactive,
   },
