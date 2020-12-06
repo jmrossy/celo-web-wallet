@@ -1,5 +1,4 @@
 import { isSignerSet } from 'src/blockchain/signer'
-import { config } from 'src/config'
 import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage'
 import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
@@ -110,7 +109,7 @@ function clearPinCache() {
 }
 
 export function isAccountUnlocked() {
-  return !!config.defaultAccount || !!getCachedPin()
+  return !!getCachedPin()
 }
 
 function* pincode({ value, newValue, action }: PincodeParams) {

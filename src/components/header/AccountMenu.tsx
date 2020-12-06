@@ -75,7 +75,7 @@ export const AccountMenu = () => {
     <>
       <div css={style.container} onClick={() => setOpen(true)}>
         <Box styles={style.caretContainer} align="center">
-          <img src={ChevronIcon} width="15px" css={rotated(isOpen)} />
+          <img src={ChevronIcon} width="14px" css={rotated(isOpen)} />
         </Box>
         <Box styles={style.addressContainer} align="center">
           <span css={style.address}>{addressStub}</span>
@@ -126,9 +126,9 @@ const style: Stylesheet = {
     justifyContent: 'flex-end',
     cursor: 'pointer',
     borderRadius: 22,
-    background: Color.fillLight,
+    background: Color.fillLighter,
     ':hover': {
-      backgroundColor: Color.fillLighter,
+      backgroundColor: Color.fillLight,
     },
   },
   addressContainer: {
@@ -143,7 +143,7 @@ const style: Stylesheet = {
     letterSpacing: '0.06em',
   },
   caretContainer: {
-    padding: '4px 9px 0 14px',
+    padding: '3px 9px 0 14px',
   },
   identicon: {
     border: `4px solid ${Color.primaryWhite}`,

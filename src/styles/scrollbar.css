@@ -18,3 +18,9 @@ body {
   border-radius: 6px;
   border: 3px solid var(--scrollbarBG);
 }
+/* phones */
+@media only screen and (max-width: 767px) {
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+}

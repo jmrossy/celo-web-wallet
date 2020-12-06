@@ -51,7 +51,7 @@ const style = {
     },
   },
   balanceContainer: {
-    margin: '0 1em',
+    margin: '0 0.5em',
     [mq[768]]: {
       margin: '0 1.6em',
     },
