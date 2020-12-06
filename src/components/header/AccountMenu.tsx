@@ -50,6 +50,10 @@ export const AccountMenu = () => {
         dispatch(logoutActions.trigger())
         navigate('/welcome')
         break
+      case 'help':
+        // TODO show modal with links to Discord and FAQ,
+        // Content can be similar to ExchangesModal in HeaderSectionEmpty
+        break
       default:
         logger.info('Menu Item Clicked: ', key)
         break

@@ -11,7 +11,12 @@ export function ImportWalletWarning() {
       </p>
       <p css={style.text}>
         The Celo Wallet tries its best to protect your funds but there{' '}
-        <a css={Font.linkLight} href="TODO" target="_blank" rel="noopener noreferrer">
+        <a
+          css={Font.linkLight}
+          href="https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md#is-the-web-wallet-safe"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           are still risks
         </a>{' '}
         .

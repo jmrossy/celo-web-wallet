@@ -155,7 +155,7 @@ function toExchangeTokenParams(values: ExchangeTokenForm): ExchangeTokenParams {
   } catch (error) {
     return {
       ...values,
-      amountInWei: '0', // TODO Makes this NaN?
+      amountInWei: '0',
     }
   }
 }

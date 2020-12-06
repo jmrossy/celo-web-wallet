@@ -9,7 +9,7 @@ interface ButtonProps {
   margin?: string | number
   onClick?: () => void
   icon?: string
-  iconPosition?: 'start' | 'end' //defaults to start //TODO: add top / bottom if necessary
+  iconPosition?: 'start' | 'end' //defaults to start
   disabled?: boolean
   styles?: Styles
   width?: number | string

@@ -90,7 +90,6 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     tx.type === TransactionType.StableTokenApprove ||
     tx.type === TransactionType.CeloTokenApprove
   ) {
-    // TODO support comment encryption
     const description = 'Transfer Approval'
     // TODO create an approve tx icon
     const icon = <Identicon address={tx.to} />

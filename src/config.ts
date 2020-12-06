@@ -16,6 +16,7 @@ interface Config {
   debug: boolean
   jsonRpcUrlPrimary: string
   jsonRpcUrlSecondary?: string
+  gatewayFeeRecipient?: string
   blockscoutUrl: string
   chainId: number
   contractAddresses: Record<CeloContract, string>
@@ -31,6 +32,7 @@ const configMainnet: Config = {
   debug: debugMode,
   jsonRpcUrlPrimary: 'https://node.celowallet.app',
   jsonRpcUrlSecondary: 'https://forno.celo.org',
+  gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
   chainId: 42220,
   contractAddresses: {

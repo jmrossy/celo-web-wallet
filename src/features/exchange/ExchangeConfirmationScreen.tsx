@@ -60,7 +60,6 @@ export function ExchangeConfirmationScreen() {
     )
   }, [tx])
 
-  // TODO show totalIn as shown in new designs
   const { total: totalIn, feeAmount, feeCurrency, feeEstimates } = useFee(tx?.amountInWei, 2)
 
   const { from, to, rate } = useExchangeValues(tx?.amountInWei, tx?.fromCurrency, cUsdToCelo, true)

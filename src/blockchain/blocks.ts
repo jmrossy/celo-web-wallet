@@ -8,21 +8,16 @@ export async function getLatestBlockDetails() {
     return null
   }
 
-  // TODO remove this chunk when below method is working
-  const number = await provider.getBlockNumber()
-  logger.info('Got block number', number)
-  return { number }
+  const block = await provider.getBlock('latest')
+  if (!block || !block.number) {
+    logger.warn('Latest block is not valid')
+    return null
+  }
 
-  // const block = await provider.getBlock('latest')
-  // if (!block || !block.number) {
-  //   logger.warn('Latest block is not valid')
-  //   return null
-  // }
-
-  // return {
-  //   number: block.number,
-  //   timestamp: block.timestamp,
-  // }
+  return {
+    number: block.number,
+    timestamp: block.timestamp,
+  }
 }
 
 /**
