@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { ExchangeIcon } from 'src/components/icons/Exchange'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { getCurrencyProps, MoneyValue } from 'src/components/MoneyValue'
@@ -105,8 +106,7 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
   }
 
   if (tx.type === TransactionType.TokenExchange) {
-    // TODO create an exchange tx icon
-    const icon = <Identicon address={tx.to} />
+    const icon = <ExchangeIcon toToken={tx.toToken} />
     let description: string
     let currency: Currency
 

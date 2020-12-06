@@ -1,6 +1,7 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
 import { Currency, WEI_PER_UNIT } from 'src/consts'
 import { ExchangeRate } from 'src/features/exchange/types'
+import { TokenExchangeTx } from 'src/features/types'
 import { Balances } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 
@@ -117,6 +118,12 @@ function getDefaultExchangeValues(fromCurrency?: Currency | null) {
       weiRate: '0',
     },
   }
+}
+
+export function computeRate(tx: TokenExchangeTx) {
+  if (!tx) return 0
+  // TODO compute rate
+  return 'TODO'
 }
 
 export function getOtherCurrency(currency: Currency) {

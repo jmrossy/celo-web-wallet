@@ -86,7 +86,7 @@ function ExchangesModal() {
 const style: Stylesheet = {
   header: {
     ...Font.h1,
-    marginBottom: '1.2em',
+    margin: '0.2em 0 1.2em 0',
     color: Color.primaryGreen,
   },
   icon: {

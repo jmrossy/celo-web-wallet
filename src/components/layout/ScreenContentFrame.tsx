@@ -37,7 +37,10 @@ const style: Stylesheet = {
     height: '100%',
     position: 'relative',
     [mq[768]]: {
-      padding: '2em 4em 2em 4em',
+      padding: '1.5em 2em 1.5em 2em',
+    },
+    [mq[1200]]: {
+      padding: '2.5em 3em 2.5em 3em',
     },
   },
   closeButton: {
@@ -45,6 +48,10 @@ const style: Stylesheet = {
     right: '1.4em',
     top: '1.2em',
     [mq[768]]: {
+      right: '1.5em',
+      top: '1.5em',
+    },
+    [mq[1200]]: {
       right: '2em',
       top: '2em',
     },
