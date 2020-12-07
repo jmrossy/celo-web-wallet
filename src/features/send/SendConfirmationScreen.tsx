@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/Button'
-import ArrowBackIcon from 'src/components/icons/arrow_back.svg'
 import QuestionIcon from 'src/components/icons/question_mark.svg'
 import RequestPaymentIcon from 'src/components/icons/request_payment.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
@@ -163,7 +162,6 @@ export function SendConfirmationScreen() {
             size="m"
             color={Color.altGrey}
             onClick={onGoBack}
-            icon={ArrowBackIcon}
             disabled={isSagaWorking || !feeAmount}
             margin="0 2em 0 0"
             width="6em"

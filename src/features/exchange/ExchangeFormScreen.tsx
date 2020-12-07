@@ -214,6 +214,7 @@ const style: Stylesheet = {
     backgroundColor: Color.fillLighter,
     padding: '0.5em 1em',
     marginBottom: '0.5em',
+    marginRight: '1.5em',
   },
   chartContainer: {
     minWidth: 300,

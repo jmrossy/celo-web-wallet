@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
-import ArrowBackIcon from 'src/components/icons/arrow_back.svg'
 import QuestionIcon from 'src/components/icons/question_mark.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
@@ -20,6 +19,7 @@ import { useFee } from 'src/features/fees/utils'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { useExchangeValues } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
@@ -111,10 +111,10 @@ export function ExchangeConfirmationScreen() {
     <ScreenContentFrame onClose={onClose}>
       {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
       <h1 css={Font.h2Green}>Review Exchange</h1>
-      <Box direction="row" align="start">
+      <div css={style.container}>
         <Box direction="column">
           <Box direction="row" styles={style.inputRow} align="end">
-            <label css={[Font.inputLabel, style.labelWidth]}>Value</label>
+            <label css={[style.label, style.labelWidth]}>Value</label>
             <MoneyValue
               amountInWei={from.weiAmount}
               currency={from.currency}
@@ -130,13 +130,13 @@ export function ExchangeConfirmationScreen() {
             justify="between"
           >
             <Box direction="row" justify="between" align="end" styles={style.labelWidth}>
-              <label css={style.feeLabel}>
+              <label css={style.label}>
                 Fee <img src={QuestionIcon} css={style.icon} />
               </label>
             </Box>
             {feeAmount && feeCurrency ? (
               <Box styles={style.valueWidth} justify="end" align="end">
-                <label css={{ ...style.feeLabel, marginRight: '0.25em' }}>+</label>
+                <label css={{ ...style.label, marginRight: '0.25em' }}>+</label>
                 <MoneyValue amountInWei={feeAmount} currency={feeCurrency} baseFontSize={1.2} />
               </Box>
             ) : (
@@ -172,11 +172,10 @@ export function ExchangeConfirmationScreen() {
               type="button"
               onClick={onGoBack}
               size="m"
-              icon={ArrowBackIcon}
               color={Color.altGrey}
               disabled={isWorking}
               margin="0 2em 0 0"
-              width="6em"
+              width="5.5em"
             >
               Back
             </Button>
@@ -184,7 +183,7 @@ export function ExchangeConfirmationScreen() {
               type="button"
               onClick={onExchange}
               size="m"
-              width="9em"
+              width="10em"
               icon={ExchangeIcon}
               disabled={isWorking || !feeAmount || !cUsdToCelo}
             >
@@ -192,46 +191,48 @@ export function ExchangeConfirmationScreen() {
             </Button>
           </Box>
         </Box>
-        <Box direction="column" align="center" styles={style.rateBox}>
-          <label css={style.rateLabel}>Rate</label>
+        <div css={style.rateBox}>
+          <label css={style.label}>Rate</label>
           {cUsdToCelo ? (
             <>
-              <MoneyValue
-                amountInWei={rate.weiBasis}
-                currency={from.currency}
-                baseFontSize={1.2}
-                margin={'0 0 0.5em 0'}
-              />
+              <MoneyValue amountInWei={rate.weiBasis} currency={from.currency} baseFontSize={1.2} />
               <span css={style.valueText}>=</span>
-              <MoneyValue
-                amountInWei={rate.weiRate}
-                currency={to.currency}
-                baseFontSize={1.2}
-                margin={'0.5em 0 0 0'}
-              />
+              <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
             </>
           ) : (
             // TODO a proper loader (need to update mocks)
             <span css={style.valueText}>...</span>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </ScreenContentFrame>
   )
 }
 
 const style: Stylesheet = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column-reverse',
+    alignItems: 'flex-start',
+    [mq[768]]: {
+      flexDirection: 'row',
+    },
+  },
   inputRow: {
     marginBottom: '1.25em',
+  },
+  label: {
+    ...Font.inputLabel,
+    color: Color.primaryGrey,
+  },
+  totalLabel: {
+    ...Font.inputLabel,
+    color: Color.primaryGrey,
+    fontWeight: 600,
   },
   labelWidth: {
     width: '9em',
     marginRight: '1em',
-  },
-  totalLabel: {
-    fontWeight: 700,
-    fontSize: '1.1em',
-    color: Color.primaryGrey,
   },
   valueWidth: {
     width: '7em',
@@ -242,16 +243,25 @@ const style: Stylesheet = {
     fontWeight: 400,
     color: Color.primaryGrey,
     margin: '0 0.5em',
-    width: '',
-  },
-  feeLabel: {
-    fontWeight: 300,
-    fontSize: '1.1em',
   },
   rateBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: '0.75em',
+    margin: '0.5em 0 1em 0',
     background: Color.fillLighter,
-    padding: '1em 3em',
-    marginLeft: '2em',
+    '& > *': {
+      margin: '0 0.5em',
+    },
+    [mq[768]]: {
+      flexDirection: 'column',
+      margin: '0 0 0 2em',
+      padding: '1em 2.5em',
+      '& > *': {
+        margin: '0.55em 0',
+      },
+    },
   },
   rateLabel: {
     fontWeight: 300,
@@ -259,8 +269,8 @@ const style: Stylesheet = {
     marginBottom: '0.5em',
   },
   bottomBorder: {
-    paddingBottom: '0.25em',
-    borderBottom: `1px solid ${Color.borderLight}`,
+    paddingBottom: '1.25em',
+    borderBottom: `1px solid ${Color.borderMedium}`,
   },
   icon: {
     marginBottom: '-0.3em',
