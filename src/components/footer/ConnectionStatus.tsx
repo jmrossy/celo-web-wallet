@@ -1,14 +1,16 @@
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
+import { config } from 'src/config'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { Styles } from 'src/styles/types'
 
 export const ConnectionStatus = () => {
   const { lastBlockNumber } = useSelector((state: RootState) => state.feed)
   //TODO: Get the Chain ID and the actuall connection status
   const status = 'You are connected to the Celo Mainnet network!'
-  const chain = '42220'
+  const chain = config.chainId
 
   return (
     <Box direction="column" align="center" styles={style.container}>
@@ -25,7 +27,7 @@ export const ConnectionStatus = () => {
   )
 }
 
-const style = {
+const style: Styles = {
   container: {
     paddingTop: '2em',
     '& p': {

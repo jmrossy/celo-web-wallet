@@ -74,11 +74,8 @@ const style: Stylesheet = {
     position: 'relative',
     cursor: 'pointer',
     '& svg': {
-      height: '3.5em',
-      width: '3.5em',
-      position: 'absolute',
-      top: '-1.7em',
-      left: '-.5em',
+      height: '1em',
+      width: '1em',
     },
   },
 }

@@ -59,7 +59,7 @@
       }
     </style>
     <style>
-      .loader{
+      #loader{
         position: absolute;
         top: 0;
         left: 0;
@@ -129,12 +129,12 @@
         animation: fadeIn 0.5s forwards;
       }
       @media only screen and (max-width: 768px) {
-        .loader{
+        #loader{
           margin-left: -11em;
         }
       }
       @media only screen and (max-width: 480px) {
-        .loader{
+        #loader{
           margin-left: -22em;
         }
       }
@@ -157,7 +157,7 @@
   <body>
     <div id="app"></div>
     
-    <div class="loader">
+    <div id="loader">
       <div class="loader-grid">
           <svg class="ellipse animate" width="205" height="240" viewBox="0 0 205 240" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M166.577 146.201C145.392 197.963 99.5149 228.176 64.1089 213.685C28.7029 199.193 17.175 145.485 38.3607 93.7229C59.5463 41.9611 105.423 11.7475 140.829 26.2389C176.235 40.7303 187.763 94.439 166.577 146.201Z" fill="#35D07F" fill-opacity="0.65"/>
@@ -177,7 +177,7 @@
     </div>
     
     <script>
-      document.querySelector('.loader').setAttribute('data-start', Date.now())
+      document.getElementById('loader').setAttribute('data-start', Date.now())
     </script>  
 
     <script src="bundle.js"></script>

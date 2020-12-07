@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { Loading } from 'src/app/Loading'
+import { useSplashScreen } from 'src/app/splash'
 import { ModalProvider } from 'src/components/modal/modalContext'
 import { ModalTestScreen } from 'src/components/modal/ModalTestScreen'
 import { ExchangeConfirmationScreen } from 'src/features/exchange/ExchangeConfirmationScreen'
@@ -17,11 +18,10 @@ import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { DevTools } from 'src/features/settings/DevTools'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
-import { useSplashScreen } from 'src/utils/splash'
 
 export const App = () => {
-  const isSplash = useSplashScreen()
-  if (isSplash) return null //don't load the app until we're done with the splash screen
+  const showSplash = useSplashScreen()
+  if (showSplash) return null //don't load the app until we're done with the splash screen
 
   return (
     <ErrorBoundary>
