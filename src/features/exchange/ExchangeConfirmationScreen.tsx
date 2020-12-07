@@ -113,7 +113,7 @@ export function ExchangeConfirmationScreen() {
       <h1 css={Font.h2Green}>Review Exchange</h1>
       <div css={style.container}>
         <Box direction="column">
-          <Box direction="row" styles={style.inputRow} align="end">
+          <Box direction="row" styles={style.inputRow} align="end" justify="between">
             <label css={[style.label, style.labelWidth]}>Value</label>
             <MoneyValue
               amountInWei={from.weiAmount}
@@ -167,7 +167,7 @@ export function ExchangeConfirmationScreen() {
             />
           </Box>
 
-          <Box direction="row" justify="between" margin={'3em 0 0 0'}>
+          <Box direction="row" justify="between" margin={'2em 0 0 0'}>
             <Button
               type="button"
               onClick={onGoBack}
@@ -215,11 +215,15 @@ const style: Stylesheet = {
     flexDirection: 'column-reverse',
     alignItems: 'flex-start',
     [mq[768]]: {
+      marginTop: '0.5em',
       flexDirection: 'row',
     },
   },
   inputRow: {
     marginBottom: '1.25em',
+    [mq[1200]]: {
+      marginBottom: '1.6em',
+    },
   },
   label: {
     ...Font.inputLabel,
@@ -233,6 +237,9 @@ const style: Stylesheet = {
   labelWidth: {
     width: '9em',
     marginRight: '1em',
+    [mq[1200]]: {
+      width: '11em',
+    },
   },
   valueWidth: {
     width: '7em',

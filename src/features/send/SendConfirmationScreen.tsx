@@ -19,6 +19,7 @@ import { sendTokenActions } from 'src/features/send/sendToken'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 
@@ -103,40 +104,52 @@ export function SendConfirmationScreen() {
       <div css={style.content}>
         <h1 css={Font.h2Green}>Review {isRequest ? 'Request' : 'Payment'}</h1>
 
-        <Box align="center" styles={style.inputRow}>
+        <Box align="center" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>Recipient</label>
           <Box direction="row" align="center" justify="end" styles={style.valueCol}>
             <Address address={tx.recipient} />
           </Box>
         </Box>
 
-        <Box direction="row" styles={style.inputRow}>
-          <label css={style.labelCol}>Comment</label>
-          <label css={[style.valueLabel, style.valueCol]}>{tx.comment}</label>
-        </Box>
+        {tx.comment && (
+          <Box direction="row" styles={style.inputRow} justify="between">
+            <label css={style.labelCol}>Comment</label>
+            <label css={[style.valueLabel, style.valueCol]}>{tx.comment}</label>
+          </Box>
+        )}
 
-        <Box direction="row" styles={style.inputRow}>
+        <Box direction="row" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>Value</label>
           <Box justify="end" align="end" styles={style.valueCol}>
             <MoneyValue amountInWei={amount} currency={tx.currency} baseFontSize={1.2} />
           </Box>
         </Box>
 
-        <Box direction="row" styles={{ ...style.inputRow, ...style.bottomBorder }} align="end">
+        <Box
+          direction="row"
+          styles={{ ...style.inputRow, ...style.bottomBorder }}
+          align="end"
+          justify="between"
+        >
           <Box
             direction="row"
             justify="between"
             align="end"
             styles={{ ...style.labelCol, width: '10em' }}
           >
-            <label css={style.feeLabel}>
+            <label>
               Fee <img src={QuestionIcon} css={style.icon} />
             </label>
           </Box>
           {feeAmount && feeCurrency ? (
             <Box justify="end" align="end" styles={style.valueCol}>
-              <label css={{ ...style.feeLabel, marginRight: '0.25em' }}>+</label>
-              <MoneyValue amountInWei={feeAmount} currency={feeCurrency} baseFontSize={1.2} />
+              <label>+</label>
+              <MoneyValue
+                amountInWei={feeAmount}
+                currency={feeCurrency}
+                baseFontSize={1.2}
+                margin="0 0 0 0.25em"
+              />
             </Box>
           ) : (
             // TODO a proper loader (need to update mocks)
@@ -144,8 +157,8 @@ export function SendConfirmationScreen() {
           )}
         </Box>
 
-        <Box direction="row" styles={style.inputRow}>
-          <label css={{ ...style.totalLabel, ...style.labelCol, ...Font.bold }}>Total</label>
+        <Box direction="row" styles={style.inputRow} justify="between">
+          <label css={[style.labelCol, style.totalLabel]}>Total</label>
           <Box justify="end" align="end" styles={style.valueCol}>
             <MoneyValue
               amountInWei={total}
@@ -164,7 +177,7 @@ export function SendConfirmationScreen() {
             onClick={onGoBack}
             disabled={isSagaWorking || !feeAmount}
             margin="0 2em 0 0"
-            width="6em"
+            width="5em"
           >
             Back
           </Button>
@@ -189,33 +202,36 @@ const style: Stylesheet = {
     maxWidth: '23em',
   },
   inputRow: {
-    marginBottom: '1.25em',
+    marginBottom: '1.4em',
+    [mq[1200]]: {
+      marginBottom: '1.6em',
+    },
   },
   labelCol: {
+    ...Font.inputLabel,
+    color: Color.primaryGrey,
     width: '9em',
     marginRight: '1em',
+    [mq[1200]]: {
+      width: '11em',
+    },
   },
   valueCol: {
     width: '12em',
     textAlign: 'end',
   },
   totalLabel: {
-    fontWeight: 700,
-    fontSize: '1.1em',
     color: Color.primaryGrey,
+    fontWeight: 600,
   },
   valueLabel: {
     color: Color.primaryBlack,
     fontSize: '1.2em',
     fontWeight: 400,
   },
-  feeLabel: {
-    fontWeight: 300,
-    fontSize: '1.1em',
-  },
   bottomBorder: {
-    paddingBottom: '0.25em',
-    borderBottom: `1px solid ${Color.borderLight}`,
+    paddingBottom: '1.25em',
+    borderBottom: `1px solid ${Color.borderMedium}`,
   },
   iconRight: {
     marginLeft: '0.5em',
