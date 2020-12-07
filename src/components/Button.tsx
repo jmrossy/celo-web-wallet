@@ -83,8 +83,9 @@ function getDimensions(size?: string, width?: number | string, height?: number |
     case 's':
       return { height: height ?? '2.25em', width: width ?? '9em' }
     case 'm':
-    case 'l':
     case undefined:
+      return { height: height ?? '3em', width: width ?? '12em' }
+    case 'l':
       return { height: height ?? '3.25em', width: width ?? '12.5em' }
     case 'icon':
       return { height: height ?? 27, width: width ?? 27 }

@@ -39,7 +39,7 @@ export function HomeScreen() {
               <label css={[Font.body, Font.bold]}>Celo Prices</label>
             </Box>
 
-            <PriceChartCelo />
+            <PriceChartCelo showHeaderPrice={true} />
           </>
         )}
       </div>

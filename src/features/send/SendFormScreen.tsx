@@ -217,8 +217,7 @@ const style: Stylesheet = {
     marginBottom: '2em',
   },
   inputLabel: {
-    fontWeight: 300,
-    fontSize: '1.1em',
+    ...Font.inputLabel,
     marginBottom: '0.5em',
   },
   copyIcon: {

@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -85,7 +85,7 @@ export function ExchangeFormScreen() {
               <label css={style.inputLabel}>Amount to Exchange</label>
               <MoneyValueInput
                 name="amount"
-                width={150}
+                width="7.4em"
                 onChange={handleChange}
                 value={values.amount.toString()}
                 onBlur={handleBlur}
@@ -93,7 +93,7 @@ export function ExchangeFormScreen() {
               />
             </Box>
             <Box direction="row" align="center" styles={style.inputRow}>
-              <label css={style.inputLabel}>Currency</label>
+              <label css={style.inputLabel}>From Currency</label>
               <CurrencyRadioBox
                 tabIndex={0}
                 label="cUSD"
@@ -124,23 +124,28 @@ export function ExchangeFormScreen() {
           </form>
         </Box>
         <Box direction="column" styles={style.chartColumn}>
-          <Box direction="row" align="center" styles={style.inputRow}>
-            <label css={style.inputLabel}>Current Rate</label>
+          <Box direction="row" align="center" styles={style.rateRow}>
+            <label css={Font.inputLabel}>Current Rate</label>
             {cUsdToCelo ? (
-              <Fragment>
+              <>
                 <MoneyValue
                   amountInWei={rate.weiBasis}
                   currency={from.currency}
                   baseFontSize={1.2}
+                  margin="0 0 0 1em"
                 />
-                <span css={style.valueText}>to</span>
+                <span css={style.valueText}>:</span>
                 <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
-              </Fragment>
+              </>
             ) : (
               <span css={style.valueText}>Loading...</span>
             )}
           </Box>
-          <PriceChartCelo containerCss={style.chartContainer} height={200} />
+          <PriceChartCelo
+            showHeaderPrice={false}
+            containerCss={style.chartContainer}
+            height={200}
+          />
         </Box>
       </Box>
     </ScreenContentFrame>
@@ -173,16 +178,19 @@ const style: Stylesheet = {
   containerBox: {
     flexDirection: 'column',
     [mq[1200]]: {
+      marginTop: '0.5em',
       flexDirection: 'row',
     },
   },
   inputRow: {
     marginBottom: '2em',
+    [mq[1200]]: {
+      marginBottom: '3em',
+    },
   },
   inputLabel: {
-    fontWeight: 300,
-    fontSize: '1.1em',
-    width: '9em',
+    ...Font.inputLabel,
+    width: '10em',
     marginRight: '1em',
   },
   valueText: {
@@ -196,10 +204,16 @@ const style: Stylesheet = {
     marginLeft: 0,
     width: '100%',
     [mq[1200]]: {
-      marginLeft: '3em',
+      marginLeft: '8em',
       marginTop: 0,
       width: 'calc(100% - 150px - 10em)',
+      maxWidth: '30em',
     },
+  },
+  rateRow: {
+    backgroundColor: Color.fillLighter,
+    padding: '0.5em 1em',
+    marginBottom: '0.5em',
   },
   chartContainer: {
     minWidth: 300,

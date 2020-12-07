@@ -49,6 +49,10 @@ export const Font: Stylesheet = {
     letterSpacing: '0.04em',
     color: Color.textGrey,
   },
+  inputLabel: {
+    fontWeight: 400,
+    fontSize: '1.1em',
+  },
   linkLight: {
     textDecoration: 'underline',
     color: Color.textGrey,

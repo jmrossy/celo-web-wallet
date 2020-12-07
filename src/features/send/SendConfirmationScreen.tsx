@@ -105,19 +105,19 @@ export function SendConfirmationScreen() {
         <h1 css={Font.h2Green}>Review {isRequest ? 'Request' : 'Payment'}</h1>
 
         <Box align="center" styles={style.inputRow}>
-          <label css={[style.inputLabel, style.labelCol]}>Recipient</label>
+          <label css={style.labelCol}>Recipient</label>
           <Box direction="row" align="center" justify="end" styles={style.valueCol}>
             <Address address={tx.recipient} />
           </Box>
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
-          <label css={[style.inputLabel, style.labelCol]}>Comment</label>
+          <label css={style.labelCol}>Comment</label>
           <label css={[style.valueLabel, style.valueCol]}>{tx.comment}</label>
         </Box>
 
         <Box direction="row" styles={style.inputRow}>
-          <label css={[style.inputLabel, style.labelCol]}>Value</label>
+          <label css={style.labelCol}>Value</label>
           <Box justify="end" align="end" styles={style.valueCol}>
             <MoneyValue amountInWei={amount} currency={tx.currency} baseFontSize={1.2} />
           </Box>
@@ -200,10 +200,6 @@ const style: Stylesheet = {
   valueCol: {
     width: '12em',
     textAlign: 'end',
-  },
-  inputLabel: {
-    fontWeight: 300,
-    fontSize: '1.1em',
   },
   totalLabel: {
     fontWeight: 700,

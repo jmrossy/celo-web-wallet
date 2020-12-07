@@ -13,11 +13,12 @@ import { Font } from 'src/styles/fonts'
 import { Styles, Stylesheet } from 'src/styles/types'
 
 interface PriceChartProps {
+  showHeaderPrice: boolean
   containerCss?: Styles
   height?: number | string
 }
 
-export function PriceChartCelo({ containerCss, height }: PriceChartProps) {
+export function PriceChartCelo({ showHeaderPrice, containerCss, height }: PriceChartProps) {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(
@@ -41,14 +42,16 @@ export function PriceChartCelo({ containerCss, height }: PriceChartProps) {
 
   return (
     <Box direction="column" styles={containerCss}>
-      <Box direction="row" align="end">
-        <label css={style.currencyLabel}>CELO</label>
-        {headerRate ? (
-          <label css={style.text}>{`$${headerRate.toFixed(2)} (USD)`}</label>
-        ) : (
-          <label css={style.text}>{`Unknown`}</label>
-        )}
-      </Box>
+      {showHeaderPrice && (
+        <Box direction="row" align="end">
+          <label css={style.currencyLabel}>CELO</label>
+          {headerRate ? (
+            <label css={style.text}>{`$${headerRate.toFixed(2)} (USD)`}</label>
+          ) : (
+            <label css={style.text}>{`Unknown`}</label>
+          )}
+        </Box>
+      )}
       <div css={chartContainer}>
         <ReactFrappeChart
           type="line"

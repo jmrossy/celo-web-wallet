@@ -114,7 +114,7 @@ export function ExchangeConfirmationScreen() {
       <Box direction="row" align="start">
         <Box direction="column">
           <Box direction="row" styles={style.inputRow} align="end">
-            <label css={[style.inputLabel, style.labelWidth]}>Value</label>
+            <label css={[Font.inputLabel, style.labelWidth]}>Value</label>
             <MoneyValue
               amountInWei={from.weiAmount}
               currency={from.currency}
@@ -228,10 +228,6 @@ const style: Stylesheet = {
     width: '9em',
     marginRight: '1em',
   },
-  inputLabel: {
-    fontWeight: 300,
-    fontSize: '1.1em',
-  },
   totalLabel: {
     fontWeight: 700,
     fontSize: '1.1em',
@@ -253,7 +249,7 @@ const style: Stylesheet = {
     fontSize: '1.1em',
   },
   rateBox: {
-    background: Color.fillLight,
+    background: Color.fillLighter,
     padding: '1em 3em',
     marginLeft: '2em',
   },
