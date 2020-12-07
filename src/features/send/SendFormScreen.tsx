@@ -92,7 +92,8 @@ export function SendFormScreen() {
 
             <Box direction="row" justify="start" align="end">
               <AddressInput
-                width="22em"
+                fillWidth={true}
+                width="initial"
                 name="recipient"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -100,17 +101,17 @@ export function SendFormScreen() {
                 {...inputErrors['recipient']}
                 placeholder="0x1234..."
               />
-              <Button size="icon" type="button" margin="0 0.5em" onClick={onPasteAddress}>
+              <Button size="icon" type="button" margin="0 0 0 0.5em" onClick={onPasteAddress}>
                 <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
               </Button>
             </Box>
           </Box>
 
-          <Box direction="row" styles={style.inputRow} justify="between">
+          <Box direction="row" styles={style.inputRow} justify="between" margin="0 2.1em 0 0">
             <Box direction="column" justify="end" align="start">
               <label css={style.inputLabel}>Amount to Send</label>
               <MoneyValueInput
-                width="10em"
+                width="6em"
                 name="amount"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -119,9 +120,9 @@ export function SendFormScreen() {
                 placeholder="1.00"
               />
             </Box>
-            <Box direction="column" align="start" styles={{ width: '50%', marginLeft: '2em' }}>
+            <Box direction="column" align="start" margin="0 0 0 2em">
               <label css={style.inputLabel}>Currency</label>
-              <Box direction="row" justify="start" align="end" styles={style.radioBox}>
+              <Box direction="row" justify="between" align="end" styles={style.radioBox}>
                 <CurrencyRadioBox
                   tabIndex={0}
                   label="cUSD"
@@ -129,6 +130,7 @@ export function SendFormScreen() {
                   name="currency"
                   checked={values.currency === Currency.cUSD}
                   onChange={handleChange}
+                  containerCss={{ marginRight: '0.5em' }}
                 />
                 <CurrencyRadioBox
                   tabIndex={1}
@@ -142,7 +144,7 @@ export function SendFormScreen() {
             </Box>
           </Box>
 
-          <Box direction="column" align="start" styles={style.inputRow}>
+          <Box direction="column" align="start" styles={style.inputRow} margin="0 2.1em 0 0">
             <label css={style.inputLabel}>Comment (optional)</label>
             <TextArea
               name="comment"
@@ -150,10 +152,11 @@ export function SendFormScreen() {
               placeholder="Dinner on Tuesday"
               onChange={handleChange}
               onBlur={handleBlur}
-              minWidth="22em"
-              maxWidth="26em"
+              minWidth="16em"
+              maxWidth="24em"
               minHeight="5em"
               maxHeight="7em"
+              fillWidth={true}
             />
           </Box>
 
@@ -192,7 +195,7 @@ function toSendTokenParams(values: SendTokenForm): SendTokenParams {
   } catch (error) {
     return {
       ...values,
-      amountInWei: '0', // TODO Makes this NaN?
+      amountInWei: '0',
     }
   }
 }
@@ -208,7 +211,7 @@ function toSendTokenForm(values: SendTokenParams | null): SendTokenForm | null {
 const style: Stylesheet = {
   content: {
     width: '100%',
-    maxWidth: '28em',
+    maxWidth: '26em',
   },
   inputRow: {
     marginBottom: '2em',

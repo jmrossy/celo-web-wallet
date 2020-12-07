@@ -4,7 +4,7 @@ import { Styles } from 'src/styles/types'
 export const sharedInputStyles: Styles = {
   borderRadius: 3,
   outline: 'none',
-  border: `2px solid ${Color.borderInactive}`,
+  border: `1px solid ${Color.borderInactive}`,
   ':focus': {
     borderColor: Color.borderActive,
   },
@@ -14,7 +14,7 @@ export const sharedInputStylesWithError: Styles = {
   ...sharedInputStyles,
   borderRadius: 3,
   outline: 'none',
-  border: `2px solid ${Color.borderError}`,
+  border: `1px solid ${Color.borderError}`,
   ':focus': {
     borderColor: Color.borderError,
   },

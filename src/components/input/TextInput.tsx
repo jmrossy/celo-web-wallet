@@ -15,6 +15,7 @@ export interface TextInputProps {
   helpText?: string
   autoComplete?: string //default to "off"
   placeholder?: string
+  fillWidth?: boolean
   // TODO add validation hook
 }
 
@@ -31,12 +32,14 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
     helpText,
     autoComplete,
     placeholder,
+    fillWidth,
   } = props
 
   const sharedStyles = getSharedInputStyles(error)
+  const containerStyles = fillWidth ? { width: '100%' } : null
 
   return (
-    <Box direction="column">
+    <Box direction="column" styles={containerStyles}>
       <input
         type="text"
         name={name}

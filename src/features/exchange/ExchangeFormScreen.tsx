@@ -101,6 +101,7 @@ export function ExchangeFormScreen() {
                 name="fromCurrency"
                 checked={values.fromCurrency === Currency.cUSD}
                 onChange={handleChange}
+                containerCss={{ marginRight: '0.5em' }}
               />
               <CurrencyRadioBox
                 tabIndex={1}
