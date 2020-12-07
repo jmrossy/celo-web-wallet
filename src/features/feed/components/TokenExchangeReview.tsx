@@ -1,4 +1,5 @@
 import { MoneyValue } from 'src/components/MoneyValue'
+import { Currency } from 'src/consts'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
@@ -30,12 +31,16 @@ export function TokenExchangeReview({ tx }: Props) {
           <MoneyValue amountInWei={tx.toValue} currency={tx.toToken} />
         </div>
       </TransactionProperty>
-      <TransactionProperty label="Rate">
-        <div css={style.value}>{rate}</div>
-      </TransactionProperty>
       <TransactionProperty label="Fee">
         <div css={style.value}>
           <MoneyValue amountInWei={feeValue} currency={feeCurrency} />
+        </div>
+      </TransactionProperty>
+      <TransactionProperty label="Rate">
+        <div css={style.value}>
+          <MoneyValue amountInWei={rate.weiRate} currency={Currency.CELO} />
+          <span css={style.rateDivider}> : </span>
+          <MoneyValue amountInWei={rate.weiBasis} currency={Currency.cUSD} />
         </div>
       </TransactionProperty>
     </TransactionPropertyGroup>
@@ -49,5 +54,8 @@ const style: Stylesheet = {
   amountLabel: {
     display: 'inline-block',
     minWidth: '3em',
+  },
+  rateDivider: {
+    padding: '0 0.5em',
   },
 }

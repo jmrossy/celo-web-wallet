@@ -121,9 +121,27 @@ function getDefaultExchangeValues(fromCurrency?: Currency | null) {
 }
 
 export function computeRate(tx: TokenExchangeTx) {
-  if (!tx) return 0
-  // TODO compute rate
-  return 'TODO'
+  if (!tx) {
+    return {
+      weiRate: 0,
+      weiBasis: WEI_PER_UNIT,
+    }
+  }
+  const fromValue = fromWei(tx.fromValue)
+  const toValue = fromWei(tx.toValue)
+
+  if (!fromValue || !toValue) {
+    return {
+      weiRate: 0,
+      weiBasis: WEI_PER_UNIT,
+    }
+  }
+
+  const rate = tx.fromToken === Currency.cUSD ? fromValue / toValue : toValue / fromValue
+  return {
+    weiRate: toWei(rate).toString(),
+    weiBasis: WEI_PER_UNIT,
+  }
 }
 
 export function getOtherCurrency(currency: Currency) {
