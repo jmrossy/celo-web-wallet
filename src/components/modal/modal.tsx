@@ -145,6 +145,7 @@ const style: Stylesheet = {
     fontSize: '1.15em',
     fontWeight: 400,
     textAlign: 'center',
+    maxWidth: '25em',
   },
   bodyText: {
     margin: '2em 0 0 0',

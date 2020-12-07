@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
-import ArrowBackIcon from 'src/components/icons/arrow_back_white.svg'
+import ArrowBackIcon from 'src/components/icons/arrow_back.svg'
 import QuestionIcon from 'src/components/icons/question_mark.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
@@ -60,7 +60,6 @@ export function ExchangeConfirmationScreen() {
     )
   }, [tx])
 
-  // TODO show totalIn as shown in new designs
   const { total: totalIn, feeAmount, feeCurrency, feeEstimates } = useFee(tx?.amountInWei, 2)
 
   const { from, to, rate } = useExchangeValues(tx?.amountInWei, tx?.fromCurrency, cUsdToCelo, true)
@@ -120,7 +119,7 @@ export function ExchangeConfirmationScreen() {
               amountInWei={from.weiAmount}
               currency={from.currency}
               baseFontSize={1.2}
-              spanCss={style.valueWidth}
+              containerCss={style.valueWidth}
             />
           </Box>
 
@@ -152,7 +151,7 @@ export function ExchangeConfirmationScreen() {
               amountInWei={totalIn}
               currency={from.currency}
               baseFontSize={1.2}
-              spanCss={style.valueWidth}
+              containerCss={style.valueWidth}
               fontWeight={700}
             />
           </Box>
@@ -163,7 +162,7 @@ export function ExchangeConfirmationScreen() {
               amountInWei={to.weiAmount}
               currency={to.currency}
               baseFontSize={1.2}
-              spanCss={style.valueWidth}
+              containerCss={style.valueWidth}
               fontWeight={700}
             />
           </Box>

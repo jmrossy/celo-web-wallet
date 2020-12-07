@@ -15,6 +15,7 @@ import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
 import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
+import { DevTools } from 'src/features/settings/DevTools'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useSplashScreen } from 'src/utils/splash'
 
@@ -48,6 +49,7 @@ export const App = () => {
             <Route path="home" element={<HomeScreen />} />
             <Route path="loading" element={<Loading />} />
             <Route path="modals" element={<ModalTestScreen />} />
+            <Route path="dev" element={<DevTools />} />
           </Routes>
         </ModalProvider>
       </BrowserRouter>

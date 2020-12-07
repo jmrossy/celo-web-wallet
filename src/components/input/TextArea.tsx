@@ -17,6 +17,7 @@ export interface TextAreaProps {
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
   onBlur?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
   onFocus?: () => void
+  fillWidth?: boolean
 }
 
 export function TextArea(props: PropsWithChildren<TextAreaProps>) {
@@ -34,12 +35,14 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
     onChange,
     onBlur,
     onFocus,
+    fillWidth,
   } = props
 
   const sharedStyles = getSharedInputStyles(error)
+  const containerStyles = fillWidth ? { width: '100%' } : null
 
   return (
-    <Box direction="column">
+    <Box direction="column" styles={containerStyles}>
       <textarea
         name={name}
         css={{

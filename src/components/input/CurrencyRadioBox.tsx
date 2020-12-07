@@ -9,12 +9,21 @@ export interface CurrencyRadioBoxInputProps extends RadioBoxInputProps {
 }
 
 export function CurrencyRadioBox(props: PropsWithChildren<CurrencyRadioBoxInputProps>) {
-  const { value, checked, ...passThroughProps } = props
+  const { value, checked, containerCss, ...passThroughProps } = props
 
-  const containerCss = { minWidth: '3em', ...(checked && containerStyleSelected[value]) }
+  const containerCssWithColor = {
+    minWidth: '3em',
+    ...(checked && containerStyleSelected[value]),
+    ...containerCss,
+  }
 
   return (
-    <RadioBox value={value} checked={checked} {...passThroughProps} containerCss={containerCss} />
+    <RadioBox
+      value={value}
+      checked={checked}
+      {...passThroughProps}
+      containerCss={containerCssWithColor}
+    />
   )
 }
 

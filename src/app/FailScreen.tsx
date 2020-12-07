@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import SadFace from 'src/components/icons/sad_face.svg'
 import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
+import { config } from 'src/config'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'
@@ -39,12 +40,7 @@ export function FailScreen() {
       <img width={'200em'} src={SadFace} alt="Sad Face" css={style.img} />
       <h3 css={style.h3}>
         Please refresh the page. If the problem persists, you can{' '}
-        <a
-          css={Font.linkLight}
-          href="https://discord.com/channels/600834479145353243/783806028629934110"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a css={Font.linkLight} href={config.discordUrl} target="_blank" rel="noopener noreferrer">
           ask for help here
         </a>
         .

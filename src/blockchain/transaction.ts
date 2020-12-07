@@ -25,6 +25,7 @@ export async function sendTransaction(tx: CeloTransactionRequest, feeEstimate?: 
 
   const txResponse = await signer.sendTransaction({
     ...tx,
+    // TODO set gatewayFeeRecipient
     gasPrice: BigNumber.from(gasPrice),
     gasLimit: BigNumber.from(gasLimit),
     feeCurrency: feeCurrencyAddress,

@@ -1,10 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/Button'
-import Bittrex from 'src/components/icons/exchanges/bittrex.svg'
-import Coinbase from 'src/components/icons/exchanges/coinbase.svg'
-import Okcoin from 'src/components/icons/exchanges/okcoin.svg'
+import Bittrex from 'src/components/icons/logos/bittrex.svg'
+import Coinbase from 'src/components/icons/logos/coinbase.svg'
+import Okcoin from 'src/components/icons/logos/okcoin.svg'
 import Mail from 'src/components/icons/mail.svg'
 import { Box } from 'src/components/layout/Box'
+import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -19,7 +20,7 @@ export function HeaderSectionEmpty() {
       <ExchangesModal />,
       null,
       null,
-      'Celo currencies can be earned or purchased from exchanges.'
+      'Celo currencies can be earned or purchased from these exchanges.'
     )
   }
 
@@ -62,49 +63,30 @@ export function HeaderSectionEmpty() {
 }
 
 function ExchangesModal() {
-  return (
-    <Box direction="row" align="center" justify="center" margin="1.5em 0">
-      <a
-        css={style.exchangeLink}
-        href="https://www.coinbase.com/earn/celo"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Box direction="column" align="center" justify="center" styles={style.exchangeLinkContent}>
-          <img src={Coinbase} css={style.exchangeIcon} alt="Coinbase" />
-          <div>Coinbase</div>
-        </Box>
-      </a>
-      <a
-        css={style.exchangeLink}
-        href="https://global.bittrex.com/Market/Index?MarketName=USD-CELO"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Box direction="column" align="center" justify="center" styles={style.exchangeLinkContent}>
-          <img src={Bittrex} css={style.exchangeIcon} alt="Bittrex" />
-          <div>Bittrex</div>
-        </Box>
-      </a>
-      <a
-        css={style.exchangeLink}
-        href="https://www.okcoin.com/spot/trade/celo-usd"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Box direction="column" align="center" justify="center" styles={style.exchangeLinkContent}>
-          <img src={Okcoin} css={style.exchangeIcon} alt="OkCoin" />
-          <div>OkCoin</div>
-        </Box>
-      </a>
-    </Box>
-  )
+  const links = [
+    {
+      url: 'https://www.coinbase.com/earn/celo',
+      imgSrc: Coinbase,
+      text: 'Coinbase',
+    },
+    {
+      url: 'https://global.bittrex.com/Market/Index?MarketName=USD-CELO',
+      imgSrc: Bittrex,
+      text: 'Bittrex',
+    },
+    {
+      url: 'https://www.okcoin.com/spot/trade/celo-usd',
+      imgSrc: Okcoin,
+      text: 'Okcoin',
+    },
+  ]
+  return <ModalLinkGrid links={links} />
 }
 
 const style: Stylesheet = {
   header: {
     ...Font.h1,
-    marginBottom: '1.2em',
+    margin: '0.2em 0 1.2em 0',
     color: Color.primaryGreen,
   },
   icon: {

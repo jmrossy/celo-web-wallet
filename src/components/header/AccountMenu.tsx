@@ -7,10 +7,15 @@ import ChevronIcon from 'src/components/icons/chevron.svg'
 import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
+import Discord from 'src/components/icons/logos/discord.svg'
+import Github from 'src/components/icons/logos/github.svg'
 import SignPostIcon from 'src/components/icons/sign_post.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
+import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
+import { useModal } from 'src/components/modal/useModal'
+import { config } from 'src/config'
 import { NULL_ADDRESS } from 'src/consts'
 import { logoutActions } from 'src/features/wallet/logout'
 import { Color } from 'src/styles/Color'
@@ -30,6 +35,7 @@ export const AccountMenu = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  const { showModalWithContent } = useModal()
   const address = useSelector((s: RootState) => s.wallet.address)
   const addressOrDefault = address || NULL_ADDRESS
   const addressStub = '0x' + shortenAddress(addressOrDefault).substring(2).toUpperCase()
@@ -50,6 +56,15 @@ export const AccountMenu = () => {
         dispatch(logoutActions.trigger())
         navigate('/welcome')
         break
+      case 'help':
+        showModalWithContent(
+          'Need some help?',
+          <HelpModal />,
+          null,
+          null,
+          'See the Frequently Asked Questions (FAQ) on Github or join Discord to chat with the Celo community.'
+        )
+        break
       default:
         logger.info('Menu Item Clicked: ', key)
         break
@@ -58,19 +73,15 @@ export const AccountMenu = () => {
 
   return (
     <>
-      <Box align="center" justify="end">
-        <Box styles={style.chooser} align="center">
-          <img
-            src={ChevronIcon}
-            css={[style.caret, rotated(isOpen)]}
-            onClick={() => setOpen(true)}
-          />
+      <div css={style.container} onClick={() => setOpen(true)}>
+        <Box styles={style.caretContainer} align="center">
+          <img src={ChevronIcon} width="14px" css={rotated(isOpen)} />
         </Box>
-        <Box styles={style.container} align="center">
+        <Box styles={style.addressContainer} align="center">
           <span css={style.address}>{addressStub}</span>
         </Box>
         <Identicon address={addressOrDefault} size={identiconSize} styles={style.identicon} />
-      </Box>
+      </div>
       {isOpen && (
         <>
           <Backdrop opacity={0.01} color={Color.primaryWhite} onClick={() => setOpen(false)} />
@@ -90,47 +101,55 @@ export const AccountMenu = () => {
   )
 }
 
+function HelpModal() {
+  const links = [
+    {
+      url: 'https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md',
+      imgSrc: Github,
+      text: 'FAQ on Github',
+      altText: 'Github',
+    },
+    {
+      url: config.discordUrl,
+      imgSrc: Discord,
+      text: 'Chat on Discord',
+      altText: 'Discord',
+    },
+  ]
+  return <ModalLinkGrid links={links} />
+}
+
 const style: Stylesheet = {
   container: {
-    background: Color.fillLight,
-    padding: '0.5em 0',
-    marginRight: '-0.8em',
-    height: 30,
-    paddingRight: '0.25em',
-    [mq[768]]: {
-      height: 40,
-      paddingRight: '1.4em',
-    },
-  },
-  chooser: {
-    padding: '0.5em',
-    background: Color.fillLight,
-    borderRadius: '50% 0 0 50%',
-    height: 30,
-    [mq[768]]: {
-      height: 40,
-    },
-  },
-  caret: {
-    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
     cursor: 'pointer',
-    padding: '0.5em 0.25em',
+    borderRadius: 22,
+    background: Color.fillLighter,
     ':hover': {
-      backgroundColor: Color.borderInactive,
+      backgroundColor: Color.fillLight,
     },
   },
-  identicon: {
-    border: `0.25em solid ${Color.primaryWhite}`,
-    borderRadius: '50%',
-    marginTop: '-0.25em',
-  },
-  address: {
+  addressContainer: {
     display: 'none',
     [mq[768]]: {
       display: 'inline',
-      fontSize: '1.3em',
-      letterSpacing: '0.06em',
+      paddingRight: 10,
     },
+  },
+  address: {
+    fontSize: '1.3em',
+    letterSpacing: '0.06em',
+  },
+  caretContainer: {
+    padding: '3px 9px 0 14px',
+  },
+  identicon: {
+    border: `4px solid ${Color.primaryWhite}`,
+    borderRadius: '50%',
+    marginTop: -2,
+    marginRight: -3,
   },
   menu: {
     display: 'flex',

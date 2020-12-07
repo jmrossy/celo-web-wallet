@@ -7,12 +7,14 @@ import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/consts'
 import { Color } from 'src/styles/Color'
+import { mq } from 'src/styles/mediaQueries'
 
 export function Header() {
   const balances = useSelector((s: RootState) => s.wallet.balances, shallowEqual)
 
   return (
     <Box align="center" justify="between" styles={style.container}>
+      {/* TODO find clear active tx in state when navigating */}
       <Link to={'/'}>
         <img width={'130em'} src={Logo} alt="Celo Logo" css={style.logo} />
       </Link>
@@ -20,13 +22,13 @@ export function Header() {
         <MoneyValue
           amountInWei={balances.cUsd}
           currency={Currency.cUSD}
-          margin={'0 1.5em'}
           baseFontSize={1.4}
+          containerCss={style.balanceContainer}
         />
         <MoneyValue
           amountInWei={balances.celo}
           currency={Currency.CELO}
-          margin={'0 1.5em'}
+          containerCss={style.balanceContainer}
           baseFontSize={1.4}
         />
       </span>
@@ -45,5 +47,14 @@ const style = {
   },
   balances: {
     letterSpacing: '0.05em',
+    [mq[768]]: {
+      paddingLeft: '1.5em',
+    },
+  },
+  balanceContainer: {
+    margin: '0 0.5em',
+    [mq[768]]: {
+      margin: '0 1.6em',
+    },
   },
 }

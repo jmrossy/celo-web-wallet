@@ -1,8 +1,8 @@
 import { utils } from 'ethers'
 import { useNavigate } from 'react-router'
 import { defaultButtonStyles } from 'src/components/Button'
-import Paste from 'src/components/icons/paste.svg'
-import PlusWhite from 'src/components/icons/plus_white.svg'
+import PasteIcon from 'src/components/icons/paste.svg'
+import PlusIcon from 'src/components/icons/plus.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
@@ -62,12 +62,12 @@ export function Address(props: Props) {
       </div>
       {buttonType === 'send' && (
         <button css={style.button} onClick={onSendButtonClick}>
-          <img width={'20px'} height={'20px'} src={PlusWhite} alt="Send" />
+          <img width="20px" height="20px" src={PlusIcon} alt="Send" />
         </button>
       )}
       {buttonType === 'copy' && (
         <button css={style.button} onClick={onCopyButtonClick}>
-          <img width={'18px'} height={'18px'} src={Paste} alt="Copy" />
+          <img width="18px" height="18px" src={PasteIcon} alt="Copy" />
         </button>
       )}
     </Box>

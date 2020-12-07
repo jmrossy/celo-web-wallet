@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
-import ArrowBackIcon from 'src/components/icons/arrow_back_white.svg'
+import ArrowBackIcon from 'src/components/icons/arrow_back.svg'
 import { Box } from 'src/components/layout/Box'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
 import { Color } from 'src/styles/Color'

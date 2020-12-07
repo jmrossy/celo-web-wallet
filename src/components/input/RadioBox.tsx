@@ -53,7 +53,6 @@ const containerStyle: Styles = {
   cursor: 'pointer',
   userSelect: 'none',
   color: Color.primaryGrey,
-  marginRight: 4,
   height: 40, //default height (may be overridden by the classes)
   transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
 }

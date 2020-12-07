@@ -14,8 +14,11 @@ export enum CeloContract {
 
 interface Config {
   debug: boolean
-  fornoUrl: string
+  jsonRpcUrlPrimary: string
+  jsonRpcUrlSecondary?: string
+  gatewayFeeRecipient?: string
   blockscoutUrl: string
+  discordUrl: string
   chainId: number
   contractAddresses: Record<CeloContract, string>
   defaultAccount?: string // strictly for dev use, provide a backup phrase
@@ -28,8 +31,11 @@ const debugMode = __DEBUG__ ?? false
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configMainnet: Config = {
   debug: debugMode,
-  fornoUrl: 'https://forno.celo.org',
+  jsonRpcUrlPrimary: 'https://node.celowallet.app',
+  jsonRpcUrlSecondary: 'https://forno.celo.org',
+  gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
+  discordUrl: 'https://discord.com/channels/600834479145353243/783806028629934110',
   chainId: 42220,
   contractAddresses: {
     [CeloContract.Accounts]: '0x7d21685C17607338b313a7174bAb6620baD0aaB7',
@@ -44,15 +50,16 @@ const configMainnet: Config = {
     [CeloContract.SortedOracles]: '0xefB84935239dAcdecF7c5bA76d8dE40b077B7b33',
     [CeloContract.StableToken]: '0x765DE816845861e75A25fCA122bb6898B8B1282a',
   },
-  defaultAccount:
-    'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
+  // defaultAccount:
+  //   'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configAlfajores: Config = {
   debug: true,
-  fornoUrl: 'https://alfajores-forno.celo-testnet.org',
+  jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
+  discordUrl: 'https://discord.com/channels/600834479145353243/783806028629934110',
   chainId: 44787,
   contractAddresses: {
     [CeloContract.Accounts]: '0xed7f51A34B4e71fbE69B3091FcF879cD14bD73A9',

@@ -1,9 +1,23 @@
 import { getProvider } from 'src/blockchain/provider'
 import { AVG_BLOCK_TIMES } from 'src/consts'
+import { logger } from 'src/utils/logger'
 
-export function getLatestBlockNumber() {
+export async function getLatestBlockDetails() {
   const provider = getProvider()
-  return provider.getBlockNumber()
+  if (!provider) {
+    return null
+  }
+
+  const block = await provider.getBlock('latest')
+  if (!block || !block.number) {
+    logger.warn('Latest block is not valid')
+    return null
+  }
+
+  return {
+    number: block.number,
+    timestamp: block.timestamp,
+  }
 }
 
 /**

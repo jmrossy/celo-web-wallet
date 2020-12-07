@@ -8,6 +8,7 @@ body {
 }
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
   background-color: var(--scrollbarBG);
 }
 ::-webkit-scrollbar-track {
@@ -17,4 +18,10 @@ body {
   background-color: var(--thumbBG);
   border-radius: 6px;
   border: 3px solid var(--scrollbarBG);
+}
+/* phones */
+@media only screen and (max-width: 767px) {
+  ::-webkit-scrollbar {
+    width: 0;
+  }
 }

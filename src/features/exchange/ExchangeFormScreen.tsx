@@ -101,6 +101,7 @@ export function ExchangeFormScreen() {
                 name="fromCurrency"
                 checked={values.fromCurrency === Currency.cUSD}
                 onChange={handleChange}
+                containerCss={{ marginRight: '0.5em' }}
               />
               <CurrencyRadioBox
                 tabIndex={1}
@@ -155,7 +156,7 @@ function toExchangeTokenParams(values: ExchangeTokenForm): ExchangeTokenParams {
   } catch (error) {
     return {
       ...values,
-      amountInWei: '0', // TODO Makes this NaN?
+      amountInWei: '0',
     }
   }
 }

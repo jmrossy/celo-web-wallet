@@ -103,7 +103,7 @@ export function createMonitoredSaga<SagaParams = void>(
         logger.debug(`${name} triggered`)
         yield put(statusAction(SagaStatus.Started))
         const { result, cancel, timeout } = yield race({
-          // TODO Use fork here instead if parallelism is required for the saga
+          // Note: Use fork here instead if parallelism is required for the saga
           result: call(saga, trigger.payload),
           cancel: take(cancelAction.type),
           timeout: delay(options?.timeoutDuration || DEFAULT_TIMEOUT),

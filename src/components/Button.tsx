@@ -9,16 +9,18 @@ interface ButtonProps {
   margin?: string | number
   onClick?: () => void
   icon?: string
-  iconPosition?: 'start' | 'end' //defaults to start //TODO: add top / bottom if necessary
+  iconPosition?: 'start' | 'end' //defaults to start
   disabled?: boolean
   styles?: Styles
   width?: number | string
+  height?: number | string
 }
 
 export function Button(props: React.PropsWithChildren<ButtonProps>) {
   const {
     size,
     width: widthOverride,
+    height: heightOverride,
     type,
     color,
     margin,
@@ -28,7 +30,7 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
     disabled,
     styles,
   } = props
-  const { height, width } = getDimensions(size, widthOverride)
+  const { height, width } = getDimensions(size, widthOverride, heightOverride)
   const icoLayout = getLayout(size)
 
   const baseBg = color || Color.primaryGreen
@@ -76,16 +78,16 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
   )
 }
 
-function getDimensions(size?: string, width?: number | string) {
+function getDimensions(size?: string, width?: number | string, height?: number | string) {
   switch (size) {
     case 's':
-      return { height: '2.25em', width: width ?? '9em' }
+      return { height: height ?? '2.25em', width: width ?? '9em' }
     case 'm':
     case 'l':
     case undefined:
-      return { height: '3.25em', width: width ?? '12.5em' }
+      return { height: height ?? '3.25em', width: width ?? '12.5em' }
     case 'icon':
-      return { height: 27, width: 27 }
+      return { height: height ?? 27, width: width ?? 27 }
     default:
       throw new Error(`Unsupported size: ${size}`)
   }
@@ -112,6 +114,7 @@ export const defaultButtonStyles: Styles = {
     backgroundColor: '#0fb972',
   },
   ':disabled': {
+    cursor: 'default',
     color: Color.primaryGrey,
     backgroundColor: Color.borderInactive,
   },
