@@ -1,9 +1,20 @@
+import { ConnectionStatus } from 'src/components/footer/ConnectionStatus'
+import { ConnectionIcon } from 'src/components/icons/Connection'
 import { Box } from 'src/components/layout/Box'
+import { ModalOkAction } from 'src/components/modal/modal'
+import { useModal } from 'src/components/modal/useModal'
 import { Color } from 'src/styles/Color'
-import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
 
 export function Footer() {
+  const { showModalWithContent } = useModal()
+  //TODO: determine color from actual connection status
+  const connectionColor = Color.accentBlue
+
+  const onConnectionClick = () => {
+    showModalWithContent('Connection Status', <ConnectionStatus />, ModalOkAction)
+  }
+
   return (
     <Box align="center" justify="between" styles={style.container}>
       <Box align="center" justify="center">
@@ -24,8 +35,10 @@ export function Footer() {
           View Source
         </a>
       </Box>
-      {/* TODO check connected status and add icon */}
-      <div css={style.version}>Connected</div>
+      <div css={style.connectedBox} onClick={onConnectionClick}>
+        <ConnectionIcon fill={connectionColor} />
+        <div css={[style.connection, { color: `${connectionColor} !important` }]}>Connected</div>
+      </div>
     </Box>
   )
 }
@@ -49,11 +62,20 @@ const style: Stylesheet = {
     opacity: 0.8,
     borderTop: `1px solid ${Color.borderLight}`,
   },
-  version: {
-    display: 'none',
-    [mq[768]]: {
-      ...textStyle,
-      display: 'inline',
+  connection: {
+    ...textStyle,
+    display: 'inline',
+  },
+  connectedBox: {
+    display: 'flex',
+    alignContent: 'flex-end',
+    borderLeft: `1px solid ${Color.borderInactive}`,
+    paddingLeft: '1em',
+    position: 'relative',
+    cursor: 'pointer',
+    '& svg': {
+      height: '1em',
+      width: '1em',
     },
   },
 }

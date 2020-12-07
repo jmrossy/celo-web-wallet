@@ -5,7 +5,8 @@ function _ConnectionIcon({ fill }: { fill: string }) {
     <svg
       enableBackground="new 0 0 1920 1260"
       version="1.1"
-      viewBox="0 0 1920 1260"
+      viewBox="394.00 534.00 655.67 482.90"
+      width="100"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
