@@ -138,7 +138,7 @@ export function SendConfirmationScreen() {
             styles={{ ...style.labelCol, width: '10em' }}
           >
             <label>
-              Fee <HelpIcon tooltip="The fee charged by the Celo network." />
+              Fee <HelpIcon tooltip="Fees, or 'gas', keep the network secure." />
             </label>
           </Box>
           {feeAmount && feeCurrency ? (

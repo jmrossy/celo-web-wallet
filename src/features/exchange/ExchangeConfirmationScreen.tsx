@@ -131,7 +131,7 @@ export function ExchangeConfirmationScreen() {
           >
             <Box direction="row" justify="between" align="end" styles={style.labelWidth}>
               <label css={style.label}>
-                Fee <HelpIcon tooltip="The fee charged by the Celo network." />
+                Fee <HelpIcon tooltip="Fees, or 'gas', keep the network secure." />
               </label>
             </Box>
             {feeAmount && feeCurrency ? (
