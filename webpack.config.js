@@ -71,6 +71,7 @@ const config = {
     new CopyPlugin({
       patterns: [
         { from: './src/index.html', to: 'index.html' },
+        { from: './src/_redirects', to: '_redirects', toType: 'file' },
         { from: './static/*', to: 'static/[name].[ext]' },
       ],
     }),

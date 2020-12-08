@@ -1,0 +1,3 @@
+# Configure Netlify redirect handling
+# This sends routes that don't map to files to index so app's routing can handle it
+/*    /index.html   200
