@@ -16,11 +16,19 @@ export function ViewWalletScreen() {
 
   // TODO the routes and HomeFrame need to be refactored a bit
   // to have this render without the feed on the left
+  //TODO: consider wrapping in the ScreenContentFrame for consistent spacing.
+  // Not sure if there's anything that needs to be different here (minHeight 100%?)
   return (
-    <Box direction="column" align="center" justify="center" styles={style.contentContainer}>
+    <Box
+      direction="column"
+      align="start"
+      justify="start"
+      styles={style.contentContainer}
+      margin="1.2em 1.4em"
+    >
       <h1 css={style.header}>Your Celo Account</h1>
       <WalletDetails />
-      <Button color={Color.altGrey} icon={ArrowBackIcon} onClick={onClickBack} margin="3em">
+      <Button color={Color.altGrey} icon={ArrowBackIcon} onClick={onClickBack} margin="3em 0 0 0">
         Back
       </Button>
     </Box>
@@ -33,6 +41,6 @@ const style: Stylesheet = {
   },
   header: {
     ...Font.h1Green,
-    margin: '2em',
+    margin: '0 0 1.2em 0',
   },
 }

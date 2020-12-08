@@ -68,6 +68,7 @@ const style: Stylesheet = {
     backgroundColor: Color.fillLight,
     padding: '5px 22px 5px 5px',
     borderRadius: 3,
+    minWidth: '17em',
   },
   line: {
     padding: '0px 2px',
