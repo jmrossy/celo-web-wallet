@@ -46,7 +46,6 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
         margin,
         height,
         width,
-        fontSize: size === 'l' ? '1.1em' : undefined,
         backgroundColor: baseBg,
         ':hover': {
           backgroundColor: hoverBg,

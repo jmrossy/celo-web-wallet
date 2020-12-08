@@ -78,7 +78,7 @@ export function SetPincodeForm() {
           />
           <Box styles={{ width: '100%' }} justify="end">
             <Button
-              size={'m'}
+              size="l"
               type="submit"
               margin={'3em 0 0 0'}
               disabled={status === SagaStatus.Started}

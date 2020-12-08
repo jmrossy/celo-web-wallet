@@ -22,10 +22,20 @@ export function WelcomeScreen() {
       <Box direction="column" justify="center" align="center" styles={style.container}>
         <img width={'500rem'} src={Logo} alt="Celo Logo" css={style.logo} />
         <div css={style.buttonContainer}>
-          <Button size={'l'} onClick={onClickCreateNew} margin={'1em 1.5em'}>
+          <Button
+            size="l"
+            onClick={onClickCreateNew}
+            margin={'1em 1.5em'}
+            styles={{ fontSize: '1.1em' }}
+          >
             Create New Account
           </Button>
-          <Button size={'l'} onClick={onClickUseExisting} margin={'1em 1.5em'}>
+          <Button
+            size="l"
+            onClick={onClickUseExisting}
+            margin={'1em 1.5em'}
+            styles={{ fontSize: '1.1em' }}
+          >
             Use Existing Account
           </Button>
         </div>

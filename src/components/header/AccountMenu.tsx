@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
@@ -17,7 +17,7 @@ import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
 import { NULL_ADDRESS } from 'src/consts'
-import { logoutActions } from 'src/features/wallet/logout'
+import { useLogoutModal } from 'src/features/wallet/logout'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -32,9 +32,9 @@ const MenuItems = [
 ]
 
 export const AccountMenu = () => {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  const onLogout = useLogoutModal()
   const { showModalWithContent } = useModal()
   const address = useSelector((s: RootState) => s.wallet.address)
   const addressOrDefault = address || NULL_ADDRESS
@@ -42,7 +42,7 @@ export const AccountMenu = () => {
   const identiconSize = isMobile ? 30 : 40
   const [isOpen, setOpen] = useState(false)
 
-  const onItemClick = (key: string) => () => {
+  const onItemClick = (key: string) => async () => {
     switch (key) {
       case 'account':
         setOpen(false)
@@ -53,8 +53,7 @@ export const AccountMenu = () => {
         navigate('/change-pin')
         break
       case 'logout':
-        dispatch(logoutActions.trigger())
-        navigate('/welcome')
+        await onLogout()
         break
       case 'help':
         showModalWithContent(

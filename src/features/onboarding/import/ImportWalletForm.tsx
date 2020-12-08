@@ -60,7 +60,7 @@ export function ImportWalletForm() {
         <Box direction="column" align="center" margin="-1em 0 0 0">
           <p css={styles.description}>Enter your account key (mnemonic phrase).</p>
           <p css={styles.description}>Only import on devices you trust.</p>
-          <Box direction="column" align="center" margin="3em 0 0 0">
+          <Box direction="column" align="center" margin="2em 0 0 0">
             <TextArea
               name="mnemonic"
               value={mnemonic}
@@ -77,6 +77,7 @@ export function ImportWalletForm() {
               onClick={onClickImport}
               margin="2em 0 0 0"
               disabled={status === SagaStatus.Started}
+              size="l"
             >
               Import Account
             </Button>
@@ -89,8 +90,7 @@ export function ImportWalletForm() {
 
 const styles = {
   warningBox: {
-    border: `2px solid ${Color.accentBlue}`,
-    borderRadius: 5,
+    borderRadius: 4,
     padding: '0 1em 1em 1em',
     background: `${Color.accentBlue}11`,
   },

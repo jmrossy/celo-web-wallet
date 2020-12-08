@@ -57,7 +57,7 @@ export function NewWalletScreen() {
       )}
       {isDone && <WalletDetails />}
       <Button
-        size={'m'}
+        size="l"
         onClick={onClickContinue}
         margin={'3em 0 0 0'}
         disabled={status !== SagaStatus.Success && !address}

@@ -57,7 +57,7 @@ const style: Stylesheet = {
     textAlign: 'center',
     ':first-of-type': {
       ...Font.bold,
-      marginTop: '2em',
+      marginTop: '1.5em',
     },
     [mq[768]]: {
       margin: '0.6em 1.4em',
