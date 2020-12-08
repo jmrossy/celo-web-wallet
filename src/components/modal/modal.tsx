@@ -3,6 +3,7 @@ import { Button } from 'src/components/Button'
 import CloseIcon from 'src/components/icons/close.svg'
 import { Box } from 'src/components/layout/Box'
 import { LoadingIndicator } from 'src/components/LoadingIndicator'
+import { Backdrop } from 'src/components/modal/Backdrop'
 import { Color } from 'src/styles/Color'
 import { Styles, Stylesheet } from 'src/styles/types'
 
@@ -40,15 +41,15 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
 
   const allActions = actions ? (Array.isArray(actions) ? actions : [actions]) : []
 
-  const backdropClick = (e: React.MouseEvent<any>) => {
-    if (e.target === e.currentTarget) {
+  const backdropClick = (e?: React.MouseEvent<any>) => {
+    if (e && e.target === e.currentTarget) {
       if (onClose) onClose()
     }
   }
 
   return (
     <>
-      <div css={[style.background, style.modalBackdrop]} />
+      <Backdrop onClick={backdropClick} />
       <div css={[style.background, style.modalContainer]} onClick={backdropClick}>
         <div id="modal" css={[style.modal, propsToModalStyle(props)]}>
           <Box direction="column" justify="between" styles={style.modalContent}>
@@ -97,10 +98,6 @@ const style: Stylesheet = {
     left: 0,
     height: '100%',
     width: '100%',
-  },
-  modalBackdrop: {
-    backgroundColor: '#FFF8', //semi-transparent white
-    zIndex: 99,
   },
   modalContainer: {
     display: 'flex',

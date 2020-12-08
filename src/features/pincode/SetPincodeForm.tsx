@@ -76,14 +76,16 @@ export function SetPincodeForm() {
             onChange={handleChange}
             {...inputErrors['valueConfirm']}
           />
-          <Button
-            size={'m'}
-            type="submit"
-            margin={'3em 0 0 8em'}
-            disabled={status === SagaStatus.Started}
-          >
-            Set Pin
-          </Button>
+          <Box styles={{ width: '100%' }} justify="end">
+            <Button
+              size={'m'}
+              type="submit"
+              margin={'3em 0 0 0'}
+              disabled={status === SagaStatus.Started}
+            >
+              Set Pin
+            </Button>
+          </Box>
         </form>
       </div>
     </Box>

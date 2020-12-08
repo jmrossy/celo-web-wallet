@@ -82,10 +82,12 @@ export const ModalProvider = ({ children }: any) => {
     closeModal: () => closeRef.current(),
   }
 
+  const blurCss = modal ? { filter: 'blur(3px)' } : undefined
+
   return (
     <ModalContext.Provider value={myContext}>
       <div>
-        {children}
+        <div css={blurCss}>{children}</div>
         {modal && <Modal {...modal}>{content}</Modal>}
       </div>
     </ModalContext.Provider>

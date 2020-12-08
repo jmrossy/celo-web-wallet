@@ -35,8 +35,8 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
 
   const baseBg = color || Color.primaryGreen
   // TODO make this more robust. Could use a css filter to just brighten the base color
-  const hoverBg =
-    baseBg === Color.primaryGreen ? '#4cdd91' : `${baseBg}${baseBg.length === 3 ? 'c' : 'cc'}`
+  // perhaps consider the function from this SO answer: https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
+  const { hoverBg, activeBg } = getStateColors(baseBg)
 
   return (
     <button
@@ -53,7 +53,7 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
         },
         ':active': {
           // TODO make this dynamic like the other colors
-          backgroundColor: '#0fb972',
+          backgroundColor: activeBg, //'#0fb972',
         },
         ...styles,
       }}
@@ -98,6 +98,19 @@ function getLayout(size?: string) {
   return size === 'icon'
     ? { display: 'flex', alignItems: 'center', justifyContent: 'center' }
     : null
+}
+
+function getStateColors(baseColor: string) {
+  if (baseColor === Color.primaryGreen) {
+    return { hoverBg: '#4cdd91', activeBg: '#29d67d' }
+  } else if (baseColor === Color.primaryWhite) {
+    return { hoverBg: '#e4e6e7', activeBg: '#c8ccd0' }
+  } else {
+    return {
+      hoverBg: `${baseColor}${baseColor.length === 3 ? 'c' : 'cc'}`,
+      activeBg: `${baseColor}${baseColor.length === 3 ? 'e' : 'ee'}`,
+    }
+  }
 }
 
 export const defaultButtonStyles: Styles = {

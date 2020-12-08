@@ -1,4 +1,5 @@
 import { utils, Wallet } from 'ethers'
+import { RootState } from 'src/app/rootReducer'
 import { setSigner } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { CELO_DERIVATION_PATH } from 'src/consts'
@@ -6,10 +7,12 @@ import { clearTransactions } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetch'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { call, put } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 import { setAddress } from './walletSlice'
 
 const MNEMONIC_LENGTH = 24
+
+const getWalletAddress = (state: RootState) => state.wallet.address
 
 export function* importWallet(mnemonic: string) {
   if (!isValidMnemonic(mnemonic)) {
@@ -19,9 +22,15 @@ export function* importWallet(mnemonic: string) {
   const derivationPath = CELO_DERIVATION_PATH + '/0'
   const wallet = Wallet.fromMnemonic(mnemonic.trim(), derivationPath)
   setSigner(wallet)
+  //Grab the current address from the store (may have been loaded by persistence)
+  const currentAddress = yield* select(getWalletAddress)
   yield* put(setAddress(wallet.address))
   yield* put(fetchBalancesActions.trigger())
-  yield* put(clearTransactions())
+
+  //Only want to clear the feed if its not from the persisted/current wallet
+  if (!currentAddress || currentAddress !== wallet.address) {
+    yield* put(clearTransactions())
+  }
   yield* put(fetchFeedActions.trigger())
 }
 
