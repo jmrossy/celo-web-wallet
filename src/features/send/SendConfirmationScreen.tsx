@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/Button'
-import QuestionIcon from 'src/components/icons/question_mark.svg'
+import { HelpIcon } from 'src/components/icons/HelpIcon'
 import RequestPaymentIcon from 'src/components/icons/request_payment.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Box } from 'src/components/layout/Box'
@@ -138,7 +138,7 @@ export function SendConfirmationScreen() {
             styles={{ ...style.labelCol, width: '10em' }}
           >
             <label>
-              Fee <img src={QuestionIcon} css={style.icon} />
+              Fee <HelpIcon tooltip="The fee charged by the Celo network." />
             </label>
           </Box>
           {feeAmount && feeCurrency ? (
