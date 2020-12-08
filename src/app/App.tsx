@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { Loading } from 'src/app/Loading'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
@@ -19,10 +20,16 @@ import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { DevTools } from 'src/features/settings/DevTools'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
+import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
 export const App = () => {
   const showSplash = useSplashScreen()
-  if (showSplash) return null //don't load the app until we're done with the splash screen
+  const isBrowserSupported = useBrowserFeatureChecks()
+
+  // Don't load the app until we're done with the splash screen
+  if (showSplash) return null
+
+  if (!isBrowserSupported) return <BadBrowserScreen />
 
   return (
     <ErrorBoundary>

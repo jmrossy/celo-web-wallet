@@ -6,13 +6,13 @@ import { ModalAction, ModalOkAction, ModalSize } from 'src/components/modal/moda
 import { useModal } from 'src/components/modal/useModal'
 import { Notification } from 'src/components/Notification'
 import { Color } from 'src/styles/Color'
+import { testInvalidFeatures, useBrowserFeatureChecks } from 'src/utils/browsers'
 import { logger } from 'src/utils/logger'
-import { testInvalidFeatures, useFeatureValidation } from 'src/utils/validation'
 
 export function ModalTestScreen() {
   const [isLoading, setLoading] = useState<boolean>(false)
   const [isInvalid, setInvalid] = useState(false)
-  const isBrowserValid = useFeatureValidation(isInvalid ? testInvalidFeatures : null)
+  const isBrowserValid = useBrowserFeatureChecks(isInvalid ? testInvalidFeatures : null)
 
   const actionClick = (action: ModalAction) => {
     if (action.key === 'ok' || action.key === 'close') closeModal()
