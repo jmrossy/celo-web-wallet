@@ -33,16 +33,9 @@ export function createSaga<SagaParams = void>(saga: (...args: any[]) => any, nam
 const DEFAULT_TIMEOUT = 60 * 1000 // 1 minute
 
 export enum SagaStatus {
-  Started = 'started',
-  Success = 'success',
-  Failure = 'failure',
-}
-
-export enum SagaError {
-  Exception = 'exception',
-  Failure = 'failure',
-  Timeout = 'timeout',
-  Cancel = 'cancel',
+  Started = 'SagaStarted',
+  Success = 'SagaSuccess',
+  Failure = 'SagaFailure',
 }
 
 export interface SagaActions {
@@ -55,7 +48,7 @@ export interface SagaActions {
 
 export interface SagaState {
   status: SagaStatus | null
-  error: SagaError | string | number | null // error details such as type or error code
+  error: string | null // error details
 }
 
 interface MonitoredSagaOptions {
@@ -111,19 +104,19 @@ export function createMonitoredSaga<SagaParams = void>(
 
         if (cancel) {
           logger.debug(`${name} canceled`)
-          yield put(errorAction(SagaError.Cancel))
+          yield put(errorAction('Action was cancelled.'))
           continue
         }
 
         if (timeout) {
           logger.warn(`${name} timed out`)
-          yield put(errorAction(SagaError.Timeout))
+          yield put(errorAction('Action timed out.'))
           continue
         }
 
         if (result === false) {
           logger.warn(`${name} returned failure result`)
-          yield put(errorAction(SagaError.Failure))
+          yield put(errorAction('Action returned failure result.'))
           continue
         }
 

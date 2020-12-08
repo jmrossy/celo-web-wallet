@@ -13,7 +13,7 @@ import { Balances } from 'src/features/wallet/walletSlice'
 import { isAmountValid } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { ErrorState, invalidInput } from 'src/utils/validation'
+import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
 import { call, put } from 'typed-redux-saga'
 
 export interface SendTokenParams {
@@ -77,7 +77,7 @@ function* sendToken(params: SendTokenParams) {
 
   const validateResult = yield* call(validate, params, balances, true)
   if (!validateResult.isValid) {
-    throw new Error('Invalid Transaction') //TODO: provide the details of the invalid transaction
+    throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }
 
   const placeholderTx = yield* call(_sendToken, params)

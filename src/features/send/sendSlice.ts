@@ -1,10 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { SendTokenParams } from 'src/features/send/sendToken'
-import { SagaError } from 'src/utils/saga'
 
 export interface SendState {
   transaction: SendTokenParams | null
-  transactionError: SagaError | string | number | null
+  transactionError: string | null
 }
 
 export const sendInitialState: SendState = {

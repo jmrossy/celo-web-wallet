@@ -21,6 +21,23 @@ export function invalidInput(fieldName: string, helpText: string) {
   }
 }
 
+export function errorStateToString(error: ErrorState, summary: string) {
+  if (!error) throw new Error('No error provided to errorStateToString')
+  const { isValid, ...fields } = error
+  if (isValid) throw new Error('ErrorState provided to errorStateToString is actually valid')
+  const fieldNames = Object.keys(fields)
+  if (fieldNames.length === 0) {
+    return summary
+  } else if (fieldNames.length === 1) {
+    const name = fieldNames[0]
+    const fieldError = fields[name]
+    if (typeof fieldError === 'boolean') throw new Error(`No field error found for ${name}`)
+    return `${summary}: ${fieldError.helpText}`
+  } else {
+    return `${summary}. Invalid fields: ${fieldNames.join(', ')}`
+  }
+}
+
 //--
 // Handles the validation of input components
 export function useInputValidation(touched: any, validateFn: () => ErrorState) {

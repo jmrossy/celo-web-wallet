@@ -20,7 +20,7 @@ import { fromWei, getOtherCurrency, isAmountValid, toWei } from 'src/utils/amoun
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { ErrorState, invalidInput } from 'src/utils/validation'
+import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
 import { call, put } from 'typed-redux-saga'
 
 export function validate(
@@ -85,7 +85,7 @@ function* exchangeToken(params: ExchangeTokenParams) {
 
   const validateResult = yield* call(validate, params, balances, true, true)
   if (!validateResult.isValid) {
-    throw new Error('Invalid transaction') //TODO: provide details of the error
+    throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }
 
   const placeholderTx = yield* call(_exchangeToken, params)

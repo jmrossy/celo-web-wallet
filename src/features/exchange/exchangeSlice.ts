@@ -1,12 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
-import { SagaError } from 'src/utils/saga'
 
 export interface ExchangeState {
   cUsdToCelo: ExchangeRate | null
   cUsdToUsd: ExchangeRate | null
   transaction: ExchangeTokenParams | null
-  transactionError: SagaError | string | number | null //to have one place for an error
+  transactionError: string | null
 }
 
 export const exchangeInitialState: ExchangeState = {
@@ -37,7 +36,7 @@ const exchangeSlice = createSlice({
       state.transaction = null
       state.transactionError = null
     },
-    exchangeFailed: (state, action: PayloadAction<SagaError | string | number>) => {
+    exchangeFailed: (state, action: PayloadAction<string | null>) => {
       state.transactionError = action.payload
     },
   },

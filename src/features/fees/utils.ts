@@ -30,8 +30,8 @@ export function validateFeeEstimate(estimate?: FeeEstimate): ErrorState {
   }
 
   if (!fee || BigNumber.from(fee).gt(MAX_FEE_SIZE)) {
-    logger.error(`Invalid fee: ${fee}`)
-    return { isValid: false, fee: { error: true, helpText: 'Invalid fee' } }
+    logger.error(`Fee is too large: ${fee}`)
+    return { isValid: false, fee: { error: true, helpText: 'Fee is too large' } }
   }
 
   return { isValid: true }
