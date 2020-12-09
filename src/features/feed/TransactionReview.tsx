@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
+import { CloseButton } from 'src/components/CloseButton'
 import Chevron from 'src/components/icons/chevron.svg'
-import CloseIcon from 'src/components/icons/close.svg'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
 import { GenericTransactionReview } from 'src/features/feed/components/GenericTransactionReview'
@@ -52,9 +52,7 @@ export function TransactionReview() {
     <div css={style.container}>
       <Box align="center" justify="between" styles={style.header}>
         <div>{header}</div>
-        <button onClick={onCloseClick} css={style.closeButton}>
-          <img src={CloseIcon} alt="Close" css={style.closeButtonIcon} />
-        </button>
+        <CloseButton onClick={onCloseClick} styles={style.closeButton} />
       </Box>
       <div css={style.contentContainer}>
         <h2 css={style.sectionHeader}>Transaction Details</h2>
@@ -162,17 +160,13 @@ const style: Stylesheet = {
     padding: '0.85rem 2rem',
   },
   closeButton: {
-    border: 'none',
-    outline: 'none',
-    cursor: 'pointer',
-    backgroundColor: Color.accentBlue,
     position: 'relative',
     top: 2,
-  },
-  closeButtonIcon: {
-    filter: 'brightness(0) invert(1)', // TODO consider using svg wrapper for this
+    img: {
+      filter: 'brightness(0) invert(1)',
+    },
     ':hover': {
-      filter: 'brightness(0) invert(0.9)',
+      filter: 'brightness(0.9)',
     },
   },
   contentContainer: {

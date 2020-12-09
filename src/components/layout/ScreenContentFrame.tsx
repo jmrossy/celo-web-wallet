@@ -1,8 +1,6 @@
 import { PropsWithChildren } from 'react'
-import { Button } from 'src/components/Button'
-import CloseIcon from 'src/components/icons/close.svg'
+import { CloseButton } from 'src/components/CloseButton'
 import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
@@ -15,17 +13,7 @@ export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
 
   return (
     <Box direction="column" styles={style.contentContainer}>
-      {onClose && (
-        <Button
-          size="icon"
-          type="button"
-          color={Color.primaryWhite}
-          onClick={onClose}
-          styles={style.closeButton}
-        >
-          <img src={CloseIcon} alt="Close" />
-        </Button>
-      )}
+      {onClose && <CloseButton onClick={onClose} styles={style.closeButton} />}
       {props.children}
     </Box>
   )

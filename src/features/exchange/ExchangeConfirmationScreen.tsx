@@ -88,7 +88,7 @@ export function ExchangeConfirmationScreen() {
 
   const confirm = () => {
     modal.closeModal()
-    modal.showModal('Exchange Succeeded', 'Your exchange has been completed successfully')
+    modal.showSuccessModal('Exchange Complete!', 'Your exchange has been made successfully')
     dispatch(exchangeTokenActions.reset())
     dispatch(exchangeSent())
     navigate('/')

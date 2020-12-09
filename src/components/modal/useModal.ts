@@ -20,6 +20,18 @@ export function useModal() {
     context.showModal(modalProps)
   }
 
+  const showSuccessModal = (head: string, subHead: string | undefined | null = undefined) => {
+    const modalProps: ModalProps = {
+      isSuccess: true,
+      head: head,
+      subHead: subHead ?? undefined,
+      actions: ModalOkAction,
+      onClose: context.closeModal,
+      onActionClick: context.closeModal,
+    }
+    context.showModal(modalProps)
+  }
+
   const showErrorModal = (
     head: string,
     error: string | number | unknown | undefined | null,
@@ -136,6 +148,7 @@ export function useModal() {
     showModal,
     showModalAsync,
     showWorkingModal,
+    showSuccessModal,
     showErrorModal,
     showActionsModal,
     showModalWithContent,

@@ -25,6 +25,7 @@ export function ModalTestScreen() {
     showModal,
     showModalAsync,
     showWorkingModal,
+    showSuccessModal,
     showErrorModal,
     showActionsModal,
     showModalWithContent,
@@ -117,6 +118,10 @@ export function ModalTestScreen() {
     showWorkingModal('Please wait...', 'Click the button at bottom right to dismiss')
   }
 
+  const success = () => {
+    showSuccessModal('Yeahhh!!!', 'Success! It worked woohoo!')
+  }
+
   const badClose = () => {
     closeModal() //attempt to close the modal when there isn't one open.  This will log a warning in the console
   }
@@ -169,6 +174,9 @@ export function ModalTestScreen() {
         </Button>
         <Button onClick={working} margin="1em">
           Working Modal
+        </Button>
+        <Button onClick={success} margin="1em">
+          Success Modal
         </Button>
         <Button onClick={withSize('s')} margin="1em">
           Small Modal

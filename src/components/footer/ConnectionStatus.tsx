@@ -12,8 +12,8 @@ import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'
 import { isStale, useInterval } from 'src/utils/time'
 
-const CONNECTION_CHECK_INTERVAL = 20000
-const STALE_BLOCK_TIME = 15000
+const CONNECTION_CHECK_INTERVAL = 15000
+const STALE_BLOCK_TIME = 20000
 
 export function ConnectionStatusLink() {
   const [latestBlock, setLatestBlock] = useState<LatestBlockDetails | null | undefined>(undefined)
