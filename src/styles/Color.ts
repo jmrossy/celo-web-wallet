@@ -11,6 +11,7 @@ export enum Color {
 
   textGrey = '#8A8A8A',
   textError = '#e53935',
+  textWarning = '#f3c335',
 
   borderInactive = '#DDDDDD',
   borderActive = 'rgba(46, 51, 56, 0.8)',

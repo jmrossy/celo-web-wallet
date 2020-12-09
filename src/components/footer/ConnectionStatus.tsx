@@ -1,42 +1,152 @@
-import { useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import { useEffect, useState } from 'react'
+import { getLatestBlockDetails, LatestBlockDetails } from 'src/blockchain/blocks'
+import { ConnectionIcon } from 'src/components/icons/Connection'
 import { Box } from 'src/components/layout/Box'
+import { ModalOkAction } from 'src/components/modal/modal'
+import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { Styles } from 'src/styles/types'
+import { mq } from 'src/styles/mediaQueries'
+import { Stylesheet } from 'src/styles/types'
+import { logger } from 'src/utils/logger'
+import { isStale, useInterval } from 'src/utils/time'
+
+const CONNECTION_CHECK_INTERVAL = 20000
+const STALE_BLOCK_TIME = 15000
+
+export function ConnectionStatusLink() {
+  const [latestBlock, setLatestBlock] = useState<LatestBlockDetails | null | undefined>(undefined)
+
+  useEffect(() => {
+    getLatestBlock(setLatestBlock)
+  }, [])
+
+  useInterval(() => {
+    getLatestBlock(setLatestBlock)
+  }, CONNECTION_CHECK_INTERVAL)
+
+  const status = getStatusFromBlock(latestBlock)
+  let summary = 'Connecting'
+  let color = Color.primaryBlack
+  if (status === ConnStatus.Connected) {
+    summary = 'Connected'
+    color = Color.accentBlue
+  } else if (status === ConnStatus.Stale) {
+    summary = 'Weak Connection'
+    color = Color.textWarning
+  } else if (status === ConnStatus.NotConnected) {
+    summary = 'Not Connected'
+    color = Color.textError
+  }
+
+  const { showModalWithContent } = useModal()
+  const onConnectionClick = () => {
+    showModalWithContent('Connection Status', <ConnectionStatus />, ModalOkAction)
+  }
+
+  return (
+    <div css={style.connectedBox} onClick={onConnectionClick}>
+      <ConnectionIcon fill={color} />
+      <span css={[style.connectionLink, { color: `${color} !important` }]}>{summary}</span>
+    </div>
+  )
+}
 
 export const ConnectionStatus = () => {
-  const { lastBlockNumber } = useSelector((state: RootState) => state.feed)
-  //TODO: Get the Chain ID and the actuall connection status
-  const status = 'You are connected to the Celo Mainnet network!'
-  const chain = config.chainId
+  const [latestBlock, setLatestBlock] = useState<LatestBlockDetails | null | undefined>(undefined)
+
+  useEffect(() => {
+    getLatestBlock(setLatestBlock)
+  }, [])
+
+  const status = getStatusFromBlock(latestBlock)
+  let summary = 'Loading ...'
+  let summaryColor = Color.primaryBlack
+  let block = '...'
+  if (status === ConnStatus.Connected) {
+    summary = 'You are connected to the Celo Network!'
+    summaryColor = Color.primaryGreen
+    block = latestBlock!.number.toString()
+  } else if (status === ConnStatus.Stale) {
+    summary = 'Your connection is weak (stale blocks)'
+    block = latestBlock!.number.toString()
+  } else if (status === ConnStatus.NotConnected) {
+    summary = 'You are not connected.'
+    summaryColor = Color.textError
+    block = '-'
+  }
+
+  const { chainId, jsonRpcUrlPrimary } = config
 
   return (
     <Box direction="column" align="center" styles={style.container}>
-      <p css={style.greenText}>{status}</p>
-      <p>
-        Full Node:{' '}
-        <a href="https://forno.celo.org" target="_blank" rel="noopener noreferrer">
-          https://forno.celo.org
-        </a>
-      </p>
-      <p>Last Block Number: {lastBlockNumber}</p>
-      <p>Chain ID: {chain}</p>
+      <p css={{ color: `${summaryColor} !important` }}>{summary}</p>
+      <p>Node: {jsonRpcUrlPrimary}</p>
+      <p>Last Block Number: {block}</p>
+      <p>Chain ID: {chainId}</p>
     </Box>
   )
 }
 
-const style: Styles = {
+function getLatestBlock(setLatestBlock: (block: LatestBlockDetails | null) => void) {
+  getLatestBlockDetails()
+    .then((block) => {
+      setLatestBlock(block)
+    })
+    .catch((reason) => {
+      logger.warn('Error getting block details', reason)
+      setLatestBlock(null)
+    })
+}
+
+enum ConnStatus {
+  NotConnected = -1,
+  Loading = 0,
+  Stale = 1,
+  Connected = 2,
+}
+
+function getStatusFromBlock(latestBlock: LatestBlockDetails | null | undefined): ConnStatus {
+  if (latestBlock === undefined) return ConnStatus.Loading
+
+  if (latestBlock && latestBlock.number > 0 && latestBlock.timestamp > 0) {
+    if (!isStale(latestBlock.timestamp * 1000, STALE_BLOCK_TIME)) {
+      return ConnStatus.Connected
+    } else {
+      return ConnStatus.Stale
+    }
+  }
+
+  return ConnStatus.NotConnected
+}
+
+const style: Stylesheet = {
   container: {
     paddingTop: '2em',
     '& p': {
       ...Font.body,
+      textAlign: 'center',
       margin: '0 1em 1em 1em',
     },
   },
-  greenText: {
-    ...Font.body,
-    color: `${Color.primaryGreen} !important`,
+  connectionLink: {
+    fontSize: '0.8em',
+    fontWeight: 400,
+    padding: '0 0.8em',
+  },
+  connectedBox: {
+    display: 'flex',
+    alignContent: 'flex-end',
+    paddingLeft: '1em',
+    position: 'relative',
+    cursor: 'pointer',
+    [mq[768]]: {
+      borderLeft: `1px solid ${Color.borderInactive}`,
+    },
+    '& svg': {
+      height: '1em',
+      width: '1em',
+    },
   },
 }

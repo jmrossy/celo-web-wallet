@@ -2,7 +2,12 @@ import { getProvider } from 'src/blockchain/provider'
 import { AVG_BLOCK_TIMES } from 'src/consts'
 import { logger } from 'src/utils/logger'
 
-export async function getLatestBlockDetails() {
+export interface LatestBlockDetails {
+  number: number
+  timestamp: number
+}
+
+export async function getLatestBlockDetails(): Promise<LatestBlockDetails | null> {
   const provider = getProvider()
   if (!provider) {
     return null

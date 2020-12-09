@@ -130,5 +130,8 @@ export const defaultButtonStyles: Styles = {
     cursor: 'default',
     color: Color.primaryGrey,
     backgroundColor: Color.borderInactive,
+    img: {
+      filter: 'brightness(0.7)',
+    },
   },
 }
