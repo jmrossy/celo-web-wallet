@@ -53,7 +53,7 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
           maxHeight,
           margin,
           padding: '1em',
-          lineHeight: '1.4em',
+          lineHeight: '1.6em',
         }}
         value={value}
         placeholder={placeholder}

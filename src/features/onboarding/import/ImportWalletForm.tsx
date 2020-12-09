@@ -68,10 +68,10 @@ export function ImportWalletForm() {
               helpText={!isMnemonicValid ? 'invalid account key' : undefined}
               placeholder="fish boot jump hand..."
               onChange={onInputChange}
-              minWidth="20em"
-              maxWidth="25em"
-              minHeight="5em"
-              maxHeight="7em"
+              minWidth="22em"
+              maxWidth="26em"
+              minHeight="6.5em"
+              maxHeight="8em"
             />
             <Button
               onClick={onClickImport}
