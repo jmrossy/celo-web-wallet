@@ -29,24 +29,19 @@ const style: Stylesheet = {
   container: {
     height: '100%',
     width: '100%',
-    display: 'grid',
-    gridTemplateColumns: '1fr',
     overflow: 'hidden',
+    position: 'relative',
   },
   elipse: {
-    gridRowStart: 1,
-    gridColumnStart: 1,
-    height: '6em',
-    margin: 'auto',
-    marginTop: '6em',
-    marginLeft: '4.5em',
+    height: '7em',
+    position: 'absolute',
+    top: '50%',
+    left: '34%',
     opacity: 0,
     animation: `${pulse} 3s infinite`,
   },
   echo: {
-    gridRowStart: 1,
-    gridColumnStart: 1,
-    margin: 'auto',
+    position: 'absolute',
     opacity: 0,
     animation: `${pulse} 3s infinite`,
   },
@@ -58,25 +53,22 @@ const echoStyle = (index: number) => {
     case 1:
       return css({
         height: '12em',
-        marginTop: '2em',
-        // marginRight: '3em',
-        marginLeft: '2.5em',
+        top: '33%',
+        left: '27%',
         animationDelay: delay,
       })
     case 2:
       return css({
         height: '18em',
-        marginTop: '-2em',
-        // marginRight: '-0.5em',
-        marginLeft: '0.5em',
+        top: '11%',
+        left: '18%',
         animationDelay: delay,
       })
     case 3:
       return css({
         height: '24em',
-        marginTop: '-6em',
-        // marginRight: '-6.5em',
-        marginLeft: '-2.5em',
+        top: '-8%',
+        left: '3%',
         animationDelay: delay,
       })
     default:

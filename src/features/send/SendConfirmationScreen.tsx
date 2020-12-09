@@ -75,7 +75,7 @@ export function SendConfirmationScreen() {
 
   const confirm = () => {
     modal.closeModal()
-    modal.showModal('Payment Succeeded', 'Your payment has been successfully sent')
+    modal.showSuccessModal('Payment Sent!', 'Your payment has been sent successfully')
     dispatch(sendTokenActions.reset())
     dispatch(sendSucceeded())
     navigate('/')

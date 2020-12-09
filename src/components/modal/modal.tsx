@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { Button } from 'src/components/Button'
-import CloseIcon from 'src/components/icons/close.svg'
+import { CloseButton } from 'src/components/CloseButton'
+import { CheckmarkInElipseIcon } from 'src/components/icons/Checkmark'
 import { Box } from 'src/components/layout/Box'
 import { LoadingIndicator } from 'src/components/LoadingIndicator'
 import { Backdrop } from 'src/components/modal/Backdrop'
@@ -26,6 +27,7 @@ export interface ModalProps {
   actions?: ModalAction | ModalAction[]
   size?: ModalSize
   isLoading?: boolean
+  isSuccess?: boolean
   onActionClick?: ModalActionCallback | null
   onClose?: (action?: ModalAction | null) => void | null
 }
@@ -37,7 +39,17 @@ export const ModalOkAction: ModalAction = {
 }
 
 export function Modal(props: PropsWithChildren<ModalProps>) {
-  const { head, subHead, body, onClose, actions, onActionClick, isLoading, children } = props
+  const {
+    head,
+    subHead,
+    body,
+    onClose,
+    actions,
+    onActionClick,
+    isLoading,
+    isSuccess,
+    children,
+  } = props
 
   const allActions = actions ? (Array.isArray(actions) ? actions : [actions]) : []
 
@@ -63,12 +75,15 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
                   <LoadingIndicator />
                 </div>
               )}
-              {onClose && (
-                <Button size="icon" icon={CloseIcon} styles={style.closeIcon} onClick={onClose} />
+              {isSuccess && (
+                <div css={style.successIcon}>
+                  <CheckmarkInElipseIcon />
+                </div>
               )}
+              {onClose && <CloseButton onClick={onClose} styles={style.closeIcon} />}
             </Box>
             {onActionClick && allActions && allActions.length > 0 && (
-              <Box direction="row" justify="center" margin="2em 0 0 0">
+              <Box direction="row" justify="center" margin="1.6em 0 0 0">
                 {allActions.map((action) => {
                   return (
                     <Button
@@ -76,7 +91,7 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
                       onClick={() => onActionClick(action)}
                       color={action.color || Color.primaryGreen}
                       margin="0 1rem"
-                      size="m"
+                      size="s"
                     >
                       {action.label}
                     </Button>
@@ -108,9 +123,9 @@ const style: Stylesheet = {
   },
   modal: {
     minWidth: '20em',
-    maxWidth: '50%',
+    maxWidth: 'min(70vw, 30em)',
     minHeight: '13em',
-    maxHeight: '50%',
+    maxHeight: 'min(60vh, 23em)',
     border: `1px solid ${Color.borderInactive}`,
     backgroundColor: 'white',
     borderRadius: 4,
@@ -150,23 +165,45 @@ const style: Stylesheet = {
   },
   closeIcon: {
     position: 'absolute',
-    top: 0,
-    right: 0,
-    backgroundColor: 'transparent',
+    top: -12,
+    right: -10,
   },
   loadingContainer: {
-    maxHeight: '15em',
-    maxWidth: '20em',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  successIcon: {
+    marginTop: '1.5em',
   },
 }
 
 const propsToSubHeadStyle = (props: ModalProps): Styles => {
-  const css: Styles = props.severity?.toLowerCase() === 'error' ? { color: Color.textError } : {}
-  return css
+  return props.severity?.toLowerCase() === 'error' ? { color: Color.textError } : {}
 }
 
 const propsToModalStyle = (props: ModalProps): Styles => {
-  const css: Styles =
-    props.size === 's' ? { maxWidth: '25%' } : props.size === 'l' ? { maxWidth: '65%' } : {}
-  return css
+  if (props.isLoading) {
+    // Hardcoded size for loading modal to fit animation well
+    return {
+      height: '19em',
+      width: '22em',
+      padding: 0,
+      h1: {
+        marginTop: '1em',
+      },
+    }
+  }
+
+  if (props.isSuccess) {
+    // Hardcoded size to match loading modal
+    return {
+      height: '17.4em',
+      width: '20.4em',
+    }
+  }
+
+  return props.size === 's' ? { maxWidth: '25vw' } : props.size === 'l' ? { maxWidth: '80vw' } : {}
 }

@@ -19,7 +19,7 @@ export function useLogoutModal() {
       warning,
       [
         { key: 'cancel', label: 'Cancel', color: Color.primaryGrey },
-        { key: 'logout', label: 'I understand, log me out', color: Color.primaryRed },
+        { key: 'logout', label: 'Log me out', color: Color.primaryRed },
       ],
       'Backup your Account Key first!'
     )
