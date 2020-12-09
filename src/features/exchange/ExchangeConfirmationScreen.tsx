@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
-import QuestionIcon from 'src/components/icons/question_mark.svg'
+import { HelpIcon } from 'src/components/icons/HelpIcon'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -131,7 +131,7 @@ export function ExchangeConfirmationScreen() {
           >
             <Box direction="row" justify="between" align="end" styles={style.labelWidth}>
               <label css={style.label}>
-                Fee <img src={QuestionIcon} css={style.icon} />
+                Fee <HelpIcon tooltip="Fees, or 'gas', keep the network secure." />
               </label>
             </Box>
             {feeAmount && feeCurrency ? (
