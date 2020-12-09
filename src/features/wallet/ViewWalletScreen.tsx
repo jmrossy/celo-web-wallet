@@ -21,7 +21,7 @@ export function ViewWalletScreen() {
   return (
     <ScreenContentFrame>
       <Box direction="column" align="center" styles={style.contentContainer}>
-        <h1 css={style.header}>Your Celo Account</h1>
+        <h2 css={style.header}>Your Celo Account</h2>
         <div css={style.detailsContainer}>
           <WalletDetails />
         </div>
@@ -40,7 +40,7 @@ const style: Stylesheet = {
     },
   },
   header: {
-    ...Font.h1Green,
+    ...Font.h2Green,
     margin: '0 0 1.2em 0',
     textAlign: 'center',
     [mq[768]]: {
