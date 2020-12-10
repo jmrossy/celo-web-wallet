@@ -1,16 +1,15 @@
-import { useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
 import { getSigner, isSignerSet } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
 import { Identicon } from 'src/components/Identicon'
 import { Mnemonic } from 'src/components/Mnemonic'
-import { NULL_ADDRESS, PLACEHOLDER_MNEMONIC } from 'src/consts'
+import { PLACEHOLDER_MNEMONIC } from 'src/consts'
+import { useWalletAddress } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function WalletDetails() {
-  const address = useSelector((s: RootState) => s.wallet.address)
+  const address = useWalletAddress()
   const isWalletReady = address && isSignerSet()
   const mnemonic = isWalletReady ? getSigner().mnemonic : null
 
@@ -25,7 +24,7 @@ export function WalletDetails() {
         </div>
       </div>
       <div css={style.itemContainer}>
-        <Address address={address || NULL_ADDRESS} hideIdenticon={true} buttonType="copy" />
+        <Address address={address} hideIdenticon={true} buttonType="copy" />
       </div>
       <div css={style.hrContainer}>
         <hr css={style.hr} />
@@ -39,7 +38,7 @@ export function WalletDetails() {
         </div>
       </div>
       <div css={style.itemContainer}>
-        <Identicon address={address || NULL_ADDRESS} size={60} />
+        <Identicon address={address} size={60} />
       </div>
       <div css={style.hrContainer}>
         <hr css={style.hr} />

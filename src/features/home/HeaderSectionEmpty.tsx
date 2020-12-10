@@ -7,6 +7,8 @@ import Mail from 'src/components/icons/mail.svg'
 import { Box } from 'src/components/layout/Box'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
+import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
+import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -27,6 +29,12 @@ export function HeaderSectionEmpty() {
   const navigate = useNavigate()
   const onClickSeeWallet = () => {
     navigate('/wallet')
+  }
+
+  const showQrModal = useAddressQrCodeModal()
+  const address = useWalletAddress()
+  const onQrButtonClick = () => {
+    showQrModal(address)
   }
 
   return (
@@ -50,11 +58,14 @@ export function HeaderSectionEmpty() {
           </Link>
         </p>
         <div>
-          <Button size="s" onClick={onClickBuyCelo} margin="2em 2em 0 0">
+          <Button size="s" onClick={onClickBuyCelo} margin="2em 1em 0 0">
             Buy Celo
           </Button>
-          <Button size="s" onClick={onClickSeeWallet} margin="2em 0 0 0">
+          <Button size="s" onClick={onClickSeeWallet} margin="2em 1em 0 0">
             See Your Wallet
+          </Button>
+          <Button size="s" onClick={onQrButtonClick} margin="2em 0 0 0">
+            Receive from Valora
           </Button>
         </div>
       </Box>

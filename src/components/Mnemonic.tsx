@@ -51,7 +51,7 @@ export function Mnemonic(props: Props) {
           <img width={'20px'} height={'20px'} src={Eye} alt="Show/Hide" />
         </button>
         <button css={style.button} onClick={onCopyButtonClick}>
-          <img width={'18px'} height={'18px'} src={Paste} alt="Copy" />
+          <img width={'17px'} height={'17px'} src={Paste} alt="Copy" />
         </button>
       </Box>
     </Box>
@@ -66,9 +66,9 @@ const style: Stylesheet = {
   container: {
     zIndex: 5,
     backgroundColor: Color.fillLight,
-    padding: '5px 22px 5px 5px',
+    padding: '5px 18px 5px 5px',
     borderRadius: 3,
-    minWidth: '17em',
+    minWidth: '20em',
   },
   line: {
     padding: '0px 2px',

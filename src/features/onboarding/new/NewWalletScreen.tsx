@@ -20,6 +20,7 @@ export function NewWalletScreen() {
   const address = useSelector((s: RootState) => s.wallet.address)
 
   useEffect(() => {
+    // TODO this causes nav problems when pin wasn't set
     if (address) {
       logger.error('Attempting to create new address when one is already assigned')
       return
