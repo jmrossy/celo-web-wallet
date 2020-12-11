@@ -7,9 +7,10 @@ import { clearTransactions } from 'src/features/feed/feedSlice'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { put } from 'typed-redux-saga'
-import { setAddress } from './walletSlice'
+import { clearWallet, setAddress } from './walletSlice'
 
 function* createWallet() {
+  yield* put(clearWallet())
   const entropy = randomBytes(32)
   const mnemonic = entropyToMnemonic(entropy)
   const derivationPath = CELO_DERIVATION_PATH + '/0'

@@ -8,6 +8,7 @@ import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusM
 import { Spinner } from 'src/components/Spinner'
 import { createWalletActions, createWalletSagaName } from 'src/features/wallet/createWallet'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
+import { clearWallet } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'
@@ -20,10 +21,12 @@ export function NewWalletScreen() {
   const address = useSelector((s: RootState) => s.wallet.address)
 
   useEffect(() => {
-    // TODO this causes nav problems when pin wasn't set
+    dispatch(createWalletActions.reset())
+
     if (address) {
-      logger.error('Attempting to create new address when one is already assigned')
-      return
+      // TODO show warning modal here
+      logger.warn('Attempting to create new address when one is already assigned')
+      dispatch(clearWallet())
     }
 
     // For smoother loading render
@@ -39,7 +42,7 @@ export function NewWalletScreen() {
   )
 
   const onClickContinue = () => {
-    navigate('/set-pin')
+    navigate('/setup/set-pin')
   }
 
   const isLoading = !address && (!status || status === SagaStatus.Started)

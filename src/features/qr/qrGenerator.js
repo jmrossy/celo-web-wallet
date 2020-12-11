@@ -1,4 +1,4 @@
-/*!
+/*
  * This is a stripped down version of qrjs2 (https://github.com/englishextra/qrjs2)
  * Which is based on qr.js -- QR code generator in Javascript (revision 2011-01-19)
  * Written by Kang Seonghoon <public+qrjs@mearie.org>.

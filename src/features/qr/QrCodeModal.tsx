@@ -11,13 +11,13 @@ export function useAddressQrCodeModal() {
     const data = encodeAddressForQr(address)
     showModalWithContent(
       'Your Wallet Address',
-      <QrCodeModal address={address} data={data} />,
+      <AddressQrCodeModal address={address} data={data} />,
       ModalOkAction
     )
   }
 }
 
-function QrCodeModal({ address, data }: { address: string; data: string }) {
+function AddressQrCodeModal({ address, data }: { address: string; data: string }) {
   return (
     <Box direction="column" align="center" margin="1em 0 0 0">
       <Address address={address} hideIdenticon={true} />

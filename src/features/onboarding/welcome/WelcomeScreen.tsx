@@ -10,11 +10,11 @@ export function WelcomeScreen() {
   const navigate = useNavigate()
 
   const onClickCreateNew = () => {
-    navigate('/new')
+    navigate('/setup/new')
   }
 
   const onClickUseExisting = () => {
-    navigate('/import')
+    navigate('/setup/import')
   }
 
   return (

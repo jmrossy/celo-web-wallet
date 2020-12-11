@@ -37,7 +37,7 @@ export function ImportWalletForm() {
 
   const navigate = useNavigate()
   const onSuccess = () => {
-    navigate('/set-pin')
+    navigate('/setup/set-pin')
   }
   const status = useSagaStatusWithErrorModal(
     importWalletSagaName,

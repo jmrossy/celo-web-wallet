@@ -1,7 +1,5 @@
-import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { isSignerSet } from 'src/blockchain/signer'
 import { Button } from 'src/components/Button'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
@@ -25,12 +23,6 @@ const initialValues = { action: PincodeAction.Set, value: '', valueConfirm: '' }
 export function SetPincodeForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (!isSignerSet()) {
-      navigate('/', { replace: true })
-    }
-  }, [])
 
   const onSubmit = (values: PincodeParams) => {
     if (areInputsValid()) {
