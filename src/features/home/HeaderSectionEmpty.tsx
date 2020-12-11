@@ -57,14 +57,24 @@ export function HeaderSectionEmpty() {
             your address.
           </Link>
         </p>
-        <div>
-          <Button size="s" onClick={onClickBuyCelo} margin="2em 1em 0 0">
+        <div css={style.callToActionContainer}>
+          <Button
+            size="s"
+            onClick={onClickBuyCelo}
+            margin="0 0.5em 0 0"
+            styles={style.callToActionButton}
+          >
             Buy Celo
           </Button>
-          <Button size="s" onClick={onClickSeeWallet} margin="2em 1em 0 0">
+          <Button
+            size="s"
+            onClick={onClickSeeWallet}
+            margin="0 0.5em 0 0"
+            styles={style.callToActionButton}
+          >
             See Your Wallet
           </Button>
-          <Button size="s" onClick={onQrButtonClick} margin="2em 0 0 0">
+          <Button size="s" onClick={onQrButtonClick} styles={style.callToActionButton}>
             Receive from Valora
           </Button>
         </div>
@@ -118,38 +128,18 @@ const style: Stylesheet = {
     padding: 0,
     background: 'none',
   },
-  exchangeLink: {
-    marginTop: '1em',
-    fontSize: '1.1em',
-    color: Color.primaryBlack,
-    textAlign: 'center',
-    textDecoration: 'none',
-    ':hover': {
-      textDecoration: 'underline',
-    },
+  callToActionContainer: {
+    marginTop: '1.5em',
   },
-  exchangeLinkContent: {
-    textDecoration: 'none',
-    borderRadius: 3,
-    width: '5.6em',
-    height: '5.8em',
-    margin: '0 0.5em',
-    border: `1px solid ${Color.primaryWhite}`,
-    ':hover': {
-      borderColor: Color.altGrey,
-    },
+  callToActionButton: {
+    marginTop: '0.5em',
+    width: 'auto',
     [mq[768]]: {
-      width: '7em',
-      height: '7.2em',
+      marginRight: '1em',
     },
-  },
-  exchangeIcon: {
-    height: '2.5em',
-    width: '2.5em',
-    marginBottom: '0.7em',
-    [mq[768]]: {
-      width: '3em',
-      height: '3em',
+    [mq[1200]]: {
+      width: '9.5em',
+      marginRight: '1em',
     },
   },
 }

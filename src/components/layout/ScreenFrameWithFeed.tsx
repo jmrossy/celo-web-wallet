@@ -45,16 +45,16 @@ enum FrameState {
 
 function useFrameState() {
   const location = useLocation()
-  const isHomeScreen = location.pathname === '/'
+  const isHomeScreenMobile = location.pathname === '/' || location.pathname === '/wallet'
   const isMobile = useIsMobile()
   const isWalletEmpty = useAreBalancesEmpty()
 
   if (!isMobile && isWalletEmpty) return FrameState.DesktopHomeEmpty
   if (!isMobile && !isWalletEmpty) return FrameState.DesktopHome
 
-  if (isMobile && isHomeScreen && isWalletEmpty) return FrameState.MobileHomeEmpty
-  if (isMobile && isHomeScreen && !isWalletEmpty) return FrameState.MobileHome
-  if (isMobile && !isHomeScreen) return FrameState.MobileNotHome
+  if (isMobile && isHomeScreenMobile && isWalletEmpty) return FrameState.MobileHomeEmpty
+  if (isMobile && isHomeScreenMobile && !isWalletEmpty) return FrameState.MobileHome
+  if (isMobile && !isHomeScreenMobile) return FrameState.MobileNotHome
 
   throw new Error('Unhandled frame state case')
 }
