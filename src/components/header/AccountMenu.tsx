@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
 import ChevronIcon from 'src/components/icons/chevron.svg'
 import HelpIcon from 'src/components/icons/help.svg'
@@ -16,8 +14,8 @@ import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
-import { NULL_ADDRESS } from 'src/consts'
 import { useLogoutModal } from 'src/features/wallet/logout'
+import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -32,16 +30,18 @@ const MenuItems = [
 ]
 
 export const AccountMenu = () => {
-  const navigate = useNavigate()
-  const isMobile = useIsMobile()
-  const onLogout = useLogoutModal()
-  const { showModalWithContent } = useModal()
-  const address = useSelector((s: RootState) => s.wallet.address)
-  const addressOrDefault = address || NULL_ADDRESS
-  const addressStub = '0x' + shortenAddress(addressOrDefault).substring(2).toUpperCase()
-  const identiconSize = isMobile ? 30 : 40
   const [isOpen, setOpen] = useState(false)
 
+  const isMobile = useIsMobile()
+  const identiconSize = isMobile ? 30 : 40
+
+  const onLogout = useLogoutModal()
+  const { showModalWithContent } = useModal()
+
+  const address = useWalletAddress()
+  const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
+
+  const navigate = useNavigate()
   const onItemClick = (key: string) => async () => {
     switch (key) {
       case 'account':
@@ -79,7 +79,7 @@ export const AccountMenu = () => {
         <Box styles={style.addressContainer} align="center">
           <span css={style.address}>{addressStub}</span>
         </Box>
-        <Identicon address={addressOrDefault} size={identiconSize} styles={style.identicon} />
+        <Identicon address={address} size={identiconSize} styles={style.identicon} />
       </div>
       {isOpen && (
         <>

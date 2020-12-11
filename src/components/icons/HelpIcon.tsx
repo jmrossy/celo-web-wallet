@@ -15,6 +15,8 @@ export const HelpIcon = (props: IconProps) => {
 
 const styles: Stylesheet = {
   icon: {
+    width: '1.1em',
+    paddingLeft: '0.25em',
     marginBottom: '-0.3em',
     cursor: 'help',
   },

@@ -7,7 +7,7 @@ import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
 import { isAccountUnlocked } from 'src/features/pincode/pincode'
 import { isWalletInStorage } from 'src/features/wallet/storage'
 
-export function HomeFrame() {
+export function HomeNavigator() {
   const { address, isUnlocked } = useSelector((s: RootState) => s.wallet)
 
   // TODO necessary until auto-timeout unlock works properly
@@ -31,5 +31,5 @@ export function HomeFrame() {
   }
 
   // Otherwise, account must not be set up yet
-  return <Navigate to="/welcome" replace={true} />
+  return <Navigate to="/setup" replace={true} />
 }
