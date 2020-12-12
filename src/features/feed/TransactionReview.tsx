@@ -133,7 +133,7 @@ function TransactionAdvancedDetails({ tx }: { tx: CeloTransaction }) {
                 rel="noopener noreferrer"
                 css={Font.linkLight}
               >
-                View on Blockscout
+                View on Celo Explorer
               </a>
             </div>
           </TransactionProperty>

@@ -2,8 +2,8 @@ import { utils } from 'ethers'
 import { useNavigate } from 'react-router'
 import { defaultButtonStyles } from 'src/components/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
-import PlusIcon from 'src/components/icons/plus.svg'
 import QrCodeIcon from 'src/components/icons/qr_code.svg'
+import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
@@ -12,7 +12,7 @@ import { Stylesheet } from 'src/styles/types'
 import { tryClipboardSet } from 'src/utils/clipboard'
 import { chunk } from 'src/utils/string'
 
-type ButtonType = 'send' | 'copy'
+type ButtonType = 'send' | 'copy' | 'qrAndCopy'
 
 interface Props {
   address: string
@@ -71,17 +71,19 @@ export function Address(props: Props) {
       </div>
       {buttonType === 'send' && (
         <button css={style.button} onClick={onSendButtonClick}>
-          <img width="20px" height="20px" src={PlusIcon} alt="Send" />
+          <img width="15px" height="15px" src={SendPaymentIcon} alt="Send" />
         </button>
       )}
-      {buttonType === 'copy' && (
+      {(buttonType === 'copy' || buttonType === 'qrAndCopy') && (
         <Box direction="column" align="center" justify="between">
           <button css={style.button} onClick={onCopyButtonClick}>
             <img width="17px" height="17px" src={PasteIcon} alt="Copy" />
           </button>
-          <button css={[style.button, { marginTop: 6 }]} onClick={onQrButtonClick}>
-            <img width="16px" height="16px" src={QrCodeIcon} alt="Qr Code" />
-          </button>
+          {buttonType === 'qrAndCopy' && (
+            <button css={[style.button, { marginTop: 6 }]} onClick={onQrButtonClick}>
+              <img width="16px" height="16px" src={QrCodeIcon} alt="Qr Code" />
+            </button>
+          )}
         </Box>
       )}
     </Box>
@@ -95,10 +97,10 @@ function getAddressContainerStyle(hideIdenticon?: boolean, buttonType?: ButtonTy
     addressContainerStyle.paddingRight = 8
     addressContainerStyle.marginLeft = 0
   }
-  if (buttonType === 'send') {
+  if (buttonType) {
     addressContainerStyle.paddingRight = 16
   }
-  if (buttonType === 'copy') {
+  if (buttonType === 'qrAndCopy') {
     if (!hideIdenticon) throw new Error('No current design for two-button address with identicon')
     addressContainerStyle.paddingLeft = 12
     addressContainerStyle.paddingRight = 19

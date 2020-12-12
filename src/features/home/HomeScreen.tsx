@@ -36,7 +36,7 @@ export function HomeScreen() {
             <hr css={style.divider} />
             <Box direction="row" align="end" margin="0 0 2em 0">
               <img src={Chart} css={style.icon} alt="Price chart" />
-              <label css={[Font.body, Font.bold]}>Celo Prices</label>
+              <label css={[Font.body, Font.bold]}>Celo Price</label>
             </Box>
 
             <PriceChartCelo showHeaderPrice={true} />

@@ -20,10 +20,10 @@ export function useAddressQrCodeModal() {
 function AddressQrCodeModal({ address, data }: { address: string; data: string }) {
   return (
     <Box direction="column" align="center" margin="1em 0 0 0">
-      <Address address={address} hideIdenticon={true} />
-      <div css={{ marginTop: '1em' }}>
-        <QrCode data={data} size="12em" />
+      <div css={{ marginBottom: '1em', paddingLeft: '1em' }}>
+        <Address address={address} hideIdenticon={true} buttonType="copy" />
       </div>
+      <QrCode data={data} size="12em" />
     </Box>
   )
 }

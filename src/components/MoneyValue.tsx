@@ -65,7 +65,7 @@ const getFonts = (baseSize?: number, weight?: number) => {
   return {
     symbol: {
       fontSize: baseSize ? `${baseSize * 0.8}em` : '0.8em',
-      fontWeight: weight ?? 400,
+      fontWeight: weight ?? 500,
     },
     amount: {
       fontSize: baseSize ? `${baseSize}em` : '1em',

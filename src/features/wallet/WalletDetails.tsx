@@ -24,7 +24,7 @@ export function WalletDetails() {
         </div>
       </div>
       <div css={style.itemContainer}>
-        <Address address={address} hideIdenticon={true} buttonType="copy" />
+        <Address address={address} hideIdenticon={true} buttonType="qrAndCopy" />
       </div>
       <div css={style.hrContainer}>
         <hr css={style.hr} />

@@ -1,4 +1,3 @@
-import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/Button'
 import Bittrex from 'src/components/icons/logos/bittrex.svg'
 import Coinbase from 'src/components/icons/logos/coinbase.svg'
@@ -11,7 +10,6 @@ import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function HeaderSectionEmpty() {
@@ -24,11 +22,6 @@ export function HeaderSectionEmpty() {
       null,
       'Celo currencies can be earned or purchased from these exchanges.'
     )
-  }
-
-  const navigate = useNavigate()
-  const onClickSeeWallet = () => {
-    navigate('/wallet')
   }
 
   const showQrModal = useAddressQrCodeModal()
@@ -53,29 +46,16 @@ export function HeaderSectionEmpty() {
             buy currency
           </button>{' '}
           from an exchange or ask a friend on Celo to send a payment to{' '}
-          <Link to="/wallet" css={Font.linkLight}>
+          <button css={style.tipButton} onClick={onQrButtonClick}>
             your address.
-          </Link>
+          </button>{' '}
         </p>
         <div css={style.callToActionContainer}>
-          <Button
-            size="s"
-            onClick={onClickBuyCelo}
-            margin="0 0.5em 0 0"
-            styles={style.callToActionButton}
-          >
+          <Button size="s" margin="0.5em 1em 0 0" width="9em" onClick={onClickBuyCelo}>
             Buy Celo
           </Button>
-          <Button
-            size="s"
-            onClick={onClickSeeWallet}
-            margin="0 0.5em 0 0"
-            styles={style.callToActionButton}
-          >
-            See Your Wallet
-          </Button>
-          <Button size="s" onClick={onQrButtonClick} styles={style.callToActionButton}>
-            Receive from Valora
+          <Button size="s" margin="0.5em 0 0 0" width="9em" onClick={onQrButtonClick}>
+            Receive Celo
           </Button>
         </div>
       </Box>
@@ -130,16 +110,5 @@ const style: Stylesheet = {
   },
   callToActionContainer: {
     marginTop: '1.5em',
-  },
-  callToActionButton: {
-    marginTop: '0.5em',
-    width: 'auto',
-    [mq[768]]: {
-      marginRight: '1em',
-    },
-    [mq[1200]]: {
-      width: '9.5em',
-      marginRight: '1em',
-    },
   },
 }
