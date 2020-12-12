@@ -51,6 +51,9 @@ export function SetPincodeForm() {
   return (
     <Box direction="column" align="center">
       <div css={style.description}>You pincode protects your account on this device.</div>
+      <div css={[style.description, Font.extraBold]}>
+        Do not lose this pin, you need it to access your account!
+      </div>
       <div css={style.description}>Use six numbers (0-9).</div>
       <div css={style.inputRowContainer}>
         <form onSubmit={handleSubmit}>

@@ -1,8 +1,9 @@
+import { AboutWalletLink } from 'src/components/footer/AboutWallet'
 import { ConnectionStatusLink } from 'src/components/footer/ConnectionStatus'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { useIsMobile } from 'src/styles/mediaQueries'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { Stylesheet } from 'src/styles/types'
 
 export function Footer() {
   const isMobile = useIsMobile()
@@ -14,7 +15,7 @@ function FooterDesktop() {
   return (
     <Box align="center" justify="between" styles={style.container}>
       <Box align="center" justify="center">
-        <AboutCeloLink />
+        <AboutWalletLink styles={style.text} />
         <span>-</span>
         <ValoraLink />
         <span>-</span>
@@ -28,24 +29,16 @@ function FooterDesktop() {
 function FooterMobile() {
   return (
     <Box align="center" justify="around" styles={style.container}>
-      <AboutCeloLink />
+      <AboutWalletLink styles={style.text} />
       <ValoraLink />
       <ConnectionStatusLink />
     </Box>
   )
 }
 
-function AboutCeloLink() {
-  return (
-    <a css={textStyle} href="https://celo.org" target="_blank" rel="noopener noreferrer">
-      About Celo
-    </a>
-  )
-}
-
 function ValoraLink() {
   return (
-    <a css={textStyle} href="https://valoraapp.com" target="_blank" rel="noopener noreferrer">
+    <a css={style.text} href="https://valoraapp.com" target="_blank" rel="noopener noreferrer">
       Valora Mobile App
     </a>
   )
@@ -54,7 +47,7 @@ function ValoraLink() {
 function ViewSourceLink() {
   return (
     <a
-      css={textStyle}
+      css={style.text}
       href="https://github.com/celo-tools/celo-web-wallet"
       target="_blank"
       rel="noopener noreferrer"
@@ -64,23 +57,22 @@ function ViewSourceLink() {
   )
 }
 
-const textStyle: Styles = {
-  opacity: 0.8,
-  padding: '0 1.2em',
-  fontSize: '0.8em',
-  fontWeight: 300,
-  color: Color.primaryBlack,
-  textAlign: 'center',
-  textDecoration: 'none',
-  ':hover': {
-    textDecoration: 'underline',
-  },
-}
-
 const style: Stylesheet = {
   container: {
     padding: '0.5em 0.8em',
     width: '100%',
     borderTop: `1px solid ${Color.borderLight}`,
+  },
+  text: {
+    opacity: 0.8,
+    padding: '0 1.2em',
+    fontSize: '0.8em',
+    fontWeight: 300,
+    color: Color.primaryBlack,
+    textAlign: 'center',
+    textDecoration: 'none',
+    ':hover': {
+      textDecoration: 'underline',
+    },
   },
 }

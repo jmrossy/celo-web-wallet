@@ -45,26 +45,26 @@ export function NewWalletScreen() {
     navigate('/setup/set-pin')
   }
 
-  const isLoading = !address && (!status || status === SagaStatus.Started)
-  const isDone = address || status === SagaStatus.Success || status === SagaStatus.Failure
+  const isLoading = !address || !status || status === SagaStatus.Started
 
   return (
     <OnboardingScreenFrame>
       <h1 css={style.header}>Your New Celo Account</h1>
-      {isLoading && (
-        <div css={style.container}>
+      <div css={style.container}>
+        <div css={isLoading ? style.contentLoading : null}>
           <WalletDetails />
-          <div css={style.spinnerContainer}>
+        </div>
+        {isLoading && (
+          <div css={style.spinner}>
             <Spinner />
           </div>
-        </div>
-      )}
-      {isDone && <WalletDetails />}
+        )}
+      </div>
       <Button
         size="l"
         onClick={onClickContinue}
         margin={'3em 0 0 0'}
-        disabled={status !== SagaStatus.Success && !address}
+        disabled={status !== SagaStatus.Success || !address}
       >
         Continue
       </Button>
@@ -80,18 +80,20 @@ const style: Stylesheet = {
   container: {
     position: 'relative',
   },
-  spinnerContainer: {
-    zIndex: 100,
-    position: 'absolute',
-    left: -20,
-    right: -20,
-    top: -20,
-    bottom: -20,
-    backgroundColor: '#f5f6f7',
-    opacity: 0.4,
-    borderRadius: 4,
+  contentLoading: {
+    opacity: 0.7,
+    filter: 'blur(3px)',
+  },
+  spinner: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 100,
+    opacity: 0.7,
   },
 }

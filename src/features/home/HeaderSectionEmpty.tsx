@@ -6,6 +6,7 @@ import Mail from 'src/components/icons/mail.svg'
 import { Box } from 'src/components/layout/Box'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
+import { TextButton } from 'src/components/TextButton'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
@@ -42,13 +43,13 @@ export function HeaderSectionEmpty() {
         <p css={style.tip}>All new wallets start empty. Add funds to start using Celo.</p>
         <p css={style.tip}>
           You can{' '}
-          <button css={style.tipButton} onClick={onClickBuyCelo}>
+          <TextButton css={style.tipButton} onClick={onClickBuyCelo}>
             buy currency
-          </button>{' '}
+          </TextButton>{' '}
           from an exchange or ask a friend on Celo to send a payment to{' '}
-          <button css={style.tipButton} onClick={onQrButtonClick}>
+          <TextButton css={style.tipButton} onClick={onQrButtonClick}>
             your address.
-          </button>{' '}
+          </TextButton>{' '}
         </p>
         <div css={style.callToActionContainer}>
           <Button size="s" margin="0.5em 1em 0 0" width="9em" onClick={onClickBuyCelo}>
@@ -100,13 +101,7 @@ const style: Stylesheet = {
     margin: '1em 0 0 0',
   },
   tipButton: {
-    ...Font.linkLight,
     fontWeight: 300,
-    border: 'none',
-    outline: 'none',
-    cursor: 'pointer',
-    padding: 0,
-    background: 'none',
   },
   callToActionContainer: {
     marginTop: '1.5em',

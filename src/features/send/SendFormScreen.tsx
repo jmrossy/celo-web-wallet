@@ -29,7 +29,7 @@ interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
 const initialValues: SendTokenForm = {
   recipient: '',
   amount: '',
-  currency: Currency.CELO,
+  currency: Currency.cUSD,
   comment: '',
 }
 

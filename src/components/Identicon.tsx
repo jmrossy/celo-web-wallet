@@ -18,7 +18,7 @@ export class Identicon extends PureComponent<Props> {
     const { address, size: _size, styles } = this.props
     const size = _size ?? 34
 
-    if (!address || !utils.isAddress(address) || BigNumber.from(address).isZero()) {
+    if (!address || !utils.isAddress(address)) {
       return null
     }
 

@@ -1,3 +1,4 @@
+import { AboutWalletLink } from 'src/components/footer/AboutWallet'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
@@ -6,9 +7,7 @@ export function OnboardingFooter() {
   return (
     <Box align="center" justify="center" styles={style.container}>
       <Box align="center" justify="center">
-        <a css={style.anchor} href="https://celo.org" target="_blank" rel="noopener noreferrer">
-          Learn More About Celo
-        </a>
+        <AboutWalletLink styles={style.anchor} />
         <span>-</span>
         <a
           css={style.anchor}
