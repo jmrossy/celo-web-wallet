@@ -5,14 +5,14 @@ import { Currency } from 'src/consts'
 import { TransactionType } from 'src/features/types'
 
 const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
-  [TransactionType.StableTokenTransfer]: 50000,
-  [TransactionType.StableTokenTransferWithComment]: 66000,
-  [TransactionType.StableTokenApprove]: 52000,
-  [TransactionType.CeloTokenTransfer]: 50000,
-  [TransactionType.CeloTokenTransferWithComment]: 66000,
-  [TransactionType.CeloTokenApprove]: 52000,
-  [TransactionType.CeloNativeTransfer]: 25000,
-  [TransactionType.TokenExchange]: 250000,
+  [TransactionType.StableTokenTransfer]: 55000,
+  [TransactionType.StableTokenTransferWithComment]: 70000,
+  [TransactionType.StableTokenApprove]: 58000,
+  [TransactionType.CeloTokenTransfer]: 55000,
+  [TransactionType.CeloTokenTransferWithComment]: 70000,
+  [TransactionType.CeloTokenApprove]: 56000,
+  [TransactionType.CeloNativeTransfer]: 30000,
+  [TransactionType.TokenExchange]: 270000,
 }
 
 const STABLE_TOKEN_GAS_MULTIPLIER = 5

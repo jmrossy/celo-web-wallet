@@ -15,7 +15,7 @@ interface Props {
 
 export function TokenTransferReview({ tx }: Props) {
   const amountLabel = tx.isOutgoing ? 'Sent: ' : 'Received: '
-  const addressLabel = tx.isOutgoing ? 'Recipient' : 'Sender'
+  const addressLabel = tx.isOutgoing ? 'Sent To' : 'Received From'
   const address = tx.isOutgoing ? tx.to : tx.from
 
   const { feeValue, feeCurrency } = getFeeFromConfirmedTx(tx)

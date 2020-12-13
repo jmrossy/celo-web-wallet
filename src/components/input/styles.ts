@@ -8,6 +8,10 @@ export const sharedInputStyles: Styles = {
   ':focus': {
     borderColor: Color.borderActive,
   },
+  '::placeholder': {
+    color: Color.borderInactive,
+    opacity: 1 /* Firefox */,
+  },
 }
 
 export const sharedInputStylesWithError: Styles = {

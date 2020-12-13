@@ -23,11 +23,11 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
 interface ExchangeTokenForm extends Omit<ExchangeTokenParams, 'amountInWei'> {
-  amount: number
+  amount: number | string
 }
 
 const initialValues: ExchangeTokenForm = {
-  amount: 0,
+  amount: '',
   fromCurrency: Currency.cUSD,
 }
 
@@ -90,6 +90,7 @@ export function ExchangeFormScreen() {
                 value={values.amount.toString()}
                 onBlur={handleBlur}
                 {...inputErrors['amount']}
+                placeholder="1.00"
               />
             </Box>
             <Box direction="row" align="center" styles={style.inputRow}>
