@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const DEFAULT_DELAY = 1500
+const DEFAULT_DELAY = 1750
 
 //---
 //The work of managing and cleaning up the splash screen
@@ -8,18 +8,17 @@ export const getSplash = (loadingDelay?: number): [number, () => NodeJS.Timeout 
   const loader = document.getElementById('loader')
 
   const hideSplash = (): NodeJS.Timeout | null => {
-    if (loader) {
-      const app = document.getElementById('app')
-      app?.classList.add('fade-in')
-      loader.classList.remove('.animate')
-      loader.classList.add('loader--hide')
-      const fadeTimeout = setTimeout(() => {
-        loader.parentElement?.removeChild(loader)
-        app?.classList.remove('fade-in')
-      }, 1000) //practice 'leave no trace'...
-      return fadeTimeout
-    }
-    return null
+    if (!loader) return null
+
+    const app = document.getElementById('app')
+    app?.classList.add('fade-in')
+    loader.classList.remove('.animate')
+    loader.classList.add('loader--hide')
+    const fadeTimeout = setTimeout(() => {
+      loader.parentElement?.removeChild(loader)
+      app?.classList.remove('fade-in')
+    }, 500) //practice 'leave no trace'...
+    return fadeTimeout
   }
 
   const startStr = loader?.getAttribute('data-start')

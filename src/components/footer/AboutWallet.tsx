@@ -35,6 +35,15 @@ function AboutWalletModal() {
           rel="noopener noreferrer"
         >
           J M Rossy
+        </a>{' '}
+        and{' '}
+        <a
+          css={Font.linkLight}
+          href="https://www.linkedin.com/in/brianschwalm/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Brian Schwalm
         </a>
         .
       </p>

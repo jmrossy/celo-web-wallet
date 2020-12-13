@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
 import { ErrorBoundary } from 'src/app/FailScreen'
-import { Loading } from 'src/app/Loading'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
 import { useSplashScreen } from 'src/app/splash'
 import { ModalProvider } from 'src/components/modal/modalContext'
@@ -58,7 +57,6 @@ export const App = () => {
 
             {/* To faciliatate testing */}
             <Route path="/dev/home" element={<HomeScreen />} />
-            <Route path="/dev/loading" element={<Loading />} />
             <Route path="/dev/modals" element={<ModalTestScreen />} />
             <Route path="/dev/tools" element={<DevTools />} />
 
