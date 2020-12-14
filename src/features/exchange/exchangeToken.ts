@@ -15,8 +15,14 @@ import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
-import { Balances } from 'src/features/wallet/walletSlice'
-import { fromWei, getOtherCurrency, isAmountValid, toWei } from 'src/utils/amount'
+import { Balances } from 'src/features/wallet/types'
+import {
+  fromWei,
+  getOtherCurrency,
+  toWei,
+  validateAmount,
+  validateAmountWithFees,
+} from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -33,34 +39,34 @@ export function validate(
   let errors: ErrorState = { isValid: true }
 
   if (!amountInWei) {
-    //make sure there is an amount
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
-  } else if (!isAmountValid(amountInWei, fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE)) {
+  } else {
     errors = {
       ...errors,
-      ...invalidInput('amount', 'Amount not available'),
+      ...validateAmount(amountInWei, fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE),
     }
   }
 
   if (validateRate) {
     errors = {
-      ...validateExchangeRate(exchangeRate),
       ...errors,
+      ...validateExchangeRate(exchangeRate),
     }
   }
 
   if (validateFee) {
     errors = {
+      ...errors,
       ...validateFeeEstimate(feeEstimates && feeEstimates[0]),
       ...validateFeeEstimate(feeEstimates && feeEstimates[1]),
-      ...errors,
+      ...validateAmountWithFees(amountInWei, fromCurrency, balances, feeEstimates),
     }
   }
 
   return errors
 }
 
-export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState {
+export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState | null {
   if (!exchangeRate) {
     return { isValid: false, fee: { error: true, helpText: 'No exchange rate set' } }
   }
@@ -77,7 +83,7 @@ export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState {
     return { isValid: false, fee: { error: true, helpText: 'Exchange rate too stale' } }
   }
 
-  return { isValid: true }
+  return null
 }
 
 function* exchangeToken(params: ExchangeTokenParams) {

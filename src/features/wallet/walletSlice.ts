@@ -2,13 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
+import { Balances } from 'src/features/wallet/types'
 import { assert } from 'src/utils/validation'
-export interface Balances {
-  // All balances are represented in wei
-  cUsd: string
-  celo: string
-  lastUpdated: number | null
-}
 
 interface Wallet {
   address: string | null
