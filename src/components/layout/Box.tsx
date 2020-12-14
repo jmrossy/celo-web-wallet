@@ -5,6 +5,7 @@ interface BoxProps {
   align?: 'start' | 'end' | 'center' | 'stretch'
   justify?: 'start' | 'end' | 'center' | 'around' | 'between' | 'evenly'
   margin?: string | number
+  wrap?: boolean
   // Other css styles to be applied
   // Can't call it 'css' or Emotion will pre-parse it out
   styles?: Styles
@@ -63,10 +64,13 @@ function transformPropStyles(props: BoxProps): Styles {
       justifyContent = justify
   }
 
+  const flexWrap: string | undefined = props.wrap ? 'wrap' : undefined
+
   return {
     flexDirection: direction,
     alignItems,
     justifyContent,
+    flexWrap,
     ...passThroughStyles,
   }
 }

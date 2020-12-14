@@ -9,33 +9,37 @@ interface ModalLinkGridProps {
 
 export function ModalLinkGrid({ links }: ModalLinkGridProps) {
   return (
-    <Box direction="row" align="center" justify="center" margin="1.2em 0">
+    <Box direction="row" align="center" justify="center" margin="1.2em 0" wrap>
       {links.map((link, index) => (
-        <a
-          css={style.exchangeLink}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Box
           key={`ModalLinkGrid-link-${index}`}
+          styles={style.exchangeContainer}
+          align="center"
+          justify="center"
         >
-          <Box
-            direction="column"
-            align="center"
-            justify="center"
-            styles={style.exchangeLinkContent}
-          >
-            <img src={link.imgSrc} css={style.exchangeIcon} alt={link.altText || link.text} />
-            <div>{link.text}</div>
-          </Box>
-        </a>
+          <a css={style.exchangeLink} href={link.url} target="_blank" rel="noopener noreferrer">
+            <Box
+              direction="column"
+              align="center"
+              justify="center"
+              styles={style.exchangeLinkContent}
+            >
+              <img src={link.imgSrc} css={style.exchangeIcon} alt={link.altText || link.text} />
+              <div>{link.text}</div>
+            </Box>
+          </a>
+        </Box>
       ))}
     </Box>
   )
 }
 
 const style: Stylesheet = {
+  exchangeContainer: {
+    width: '50%',
+  },
   exchangeLink: {
-    marginTop: '1em',
+    marginTop: '0.5em',
     fontSize: '1.1em',
     color: Color.primaryBlack,
     textAlign: 'center',
