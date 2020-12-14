@@ -1,42 +1,76 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
 import { Currency, WEI_PER_UNIT } from 'src/consts'
 import { ExchangeRate } from 'src/features/exchange/types'
+import { FeeEstimate } from 'src/features/fees/types'
 import { TokenExchangeTx } from 'src/features/types'
-import { Balances } from 'src/features/wallet/walletSlice'
+import { Balances } from 'src/features/wallet/types'
+import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { logger } from 'src/utils/logger'
+import { ErrorState, invalidInput } from 'src/utils/validation'
 
-export function isAmountValid(
+export function validateAmount(
   amountInWei: BigNumberish,
   currency: Currency,
   balances: Balances,
   max: string
-) {
+): ErrorState | null {
   const _amountInWei = BigNumber.from(amountInWei)
+
   if (_amountInWei.lte(0)) {
     logger.warn(`Invalid amount, too small: ${_amountInWei.toString()}`)
-    return false
+    return invalidInput('amount', 'Amount too small')
   }
 
   if (_amountInWei.gte(max)) {
     logger.warn(`Invalid amount, too big: ${_amountInWei.toString()}`)
-    return false
+    return invalidInput('amount', 'Amount too big')
   }
 
   if (!balances.lastUpdated) {
     throw new Error('Checking amount validity without fresh balances')
   }
 
-  if (currency === Currency.cUSD && _amountInWei.gt(balances.cUsd)) {
-    logger.warn(`Exceeds cUSD balance: ${_amountInWei.toString()}`)
-    return false
+  const balance = getCurrencyBalance(balances, currency)
+  if (_amountInWei.gt(balance)) {
+    logger.warn(`Exceeds ${currency} balance: ${_amountInWei.toString()}`)
+    return invalidInput('amount', 'Amount too big')
   }
 
-  if (currency === Currency.CELO && _amountInWei.gt(balances.celo)) {
-    logger.warn(`Exceeds CELO balance: ${_amountInWei.toString()}`)
-    return false
+  return null
+}
+
+export function validateAmountWithFees(
+  txAmountInWei: BigNumberish,
+  txCurrency: Currency,
+  balances: Balances,
+  feeEstimates: FeeEstimate[] | undefined
+): ErrorState | null {
+  if (!feeEstimates || !feeEstimates.length) {
+    logger.error(`No fee set`)
+    return invalidInput('fee', 'No fee set')
   }
 
-  return true
+  const totalFee = feeEstimates.reduce(
+    (total: BigNumber, curr: FeeEstimate) => total.add(curr.fee),
+    BigNumber.from(0)
+  )
+  const feeCurrency = feeEstimates[0].currency // assumes same fee currency for all estimates
+
+  if (feeCurrency === txCurrency) {
+    const balance = getCurrencyBalance(balances, txCurrency)
+    if (totalFee.add(txAmountInWei).gt(balance)) {
+      logger.error(`Fee plus amount exceeds ${txCurrency} balance`)
+      return invalidInput('fee', 'Fee plus amount exceeds balance')
+    }
+  } else {
+    const balance = getCurrencyBalance(balances, feeCurrency)
+    if (totalFee.gt(balance)) {
+      logger.error(`Total fee exceeds ${txCurrency} balance`)
+      return invalidInput('fee', 'Fee exceeds balance')
+    }
+  }
+
+  return null
 }
 
 export function fromWei(value: BigNumberish | null | undefined): number {

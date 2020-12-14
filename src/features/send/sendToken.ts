@@ -9,8 +9,8 @@ import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
-import { Balances } from 'src/features/wallet/walletSlice'
-import { isAmountValid } from 'src/utils/amount'
+import { Balances } from 'src/features/wallet/types'
+import { validateAmount, validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
@@ -35,9 +35,7 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    if (!isAmountValid(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE)) {
-      errors = { ...errors, ...invalidInput('amount', 'Invalid Amount') }
-    }
+    errors = { ...errors, ...validateAmount(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE) }
   }
 
   if (!utils.isAddress(recipient)) {
@@ -64,8 +62,14 @@ export function validate(
 
   if (validateFee) {
     errors = {
-      ...validateFeeEstimate(feeEstimate),
       ...errors,
+      ...validateFeeEstimate(feeEstimate),
+      ...validateAmountWithFees(
+        amountInWei,
+        currency,
+        balances,
+        feeEstimate ? [feeEstimate] : undefined
+      ),
     }
   }
 

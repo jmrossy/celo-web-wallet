@@ -5,36 +5,41 @@ import { Currency, MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts
 import { FeeEstimate } from 'src/features/fees/types'
 import { CeloTransaction } from 'src/features/types'
 import { logger } from 'src/utils/logger'
-import { ErrorState } from 'src/utils/validation'
+import { ErrorState, invalidInput } from 'src/utils/validation'
 
-export function validateFeeEstimate(estimate?: FeeEstimate): ErrorState {
+export function validateFeeEstimate(estimate: FeeEstimate | undefined | null): ErrorState | null {
   if (!estimate) {
-    return { isValid: false, fee: { error: true, helpText: 'No fee set' } }
+    return invalidInput('fee', 'No fee set')
   }
 
   const { gasPrice, gasLimit, fee, currency } = estimate
 
   if (!currency || (currency !== Currency.CELO && currency !== Currency.cUSD)) {
     logger.error(`Invalid fee currency: ${currency}`)
-    return { isValid: false, fee: { error: true, helpText: 'Invalid fee currency' } }
+    return invalidInput('fee', 'Invalid fee currency')
   }
 
   if (!gasPrice || BigNumber.from(gasPrice).gt(MAX_GAS_PRICE)) {
     logger.error(`Invalid gas price: ${gasPrice}`)
-    return { isValid: false, fee: { error: true, helpText: 'Invalid gas price' } }
+    return invalidInput('fee', 'Invalid gas price')
   }
 
   if (!gasLimit || BigNumber.from(gasLimit).gt(MAX_GAS_LIMIT)) {
     logger.error(`Invalid gas limit: ${gasLimit}`)
-    return { isValid: false, fee: { error: true, helpText: 'Invalid gas limit' } }
+    return invalidInput('fee', 'Invalid gas limit')
   }
 
-  if (!fee || BigNumber.from(fee).gt(MAX_FEE_SIZE)) {
+  if (!fee) {
+    logger.error(`No fee amount set`)
+    return invalidInput('fee', 'No fee amount set')
+  }
+
+  if (BigNumber.from(fee).gt(MAX_FEE_SIZE)) {
     logger.error(`Fee is too large: ${fee}`)
-    return { isValid: false, fee: { error: true, helpText: 'Fee is too large' } }
+    return invalidInput('fee', 'Fee is too large')
   }
 
-  return { isValid: true }
+  return null
 }
 
 // Looks at the tx properties to infer what its fee was
