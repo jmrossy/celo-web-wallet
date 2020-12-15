@@ -1,9 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import warningIcon from 'src/components/icons/warning.svg'
 import { Notification } from 'src/components/Notification'
+import { HIGH_VALUE_THRESHOLD } from 'src/consts'
 import {
   setBackupReminderDismissed,
   setHighValueWarningDismissed,
@@ -11,11 +11,9 @@ import {
 import { Color } from 'src/styles/Color'
 import { fromWei } from 'src/utils/amount'
 
-const HIGH_VALUE_THRESHOLD = 25
-
 export function HomeScreenWarnings() {
   const dispatch = useDispatch()
-  const warning = useHomeScreenWarnings()
+  const warning = useSelector(selectHomeScreenWarnings)
 
   const onDismissWarning = (warning: string) => () => {
     const action = warning === 'backup' ? setBackupReminderDismissed : setHighValueWarningDismissed
@@ -63,11 +61,3 @@ export const selectHomeScreenWarnings = createSelector(
     return null
   }
 )
-
-export function useHomeScreenWarnings() {
-  const warning = useSelector(selectHomeScreenWarnings)
-  const location = useLocation()
-  //ScreenFrameWithFeed for desktop doesn't differentiate between home and not home, so need to check the path
-  if (location.pathname !== '/') return null
-  else return warning
-}

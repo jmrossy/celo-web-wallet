@@ -74,7 +74,6 @@ export function SendConfirmationScreen() {
   const modal = useModal()
 
   const confirm = () => {
-    modal.closeModal()
     modal.showSuccessModal('Payment Sent!', 'Your payment has been sent successfully')
     dispatch(sendTokenActions.reset())
     dispatch(sendSucceeded())
@@ -82,7 +81,6 @@ export function SendConfirmationScreen() {
   }
 
   const failure = (error: string | undefined) => {
-    modal.closeModal()
     modal.showErrorModal('Payment Failed', 'Your payment could not be processed', error)
   }
 
@@ -138,7 +136,8 @@ export function SendConfirmationScreen() {
             styles={{ ...style.labelCol, width: '10em' }}
           >
             <label>
-              Fee <HelpIcon tooltip="Fees, or 'gas', keep the network secure." />
+              Fee{' '}
+              <HelpIcon tooltip="Fees, or 'gas', keep the network secure." tipPosition="topRight" />
             </label>
           </Box>
           {feeAmount && feeCurrency ? (

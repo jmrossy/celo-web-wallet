@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { Button } from 'src/components/Button'
 import Elipse from 'src/components/icons/celo_elipse.svg'
+import { HelpIcon } from 'src/components/icons/HelpIcon'
+import Lightbulb from 'src/components/icons/lightbulb.svg'
 import { Box } from 'src/components/layout/Box'
 import { ModalAction, ModalOkAction, ModalSize } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { Notification } from 'src/components/Notification'
+import { Tooltip } from 'src/components/Tooltip'
 import { Color } from 'src/styles/Color'
+import { Font } from 'src/styles/fonts'
 import { testInvalidFeatures, useBrowserFeatureChecks } from 'src/utils/browsers'
 import { logger } from 'src/utils/logger'
 
@@ -115,7 +119,11 @@ export function ModalTestScreen() {
 
   const working = () => {
     setLoading(true)
-    showWorkingModal('Please wait...', 'Click the button at bottom right to dismiss')
+    showWorkingModal('Please wait...', 'Modal will disappear shortly')
+    setTimeout(() => {
+      closeModal()
+      setLoading(false)
+    }, 3000)
   }
 
   const success = () => {
@@ -124,6 +132,13 @@ export function ModalTestScreen() {
 
   const badClose = () => {
     closeModal() //attempt to close the modal when there isn't one open.  This will log a warning in the console
+  }
+
+  const backToBack = () => {
+    showWorkingModal('Loading...', 'A dismissable modal will appear in a moment')
+    setTimeout(() => {
+      showSuccessModal('Nice Job!')
+    }, 2000)
   }
 
   return (
@@ -190,6 +205,105 @@ export function ModalTestScreen() {
         <Button onClick={badClose} margin="1em">
           Close when not open (watch console)
         </Button>
+        <Button onClick={backToBack} margin="1em">
+          Show back-to-back
+        </Button>
+      </Box>
+
+      <Box direction="column" justify="center" align="center">
+        <h1 css={{ width: '100%', textAlign: 'center' }}>Tooltip Testing</h1>
+
+        <Box css={{ width: '100%' }} justify="center" align="center">
+          <HelpIcon tooltip="This is a HelpIcon with a tooltip" margin="1em" tipVariant="dark" />
+          <HelpIcon
+            tooltip="This is a HelpIcon with tooltip on the right side"
+            margin="1em"
+            tipPosition="right"
+          />
+          <HelpIcon
+            tooltip="This is a HelpIcon with tooltip on the left side"
+            margin="1em"
+            tipPosition="left"
+            tipVariant="dark"
+          />
+          <HelpIcon
+            tooltip="This is a HelpIcon with tooltip on the bottom"
+            margin="1em"
+            tipPosition="bottom"
+          />
+          <HelpIcon
+            tooltip="This is a HelpIcon with tooltip on the bottom-left"
+            margin="1em"
+            tipVariant="dark"
+            tipPosition="bottomLeft"
+          />
+          <HelpIcon
+            tooltip="This is a HelpIcon with tooltip on the bottom-right"
+            margin="1em"
+            tipVariant="dark"
+            tipPosition="bottomRight"
+          />
+          <HelpIcon
+            tooltip="This is a HelpIcon with tooltip on the top-left"
+            margin="1em"
+            tipVariant="dark"
+            tipPosition="topLeft"
+          />
+          <HelpIcon
+            tooltip="This is a HelpIcon with tooltip on the top-right"
+            margin="1em"
+            tipVariant="dark"
+            tipPosition="topRight"
+          />
+        </Box>
+
+        <Box css={{ width: '100%' }} justify="center" align="center">
+          <Tooltip content="This is a button with a tooltip" margin="1em" position="top">
+            <Button>Button with Tooltip</Button>
+          </Tooltip>
+          <Tooltip
+            content="This is a button with a tooltip"
+            margin="1em"
+            position="left"
+            variant="dark"
+          >
+            <Button>Left Tooltip</Button>
+          </Tooltip>
+          <Tooltip content="This is a button with a tooltip" margin="1em" position="right">
+            <Button>Right Tooltip</Button>
+          </Tooltip>
+          <Tooltip
+            content="This is a button with a tooltip"
+            margin="1em"
+            position="bottom"
+            variant="dark"
+          >
+            <Button>Bottom Tooltip</Button>
+          </Tooltip>
+        </Box>
+
+        <Box justify="center" align="center">
+          <HelpIcon
+            tooltip={<img src={Lightbulb} height={32} width={32} />}
+            margin="1em"
+            tipPosition="right"
+            tipVariant="light"
+          />
+          <Tooltip
+            margin="1em"
+            position="topLeft"
+            content={
+              <Box direction="column" margin="1em" align="center">
+                <h3 css={{ ...Font.h2Green }}>Fancy Tooltip!</h3>
+                <img src={Lightbulb} height={32} width={32} />
+                <p>This tooltip has complex content</p>
+                <Button onClick={working}>Click Me</Button>
+              </Box>
+            }
+          >
+            <Button>Tooltip Content</Button>
+          </Tooltip>
+        </Box>
       </Box>
 
       {isLoading && (

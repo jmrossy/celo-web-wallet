@@ -71,10 +71,7 @@ function DesktopHome(props: PropsWithChildren<DesktopHomeProps>) {
         <ButtonRow disabled={props.isWalletEmpty} />
         <TransactionFeed />
       </Box>
-      <div css={style.childContent}>
-        <HomeScreenWarnings />
-        {props.children}
-      </div>
+      <div css={style.childContent}>{props.children}</div>
     </Box>
   )
 }
