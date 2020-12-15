@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { CloseButton } from 'src/components/CloseButton'
 import { Box } from 'src/components/layout/Box'
+import { useHomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
@@ -10,9 +11,11 @@ interface FrameProps {
 
 export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
   const { onClose } = props
+  const warnings = useHomeScreenWarnings()
+  const height = warnings ? { height: 'calc(100% - 5em)' } : { height: '100%' }
 
   return (
-    <Box direction="column" styles={style.contentContainer}>
+    <Box direction="column" styles={{ ...style.contentContainer, ...height }}>
       {onClose && <CloseButton onClick={onClose} styles={style.closeButton} />}
       {props.children}
     </Box>
@@ -22,7 +25,6 @@ export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
 const style: Stylesheet = {
   contentContainer: {
     padding: '1.2em 1.4em',
-    height: '100%',
     position: 'relative',
     [mq[768]]: {
       padding: '1.5em 2em 1.5em 2em',
