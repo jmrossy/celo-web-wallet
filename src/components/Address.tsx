@@ -1,4 +1,5 @@
 import { utils } from 'ethers'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { defaultButtonStyles } from 'src/components/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
@@ -7,6 +8,7 @@ import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
+import { sendReset } from 'src/features/send/sendSlice'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 import { tryClipboardSet } from 'src/utils/clipboard'
@@ -23,6 +25,7 @@ interface Props {
 export function Address(props: Props) {
   const { address, hideIdenticon, buttonType } = props
 
+  const dispatch = useDispatch()
   const navigate = useNavigate()
 
   if (!utils.isAddress(address)) {
@@ -30,6 +33,7 @@ export function Address(props: Props) {
   }
 
   const onSendButtonClick = () => {
+    dispatch(sendReset())
     navigate('/send', { state: { recipient: address } })
   }
 

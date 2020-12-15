@@ -291,7 +291,7 @@ export function ModalTestScreen() {
           />
           <Tooltip
             margin="1em"
-            position="topLeft"
+            position="topRight"
             content={
               <Box direction="column" margin="1em" align="center">
                 <h3 css={{ ...Font.h2Green }}>Fancy Tooltip!</h3>

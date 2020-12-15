@@ -21,6 +21,7 @@ interface TooltipProps {
   variant?: 'light' | 'dark'
 }
 
+//Inspiration from: https://dev.to/vtrpldn/how-to-make-an-extremely-reusable-tooltip-component-with-react-and-nothing-else-3pnk
 export const Tooltip = ({
   content,
   margin,
@@ -51,7 +52,7 @@ export const Tooltip = ({
     <div css={{ ...tipStyles.wrapper, margin }} onMouseEnter={onEnter} onMouseLeave={onLeave}>
       {children}
       {isShowing && (
-        <div css={{ ...tipStyles.tipWrapper, ...positionStyle(position), ...color }}>{content}</div>
+        <div css={{ ...tipStyles.tooltip, ...positionStyle(position), ...color }}>{content}</div>
       )}
     </div>
   )
@@ -66,7 +67,7 @@ const tipStyles: Stylesheet = {
     display: 'inline-block',
     position: 'relative',
   },
-  tipWrapper: {
+  tooltip: {
     position: 'absolute',
     left: '50%',
     transform: 'translateX(-50%)',

@@ -29,8 +29,12 @@ const sendSlice = createSlice({
     sendFailed: (state, action: PayloadAction<string | null>) => {
       state.transactionError = action.payload
     },
+    sendReset: (state) => {
+      state.transaction = null
+      state.transactionError = null
+    },
   },
 })
 
-export const { sendStarted, sendCanceled, sendSucceeded, sendFailed } = sendSlice.actions
+export const { sendStarted, sendCanceled, sendSucceeded, sendFailed, sendReset } = sendSlice.actions
 export const sendReducer = sendSlice.reducer

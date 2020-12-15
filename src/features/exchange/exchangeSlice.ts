@@ -39,6 +39,10 @@ const exchangeSlice = createSlice({
     exchangeFailed: (state, action: PayloadAction<string | null>) => {
       state.transactionError = action.payload
     },
+    exchangeReset: (state) => {
+      state.transaction = null
+      state.transactionError = null
+    },
   },
 })
 
@@ -49,5 +53,7 @@ export const {
   exchangeCanceled,
   exchangeSent,
   exchangeFailed,
+  exchangeReset,
 } = exchangeSlice.actions
+
 export const exchangeReducer = exchangeSlice.reducer

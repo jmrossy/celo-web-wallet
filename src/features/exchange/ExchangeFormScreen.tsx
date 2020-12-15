@@ -51,7 +51,12 @@ export function ExchangeFormScreen() {
   const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
     ExchangeTokenForm,
     any
-  >(toExchangeTokenForm(tx) ?? initialValues, onSubmit)
+  >(getFormInitialValues(tx), onSubmit)
+
+  // Keep form in sync with tx state
+  useEffect(() => {
+    resetValues(getFormInitialValues(tx))
+  }, [tx])
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
     validate(toExchangeTokenParams(values), balances)
@@ -63,13 +68,6 @@ export function ExchangeFormScreen() {
     cUsdToCelo,
     false
   )
-
-  // If the txn gets cleared out in the slice, need to reset it in the screen
-  useEffect(() => {
-    if (tx === null) {
-      resetValues(initialValues)
-    }
-  }, [tx])
 
   const onClose = () => {
     navigate('/')
@@ -153,6 +151,14 @@ export function ExchangeFormScreen() {
   )
 }
 
+function getFormInitialValues(tx: ExchangeTokenParams | null) {
+  if (!tx) {
+    return initialValues
+  } else {
+    return toExchangeTokenForm(tx)
+  }
+}
+
 function toExchangeTokenParams(values: ExchangeTokenForm): ExchangeTokenParams {
   try {
     return {
@@ -167,8 +173,7 @@ function toExchangeTokenParams(values: ExchangeTokenForm): ExchangeTokenParams {
   }
 }
 
-function toExchangeTokenForm(values: ExchangeTokenParams | null): ExchangeTokenForm | null {
-  if (!values) return null
+function toExchangeTokenForm(values: ExchangeTokenParams): ExchangeTokenForm {
   return {
     ...values,
     amount: fromWei(values.amountInWei),
