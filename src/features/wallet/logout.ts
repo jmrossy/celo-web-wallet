@@ -2,6 +2,7 @@ import { useDispatch } from 'react-redux'
 import { clearContractCache } from 'src/blockchain/contracts'
 import { useModal } from 'src/components/modal/useModal'
 import { clearTransactions } from 'src/features/feed/feedSlice'
+import { resetSettingFlags } from 'src/features/settings/settingsSlice'
 import { removeWallet } from 'src/features/wallet/storage'
 import { clearWallet } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
@@ -34,6 +35,7 @@ export function* logout() {
   yield* call(removeWallet)
   yield* put(clearWallet())
   yield* put(clearTransactions())
+  yield* put(resetSettingFlags())
   clearContractCache()
 }
 

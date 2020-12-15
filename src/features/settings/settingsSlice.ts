@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
@@ -22,19 +22,25 @@ const settingsSlice = createSlice({
     toggleHomeHeaderDismissed: (state) => {
       state.homeHeaderDismissed = !state.homeHeaderDismissed
     },
-    toggleHighValueWarningDismissed: (state) => {
-      state.highValueWarningDismissed = !state.highValueWarningDismissed
+    setHighValueWarningDismissed: (state, action: PayloadAction<boolean>) => {
+      state.highValueWarningDismissed = action.payload
     },
-    toggleBackupReminderDismissed: (state) => {
-      state.backupReminderDismissed = !state.backupReminderDismissed
+    setBackupReminderDismissed: (state, action: PayloadAction<boolean>) => {
+      state.backupReminderDismissed = action.payload
+    },
+    resetSettingFlags: (state) => {
+      state.homeHeaderDismissed = false
+      state.backupReminderDismissed = false
+      state.highValueWarningDismissed = false
     },
   },
 })
 
 export const {
   toggleHomeHeaderDismissed,
-  toggleHighValueWarningDismissed,
-  toggleBackupReminderDismissed,
+  setHighValueWarningDismissed,
+  setBackupReminderDismissed,
+  resetSettingFlags,
 } = settingsSlice.actions
 export const settingsReducer = settingsSlice.reducer
 

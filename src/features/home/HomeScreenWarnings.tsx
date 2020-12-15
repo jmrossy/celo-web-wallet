@@ -4,8 +4,8 @@ import { RootState } from 'src/app/rootReducer'
 import warningIcon from 'src/components/icons/warning.svg'
 import { Notification } from 'src/components/Notification'
 import {
-  toggleBackupReminderDismissed,
-  toggleHighValueWarningDismissed,
+  setBackupReminderDismissed,
+  setHighValueWarningDismissed,
 } from 'src/features/settings/settingsSlice'
 import { Color } from 'src/styles/Color'
 import { fromWei } from 'src/utils/amount'
@@ -29,9 +29,8 @@ export function HomeScreenWarnings() {
     !highValueWarningDismissed
 
   const onDismissWarning = (warning: string) => () => {
-    const action =
-      warning === 'backup' ? toggleBackupReminderDismissed : toggleHighValueWarningDismissed
-    if (action) dispatch(action())
+    const action = warning === 'backup' ? setBackupReminderDismissed : setHighValueWarningDismissed
+    if (action) dispatch(action(false))
   }
 
   return (

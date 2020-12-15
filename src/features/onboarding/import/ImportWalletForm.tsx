@@ -6,6 +6,7 @@ import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import { ImportWalletWarning } from 'src/features/onboarding/import/ImportWalletWarning'
+import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import {
   importWalletActions,
   importWalletSagaName,
@@ -37,6 +38,7 @@ export function ImportWalletForm() {
 
   const navigate = useNavigate()
   const onSuccess = () => {
+    dispatch(setBackupReminderDismissed(true)) //dismiss the reminder about backing up your account key
     navigate('/setup/set-pin')
   }
   const status = useSagaStatusWithErrorModal(
