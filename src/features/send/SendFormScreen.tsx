@@ -55,21 +55,16 @@ export function SendFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
-  } = useCustomForm<SendTokenForm, any>(
-    toSendTokenForm(tx) ?? getFormInitialValues(location),
-    onSubmit
-  )
+  } = useCustomForm<SendTokenForm, any>(getFormInitialValues(location, tx), onSubmit)
+
+  // Keep form in sync with tx state
+  useEffect(() => {
+    resetValues(getFormInitialValues(location, tx))
+  }, [tx])
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
     validate(toSendTokenParams(values), balances)
   )
-
-  //-- if the transaction gets reset, reset the screen as well
-  useEffect(() => {
-    if (tx === null) {
-      resetValues(getFormInitialValues(location))
-    }
-  }, [tx])
 
   const onPasteAddress = async () => {
     const value = await tryClipboardGet()
@@ -174,15 +169,16 @@ export function SendFormScreen() {
   )
 }
 
-function getFormInitialValues(location: Location<any>) {
+function getFormInitialValues(location: Location<any>, tx: SendTokenParams | null) {
   const recipient = location?.state?.recipient
-  if (recipient && utils.isAddress(recipient)) {
+  const initialRecipient = recipient && utils.isAddress(recipient) ? recipient : ''
+  if (!tx) {
     return {
       ...initialValues,
-      recipient,
+      recipient: initialRecipient,
     }
   } else {
-    return initialValues
+    return toSendTokenForm(tx)
   }
 }
 
@@ -200,8 +196,7 @@ function toSendTokenParams(values: SendTokenForm): SendTokenParams {
   }
 }
 
-function toSendTokenForm(values: SendTokenParams | null): SendTokenForm | null {
-  if (!values) return null
+function toSendTokenForm(values: SendTokenParams): SendTokenForm {
   return {
     ...values,
     amount: fromWei(values.amountInWei),

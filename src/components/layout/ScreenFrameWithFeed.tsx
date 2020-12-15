@@ -7,8 +7,9 @@ import SendIcon from 'src/components/icons/send_payment.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenFrame } from 'src/components/layout/ScreenFrame'
-import { openTransaction } from 'src/features/feed/feedSlice'
+import { exchangeReset } from 'src/features/exchange/exchangeSlice'
 import { TransactionFeed } from 'src/features/feed/TransactionFeed'
+import { sendReset } from 'src/features/send/sendSlice'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
@@ -95,10 +96,8 @@ function MobileHomeEmpty(props: PropsWithChildren<any>) {
 
 function MobileNotHome(props: PropsWithChildren<any>) {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
 
   const onButtonClick = () => {
-    dispatch(openTransaction(null))
     // TODO something more user friendly, for now just going home
     navigate('/')
   }
@@ -123,12 +122,12 @@ function ButtonRow(props: { disabled: boolean; mobile?: boolean }) {
   const dispatch = useDispatch()
 
   const onNewSendClick = () => {
-    dispatch(openTransaction(null))
+    dispatch(sendReset())
     navigate('/send')
   }
 
   const onNewExchangeClick = () => {
-    dispatch(openTransaction(null))
+    dispatch(exchangeReset())
     navigate('/exchange')
   }
 

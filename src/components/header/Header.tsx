@@ -14,7 +14,6 @@ export function Header() {
 
   return (
     <Box align="center" justify="between" styles={style.container}>
-      {/* TODO find clear active tx in state when navigating */}
       <Link to={'/'}>
         <img width={'130em'} src={Logo} alt="Celo Logo" css={style.logo} />
       </Link>

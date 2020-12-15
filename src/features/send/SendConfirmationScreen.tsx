@@ -31,17 +31,13 @@ export function SendConfirmationScreen() {
     (state: RootState) => state.send
   )
 
-  //-- need to make sure we belong on this screen
   useEffect(() => {
+    // Make sure we belong on this screen
     if (!tx) {
       navigate('/send')
-    }
-  }, [tx])
-
-  useEffect(() => {
-    if (!tx) {
       return
     }
+
     const type = tx.comment
       ? TransactionType.StableTokenTransferWithComment
       : TransactionType.StableTokenTransfer

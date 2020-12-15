@@ -21,7 +21,15 @@ import { Styles, Stylesheet } from 'src/styles/types'
 
 export function TransactionReview() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { transactions, openTransaction: openTx } = useSelector((s: RootState) => s.feed)
+
+  useEffect(() => {
+    // On dismount clear open tx
+    return () => {
+      dispatch(openTransaction(null))
+    }
+  }, [])
 
   // Make sure this is the correct screen
   useEffect(() => {
@@ -30,10 +38,7 @@ export function TransactionReview() {
     }
   }, [openTx])
 
-  const dispatch = useDispatch()
-
   const onCloseClick = () => {
-    dispatch(openTransaction(null))
     navigate('/')
   }
 
