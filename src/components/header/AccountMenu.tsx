@@ -9,6 +9,7 @@ import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
 import Discord from 'src/components/icons/logos/discord.svg'
 import Github from 'src/components/icons/logos/github.svg'
+import QrCodeIcon from 'src/components/icons/qr_code_big.svg'
 import SignPostIcon from 'src/components/icons/sign_post.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
@@ -16,6 +17,7 @@ import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
+import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { useLogoutModal } from 'src/features/wallet/logout'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
@@ -25,6 +27,7 @@ import { shortenAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
 const MenuItems = [
+  { id: 'qr', label: 'Qr Code', icon: QrCodeIcon },
   { id: 'account', label: 'Account Details', icon: IdCardIcon },
   { id: 'pin', label: 'Change Pin', icon: LockIcon },
   { id: 'fund', label: 'Fund Wallet', icon: CoinSwapIcon },
@@ -53,10 +56,14 @@ export const AccountMenu = () => {
 
   const address = useWalletAddress()
   const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
+  const showQrModal = useAddressQrCodeModal()
 
   const navigate = useNavigate()
   const onItemClick = (key: string) => async () => {
     switch (key) {
+      case 'qr':
+        showQrModal(address)
+        break
       case 'account':
         navigate('/wallet')
         break

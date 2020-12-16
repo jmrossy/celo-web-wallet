@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
+import { BigNumber } from 'ethers'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import warningIcon from 'src/components/icons/warning.svg'
@@ -9,7 +10,6 @@ import {
   setHighValueWarningDismissed,
 } from 'src/features/settings/settingsSlice'
 import { Color } from 'src/styles/Color'
-import { fromWei } from 'src/utils/amount'
 
 export function HomeScreenWarnings() {
   const dispatch = useDispatch()
@@ -39,23 +39,27 @@ export const selectHomeScreenWarnings = createSelector(
   (state: RootState) => state.settings,
   (state: RootState) => state.wallet.balances,
   (settings, balances) => {
-    if (!settings.backupReminderDismissed)
+    const cUsd = BigNumber.from(balances.cUsd)
+    const celo = BigNumber.from(balances.celo)
+
+    if (!settings.backupReminderDismissed && (cUsd.gt(0) || celo.gt(0)))
+      // TODO have Account Key link to wallet screen
       return {
         key: 'backup',
         message:
-          'Reminder: Be sure to copy your account key to a safe place. If you lose it, you may not be able to access your account.',
+          'Reminder: Be sure to copy your Account Key to a safe place. If you lose it, you may not be able to access your account.',
       }
 
     if (
       settings.backupReminderDismissed &&
-      (fromWei(balances.cUsd) > HIGH_VALUE_THRESHOLD ||
-        fromWei(balances.celo) > HIGH_VALUE_THRESHOLD) &&
+      (cUsd.gte(HIGH_VALUE_THRESHOLD) || celo.gte(HIGH_VALUE_THRESHOLD)) &&
       !settings.highValueWarningDismissed
     )
+      // TODO link to Valora and Ledger docs
       return {
         key: 'highValue',
         message:
-          'Warning: This wallet is not recommended for high-value accounts. Please use the Valora mobile app or a Ledger wallet instead.',
+          'Warning: This wallet is not yet recommended for high-value accounts. Please use the Valora mobile app or a Ledger wallet instead.',
       }
 
     return null
