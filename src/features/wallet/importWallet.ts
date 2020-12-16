@@ -2,17 +2,13 @@ import { utils, Wallet } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { setSigner } from 'src/blockchain/signer'
 import { config } from 'src/config'
-import { CELO_DERIVATION_PATH } from 'src/consts'
+import { CELO_DERIVATION_PATH, MNEMONIC_LENGTH } from 'src/consts'
 import { clearTransactions } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetch'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
+import { setAddress } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
-import { setAddress } from './walletSlice'
-
-const MNEMONIC_LENGTH = 24
-
-const getWalletAddress = (state: RootState) => state.wallet.address
 
 export function* importWallet(mnemonic: string) {
   if (!isValidMnemonic(mnemonic)) {
@@ -23,7 +19,7 @@ export function* importWallet(mnemonic: string) {
   const wallet = Wallet.fromMnemonic(mnemonic.trim(), derivationPath)
   setSigner(wallet)
   //Grab the current address from the store (may have been loaded by persistence)
-  const currentAddress = yield* select(getWalletAddress)
+  const currentAddress = yield* select((state: RootState) => state.wallet.address)
   yield* put(setAddress(wallet.address))
   yield* put(fetchBalancesActions.trigger())
 

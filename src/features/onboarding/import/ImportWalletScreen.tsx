@@ -5,7 +5,7 @@ import { Font } from 'src/styles/fonts'
 export function ImportWalletScreen() {
   return (
     <OnboardingScreenFrame>
-      <h1 css={Font.h1Green}>Import Your Celo Account</h1>
+      <h1 css={Font.h1Green}>Import Your Account Key</h1>
       <ImportWalletForm />
     </OnboardingScreenFrame>
   )

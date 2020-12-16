@@ -14,6 +14,7 @@ import {
 } from 'src/features/wallet/importWallet'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 
 export function ImportWalletForm() {
@@ -51,7 +52,7 @@ export function ImportWalletForm() {
   return (
     <Box direction="column" align="center">
       {!hasShownWarning && (
-        <Box direction="column" align="center" styles={styles.warningBox}>
+        <Box direction="column" align="center" styles={style.warningBox}>
           <ImportWalletWarning />
           <Button onClick={() => setHasShownWarning(true)} margin="2em 0 0 0">
             I Understand
@@ -60,8 +61,8 @@ export function ImportWalletForm() {
       )}
       {hasShownWarning && (
         <Box direction="column" align="center" margin="-1em 0 0 0">
-          <p css={styles.description}>Enter your account key (mnemonic phrase).</p>
-          <p css={styles.description}>Only import on devices you trust.</p>
+          <p css={style.description}>Enter your account key (mnemonic phrase).</p>
+          <p css={style.description}>Only import on devices you trust.</p>
           <Box direction="column" align="center" margin="2em 0 0 0">
             <TextArea
               name="mnemonic"
@@ -90,7 +91,7 @@ export function ImportWalletForm() {
   )
 }
 
-const styles = {
+const style: Stylesheet = {
   warningBox: {
     borderRadius: 4,
     padding: '0 1em 1em 1em',
@@ -98,6 +99,7 @@ const styles = {
   },
   description: {
     ...Font.body,
+    textAlign: 'center',
     margin: '1em 0 0 0',
   },
 }

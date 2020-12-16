@@ -18,13 +18,13 @@ export async function saveWallet(pincode: string) {
       throw new Error('No signer mnemonic found')
     }
     if (!crypto || !crypto.subtle) {
-      // TODO pop modal to warn user wallet is burner only?
       throw new Error('Crypto libs not available')
     }
     const mnemonic = signer.mnemonic.phrase
     const encryptedMnemonic = await encryptMnemonic(mnemonic, pincode)
 
     // TODO warn safari users of apple's bullshit
+    // https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/
     localStorage.setItem(MNEMONIC_STORAGE_KEY, encryptedMnemonic)
   } catch (error) {
     logger.error('Failed to save wallet to storage', error)

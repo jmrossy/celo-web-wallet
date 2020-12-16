@@ -7,7 +7,7 @@ export function ImportWalletWarning() {
   return (
     <Box direction="column" align="center" justify="center" styles={style.container}>
       <p css={style.text}>
-        Never input your Account Key for high-value accounts. Use this tool for small ‘hot’ wallets.
+        Never input your Account Key for high-value accounts. Import small ‘hot’ wallets only.
       </p>
       <p css={style.text}>
         The Celo Wallet tries its best to protect your funds but there{' '}

@@ -19,12 +19,16 @@ export function getSigner() {
 
 export function setSigner(_signer: Wallet) {
   if (!_signer || !_signer._isSigner) {
-    logger.error('Signer is invalid')
-    return
+    throw new Error('Signer is invalid')
   }
 
   if (signer) {
     logger.warn('Signer is being overridden')
+  }
+
+  const provider = getProvider()
+  if (!provider) {
+    throw new Error('Provider must be set before signer')
   }
 
   signer = new CeloWallet(_signer, getProvider())
