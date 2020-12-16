@@ -1,16 +1,27 @@
 import QuestionIcon from 'src/components/icons/question_mark.svg'
+import { TipPositions, Tooltip } from 'src/components/Tooltip'
 import { Stylesheet } from 'src/styles/types'
 
 interface IconProps {
-  tooltip: string
-  margin?: string
+  tooltip: any
+  margin?: string | number
+  tipPosition?: TipPositions
+  tipVariant?: 'light' | 'dark'
 }
 
 export const HelpIcon = (props: IconProps) => {
-  const { tooltip, margin } = props
-  const iconMargin = margin ? { margin: margin } : {}
+  const { tooltip, margin, tipPosition, tipVariant } = props
 
-  return <img src={QuestionIcon} css={[styles.icon, iconMargin]} title={tooltip} />
+  return (
+    <Tooltip
+      content={tooltip}
+      margin={margin ?? undefined}
+      position={tipPosition}
+      variant={tipVariant}
+    >
+      <img src={QuestionIcon} css={styles.icon} />
+    </Tooltip>
+  )
 }
 
 const styles: Stylesheet = {

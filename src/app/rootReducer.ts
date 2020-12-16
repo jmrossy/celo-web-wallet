@@ -3,7 +3,7 @@ import { exchangeReducer } from 'src/features/exchange/exchangeSlice'
 import { persistedFeedReducer } from 'src/features/feed/feedSlice'
 import { feeReducer } from 'src/features/fees/feeSlice'
 import { sendReducer } from 'src/features/send/sendSlice'
-import { settingsReducer } from 'src/features/settings/settingsSlice'
+import { persistedSettingsReducer } from 'src/features/settings/settingsSlice'
 import { tokenPriceReducer } from 'src/features/tokenPrice/tokenPriceSlice'
 import { persistedWalletReducer } from 'src/features/wallet/walletSlice'
 import { monitoredSagaReducers } from './rootSaga'
@@ -15,7 +15,7 @@ export const rootReducer = combineReducers({
   exchange: exchangeReducer,
   fees: feeReducer,
   tokenPrice: tokenPriceReducer,
-  settings: settingsReducer,
+  settings: persistedSettingsReducer,
   saga: monitoredSagaReducers,
 })
 export type RootState = ReturnType<typeof rootReducer>

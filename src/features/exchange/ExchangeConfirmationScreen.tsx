@@ -87,7 +87,6 @@ export function ExchangeConfirmationScreen() {
   const modal = useModal()
 
   const confirm = () => {
-    modal.closeModal()
     modal.showSuccessModal('Exchange Complete!', 'Your exchange has been made successfully')
     dispatch(exchangeTokenActions.reset())
     dispatch(exchangeSent())
@@ -95,7 +94,6 @@ export function ExchangeConfirmationScreen() {
   }
 
   const failure = (error: string | undefined) => {
-    modal.closeModal()
     modal.showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
   }
 
@@ -131,7 +129,11 @@ export function ExchangeConfirmationScreen() {
           >
             <Box direction="row" justify="between" align="end" styles={style.labelWidth}>
               <label css={style.label}>
-                Fee <HelpIcon tooltip="Fees, or 'gas', keep the network secure." />
+                Fee{' '}
+                <HelpIcon
+                  tooltip="Fees, or 'gas', keep the network secure."
+                  tipPosition="topRight"
+                />
               </label>
             </Box>
             {feeAmount && feeCurrency ? (

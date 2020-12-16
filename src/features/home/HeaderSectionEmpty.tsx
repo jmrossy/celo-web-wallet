@@ -1,10 +1,7 @@
 import { Button } from 'src/components/Button'
-import Bittrex from 'src/components/icons/logos/bittrex.svg'
-import Coinbase from 'src/components/icons/logos/coinbase.svg'
-import Okcoin from 'src/components/icons/logos/okcoin.svg'
+import { ExchangesModal } from 'src/components/ExchangesModal'
 import Mail from 'src/components/icons/mail.svg'
 import { Box } from 'src/components/layout/Box'
-import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { TextButton } from 'src/components/TextButton'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
@@ -62,27 +59,6 @@ export function HeaderSectionEmpty() {
       </Box>
     </Box>
   )
-}
-
-function ExchangesModal() {
-  const links = [
-    {
-      url: 'https://www.coinbase.com/earn/celo',
-      imgSrc: Coinbase,
-      text: 'Coinbase',
-    },
-    {
-      url: 'https://global.bittrex.com/Market/Index?MarketName=USD-CELO',
-      imgSrc: Bittrex,
-      text: 'Bittrex',
-    },
-    {
-      url: 'https://www.okcoin.com/spot/trade/celo-usd',
-      imgSrc: Okcoin,
-      text: 'Okcoin',
-    },
-  ]
-  return <ModalLinkGrid links={links} />
 }
 
 const style: Stylesheet = {

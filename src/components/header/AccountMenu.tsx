@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ExchangesModal } from 'src/components/ExchangesModal'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
 import ChevronIcon from 'src/components/icons/chevron.svg'
+import CoinSwapIcon from 'src/components/icons/coin_swap.svg'
 import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
@@ -25,6 +27,7 @@ import { logger } from 'src/utils/logger'
 const MenuItems = [
   { id: 'account', label: 'Account Details', icon: IdCardIcon },
   { id: 'pin', label: 'Change Pin', icon: LockIcon },
+  { id: 'fund', label: 'Fund Wallet', icon: CoinSwapIcon },
   { id: 'help', label: 'Help', icon: HelpIcon },
   { id: 'logout', label: 'Logout', icon: SignPostIcon },
 ]
@@ -38,6 +41,16 @@ export const AccountMenu = () => {
   const onLogout = useLogoutModal()
   const { showModalWithContent } = useModal()
 
+  const showFundModal = () => {
+    showModalWithContent(
+      'Where to buy Celo',
+      <ExchangesModal />,
+      null,
+      null,
+      'Celo currencies can be earned or purchased from these exchanges.'
+    )
+  }
+
   const address = useWalletAddress()
   const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
 
@@ -45,12 +58,13 @@ export const AccountMenu = () => {
   const onItemClick = (key: string) => async () => {
     switch (key) {
       case 'account':
-        setOpen(false)
         navigate('/wallet')
         break
       case 'pin':
-        setOpen(false)
         navigate('/change-pin')
+        break
+      case 'fund':
+        showFundModal()
         break
       case 'logout':
         await onLogout()
@@ -65,9 +79,11 @@ export const AccountMenu = () => {
         )
         break
       default:
-        logger.info('Menu Item Clicked: ', key)
+        logger.info('Unknown Menu Item Clicked: ', key)
         break
     }
+
+    setOpen(false) //close the menu
   }
 
   return (

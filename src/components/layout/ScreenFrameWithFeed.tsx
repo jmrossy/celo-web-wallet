@@ -9,6 +9,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenFrame } from 'src/components/layout/ScreenFrame'
 import { exchangeReset } from 'src/features/exchange/exchangeSlice'
 import { TransactionFeed } from 'src/features/feed/TransactionFeed'
+import { HomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
 import { sendReset } from 'src/features/send/sendSlice'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
@@ -79,6 +80,7 @@ function DesktopHome(props: PropsWithChildren<DesktopHomeProps>) {
 function MobileHome(props: PropsWithChildren<any>) {
   return (
     <Box direction="column" styles={style.contentContainer}>
+      <HomeScreenWarnings />
       <div>{props.children}</div>
       <ButtonRow disabled={false} mobile={true} />
       <TransactionFeed />
@@ -89,6 +91,7 @@ function MobileHome(props: PropsWithChildren<any>) {
 function MobileHomeEmpty(props: PropsWithChildren<any>) {
   return (
     <Box direction="column" styles={style.contentContainer}>
+      <HomeScreenWarnings />
       <div>{props.children}</div>
     </Box>
   )
