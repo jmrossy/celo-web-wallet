@@ -22,8 +22,8 @@ export function ImportChoiceScreen() {
       <h1 css={Font.h1Green}>Import Your Celo Account</h1>
       <p css={style.description}>
         To import your account, use your secret Account Key or a Ledger hardware wallet.{' '}
-        <HelpIcon tooltip="TODO" />
       </p>
+      <HelpIcon tooltip="TODO" />
       <div css={style.buttonContainer}>
         <Button onClick={onClickAccountKey} size="l" margin={'1em 1.5em'}>
           Use Account Key
