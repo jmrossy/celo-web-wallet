@@ -27,6 +27,7 @@
     "@ledgerhq/hw-transport-webusb": "^5.36.0",
     "@metamask/jazzicon": "^2.0.0",
     "@reduxjs/toolkit": "^1.5.0",
+    "buffer": "^6.0.3",
     "ethers": "^5.0.24",
     "frappe-charts": "^1.5.5",
     "history": "^5.0.0",

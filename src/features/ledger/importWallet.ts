@@ -10,12 +10,10 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
 
 function* importLedgerWallet(index: number) {
-  const signer = yield* call(createLedgerSigner, index)
-
-  const address = 'todo'
-
+  const address = yield* call(createLedgerSigner, index)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
   yield* put(setAddress(address))
+
   yield* put(fetchBalancesActions.trigger())
 
   // Only want to clear the feed if its not from the persisted/current wallet
@@ -35,13 +33,24 @@ async function createLedgerSigner(index: number) {
   }
 
   const derivationPath = `${CELO_DERIVATION_PATH}/${index}`
-
   const signer = new LedgerSigner(provider, derivationPath)
+  await signer.init()
+
+  const address = await signer.getAddress()
+
+  // TODO setSigner here
+
+  return address
 }
 
 async function dynamicImportLedgerSigner() {
   try {
     logger.info('Fetching Ledger bundle')
+    const global = window as any
+    if (!global.Buffer) {
+      const buffer = await import('buffer')
+      global.Buffer = buffer.Buffer
+    }
     const ledgerModule = await import('src/features/ledger/LedgerSigner')
     return ledgerModule.LedgerSigner
   } catch (error) {

@@ -77,6 +77,7 @@ export class LedgerSigner extends Signer {
   }
 
   async signTransaction(transaction: providers.TransactionRequest): Promise<string> {
+    // TODO use Celo fields here
     const tx = await utils.resolveProperties(transaction)
     const baseTx: utils.UnsignedTransaction = {
       chainId: tx.chainId || undefined,

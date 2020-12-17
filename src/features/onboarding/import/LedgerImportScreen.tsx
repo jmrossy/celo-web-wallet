@@ -13,6 +13,10 @@ export function LedgerImportScreen() {
     dispatch(importLedgerWalletActions.trigger(0))
   }
 
+  // TODO: show loader, handle errors, go to home
+  // need to skip whole pin logic for ledger wallets
+  // And show ledger animation if not to hard
+
   return (
     <OnboardingScreenFrame>
       <h1 css={Font.h1Green}>Import Your Ledger Account</h1>
