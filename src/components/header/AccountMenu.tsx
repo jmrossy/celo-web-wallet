@@ -44,19 +44,19 @@ export const AccountMenu = () => {
   const onLogout = useLogoutModal()
   const { showModalWithContent } = useModal()
 
+  const address = useWalletAddress()
+  const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
+  const showQrModal = useAddressQrCodeModal()
+
   const showFundModal = () => {
     showModalWithContent(
       'Where to buy Celo',
-      <ExchangesModal />,
+      <ExchangesModal address={address} />,
       null,
       null,
       'Celo currencies can be earned or purchased from these exchanges.'
     )
   }
-
-  const address = useWalletAddress()
-  const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
-  const showQrModal = useAddressQrCodeModal()
 
   const navigate = useNavigate()
   const onItemClick = (key: string) => async () => {

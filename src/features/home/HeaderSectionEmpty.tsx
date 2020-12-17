@@ -12,20 +12,22 @@ import { Stylesheet } from 'src/styles/types'
 
 export function HeaderSectionEmpty() {
   const { showModalWithContent } = useModal()
+
+  const showQrModal = useAddressQrCodeModal()
+  const address = useWalletAddress()
+
+  const onQrButtonClick = () => {
+    showQrModal(address)
+  }
+
   const onClickBuyCelo = () => {
     showModalWithContent(
       'Where to buy Celo',
-      <ExchangesModal />,
+      <ExchangesModal address={address} />,
       null,
       null,
       'Celo currencies can be earned or purchased from these exchanges.'
     )
-  }
-
-  const showQrModal = useAddressQrCodeModal()
-  const address = useWalletAddress()
-  const onQrButtonClick = () => {
-    showQrModal(address)
   }
 
   return (

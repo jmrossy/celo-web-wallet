@@ -4,7 +4,7 @@ import Okcoin from 'src/components/icons/logos/okcoin.svg'
 import Simplex from 'src/components/icons/logos/simplex.svg'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 
-export function ExchangesModal() {
+export function ExchangesModal({ address }: { address: string }) {
   const links = [
     {
       url: 'https://www.coinbase.com/earn/celo',
@@ -22,7 +22,7 @@ export function ExchangesModal() {
       text: 'Okcoin',
     },
     {
-      url: 'https://valoraapp.com/simplex',
+      url: `https://valoraapp.com/simplex?address=${address}`,
       imgSrc: Simplex,
       text: 'Simplex',
     },
