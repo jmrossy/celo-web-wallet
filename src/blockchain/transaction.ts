@@ -10,7 +10,7 @@ import { FeeEstimate } from 'src/features/fees/types'
  * different gas currencies
  */
 export async function sendTransaction(tx: CeloTransactionRequest, feeEstimate?: FeeEstimate) {
-  const signer = getSigner()
+  const signer = getSigner().signer
 
   if (!feeEstimate) {
     // For now, require fee to be pre-computed when using this utility

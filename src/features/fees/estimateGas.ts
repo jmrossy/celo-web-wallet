@@ -5,14 +5,14 @@ import { Currency } from 'src/consts'
 import { TransactionType } from 'src/features/types'
 
 const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
-  [TransactionType.StableTokenTransfer]: 55000,
-  [TransactionType.StableTokenTransferWithComment]: 70000,
-  [TransactionType.StableTokenApprove]: 58000,
-  [TransactionType.CeloTokenTransfer]: 55000,
-  [TransactionType.CeloTokenTransferWithComment]: 70000,
-  [TransactionType.CeloTokenApprove]: 56000,
-  [TransactionType.CeloNativeTransfer]: 30000,
-  [TransactionType.TokenExchange]: 270000,
+  [TransactionType.StableTokenTransfer]: 95000,
+  [TransactionType.StableTokenTransferWithComment]: 115000,
+  [TransactionType.StableTokenApprove]: 95000,
+  [TransactionType.CeloTokenTransfer]: 95000,
+  [TransactionType.CeloTokenTransferWithComment]: 100000,
+  [TransactionType.CeloTokenApprove]: 95000,
+  [TransactionType.CeloNativeTransfer]: 40000,
+  [TransactionType.TokenExchange]: 400000,
 }
 
 const STABLE_TOKEN_GAS_MULTIPLIER = 5
@@ -42,7 +42,7 @@ export async function estimateGas(
 }
 
 async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: Currency) {
-  const signer = getSigner()
+  const signer = getSigner().signer
   const gasLimit = await signer.estimateGas(tx)
 
   if (!feeCurrency || feeCurrency === Currency.CELO) {

@@ -1,4 +1,4 @@
-import { getSigner, isSignerSet } from 'src/blockchain/signer'
+import { getSigner, isSignerSet, SignerType } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
 import { Identicon } from 'src/components/Identicon'
 import { Mnemonic } from 'src/components/Mnemonic'
@@ -11,7 +11,17 @@ import { Stylesheet } from 'src/styles/types'
 export function WalletDetails() {
   const address = useWalletAddress()
   const isWalletReady = address && isSignerSet()
-  const mnemonic = isWalletReady ? getSigner().mnemonic : null
+
+  let mnemonicPhrase: string = PLACEHOLDER_MNEMONIC
+  let mnemonicUnavailable = false
+  if (isWalletReady) {
+    const signer = getSigner()
+    if (signer.type === SignerType.Local) {
+      mnemonicPhrase = signer.signer.mnemonic.phrase
+    } else if (signer.type === SignerType.Ledger) {
+      mnemonicUnavailable = true
+    }
+  }
 
   return (
     <div css={style.container}>
@@ -52,7 +62,7 @@ export function WalletDetails() {
         </div>
       </div>
       <div css={style.itemContainer}>
-        <Mnemonic mnemonic={mnemonic?.phrase || PLACEHOLDER_MNEMONIC} />
+        <Mnemonic mnemonic={mnemonicPhrase} unavailable={mnemonicUnavailable} />
       </div>
     </div>
   )

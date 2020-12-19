@@ -3,9 +3,8 @@ const IV_LENGTH = 12 // Size of initialization vector for encryption
 const NUM_DERIVATION_ITERATIONS = 250000
 
 export async function encryptMnemonic(mnemonic: string, pincode: string) {
-  if (!mnemonic || !pincode) {
-    throw new Error('Invalid arguments for encryption')
-  }
+  if (!mnemonic || !pincode) throw new Error('Invalid arguments for encryption')
+  if (!crypto || !crypto.subtle) throw new Error('Crypto libs not available')
 
   const keyMaterial = await getKeyMaterialFromPincode(pincode)
   // TODO consider caching this key, it's probably expensive to compute

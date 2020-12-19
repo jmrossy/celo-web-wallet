@@ -5,6 +5,10 @@ import { sleep } from 'src/utils/sleep'
 
 let provider: CeloProvider
 
+export function isProviderSet() {
+  return !!provider
+}
+
 export async function connectToProvider() {
   const { jsonRpcUrlPrimary, jsonRpcUrlSecondary } = config
 
@@ -40,7 +44,8 @@ async function connectToJsonRpcProvider(url: string) {
 
 export function getProvider() {
   if (!provider) {
-    logger.warn('Provider is not yet initialized')
+    logger.error('Provider is not yet initialized')
+    throw new Error('Attempting to use provider before initialized')
   }
   return provider
 }

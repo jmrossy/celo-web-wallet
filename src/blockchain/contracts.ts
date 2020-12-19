@@ -11,7 +11,7 @@ export async function getContract(c: CeloContract) {
   if (cachedContract) {
     return cachedContract
   }
-  const signer = getSigner()
+  const signer = getSigner().signer
   const address = config.contractAddresses[c]
   const abi = await getContractAbi(c)
   const contract = new ethers.Contract(address, abi, signer)

@@ -10,10 +10,11 @@ import { chunk } from 'src/utils/string'
 
 interface Props {
   mnemonic: string
+  unavailable?: boolean
 }
 
 export function Mnemonic(props: Props) {
-  const { mnemonic } = props
+  const { mnemonic, unavailable } = props
 
   const [hidden, setHidden] = useState<boolean>(true)
 
@@ -29,31 +30,38 @@ export function Mnemonic(props: Props) {
     await tryClipboardSet(mnemonic)
   }
 
-  // TODO find a way to avoid content shift on hide/show change
   const valueToShow = hidden ? getObfuscatedMnemonic(mnemonic) : mnemonic
   const mnemonicWords = chunk<Array<string>>(valueToShow.trim().split(' '), 6)
 
   return (
     <Box direction="row" align="center">
       <div css={style.container}>
-        {mnemonicWords.map((words, i) => (
-          <Box direction="row" align="center" justify="between" key={`mLine-${i}`}>
-            {words.map((word, j) => (
-              <span key={`mWord-${i}-${j}`} css={style.line}>
-                {word}
-              </span>
+        {unavailable ? (
+          <>
+            {mnemonicWords.map((words, i) => (
+              <Box direction="row" align="center" justify="between" key={`mLine-${i}`}>
+                {words.map((word, j) => (
+                  <span key={`mWord-${i}-${j}`} css={style.line}>
+                    {word}
+                  </span>
+                ))}
+              </Box>
             ))}
-          </Box>
-        ))}
+          </>
+        ) : (
+          <div>Unavailable: secret is on your Ledger device.</div>
+        )}
       </div>
-      <Box direction="column" justify="between" align="center" margin="0 0 0 -10px">
-        <button css={style.button} onClick={onShowButtonClick}>
-          <img width={'20px'} height={'20px'} src={Eye} alt="Show/Hide" />
-        </button>
-        <button css={style.button} onClick={onCopyButtonClick}>
-          <img width={'17px'} height={'17px'} src={Paste} alt="Copy" />
-        </button>
-      </Box>
+      {!unavailable && (
+        <Box direction="column" justify="between" align="center" margin="0 0 0 -10px">
+          <button css={style.button} onClick={onShowButtonClick}>
+            <img width={'20px'} height={'20px'} src={Eye} alt="Show/Hide" />
+          </button>
+          <button css={style.button} onClick={onCopyButtonClick}>
+            <img width={'17px'} height={'17px'} src={Paste} alt="Copy" />
+          </button>
+        </Box>
+      )}
     </Box>
   )
 }
