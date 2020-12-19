@@ -48,10 +48,14 @@ export function ExchangeFormScreen() {
     }
   }
 
-  const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
-    ExchangeTokenForm,
-    any
-  >(getFormInitialValues(tx), onSubmit)
+  const {
+    values,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    resetValues,
+  } = useCustomForm<ExchangeTokenForm>(getFormInitialValues(tx), onSubmit)
 
   // Keep form in sync with tx state
   useEffect(() => {

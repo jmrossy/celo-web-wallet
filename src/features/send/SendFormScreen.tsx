@@ -55,7 +55,7 @@ export function SendFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
-  } = useCustomForm<SendTokenForm, any>(getFormInitialValues(location, tx), onSubmit)
+  } = useCustomForm<SendTokenForm>(getFormInitialValues(location, tx), onSubmit)
 
   // Keep form in sync with tx state
   useEffect(() => {

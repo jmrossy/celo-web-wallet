@@ -1,46 +1,54 @@
-import { RootState } from 'src/app/rootReducer'
+import { BigNumber, BigNumberish } from 'ethers'
 import { getProvider } from 'src/blockchain/provider'
-import { CELO_DERIVATION_PATH } from 'src/consts'
-import { clearTransactions } from 'src/features/feed/feedSlice'
-import { fetchFeedActions } from 'src/features/feed/fetch'
-import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
-import { setAddress } from 'src/features/wallet/walletSlice'
+import { setSigner, SignerType } from 'src/blockchain/signer'
+import { CELO_DERIVATION_PATH, DERIVATION_PATH_MAX_INDEX } from 'src/consts'
+import { onWalletImport } from 'src/features/wallet/importWallet'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { call, put, select } from 'typed-redux-saga'
+import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
+import { call } from 'typed-redux-saga'
 
-function* importLedgerWallet(index: number) {
-  const address = yield* call(createLedgerSigner, index)
-  const currentAddress = yield* select((state: RootState) => state.wallet.address)
-  yield* put(setAddress(address))
-
-  yield* put(fetchBalancesActions.trigger())
-
-  // Only want to clear the feed if its not from the persisted/current wallet
-  if (!currentAddress || currentAddress !== address) {
-    yield* put(clearTransactions())
-  }
-  yield* put(fetchFeedActions.trigger())
+export interface ImportWalletParams {
+  index: BigNumberish
 }
 
-async function createLedgerSigner(index: number) {
-  const LedgerSigner = await dynamicImportLedgerSigner()
+export function validate(params: ImportWalletParams): ErrorState {
+  const { index } = params
 
-  // TODO dedupe with setSigner
-  const provider = getProvider()
-  if (!provider) {
-    throw new Error('Provider must be set before signer')
+  if (index === null || index === undefined) {
+    return invalidInput('index', 'Index is required')
   }
 
+  const indexBn = BigNumber.from(index)
+  if (indexBn.lt(0) || indexBn.gt(DERIVATION_PATH_MAX_INDEX)) {
+    return invalidInput('index', 'Index value is invalid')
+  }
+
+  return { isValid: true }
+}
+
+function* importLedgerWallet(params: ImportWalletParams) {
+  const validateResult = yield* call(validate, params)
+  if (!validateResult.isValid) {
+    throw new Error(errorStateToString(validateResult, 'Invalid Index'))
+  }
+
+  const signer = yield* call(createLedgerSigner, params)
+  const address = signer.address
+  if (!address) throw new Error('Ledger Signer missing address')
+  setSigner({ signer, type: SignerType.Ledger })
+
+  yield* call(onWalletImport, address, SignerType.Ledger)
+}
+
+async function createLedgerSigner(params: ImportWalletParams) {
+  const { index } = params
+  const LedgerSigner = await dynamicImportLedgerSigner()
+  const provider = getProvider()
   const derivationPath = `${CELO_DERIVATION_PATH}/${index}`
   const signer = new LedgerSigner(provider, derivationPath)
   await signer.init()
-
-  const address = await signer.getAddress()
-
-  // TODO setSigner here
-
-  return address
+  return signer
 }
 
 async function dynamicImportLedgerSigner() {
@@ -64,4 +72,4 @@ export const {
   wrappedSaga: importLedgerWalletSaga,
   actions: importLedgerWalletActions,
   reducer: importLedgerWalletReducer,
-} = createMonitoredSaga<number>(importLedgerWallet, 'importLedgerWallet')
+} = createMonitoredSaga<ImportWalletParams>(importLedgerWallet, 'importLedgerWallet')

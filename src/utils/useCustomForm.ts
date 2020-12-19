@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export function useCustomForm<V, E>(
+export function useCustomForm<V, E = any>(
   initialValues: V,
   onSubmit: (values: V, errors: Partial<E>) => void
 ) {

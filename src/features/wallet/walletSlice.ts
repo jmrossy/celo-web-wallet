@@ -2,17 +2,20 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
+import { SignerType } from 'src/blockchain/signer'
 import { Balances } from 'src/features/wallet/types'
 import { assert } from 'src/utils/validation'
 
 interface Wallet {
   address: string | null
+  type: SignerType | null
   balances: Balances
   isUnlocked: boolean
 }
 
 export const walletInitialState: Wallet = {
   address: null,
+  type: null,
   balances: {
     cUsd: '0',
     celo: '0',
@@ -25,10 +28,12 @@ const walletSlice = createSlice({
   name: 'wallet',
   initialState: walletInitialState,
   reducers: {
-    setAddress: (state, action: PayloadAction<string>) => {
-      const address = action.payload
+    setAddress: (state, action: PayloadAction<{ address: string; type: SignerType }>) => {
+      const { address, type } = action.payload
       assert(address && address.length === 42, `Invalid address ${address}`)
+      assert(type === SignerType.Local || type === SignerType.Ledger, `Invalid type ${address}`)
       state.address = address
+      state.type = type
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {
       const { cUsd, celo, lastUpdated } = action.payload

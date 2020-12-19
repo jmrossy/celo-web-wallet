@@ -25,7 +25,7 @@ function* createWallet() {
   const celoWallet = new CeloWallet(wallet, provider)
 
   setSigner({ signer: celoWallet, type: SignerType.Local })
-  yield* put(setAddress(wallet.address))
+  yield* put(setAddress({ address: celoWallet.address, type: SignerType.Local }))
   yield* put(fetchBalancesActions.trigger())
 }
 

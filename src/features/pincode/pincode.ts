@@ -30,6 +30,7 @@ export enum PincodeAction {
   Unlock,
   Change,
 }
+
 export interface PincodeParams {
   action: PincodeAction
   value: string

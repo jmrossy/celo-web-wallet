@@ -66,7 +66,7 @@ export function HeaderSectionEmpty() {
 const style: Stylesheet = {
   header: {
     ...Font.h1,
-    margin: '0.2em 0 1.2em 0',
+    margin: '0 0 1.2em 0',
     color: Color.primaryGreen,
   },
   icon: {

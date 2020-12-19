@@ -30,7 +30,7 @@ export function SetPincodeForm() {
     }
   }
 
-  const { values, touched, handleChange, handleSubmit } = useCustomForm<PincodeParams, any>(
+  const { values, touched, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
     initialValues,
     onSubmit
   )

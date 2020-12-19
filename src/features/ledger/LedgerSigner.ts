@@ -82,6 +82,8 @@ export class LedgerSigner extends Signer {
     } else if (tx.chainId !== config.chainId) {
       throw new Error('Chain Id mismatch')
     }
+
+    return tx
   }
 
   private async perform<T = any>(callback: (celoApp: CeloApp) => Promise<T>): Promise<T> {
