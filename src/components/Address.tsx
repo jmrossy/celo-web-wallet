@@ -74,17 +74,21 @@ export function Address(props: Props) {
         </Box>
       </div>
       {buttonType === 'send' && (
-        <button css={style.button} onClick={onSendButtonClick}>
+        <button css={style.button} onClick={onSendButtonClick} title="Send to Address">
           <img width="15px" height="15px" src={SendPaymentIcon} alt="Send" />
         </button>
       )}
       {(buttonType === 'copy' || buttonType === 'qrAndCopy') && (
         <Box direction="column" align="center" justify="between">
-          <button css={style.button} onClick={onCopyButtonClick}>
+          <button css={style.button} onClick={onCopyButtonClick} title="Copy Address">
             <img width="17px" height="17px" src={PasteIcon} alt="Copy" />
           </button>
           {buttonType === 'qrAndCopy' && (
-            <button css={[style.button, { marginTop: 6 }]} onClick={onQrButtonClick}>
+            <button
+              css={[style.button, { marginTop: 6 }]}
+              onClick={onQrButtonClick}
+              title="Qr Code"
+            >
               <img width="16px" height="16px" src={QrCodeIcon} alt="Qr Code" />
             </button>
           )}
