@@ -1,28 +1,18 @@
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
-import CeloApp from '@ledgerhq/hw-app-eth'
 import TransportU2F from '@ledgerhq/hw-transport-u2f'
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
 import { BigNumber, providers, Signer, utils } from 'ethers'
 import { config } from 'src/config'
 import { CELO_LEDGER_APP_VERSION } from 'src/consts'
+import { CeloLedgerApp } from 'src/features/ledger/CeloLedgerApp'
 import { ensureLeading0x, trimLeading0x } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { sleep } from 'src/utils/sleep'
 
-interface CeloApp {
-  getAddress: (path: string) => Promise<any>
-  signPersonalMessage: (path: string, messageHex: string) => Promise<any>
-  signTransaction: (path: string, rawTxHex: string) => Promise<any>
-  getAppConfiguration: () => Promise<{
-    arbitraryDataEnabled: number
-    version: string
-  }>
-}
-
 // Based partly on https://github.com/ethers-io/ethers.js/blob/master/packages/hardware-wallets/src.ts/ledger.ts
 // But with customizations for the Celo network
 export class LedgerSigner extends Signer {
-  private celoApp: CeloApp | undefined
+  private celoApp: CeloLedgerApp | undefined
   address: string | undefined
 
   constructor(readonly provider: providers.Provider, readonly path: string) {
@@ -43,10 +33,10 @@ export class LedgerSigner extends Signer {
       throw new Error('Neither WebUsb nor U2F are supported')
     }
 
-    this.celoApp = new CeloApp(transport)
+    this.celoApp = new CeloLedgerApp(transport)
     await this.validateCeloAppVersion()
 
-    const account = await this.perform((celoApp) => celoApp.getAddress(this.path))
+    const account = await this.perform((celoApp) => celoApp.getAddress(this.path, true))
     this.address = utils.getAddress(account.address)
   }
 
@@ -86,7 +76,7 @@ export class LedgerSigner extends Signer {
     return tx
   }
 
-  private async perform<T = any>(callback: (celoApp: CeloApp) => Promise<T>): Promise<T> {
+  private async perform<T = any>(callback: (celoApp: CeloLedgerApp) => Promise<T>): Promise<T> {
     if (!this.celoApp) {
       throw new Error('LedgerSigner must be initiated before used')
     }
@@ -137,8 +127,10 @@ export class LedgerSigner extends Signer {
       delete tx.from
     }
 
+    // TODO check for known token
+
     // Ledger expects hex without leading 0x
-    const unsignedTx = serializeCeloTransaction(tx).substring(2)
+    const unsignedTx = trimLeading0x(serializeCeloTransaction(tx))
     const sig = await this.perform((celoApp) => celoApp.signTransaction(this.path, unsignedTx))
 
     return serializeCeloTransaction(tx, {
@@ -157,7 +149,5 @@ export class LedgerSigner extends Signer {
 
   connect(): Signer {
     throw new Error('Connect method unimplemented on LedgerSigner')
-    // TODO
-    // return new LedgerSigner(provider, this.path);
   }
 }
