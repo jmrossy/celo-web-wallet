@@ -1,15 +1,18 @@
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
-import { TextInput } from 'src/components/input/TextInput'
+import { NumberInput } from 'src/components/input/NumberInput'
+import { Box } from 'src/components/layout/Box'
 import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
+import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
 import {
   importLedgerWalletActions,
   importLedgerWalletSagaName,
   ImportWalletParams,
   validate,
 } from 'src/features/ledger/importWallet'
+import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -54,16 +57,23 @@ export function LedgerImportScreen() {
   return (
     <OnboardingScreenFrame>
       <h1 css={Font.h1Green}>Import Your Ledger Account</h1>
-      <p css={style.description}>Connect your Ledger and open the Celo application on it.</p>
+      <p css={onboardingStyles.description}>
+        To import an account, connect your Ledger, unlock it, and open the Celo application.
+      </p>
+      <div css={style.animationContainer}>
+        <DeviceAnimation xOffset={48} />
+      </div>
       <form onSubmit={handleSubmit}>
-        {/* TODO use number input instead */}
-        <TextInput
-          name="index"
-          value={'' + values.index}
-          onChange={handleChange}
-          width="5em"
-          {...inputErrors['index']}
-        />
+        <Box direction="row" align="center" justify="center" styles={style.inputContainer}>
+          <label css={style.inputLabel}>Address Index</label>
+          <NumberInput
+            name="index"
+            value={'' + values.index}
+            onChange={handleChange}
+            width="2em"
+            {...inputErrors['index']}
+          />
+        </Box>
         <Button margin="2em 0 0 0" disabled={status === SagaStatus.Started} size="l" type="submit">
           Import Account
         </Button>
@@ -73,8 +83,16 @@ export function LedgerImportScreen() {
 }
 
 const style: Stylesheet = {
-  description: {
-    ...Font.body,
-    margin: '1em 0 0 0',
+  animationContainer: {
+    margin: '2em 1em',
+  },
+  inputContainer: {
+    input: {
+      textAlign: 'center',
+    },
+  },
+  inputLabel: {
+    ...Font.inputLabel,
+    marginRight: '1.5em',
   },
 }

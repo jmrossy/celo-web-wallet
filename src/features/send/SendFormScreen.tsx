@@ -8,7 +8,7 @@ import { Button } from 'src/components/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
-import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
+import { NumberInput } from 'src/components/input/NumberInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -105,7 +105,7 @@ export function SendFormScreen() {
           <Box direction="row" styles={style.inputRow} justify="between" margin="0 2.1em 0 0">
             <Box direction="column" justify="end" align="start">
               <label css={style.inputLabel}>Amount to Send</label>
-              <MoneyValueInput
+              <NumberInput
                 width="6em"
                 name="amount"
                 onChange={handleChange}

@@ -16,7 +16,7 @@ export interface TextInputProps {
   autoComplete?: string //default to "off"
   placeholder?: string
   fillWidth?: boolean
-  // TODO add validation hook
+  type?: 'text' | 'number' // For use by NumberInput, don't use this directly
 }
 
 export function TextInput(props: PropsWithChildren<TextInputProps>) {
@@ -33,6 +33,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
     autoComplete,
     placeholder,
     fillWidth,
+    type,
   } = props
 
   const sharedStyles = getSharedInputStyles(error)
@@ -41,7 +42,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
   return (
     <Box direction="column" styles={containerStyles}>
       <input
-        type="text"
+        type={type ?? 'text'}
         name={name}
         css={{
           ...sharedStyles,

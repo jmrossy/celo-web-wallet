@@ -16,12 +16,12 @@ export function validate(params: ImportWalletParams): ErrorState {
   const { index } = params
 
   if (index === null || index === undefined) {
-    return invalidInput('index', 'Index is required')
+    return invalidInput('index', 'Index required')
   }
 
   const indexBn = BigNumber.from(index)
   if (indexBn.lt(0) || indexBn.gt(DERIVATION_PATH_MAX_INDEX)) {
-    return invalidInput('index', 'Index value is invalid')
+    return invalidInput('index', 'Invalid index')
   }
 
   return { isValid: true }
