@@ -1,4 +1,4 @@
-import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
+import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { EnterPincodeForm } from 'src/features/pincode/EnterPincodeForm'
 import { Font } from 'src/styles/fonts'
 

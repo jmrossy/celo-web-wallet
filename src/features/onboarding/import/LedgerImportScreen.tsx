@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { Box } from 'src/components/layout/Box'
-import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
 import {
@@ -12,6 +11,7 @@ import {
   ImportWalletParams,
   validate,
 } from 'src/features/ledger/importWallet'
+import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
@@ -50,12 +50,8 @@ export function LedgerImportScreen() {
     onSuccess
   )
 
-  // TODO: show loader, handle errors, go to home
-  // need to skip whole pin logic for ledger wallets
-  // And show ledger animation if not to hard
-
   return (
-    <OnboardingScreenFrame>
+    <OnboardingScreenFrame current={3} total={3}>
       <h1 css={Font.h1Green}>Import Your Ledger Account</h1>
       <p css={onboardingStyles.description}>
         To import an account, connect your Ledger, unlock it, and open the Celo application.

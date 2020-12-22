@@ -13,7 +13,7 @@ export type TipPositions =
   | 'bottomRight'
   | 'bottomLeft'
 
-interface TooltipProps {
+export interface TooltipProps {
   content: any
   delay?: number
   margin?: string | number

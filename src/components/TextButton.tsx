@@ -1,3 +1,4 @@
+import { transparentButtonStyles } from 'src/components/Button'
 import { Font } from 'src/styles/fonts'
 import { Styles } from 'src/styles/types'
 
@@ -17,11 +18,7 @@ export function TextButton(props: React.PropsWithChildren<ButtonProps>) {
 }
 
 const defaultStyle: Styles = {
+  ...transparentButtonStyles,
   ...Font.linkLight,
   textRendering: 'geometricprecision',
-  border: 'none',
-  outline: 'none',
-  cursor: 'pointer',
-  padding: 0,
-  background: 'none',
 }

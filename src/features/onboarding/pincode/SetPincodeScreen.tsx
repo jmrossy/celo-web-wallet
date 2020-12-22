@@ -1,11 +1,14 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { isSignerSet } from 'src/blockchain/signer'
-import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
+import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { SetPincodeForm } from 'src/features/pincode/SetPincodeForm'
 import { Font } from 'src/styles/fonts'
 
 export function SetPincodeScreen() {
+  const location = useLocation()
+  // @ts-ignore
+  const pageNumber = location?.state?.pageNumber ?? 3
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -16,7 +19,7 @@ export function SetPincodeScreen() {
   }, [])
 
   return (
-    <OnboardingScreenFrame>
+    <OnboardingScreenFrame current={pageNumber} total={pageNumber}>
       <h1 css={Font.h1Green}>Set Your Account Pin</h1>
       <SetPincodeForm />
     </OnboardingScreenFrame>

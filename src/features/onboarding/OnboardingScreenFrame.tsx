@@ -1,9 +1,16 @@
 import { PropsWithChildren } from 'react'
 import Logo from 'src/components/icons/logo.svg'
 import { Box } from 'src/components/layout/Box'
+import { PageDots } from 'src/features/onboarding/PageDots'
 import { Stylesheet } from 'src/styles/types'
 
-export function OnboardingScreenFrame(props: PropsWithChildren<unknown>) {
+interface Props {
+  // For page dots
+  current?: number
+  total?: number
+}
+
+export function OnboardingScreenFrame({ current, total, children }: PropsWithChildren<Props>) {
   return (
     <Box direction="column" align="center" styles={style.container}>
       <div css={style.logoContainer}>
@@ -11,9 +18,14 @@ export function OnboardingScreenFrame(props: PropsWithChildren<unknown>) {
       </div>
       <div css={style.content}>
         <Box align="center" justify="center" direction="column" styles={style.childrenContainer}>
-          {props.children}
+          {children}
         </Box>
       </div>
+      {current && total && (
+        <div css={style.dotsContainer}>
+          <PageDots current={current} total={total} />
+        </div>
+      )}
     </Box>
   )
 }
@@ -40,5 +52,12 @@ const style: Stylesheet = {
     padding: '5em 2em 5em 2em',
     minHeight: '100%',
     margin: 'auto',
+  },
+  dotsContainer: {
+    position: 'fixed',
+    borderRadius: 8,
+    bottom: '0.8em',
+    padding: '0.6em',
+    background: 'rgba(255,255,255,0.5)',
   },
 }

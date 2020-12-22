@@ -40,7 +40,7 @@ export function ImportWalletForm() {
   const navigate = useNavigate()
   const onSuccess = () => {
     dispatch(setBackupReminderDismissed(true)) //dismiss the reminder about backing up your account key
-    navigate('/setup/set-pin')
+    navigate('/setup/set-pin', { state: { pageNumber: 4 } })
   }
   const status = useSagaStatusWithErrorModal(
     importWalletSagaName,

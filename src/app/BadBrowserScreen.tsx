@@ -1,5 +1,5 @@
 import WebIcon from 'src/components/icons/web.svg'
-import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
+import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 

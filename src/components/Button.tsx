@@ -112,12 +112,18 @@ function getStateColors(baseColor: string) {
   }
 }
 
-export const defaultButtonStyles: Styles = {
-  borderRadius: 3,
-  color: Color.primaryWhite,
+export const transparentButtonStyles: Styles = {
+  padding: 0,
   border: 'none',
   outline: 'none',
+  background: 'none',
   cursor: 'pointer',
+}
+
+export const defaultButtonStyles: Styles = {
+  ...transparentButtonStyles,
+  borderRadius: 3,
+  color: Color.primaryWhite,
   backgroundColor: Color.primaryGreen,
   fontWeight: 500,
   ':hover': {

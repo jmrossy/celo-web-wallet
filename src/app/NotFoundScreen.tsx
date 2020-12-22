@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import NotFoundIcon from 'src/components/icons/not_found.svg'
-import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
+import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'

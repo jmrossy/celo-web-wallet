@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import SadFace from 'src/components/icons/sad_face.svg'
-import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
 import { config } from 'src/config'
+import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'

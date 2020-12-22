@@ -36,7 +36,7 @@ export function Mnemonic(props: Props) {
   return (
     <Box direction="row" align="center">
       <div css={style.container}>
-        {unavailable ? (
+        {!unavailable ? (
           <>
             {mnemonicWords.map((words, i) => (
               <Box direction="row" align="center" justify="between" key={`mLine-${i}`}>

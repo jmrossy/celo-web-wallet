@@ -1,7 +1,10 @@
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/Button'
-import { HelpIcon } from 'src/components/icons/HelpIcon'
-import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
+import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
+import KeyIcon from 'src/components/icons/key.svg'
+import LedgerIcon from 'src/components/icons/logos/ledger.svg'
+import { Box } from 'src/components/layout/Box'
+import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -18,23 +21,58 @@ export function ImportChoiceScreen() {
     navigate('/setup/ledger')
   }
 
+  const helpModal = (
+    <BasicHelpIconModal>
+      <HelpModal />
+    </BasicHelpIconModal>
+  )
+
   return (
-    <OnboardingScreenFrame>
+    <OnboardingScreenFrame current={2} total={4}>
       <h1 css={Font.h1Green}>Import Your Celo Account</h1>
-      <p css={onboardingStyles.description}>
-        To import your account, use your secret Account Key or a Ledger hardware wallet.{' '}
-      </p>
-      <HelpIcon tooltip="TODO" />
+      <Box direction="row" align="end" justify="center" margin="0 0 0 2em">
+        <p css={onboardingStyles.description}>
+          To import your account, use your secret Account Key (mnemonic) or a Ledger hardware
+          wallet.{' '}
+        </p>
+        <HelpIcon
+          width="1.5em"
+          margin="0 0 0.2em 0.5em"
+          modal={{ head: 'About Importing Wallets', content: helpModal }}
+        />
+      </Box>
       <div css={style.buttonContainer}>
-        {/* TODO add icons in these buttons */}
-        <Button onClick={onClickAccountKey} size="l" margin={'1em 1.5em'}>
+        <Button onClick={onClickAccountKey} size="l" margin={'1em 1.5em'} icon={KeyIcon}>
           Use Account Key
         </Button>
-        <Button onClick={onClickLedger} size="l" margin={'1em 1.5em'}>
+        <Button onClick={onClickLedger} size="l" margin={'1em 1.5em'} icon={LedgerIcon}>
           Use Ledger
         </Button>
       </div>
     </OnboardingScreenFrame>
+  )
+}
+
+function HelpModal() {
+  return (
+    <>
+      <p>
+        If you already have a Celo account, you can use the Account Key to load it here. Account
+        Keys are 24 random words (<q>dog chair hello</q>). They are secret so handle them carefully.
+      </p>
+      <p>
+        If you have a Ledger hardware wallet{' '}
+        <a
+          href="https://docs.celo.org/celo-owner-guide/ledger"
+          target="_blank"
+          rel="noopener noreferrer"
+          css={Font.linkLight}
+        >
+          with the Celo application
+        </a>
+        , you can use the Web Wallet to safely interact with it.
+      </p>
+    </>
   )
 }
 
