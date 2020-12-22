@@ -4,6 +4,7 @@ import { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
 import { config } from 'src/config'
+import { LedgerUnlockScreen } from 'src/features/ledger/LedgerUnlockScreen'
 import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
 import { isAccountUnlocked } from 'src/features/pincode/pincode'
 import { isWalletInStorage } from 'src/features/wallet/storage'
@@ -11,7 +12,7 @@ import { isWalletInStorage } from 'src/features/wallet/storage'
 export function HomeNavigator() {
   const { address, type, isUnlocked } = useSelector((s: RootState) => s.wallet)
 
-  // TODO necessary until auto-timeout unlock works properly
+  // TODO necessary until auto-timeout unlock is fully implemented
   useSelector((s: RootState) => s.saga.pincode.status)
 
   // If pin has been entered already
@@ -30,6 +31,10 @@ export function HomeNavigator() {
   // Else, if wallet exists in storage but is not unlocked yet
   if (isWalletInStorage()) {
     return <EnterPincodeScreen />
+  }
+
+  if (address && type === SignerType.Ledger) {
+    return <LedgerUnlockScreen />
   }
 
   // Otherwise, account must not be set up yet

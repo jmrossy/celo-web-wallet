@@ -18,7 +18,7 @@ import { SendTokenParams, validate } from 'src/features/send/sendToken'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei } from 'src/utils/amount'
-import { tryClipboardGet } from 'src/utils/clipboard'
+import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
@@ -96,9 +96,13 @@ export function SendFormScreen() {
                 {...inputErrors['recipient']}
                 placeholder="0x1234..."
               />
-              <Button size="icon" type="button" margin="0 0 0 0.5em" onClick={onPasteAddress}>
-                <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
-              </Button>
+              {isClipboardReadSupported() ? (
+                <Button size="icon" type="button" margin="0 0 0 0.5em" onClick={onPasteAddress}>
+                  <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
+                </Button>
+              ) : (
+                <div css={[style.copyIcon, { marginLeft: '0.5em' }]}></div>
+              )}
             </Box>
           </Box>
 

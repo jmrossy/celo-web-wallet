@@ -28,9 +28,9 @@ export function useSagaStatusWithErrorModal(
 
   const { showErrorModal } = useModal()
   useEffect(() => {
-    if (status === SagaStatus.Success && onSuccess) {
+    if (status === SagaStatus.Success) {
       dispatch(saga.actions.reset(null))
-      onSuccess()
+      if (onSuccess) onSuccess()
     } else if (status === SagaStatus.Failure) {
       showErrorModal(
         errorTitle,

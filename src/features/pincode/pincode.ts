@@ -164,6 +164,7 @@ function* unlockWallet(pin: string) {
   if (!isSignerSet()) {
     yield* call(importWallet, mnemonic)
   }
+  yield* put(setWalletUnlocked(true))
 }
 
 function* changePin(existingPin: string, newPin: string) {

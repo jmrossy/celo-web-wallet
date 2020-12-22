@@ -3,10 +3,11 @@ import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH, DERIVATION_PATH_MAX_INDEX } from 'src/consts'
 import { onWalletImport } from 'src/features/wallet/importWallet'
+import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
-import { call } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export interface ImportWalletParams {
   index: BigNumberish
@@ -33,12 +34,13 @@ function* importLedgerWallet(params: ImportWalletParams) {
     throw new Error(errorStateToString(validateResult, 'Invalid Index'))
   }
 
-  const signer = yield* call(createLedgerSigner, params)
+  const { signer, derivationPath } = yield* call(createLedgerSigner, params)
   const address = signer.address
   if (!address) throw new Error('Ledger Signer missing address')
   setSigner({ signer, type: SignerType.Ledger })
 
-  yield* call(onWalletImport, address, SignerType.Ledger)
+  yield* call(onWalletImport, address, SignerType.Ledger, derivationPath)
+  yield* put(setWalletUnlocked(true))
 }
 
 async function createLedgerSigner(params: ImportWalletParams) {
@@ -48,7 +50,7 @@ async function createLedgerSigner(params: ImportWalletParams) {
   const derivationPath = `${CELO_DERIVATION_PATH}/${index}`
   const signer = new LedgerSigner(provider, derivationPath)
   await signer.init()
-  return signer
+  return { signer, derivationPath }
 }
 
 async function dynamicImportLedgerSigner() {

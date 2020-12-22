@@ -21,13 +21,13 @@ export function* importWallet(mnemonic: string) {
   const celoWallet = new CeloWallet(wallet, provider)
   setSigner({ signer: celoWallet, type: SignerType.Local })
 
-  yield* call(onWalletImport, celoWallet.address, SignerType.Local)
+  yield* call(onWalletImport, celoWallet.address, SignerType.Local, derivationPath)
 }
 
-export function* onWalletImport(newAddress: string, type: SignerType) {
+export function* onWalletImport(newAddress: string, type: SignerType, derivationPath: string) {
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
-  yield* put(setAddress({ address: newAddress, type }))
+  yield* put(setAddress({ address: newAddress, type, derivationPath }))
   yield* put(fetchBalancesActions.trigger())
 
   // Only want to clear the feed if its not from the persisted/current wallet

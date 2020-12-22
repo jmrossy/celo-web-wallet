@@ -13,7 +13,6 @@ import {
 } from 'src/features/ledger/importWallet'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
-import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -40,7 +39,6 @@ export function LedgerImportScreen() {
 
   const navigate = useNavigate()
   const onSuccess = () => {
-    dispatch(setWalletUnlocked(true))
     navigate('/', { replace: true })
   }
   const status = useSagaStatusWithErrorModal(
