@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { BigNumber } from 'ethers'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
+import { SignerType } from 'src/blockchain/signer'
 import warningIcon from 'src/components/icons/warning.svg'
 import { Notification } from 'src/components/Notification'
 import { HIGH_VALUE_THRESHOLD } from 'src/consts'
@@ -38,7 +39,8 @@ export function HomeScreenWarnings() {
 export const selectHomeScreenWarnings = createSelector(
   (state: RootState) => state.settings,
   (state: RootState) => state.wallet.balances,
-  (settings, balances) => {
+  (state: RootState) => state.wallet.type,
+  (settings, balances, type) => {
     const cUsd = BigNumber.from(balances.cUsd)
     const celo = BigNumber.from(balances.celo)
 
@@ -53,7 +55,8 @@ export const selectHomeScreenWarnings = createSelector(
     if (
       settings.backupReminderDismissed &&
       (cUsd.gte(HIGH_VALUE_THRESHOLD) || celo.gte(HIGH_VALUE_THRESHOLD)) &&
-      !settings.highValueWarningDismissed
+      !settings.highValueWarningDismissed &&
+      type == SignerType.Local
     )
       // TODO link to Valora and Ledger docs
       return {

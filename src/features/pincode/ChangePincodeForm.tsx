@@ -45,7 +45,7 @@ export function ChangePincodeForm() {
   const { showModalAsync } = useModal()
   const onSuccess = async () => {
     await showModalAsync('Pincode Changed', 'Your pincode has been successfully changed')
-    onClickCancel()
+    navigate(-1)
   }
 
   const status = useSagaStatusWithErrorModal(

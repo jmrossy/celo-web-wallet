@@ -38,7 +38,9 @@ export function NewWalletScreen() {
   const status = useSagaStatusWithErrorModal(
     createWalletSagaName,
     'Error Creating Wallet',
-    'Something went wrong when creating your new wallet, sorry! Please try again.'
+    'Something went wrong when creating your new wallet, sorry! Please try again.',
+    undefined,
+    false
   )
 
   const onClickContinue = () => {

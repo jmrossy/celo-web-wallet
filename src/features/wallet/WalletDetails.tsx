@@ -27,7 +27,7 @@ export function WalletDetails() {
     <div css={style.container}>
       <div css={style.itemContainer}>
         <h3 css={style.h3}>Public Address</h3>
-        <div>
+        <div css={style.description}>
           It’s like your username on Celo.
           <br />
           You can share this with friends.
@@ -41,7 +41,7 @@ export function WalletDetails() {
       </div>
       <div css={style.itemContainer}>
         <h3 css={style.h3}>Unique Icon</h3>
-        <div>
+        <div css={style.description}>
           Every account has a unique visual
           <br />
           representation of its address.
@@ -55,10 +55,10 @@ export function WalletDetails() {
       </div>
       <div css={style.itemContainer}>
         <h3 css={style.h3}>Account Key</h3>
-        <div>
-          Keep this phrase secret and safe. You can
+        <div css={style.description}>
+          <strong>Keep this phrase secret and safe.</strong>
           <br />
-          retrieve it again under Account Settings.
+          {!mnemonicUnavailable && 'You can retrieve it again later.'}
         </div>
       </div>
       <div css={style.itemContainer}>
@@ -72,7 +72,7 @@ const style: Stylesheet = {
   container: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(20em, 1fr))',
-    gap: '1.5em 2em',
+    gap: '1em 2em',
     alignItems: 'center',
     justifyItems: 'center',
     [mq[768]]: {
@@ -81,7 +81,11 @@ const style: Stylesheet = {
   },
   h3: {
     ...Font.h3,
-    margin: '0 0 0.5em 0',
+    margin: '0 0 0.25em 0',
+  },
+  description: {
+    ...Font.body2,
+    lineHeight: '1.5em',
   },
   itemContainer: {
     textAlign: 'center',
