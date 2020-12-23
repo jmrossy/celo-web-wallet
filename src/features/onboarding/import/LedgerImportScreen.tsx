@@ -52,7 +52,7 @@ export function LedgerImportScreen() {
     <OnboardingScreenFrame current={3} total={3}>
       <h1 css={Font.h1Green}>Import Your Ledger Account</h1>
       <p css={onboardingStyles.description}>
-        To import an account, connect your Ledger, unlock it, and open the Celo application.
+        To import, connect your Ledger, open the Celo application, and verify your address.
       </p>
       <div css={style.animationContainer}>
         <DeviceAnimation xOffset={48} />

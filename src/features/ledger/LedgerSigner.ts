@@ -5,7 +5,8 @@ import { BigNumber, providers, Signer, utils } from 'ethers'
 import { config } from 'src/config'
 import { CELO_LEDGER_APP_VERSION } from 'src/consts'
 import { CeloLedgerApp } from 'src/features/ledger/CeloLedgerApp'
-import { ensureLeading0x, trimLeading0x } from 'src/utils/addresses'
+import { getTokenData } from 'src/features/ledger/tokenData'
+import { areAddressesEqual, ensureLeading0x, trimLeading0x } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { sleep } from 'src/utils/sleep'
 
@@ -127,7 +128,18 @@ export class LedgerSigner extends Signer {
       delete tx.from
     }
 
-    // TODO check for known token
+    const toTokenInfo = getTokenData(transaction.to)
+    const feeTokenInfo = getTokenData(transaction.feeCurrency)
+    if (toTokenInfo) {
+      await this.perform((celoApp) => celoApp.provideERC20TokenInformation(toTokenInfo))
+    }
+    if (
+      feeTokenInfo &&
+      (!toTokenInfo ||
+        !areAddressesEqual(toTokenInfo.contractAddress, feeTokenInfo.contractAddress))
+    ) {
+      await this.perform((celoApp) => celoApp.provideERC20TokenInformation(feeTokenInfo))
+    }
 
     // Ledger expects hex without leading 0x
     const unsignedTx = trimLeading0x(serializeCeloTransaction(tx))
