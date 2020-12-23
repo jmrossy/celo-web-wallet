@@ -7,8 +7,10 @@ import { config } from 'src/config'
 import { CELO_DERIVATION_PATH, MNEMONIC_LENGTH } from 'src/consts'
 import { clearTransactions } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetch'
+import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { setAddress } from 'src/features/wallet/walletSlice'
+import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
 
@@ -28,10 +30,12 @@ export function* onWalletImport(newAddress: string, type: SignerType, derivation
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
   yield* put(setAddress({ address: newAddress, type, derivationPath }))
+  yield* put(setBackupReminderDismissed(true)) // Dismiss reminder about account key backup
   yield* put(fetchBalancesActions.trigger())
 
   // Only want to clear the feed if its not from the persisted/current wallet
   if (!currentAddress || currentAddress !== newAddress) {
+    logger.warn('New address does not match current one in store')
     yield* put(clearTransactions())
   }
   yield* put(fetchFeedActions.trigger())

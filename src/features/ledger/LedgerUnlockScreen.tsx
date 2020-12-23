@@ -22,15 +22,14 @@ export function LedgerUnlockScreen() {
   const dispatch = useDispatch()
 
   const onClickConnect = () => {
-    // TODO
-    dispatch(importLedgerWalletActions.trigger({ index: 0 }))
+    dispatch(importLedgerWalletActions.trigger({ useExisting: true }))
   }
 
   const onLogout = useLogoutModal()
 
   const status = useSagaStatusWithErrorModal(
     importLedgerWalletSagaName,
-    'Error Importing Wallet',
+    'Error Unlocking Wallet',
     'Something went wrong, sorry! Please ensure your Ledger is connected, unlocked, and running the latest Celo app.'
   )
 

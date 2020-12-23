@@ -1,20 +1,26 @@
 import { BigNumber, BigNumberish } from 'ethers'
+import { RootState } from 'src/app/rootReducer'
 import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH, DERIVATION_PATH_MAX_INDEX } from 'src/consts'
+import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
 import { onWalletImport } from 'src/features/wallet/importWallet'
 import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
+import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 export interface ImportWalletParams {
-  index: BigNumberish
+  index?: BigNumberish
+  useExisting?: boolean
 }
 
 export function validate(params: ImportWalletParams): ErrorState {
-  const { index } = params
+  const { index, useExisting } = params
+
+  if (useExisting) return { isValid: true }
 
   if (index === null || index === undefined) {
     return invalidInput('index', 'Index required')
@@ -34,7 +40,18 @@ function* importLedgerWallet(params: ImportWalletParams) {
     throw new Error(errorStateToString(validateResult, 'Invalid Index'))
   }
 
-  const { signer, derivationPath } = yield* call(createLedgerSigner, params)
+  const { index, useExisting } = params
+  let signer: LedgerSigner
+  let derivationPath: string
+  if (useExisting) {
+    const wallet = yield* call(importExistingLedgerWallet)
+    derivationPath = wallet.derivationPath
+    signer = wallet.signer
+  } else {
+    derivationPath = `${CELO_DERIVATION_PATH}/${index}`
+    signer = yield* call(createLedgerSigner, derivationPath)
+  }
+
   const address = signer.address
   if (!address) throw new Error('Ledger Signer missing address')
   setSigner({ signer, type: SignerType.Ledger })
@@ -43,19 +60,33 @@ function* importLedgerWallet(params: ImportWalletParams) {
   yield* put(setWalletUnlocked(true))
 }
 
-async function createLedgerSigner(params: ImportWalletParams) {
-  const { index } = params
+function* importExistingLedgerWallet() {
+  const { address, derivationPath, type } = yield* select((state: RootState) => state.wallet)
+
+  if (!address || !derivationPath || !type) throw new Error('No current wallet info found')
+  if (type !== SignerType.Ledger) throw new Error('Current wallet is not Ledger based')
+
+  const signer = yield* call(createLedgerSigner, derivationPath)
+  const newAddress = signer.address
+  if (!newAddress) throw new Error('Ledger Signer missing address')
+  if (!areAddressesEqual(newAddress, address))
+    throw new Error(
+      'Ledger address does not match current wallet. Please ensure you are using the right Ledger.'
+    )
+  return { signer, derivationPath }
+}
+
+async function createLedgerSigner(derivationPath: string) {
   const LedgerSigner = await dynamicImportLedgerSigner()
   const provider = getProvider()
-  const derivationPath = `${CELO_DERIVATION_PATH}/${index}`
   const signer = new LedgerSigner(provider, derivationPath)
   await signer.init()
-  return { signer, derivationPath }
+  return signer
 }
 
 async function dynamicImportLedgerSigner() {
   try {
-    logger.info('Fetching Ledger bundle')
+    logger.debug('Fetching Ledger bundle')
     const global = window as any
     if (!global.Buffer) {
       const buffer = await import('buffer')
