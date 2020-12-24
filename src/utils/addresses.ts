@@ -24,3 +24,11 @@ export function areAddressesEqual(a1: string, a2: string) {
   validateAddress(a2, 'compare')
   return utils.getAddress(a1) === utils.getAddress(a2)
 }
+
+export function trimLeading0x(input: string) {
+  return input.startsWith('0x') ? input.substring(2) : input
+}
+
+export function ensureLeading0x(input: string) {
+  return input.startsWith('0x') ? input : `0x${input}`
+}

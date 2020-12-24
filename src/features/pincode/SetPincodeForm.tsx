@@ -11,7 +11,6 @@ import {
   validate,
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow } from 'src/features/pincode/PincodeInput'
-import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -30,7 +29,7 @@ export function SetPincodeForm() {
     }
   }
 
-  const { values, touched, handleChange, handleSubmit } = useCustomForm<PincodeParams, any>(
+  const { values, touched, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
     initialValues,
     onSubmit
   )
@@ -38,7 +37,6 @@ export function SetPincodeForm() {
   const { inputErrors, areInputsValid } = useInputValidation(touched, () => validate(values))
 
   const onSuccess = () => {
-    dispatch(setWalletUnlocked(true))
     navigate('/', { replace: true })
   }
   const status = useSagaStatusWithErrorModal(
@@ -62,6 +60,7 @@ export function SetPincodeForm() {
             name="value"
             value={values.value}
             onChange={handleChange}
+            autoFocus={true}
             {...inputErrors['value']}
           />
           <PincodeInputRow
@@ -69,6 +68,7 @@ export function SetPincodeForm() {
             name="valueConfirm"
             value={values.valueConfirm}
             onChange={handleChange}
+            autoFocus={false}
             {...inputErrors['valueConfirm']}
           />
           <Box styles={{ width: '100%' }} justify="end">

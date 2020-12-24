@@ -27,6 +27,12 @@ import {
   estimateFeeSagaName,
 } from 'src/features/fees/estimateFee'
 import {
+  importLedgerWalletActions,
+  importLedgerWalletReducer,
+  importLedgerWalletSaga,
+  importLedgerWalletSagaName,
+} from 'src/features/ledger/importWallet'
+import {
   pincodeActions,
   pincodeReducer,
   pincodeSaga,
@@ -117,6 +123,11 @@ export const monitoredSagas: {
     saga: importWalletSaga,
     reducer: importWalletReducer,
     actions: importWalletActions,
+  },
+  [importLedgerWalletSagaName]: {
+    saga: importLedgerWalletSaga,
+    reducer: importLedgerWalletReducer,
+    actions: importLedgerWalletActions,
   },
   [estimateFeeSagaName]: {
     saga: estimateFeeSaga,

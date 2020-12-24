@@ -32,31 +32,36 @@ export function ScreenFrameWithFeed(props: PropsWithChildren<any>) {
         <MobileHomeEmpty>{props.children}</MobileHomeEmpty>
       )}
       {frameState === FrameState.MobileNotHome && <MobileNotHome>{props.children}</MobileNotHome>}
+      {frameState === FrameState.MobileNotHomeEmpty && (
+        <MobileNotHomeEmpty>{props.children}</MobileNotHomeEmpty>
+      )}
     </ScreenFrame>
   )
 }
 
 enum FrameState {
-  DesktopHomeEmpty, // i.e. empty wallet (0 balances)
-  MobileHomeEmpty,
   DesktopHome,
+  DesktopHomeEmpty, // i.e. empty wallet (0 balances)
   MobileHome,
+  MobileHomeEmpty,
   MobileNotHome,
+  MobileNotHomeEmpty,
   // Note: no DesktopNotHome needed as it would be the same as DesktopHome
 }
 
 function useFrameState() {
   const location = useLocation()
-  const isHomeScreenMobile = location.pathname === '/' || location.pathname === '/wallet'
+  const isHomeScreen = location.pathname === '/'
   const isMobile = useIsMobile()
   const isWalletEmpty = useAreBalancesEmpty()
 
-  if (!isMobile && isWalletEmpty) return FrameState.DesktopHomeEmpty
   if (!isMobile && !isWalletEmpty) return FrameState.DesktopHome
+  if (!isMobile && isWalletEmpty) return FrameState.DesktopHomeEmpty
 
-  if (isMobile && isHomeScreenMobile && isWalletEmpty) return FrameState.MobileHomeEmpty
-  if (isMobile && isHomeScreenMobile && !isWalletEmpty) return FrameState.MobileHome
-  if (isMobile && !isHomeScreenMobile) return FrameState.MobileNotHome
+  if (isMobile && isHomeScreen && !isWalletEmpty) return FrameState.MobileHome
+  if (isMobile && isHomeScreen && isWalletEmpty) return FrameState.MobileHomeEmpty
+  if (isMobile && !isHomeScreen && !isWalletEmpty) return FrameState.MobileNotHome
+  if (isMobile && !isHomeScreen && isWalletEmpty) return FrameState.MobileNotHomeEmpty
 
   throw new Error('Unhandled frame state case')
 }
@@ -114,6 +119,14 @@ function MobileNotHome(props: PropsWithChildren<any>) {
         <TransactionFeed collapsed={true} />
       </Box>
       <div css={style.childContent}>{props.children}</div>
+    </Box>
+  )
+}
+
+function MobileNotHomeEmpty(props: PropsWithChildren<any>) {
+  return (
+    <Box direction="column" styles={style.contentContainer}>
+      <div>{props.children}</div>
     </Box>
   )
 }

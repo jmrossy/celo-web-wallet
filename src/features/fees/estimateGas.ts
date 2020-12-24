@@ -42,7 +42,7 @@ export async function estimateGas(
 }
 
 async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: Currency) {
-  const signer = getSigner()
+  const signer = getSigner().signer
   const gasLimit = await signer.estimateGas(tx)
 
   if (!feeCurrency || feeCurrency === Currency.CELO) {

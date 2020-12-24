@@ -12,7 +12,7 @@ export function tokenPriceHistoryToChartData(
   date.setDate(date.getDate() - numDays + 1)
   for (let i = 0; i < numDays; i++) {
     const label = dateToChartLabel(date)
-    const value = findPriceForDay(prices, date)
+    const value = findPriceForDay(prices, date) || 0
     dataValues.push({ label, values: [value] })
     date.setDate(date.getDate() + 1)
   }

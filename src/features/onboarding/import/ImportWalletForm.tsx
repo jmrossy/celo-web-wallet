@@ -6,7 +6,6 @@ import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import { ImportWalletWarning } from 'src/features/onboarding/import/ImportWalletWarning'
-import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import {
   importWalletActions,
   importWalletSagaName,
@@ -14,6 +13,7 @@ import {
 } from 'src/features/wallet/importWallet'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 
 export function ImportWalletForm() {
@@ -38,8 +38,7 @@ export function ImportWalletForm() {
 
   const navigate = useNavigate()
   const onSuccess = () => {
-    dispatch(setBackupReminderDismissed(true)) //dismiss the reminder about backing up your account key
-    navigate('/setup/set-pin')
+    navigate('/setup/set-pin', { state: { pageNumber: 4 } })
   }
   const status = useSagaStatusWithErrorModal(
     importWalletSagaName,
@@ -51,7 +50,7 @@ export function ImportWalletForm() {
   return (
     <Box direction="column" align="center">
       {!hasShownWarning && (
-        <Box direction="column" align="center" styles={styles.warningBox}>
+        <Box direction="column" align="center" styles={style.warningBox}>
           <ImportWalletWarning />
           <Button onClick={() => setHasShownWarning(true)} margin="2em 0 0 0">
             I Understand
@@ -60,8 +59,8 @@ export function ImportWalletForm() {
       )}
       {hasShownWarning && (
         <Box direction="column" align="center" margin="-1em 0 0 0">
-          <p css={styles.description}>Enter your account key (mnemonic phrase).</p>
-          <p css={styles.description}>Only import on devices you trust.</p>
+          <p css={style.description}>Enter your account key (mnemonic phrase).</p>
+          <p css={style.description}>Only import on devices you trust.</p>
           <Box direction="column" align="center" margin="2em 0 0 0">
             <TextArea
               name="mnemonic"
@@ -90,7 +89,7 @@ export function ImportWalletForm() {
   )
 }
 
-const styles = {
+const style: Stylesheet = {
   warningBox: {
     borderRadius: 4,
     padding: '0 1em 1em 1em',
@@ -98,6 +97,7 @@ const styles = {
   },
   description: {
     ...Font.body,
+    textAlign: 'center',
     margin: '1em 0 0 0',
   },
 }

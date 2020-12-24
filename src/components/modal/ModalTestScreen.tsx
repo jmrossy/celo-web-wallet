@@ -214,46 +214,59 @@ export function ModalTestScreen() {
         <h1 css={{ width: '100%', textAlign: 'center' }}>Tooltip Testing</h1>
 
         <Box css={{ width: '100%' }} justify="center" align="center">
-          <HelpIcon tooltip="This is a HelpIcon with a tooltip" margin="1em" tipVariant="dark" />
           <HelpIcon
-            tooltip="This is a HelpIcon with tooltip on the right side"
+            tooltip={{ content: 'This is a HelpIcon with a tooltip', variant: 'dark' }}
             margin="1em"
-            tipPosition="right"
           />
           <HelpIcon
-            tooltip="This is a HelpIcon with tooltip on the left side"
+            tooltip={{
+              content: 'This is a HelpIcon with a tooltip on the right side',
+              position: 'right',
+            }}
             margin="1em"
-            tipPosition="left"
-            tipVariant="dark"
           />
           <HelpIcon
-            tooltip="This is a HelpIcon with tooltip on the bottom"
+            tooltip={{
+              content: 'This is a HelpIcon with a tooltip on the left side',
+              position: 'left',
+              variant: 'dark',
+            }}
             margin="1em"
-            tipPosition="bottom"
           />
           <HelpIcon
-            tooltip="This is a HelpIcon with tooltip on the bottom-left"
+            tooltip={{
+              content: 'This is a HelpIcon with a tooltip on the bottom',
+              position: 'bottom',
+            }}
             margin="1em"
-            tipVariant="dark"
-            tipPosition="bottomLeft"
           />
           <HelpIcon
-            tooltip="This is a HelpIcon with tooltip on the bottom-right"
+            tooltip={{
+              content: 'This is a HelpIcon with a tooltip on the bottom left',
+              position: 'bottomLeft',
+            }}
             margin="1em"
-            tipVariant="dark"
-            tipPosition="bottomRight"
           />
           <HelpIcon
-            tooltip="This is a HelpIcon with tooltip on the top-left"
+            tooltip={{
+              content: 'This is a HelpIcon with a tooltip on the top left',
+              position: 'topLeft',
+            }}
             margin="1em"
-            tipVariant="dark"
-            tipPosition="topLeft"
           />
           <HelpIcon
-            tooltip="This is a HelpIcon with tooltip on the top-right"
+            tooltip={{
+              content: 'This is a HelpIcon with a tooltip on the top right',
+              position: 'topRight',
+            }}
             margin="1em"
-            tipVariant="dark"
-            tipPosition="topRight"
+          />
+          <HelpIcon
+            tooltip={{
+              content: 'This is a HelpIcon with a tooltip on the bottom right',
+              position: 'bottomRight',
+            }}
+            margin="1em"
           />
         </Box>
 
@@ -284,10 +297,12 @@ export function ModalTestScreen() {
 
         <Box justify="center" align="center">
           <HelpIcon
-            tooltip={<img src={Lightbulb} height={32} width={32} />}
+            tooltip={{
+              content: <img src={Lightbulb} height={32} width={32} />,
+              position: 'right',
+              variant: 'light',
+            }}
             margin="1em"
-            tipPosition="right"
-            tipVariant="light"
           />
           <Tooltip
             margin="1em"

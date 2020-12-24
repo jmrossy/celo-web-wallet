@@ -23,7 +23,7 @@ export function* fetchGasPriceIfStale(feeCurrency: Currency) {
 }
 
 function fetchGasPrice(feeCurrency: Currency) {
-  const signer = getSigner()
+  const signer = getSigner().signer
 
   if (!feeCurrency || feeCurrency === Currency.CELO) {
     return signer.getGasPrice()

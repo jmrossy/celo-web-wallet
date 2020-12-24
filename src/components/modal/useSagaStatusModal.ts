@@ -11,7 +11,8 @@ export function useSagaStatusWithErrorModal(
   sagaName: string,
   errorTitle: string,
   errorMsg?: string,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  resetSagaOnSuccess = true
 ) {
   const dispatch = useDispatch()
   const sagaState = useSelector((s: RootState) => s.saga[sagaName])
@@ -28,9 +29,9 @@ export function useSagaStatusWithErrorModal(
 
   const { showErrorModal } = useModal()
   useEffect(() => {
-    if (status === SagaStatus.Success && onSuccess) {
-      dispatch(saga.actions.reset(null))
-      onSuccess()
+    if (status === SagaStatus.Success) {
+      if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
+      if (onSuccess) onSuccess()
     } else if (status === SagaStatus.Failure) {
       showErrorModal(
         errorTitle,

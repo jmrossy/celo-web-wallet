@@ -11,10 +11,7 @@ import {
 } from 'src/features/pincode/pincode'
 import { PincodeInput } from 'src/features/pincode/PincodeInput'
 import { useLogoutModal } from 'src/features/wallet/logout'
-import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 
 const defaultPinError = { isError: false, helpText: '' }
@@ -41,24 +38,18 @@ export function EnterPincodeForm() {
     dispatch(pincodeActions.trigger({ action: PincodeAction.Unlock, value: pin }))
   }
 
-  const onUnlocked = () => {
-    dispatch(setWalletUnlocked(true)) //This will trigger the homeframe to show the main view, otherwise, pincode.status doesn't get reset
-  }
-
   const onLogout = useLogoutModal()
 
   const status = useSagaStatusWithErrorModal(
     pincodeSagaName,
     'Error Unlocking Account',
-    'Unable to unlock your account, please check your pin and try again.',
-    onUnlocked
+    'Unable to unlock your account, please check your pin and try again.'
   )
 
   // TODO add 15 tries before account nuke logic here
 
   return (
-    <Box direction="column" align="center">
-      <div css={style.description}>Enter your pincode to unlock your account.</div>
+    <Box direction="column" align="center" margin="1.75em 0 0 0">
       <form onSubmit={onClickSubmit}>
         <PincodeInput
           name="pin"
@@ -88,11 +79,4 @@ export function EnterPincodeForm() {
       </form>
     </Box>
   )
-}
-
-const style: Stylesheet = {
-  description: {
-    ...Font.body,
-    marginBottom: '2em',
-  },
 }

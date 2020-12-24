@@ -8,7 +8,7 @@ import { Button } from 'src/components/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
-import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
+import { NumberInput } from 'src/components/input/NumberInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -18,7 +18,7 @@ import { SendTokenParams, validate } from 'src/features/send/sendToken'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei } from 'src/utils/amount'
-import { tryClipboardGet } from 'src/utils/clipboard'
+import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
@@ -55,7 +55,7 @@ export function SendFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
-  } = useCustomForm<SendTokenForm, any>(getFormInitialValues(location, tx), onSubmit)
+  } = useCustomForm<SendTokenForm>(getFormInitialValues(location, tx), onSubmit)
 
   // Keep form in sync with tx state
   useEffect(() => {
@@ -96,16 +96,20 @@ export function SendFormScreen() {
                 {...inputErrors['recipient']}
                 placeholder="0x1234..."
               />
-              <Button size="icon" type="button" margin="0 0 0 0.5em" onClick={onPasteAddress}>
-                <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
-              </Button>
+              {isClipboardReadSupported() ? (
+                <Button size="icon" type="button" margin="0 0 0 0.5em" onClick={onPasteAddress}>
+                  <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
+                </Button>
+              ) : (
+                <div css={[style.copyIcon, { marginLeft: '0.5em' }]}></div>
+              )}
             </Box>
           </Box>
 
           <Box direction="row" styles={style.inputRow} justify="between" margin="0 2.1em 0 0">
             <Box direction="column" justify="end" align="start">
               <label css={style.inputLabel}>Amount to Send</label>
-              <MoneyValueInput
+              <NumberInput
                 width="6em"
                 name="amount"
                 onChange={handleChange}

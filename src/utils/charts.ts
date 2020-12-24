@@ -5,13 +5,12 @@ export interface DataValue {
 
 export interface ChartData {
   labels: string[]
-  datasets: Array<{ values: Array<number | null> }>
+  datasets: Array<{ name: string; values: Array<number | null> }>
 }
 
 export function prepareChartData(data: DataValue[]): ChartData {
-  if (!data || data.length === 0) throw Error('data is required')
+  if (!data || data.length === 0) throw Error('Data is required for chart')
 
-  //Initialize the data structure
   const initial: ChartData = { labels: [], datasets: [] }
 
   const results = data.reduce((result: ChartData, item: DataValue) => {
@@ -19,12 +18,11 @@ export function prepareChartData(data: DataValue[]): ChartData {
 
     item.values.forEach((value, index) => {
       if (result.datasets.length <= index) {
-        result.datasets.push({ values: [value] })
+        result.datasets.push({ name: '', values: [value] })
       } else {
         result.datasets[index].values.push(value)
       }
     })
-
     return result
   }, initial)
 

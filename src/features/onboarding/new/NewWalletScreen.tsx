@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
-import { OnboardingScreenFrame } from 'src/components/layout/OnboardingScreenFrame'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
+import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { createWalletActions, createWalletSagaName } from 'src/features/wallet/createWallet'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
 import { clearWallet } from 'src/features/wallet/walletSlice'
@@ -38,17 +38,19 @@ export function NewWalletScreen() {
   const status = useSagaStatusWithErrorModal(
     createWalletSagaName,
     'Error Creating Wallet',
-    'Something went wrong when creating your new wallet, sorry! Please try again.'
+    'Something went wrong when creating your new wallet, sorry! Please try again.',
+    undefined,
+    false
   )
 
   const onClickContinue = () => {
-    navigate('/setup/set-pin')
+    navigate('/setup/set-pin', { state: { pageNumber: 3 } })
   }
 
   const isLoading = !address || !status || status === SagaStatus.Started
 
   return (
-    <OnboardingScreenFrame>
+    <OnboardingScreenFrame current={2} total={3}>
       <h1 css={style.header}>Your New Celo Account</h1>
       <div css={style.container}>
         <div css={isLoading ? style.contentLoading : null}>

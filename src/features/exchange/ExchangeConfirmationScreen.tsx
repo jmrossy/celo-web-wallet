@@ -131,8 +131,10 @@ export function ExchangeConfirmationScreen() {
               <label css={style.label}>
                 Fee{' '}
                 <HelpIcon
-                  tooltip="Fees, or 'gas', keep the network secure."
-                  tipPosition="topRight"
+                  tooltip={{
+                    content: "Fees, or 'gas', keep the network secure.",
+                    position: 'topRight',
+                  }}
                 />
               </label>
             </Box>

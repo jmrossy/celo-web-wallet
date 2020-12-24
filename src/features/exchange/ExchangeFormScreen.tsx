@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/Button'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
-import { MoneyValueInput } from 'src/components/input/MoneyValueInput'
+import { NumberInput } from 'src/components/input/NumberInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
@@ -48,10 +48,14 @@ export function ExchangeFormScreen() {
     }
   }
 
-  const { values, touched, handleChange, handleBlur, handleSubmit, resetValues } = useCustomForm<
-    ExchangeTokenForm,
-    any
-  >(getFormInitialValues(tx), onSubmit)
+  const {
+    values,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    resetValues,
+  } = useCustomForm<ExchangeTokenForm>(getFormInitialValues(tx), onSubmit)
 
   // Keep form in sync with tx state
   useEffect(() => {
@@ -81,7 +85,7 @@ export function ExchangeFormScreen() {
           <form onSubmit={handleSubmit}>
             <Box direction="row" align="center" styles={style.inputRow}>
               <label css={style.inputLabel}>Amount to Exchange</label>
-              <MoneyValueInput
+              <NumberInput
                 name="amount"
                 width="7.4em"
                 onChange={handleChange}

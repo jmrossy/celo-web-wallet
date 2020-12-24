@@ -133,7 +133,12 @@ export function SendConfirmationScreen() {
           >
             <label>
               Fee{' '}
-              <HelpIcon tooltip="Fees, or 'gas', keep the network secure." tipPosition="topRight" />
+              <HelpIcon
+                tooltip={{
+                  content: "Fees, or 'gas', keep the network secure.",
+                  position: 'topRight',
+                }}
+              />
             </label>
           </Box>
           {feeAmount && feeCurrency ? (

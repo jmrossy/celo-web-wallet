@@ -30,6 +30,7 @@ export enum PincodeAction {
   Unlock,
   Change,
 }
+
 export interface PincodeParams {
   action: PincodeAction
   value: string
@@ -163,6 +164,7 @@ function* unlockWallet(pin: string) {
   if (!isSignerSet()) {
     yield* call(importWallet, mnemonic)
   }
+  yield* put(setWalletUnlocked(true))
 }
 
 function* changePin(existingPin: string, newPin: string) {

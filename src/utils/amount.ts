@@ -8,6 +8,14 @@ import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { logger } from 'src/utils/logger'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
+export function range(length: number, start = 0, step = 1) {
+  const range = []
+  for (let i = start; i < length; i += step) {
+    range.push(i)
+  }
+  return range
+}
+
 export function validateAmount(
   amountInWei: BigNumberish,
   currency: Currency,

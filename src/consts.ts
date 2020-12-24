@@ -6,8 +6,10 @@ export enum Currency {
 export const WEI_PER_UNIT = '1000000000000000000' // 1 'Celo' or 'Ether'
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const TEST_ADDRESS = '0x35b74Ed5038bf0488Ff33bD9819b9D12D10A7560'
+export const MNEMONIC_LENGTH = 24
 export const ETHEREUM_DERIVATION_PATH = "m/44'/60'/0'/0"
 export const CELO_DERIVATION_PATH = "m/44'/52752'/0'/0"
+export const DERIVATION_PATH_MAX_INDEX = 1000000
 export const AVG_BLOCK_TIMES = 5000 // 5 seconds
 
 export const MAX_SEND_TOKEN_SIZE = '100000000000000000000' // 100 Tokens
@@ -28,3 +30,5 @@ export const PLACEHOLDER_MNEMONIC =
   'wage bitter silk coin door shine orphan quote witness ticket venture undo grief sense write limit famous always wage pink fresh gold carpet adult'
 
 export const HIGH_VALUE_THRESHOLD = '25000000000000000000' // 25 cusd - threshold balance for a "high-value" wallet
+
+export const CELO_LEDGER_APP_VERSION = '1.0.3' // Only allow latest ledger app version

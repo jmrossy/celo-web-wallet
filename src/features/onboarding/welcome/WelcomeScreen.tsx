@@ -14,7 +14,7 @@ export function WelcomeScreen() {
   }
 
   const onClickUseExisting = () => {
-    navigate('/setup/import')
+    navigate('/setup/existing')
   }
 
   return (

@@ -1,5 +1,6 @@
-import { getSigner } from 'src/blockchain/signer'
+import { getSigner, SignerType } from 'src/blockchain/signer'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
+import { isValidMnemonic } from 'src/features/wallet/importWallet'
 import { logger } from 'src/utils/logger'
 
 const MNEMONIC_STORAGE_KEY = 'wallet/mnemonic'
@@ -11,20 +12,17 @@ export function isWalletInStorage() {
 export async function saveWallet(pincode: string) {
   try {
     const signer = getSigner()
-    if (!signer) {
-      throw new Error('No signer found')
-    }
-    if (!signer.mnemonic) {
-      throw new Error('No signer mnemonic found')
-    }
-    if (!crypto || !crypto.subtle) {
-      // TODO pop modal to warn user wallet is burner only?
-      throw new Error('Crypto libs not available')
-    }
-    const mnemonic = signer.mnemonic.phrase
+    if (!signer) throw new Error('No signer found')
+    if (signer.type !== SignerType.Local) throw new Error('Attempting to save non-local wallet')
+
+    const mnemonic = signer.signer.mnemonic?.phrase
+    if (!mnemonic) throw new Error('No signer mnemonic found')
+    if (!isValidMnemonic(mnemonic)) throw new Error('Attempting to save invalid mnemonic')
+
     const encryptedMnemonic = await encryptMnemonic(mnemonic, pincode)
 
     // TODO warn safari users of apple's bullshit
+    // https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/
     localStorage.setItem(MNEMONIC_STORAGE_KEY, encryptedMnemonic)
   } catch (error) {
     logger.error('Failed to save wallet to storage', error)

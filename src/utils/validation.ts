@@ -29,6 +29,9 @@ export function errorStateToString(error: ErrorState, summary: string) {
   if (!error) throw new Error('No error provided to errorStateToString')
   const { isValid, ...fields } = error
   if (isValid) throw new Error('ErrorState provided to errorStateToString is actually valid')
+
+  summary = summary || 'Unknown Error'
+
   const fieldNames = Object.keys(fields)
   if (fieldNames.length === 0) {
     return summary

@@ -1,9 +1,26 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
-import { Wallet } from 'ethers'
-import { getProvider } from 'src/blockchain/provider'
+import { isProviderSet } from 'src/blockchain/provider'
+import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
 import { logger } from 'src/utils/logger'
 
-let signer: CeloWallet
+export enum SignerType {
+  Local = 'local',
+  Ledger = 'ledger',
+}
+
+interface CeloWalletSigner {
+  type: SignerType.Local
+  signer: CeloWallet
+}
+
+interface CeloLedgerSigner {
+  type: SignerType.Ledger
+  signer: LedgerSigner
+}
+
+export type CeloSigner = CeloWalletSigner | CeloLedgerSigner
+
+let signer: CeloSigner
 
 export function isSignerSet() {
   return !!signer
@@ -17,16 +34,19 @@ export function getSigner() {
   return signer
 }
 
-export function setSigner(_signer: Wallet) {
-  if (!_signer || !_signer._isSigner) {
-    logger.error('Signer is invalid')
-    return
+export function setSigner(_signer: CeloSigner) {
+  if (!_signer || !_signer.signer || !_signer.type) {
+    throw new Error('Signer is invalid')
+  }
+
+  if (!isProviderSet()) {
+    throw new Error('Provider must be set before signer')
   }
 
   if (signer) {
     logger.warn('Signer is being overridden')
   }
 
-  signer = new CeloWallet(_signer, getProvider())
+  signer = _signer
   logger.info('Signer is set')
 }

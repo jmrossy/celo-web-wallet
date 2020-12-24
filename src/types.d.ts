@@ -1,6 +1,10 @@
 /// <reference types="@emotion/react/types/css-prop" />
 
 declare module '@metamask/jazzicon'
+declare module '@ledgerhq/errors'
+declare module '@ledgerhq/hw-app-eth'
+declare module '@ledgerhq/hw-transport-u2f'
+declare module '@ledgerhq/hw-transport-webusb'
 
 declare module '*.svg' {
   import { FunctionComponent, SVGProps } from 'react'

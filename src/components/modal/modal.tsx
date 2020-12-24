@@ -148,7 +148,7 @@ const style: Stylesheet = {
   },
   head: {
     margin: 0,
-    fontSize: '1.5em',
+    fontSize: '1.4em',
     fontWeight: 400,
     textAlign: 'center',
   },

@@ -1,5 +1,9 @@
 import { logger } from 'src/utils/logger'
 
+export function isClipboardReadSupported() {
+  return !!navigator?.clipboard?.readText
+}
+
 export async function tryClipboardSet(value: string) {
   try {
     await navigator.clipboard.writeText(value)
@@ -10,6 +14,7 @@ export async function tryClipboardSet(value: string) {
 
 export async function tryClipboardGet() {
   try {
+    // Note: doesn't work in firefox, which only allows extensions to read clipboard
     const value = await navigator.clipboard.readText()
     return value
   } catch (error) {
