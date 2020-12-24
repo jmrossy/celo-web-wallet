@@ -1,4 +1,5 @@
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
+import { TransportError, TransportStatusError } from '@ledgerhq/errors'
 import TransportU2F from '@ledgerhq/hw-transport-u2f'
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
 import { BigNumber, providers, Signer, utils } from 'ethers'
@@ -82,21 +83,39 @@ export class LedgerSigner extends Signer {
       throw new Error('LedgerSigner must be initiated before used')
     }
 
-    // Wait up to 5 seconds
-    for (let i = 0; i < 5; i++) {
+    // Try up to 3 times over 3 seconds
+    for (let i = 0; i < 3; i++) {
       try {
         const result = await callback(this.celoApp)
         return result
       } catch (error) {
-        // TODO better error handling here with typed errors from ledgerjs error package
-        if (error.id !== 'TransportLocked') {
-          throw error
+        if (error instanceof TransportError) {
+          logger.error('Ledger TransportError', error.name, error.id, error.message)
+          if (error.id === 'TransportLocked') {
+            // Device is locked up, possibly from another use. Wait then try again
+            await sleep(1000)
+            continue
+          } else {
+            throw new Error(`Ledger transport issue: ${error.message || 'unknown error'}`)
+          }
         }
+
+        if (error instanceof TransportStatusError) {
+          logger.error(
+            'Ledger TransportStatusError',
+            error.statusCode,
+            error.statusText,
+            error.message
+          )
+          throw new Error(error.message || 'Ledger responded with failure')
+        }
+
+        logger.error('Unknown ledger error', error)
+        break
       }
-      await sleep(1000)
     }
 
-    throw new Error('All LedgerSigner retry attempts failed')
+    throw new Error('Ledger action failed, please check connection')
   }
 
   async getAddress(): Promise<string> {
@@ -128,6 +147,7 @@ export class LedgerSigner extends Signer {
       delete tx.from
     }
 
+    // Provide ERC20 info for known tokens
     const toTokenInfo = getTokenData(transaction.to)
     const feeTokenInfo = getTokenData(transaction.feeCurrency)
     if (toTokenInfo) {
