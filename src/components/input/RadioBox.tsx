@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { ChangeEvent, PropsWithChildren } from 'react'
 import { sharedInputStyles } from 'src/components/input/styles'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
@@ -9,8 +9,8 @@ export interface RadioBoxInputProps {
   value: string
   checked?: boolean
   tabIndex?: number
-  onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onBlur?: (event: ChangeEvent<HTMLInputElement>) => void
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
   containerCss?: Styles
   inputCss?: Styles
   labelCss?: Styles

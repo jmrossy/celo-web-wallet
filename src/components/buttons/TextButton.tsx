@@ -1,3 +1,4 @@
+import { PropsWithChildren } from 'react'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Font } from 'src/styles/fonts'
 import { Styles } from 'src/styles/types'
@@ -7,7 +8,7 @@ interface ButtonProps {
   styles?: Styles
 }
 
-export function TextButton(props: React.PropsWithChildren<ButtonProps>) {
+export function TextButton(props: PropsWithChildren<ButtonProps>) {
   const { onClick, styles } = props
 
   return (

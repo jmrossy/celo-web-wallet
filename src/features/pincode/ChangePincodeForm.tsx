@@ -11,7 +11,7 @@ import {
   pincodeSagaName,
   validate,
 } from 'src/features/pincode/pincode'
-import { PincodeInputRow } from 'src/features/pincode/PincodeInput'
+import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -62,6 +62,7 @@ export function ChangePincodeForm() {
       <div>
         <form onSubmit={handleSubmit}>
           <PincodeInputRow
+            type={PincodeInputType.CurrentPincode}
             label="Current Pin"
             name="value"
             value={values.value}
@@ -70,6 +71,7 @@ export function ChangePincodeForm() {
             autoFocus={true}
           />
           <PincodeInputRow
+            type={PincodeInputType.NewPincode}
             label="New Pin"
             name="newValue"
             value={values.newValue}
@@ -77,7 +79,8 @@ export function ChangePincodeForm() {
             {...inputErrors['newValue']}
           />
           <PincodeInputRow
-            label="Re-Enter New Pin"
+            type={PincodeInputType.NewPincode}
+            label="Confirm New Pin"
             name="valueConfirm"
             value={values.valueConfirm}
             onChange={handleChange}

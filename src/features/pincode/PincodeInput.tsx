@@ -1,10 +1,19 @@
 import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
+import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
+
+export enum PincodeInputType {
+  NewPincode,
+  CurrentPincode,
+  NewPassword,
+  CurrentPassword,
+}
 
 interface Props {
   name: string
+  type: PincodeInputType
   value?: string
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   error?: boolean
@@ -13,13 +22,20 @@ interface Props {
 }
 
 export function PincodeInput(props: Props) {
-  const { name, value, onChange, error, helpText, autoFocus } = props
+  const { name, type, value, onChange, error, helpText, autoFocus } = props
 
-  // Wrap the provided onChange to enforce char length limit
+  const { placeholder, autoComplete, inputMode } = getPropsForInputType(type)
+
+  // Wrap the provided onChange to validate input
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event?.target?.value
+    let value = event?.target?.value
     if (value) {
-      event.target.value = value.substring(0, 6)
+      if (inputMode === 'numeric') {
+        value = value.substring(0, 6).replace(/[^0-9]/g, '')
+      } else {
+        value = value.replace(/[\s]/g, '')
+      }
+      event.target.value = value
     }
     onChange(event)
   }
@@ -33,12 +49,43 @@ export function PincodeInput(props: Props) {
         css={{ ...sharedStyles, ...style.input }}
         value={value}
         onChange={handleChange}
-        autoComplete="one-time-code"
+        placeholder={placeholder}
+        inputMode={inputMode as any}
+        autoComplete={autoComplete}
+        autoCapitalize="off"
+        autoCorrect="off"
+        spellCheck="false"
         autoFocus={autoFocus}
       />
       {helpText && <HelpText>{helpText}</HelpText>}
     </Box>
   )
+}
+
+function getPropsForInputType(type: PincodeInputType) {
+  if (type === PincodeInputType.NewPincode || type === PincodeInputType.CurrentPincode) {
+    return {
+      placeholder: '123456',
+      inputMode: 'numeric',
+      autoComplete: 'off',
+    }
+  }
+  if (type === PincodeInputType.NewPassword) {
+    return {
+      placeholder: undefined,
+      inputMode: 'text',
+      autoComplete: 'new-password',
+    }
+  }
+  if (type === PincodeInputType.CurrentPassword) {
+    return {
+      placeholder: undefined,
+      inputMode: 'text',
+      autoComplete: 'current-password',
+    }
+  }
+
+  throw new Error(`Unsupported Pincode Type: ${type}`)
 }
 
 export function PincodeInputRow(props: Props & { label: string }) {
@@ -57,7 +104,7 @@ const style: Stylesheet = {
     textAlign: 'right',
   },
   inputLabel: {
-    width: '7.5em',
+    width: '8em',
     paddingRight: '1em',
   },
   input: {
@@ -66,5 +113,16 @@ const style: Stylesheet = {
     textAlign: 'center',
     letterSpacing: '0.6em',
     fontSize: '1.4em',
+    '::placeholder': {
+      letterSpacing: '0.3em',
+      color: Color.borderInactive,
+      opacity: 1 /* Firefox */,
+    },
+    ':focus': {
+      '::placeholder': {
+        color: Color.primaryWhite,
+        opacity: 0,
+      },
+    },
   },
 }

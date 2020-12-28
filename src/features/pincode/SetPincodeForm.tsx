@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
+import { ButtonToggle } from 'src/components/buttons/ButtonToggle'
+import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import {
@@ -10,7 +13,7 @@ import {
   pincodeSagaName,
   validate,
 } from 'src/features/pincode/pincode'
-import { PincodeInputRow } from 'src/features/pincode/PincodeInput'
+import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -20,6 +23,10 @@ import { useInputValidation } from 'src/utils/validation'
 const initialValues = { action: PincodeAction.Set, value: '', valueConfirm: '' }
 
 export function SetPincodeForm() {
+  const [usingPin, setUsingPin] = useState(true)
+  const [label, labelC] = usingPin ? ['pin', 'Pin'] : ['password', 'Password']
+  const inputType = usingPin ? PincodeInputType.NewPincode : PincodeInputType.NewPassword
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -29,34 +36,47 @@ export function SetPincodeForm() {
     }
   }
 
-  const { values, touched, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
+  const { values, touched, handleChange, handleSubmit, resetValues } = useCustomForm<PincodeParams>(
     initialValues,
     onSubmit
   )
 
-  const { inputErrors, areInputsValid } = useInputValidation(touched, () => validate(values))
+  const { inputErrors, areInputsValid, clearInputErrors } = useInputValidation(touched, () =>
+    validate(values)
+  )
+
+  const onToggleSecretType = (index: number) => {
+    resetValues(initialValues)
+    clearInputErrors()
+    setUsingPin(index === 0)
+  }
 
   const onSuccess = () => {
     navigate('/', { replace: true })
   }
   const status = useSagaStatusWithErrorModal(
     pincodeSagaName,
-    'Error Setting Pin',
-    'Something went wrong when setting your pin, sorry! Please try again.',
+    `Error Setting ${labelC}`,
+    `Something went wrong when setting your ${label}, sorry! Please try again.`,
     onSuccess
   )
 
   return (
     <Box direction="column" align="center">
-      <div css={style.description}>You pincode protects your account on this device.</div>
-      <div css={[style.description, Font.extraBold]}>
-        Do not lose this pin, you need it to access your account!
+      <div css={style.buttonToggleContainer}>
+        <ButtonToggle label1="Pincode" label2="Password" onToggle={onToggleSecretType} />
+        <div css={style.helpIcon}>
+          <HelpIcon width="1.5em" modal={{ head: 'Pincode vs Password', content: <HelpModal /> }} />
+        </div>
       </div>
-      <div css={style.description}>Use six numbers (0-9).</div>
+      <div css={[style.description, Font.extraBold]}>
+        {`Don't lose this ${label}, you need it to unlock your account!`}
+      </div>
       <div css={style.inputRowContainer}>
         <form onSubmit={handleSubmit}>
           <PincodeInputRow
-            label="Enter Pin"
+            type={inputType}
+            label={`Enter ${labelC}`}
             name="value"
             value={values.value}
             onChange={handleChange}
@@ -64,7 +84,8 @@ export function SetPincodeForm() {
             {...inputErrors['value']}
           />
           <PincodeInputRow
-            label="Re-Enter Pin"
+            type={inputType}
+            label={`Confirm ${labelC}`}
             name="valueConfirm"
             value={values.valueConfirm}
             onChange={handleChange}
@@ -75,10 +96,10 @@ export function SetPincodeForm() {
             <Button
               size="l"
               type="submit"
-              margin={'3em 0 0 0'}
+              margin="2.5em 0 0 0"
               disabled={status === SagaStatus.Started}
             >
-              Set Pin
+              {`Set ${labelC}`}
             </Button>
           </Box>
         </form>
@@ -87,12 +108,36 @@ export function SetPincodeForm() {
   )
 }
 
+function HelpModal() {
+  return (
+    <BasicHelpIconModal>
+      <p>
+        You can use a 6-digit pincode or a password to secure your account, whichever you prefer.
+        Pincodes are more convenient but passwords are more secure.
+      </p>
+      <p>
+        Note, there is no way to recover your pin or password,{' '}
+        <strong>you need to keep it safe!</strong> Using a password manager is recommended.
+      </p>
+    </BasicHelpIconModal>
+  )
+}
+
 const style: Stylesheet = {
+  buttonToggleContainer: {
+    position: 'relative',
+    marginTop: '0.1em',
+  },
+  helpIcon: {
+    position: 'absolute',
+    right: -52,
+    top: 6,
+  },
   description: {
     ...Font.body,
-    marginBottom: '0.75em',
+    margin: '1.75em 0.5em 0.75em 0.5em',
   },
   inputRowContainer: {
-    marginLeft: '-8em',
+    marginLeft: '-9em',
   },
 }

@@ -9,7 +9,7 @@ import {
   pincodeActions,
   pincodeSagaName,
 } from 'src/features/pincode/pincode'
-import { PincodeInput } from 'src/features/pincode/PincodeInput'
+import { PincodeInput, PincodeInputType } from 'src/features/pincode/PincodeInput'
 import { useLogoutModal } from 'src/features/wallet/logout'
 import { Color } from 'src/styles/Color'
 import { SagaStatus } from 'src/utils/saga'
@@ -52,6 +52,7 @@ export function EnterPincodeForm() {
     <Box direction="column" align="center" margin="1.75em 0 0 0">
       <form onSubmit={onClickSubmit}>
         <PincodeInput
+          type={PincodeInputType.CurrentPincode}
           name="pin"
           value={pin}
           onChange={onPinChange}

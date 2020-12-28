@@ -1,3 +1,4 @@
+import { PropsWithChildren } from 'react'
 import { Button } from 'src/components/buttons/Button'
 import CloseIcon from 'src/components/icons/close.svg'
 import { Styles } from 'src/styles/types'
@@ -7,7 +8,7 @@ interface ButtonProps {
   styles?: Styles
 }
 
-export function CloseButton(props: React.PropsWithChildren<ButtonProps>) {
+export function CloseButton(props: PropsWithChildren<ButtonProps>) {
   const { onClick, styles } = props
 
   return (
