@@ -3,13 +3,9 @@ import { useDispatch } from 'react-redux'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
-import {
-  isPinValid,
-  PincodeAction,
-  pincodeActions,
-  pincodeSagaName,
-} from 'src/features/pincode/pincode'
+import { pincodeActions, pincodeSagaName } from 'src/features/pincode/pincode'
 import { PincodeInput, PincodeInputType } from 'src/features/pincode/PincodeInput'
+import { PincodeAction } from 'src/features/pincode/types'
 import { useLogoutModal } from 'src/features/wallet/logout'
 import { Color } from 'src/styles/Color'
 import { SagaStatus } from 'src/utils/saga'
@@ -30,11 +26,13 @@ export function EnterPincodeForm() {
   const onClickSubmit = (event?: FormEvent) => {
     if (event) event.preventDefault()
 
-    if (!isPinValid(pin)) {
-      setPinError({ isError: true, helpText: 'Invalid pin' })
-      return
-    }
+    // TODO proper validation here
+    // if (!isPinValid(pin)) {
+    //   setPinError({ isError: true, helpText: 'Invalid pin' })
+    //   return
+    // }
 
+    // TODO include secretType
     dispatch(pincodeActions.trigger({ action: PincodeAction.Unlock, value: pin }))
   }
 

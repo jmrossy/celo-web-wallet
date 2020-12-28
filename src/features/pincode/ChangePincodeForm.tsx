@@ -5,13 +5,13 @@ import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import {
-  PincodeAction,
   pincodeActions,
   PincodeParams,
   pincodeSagaName,
   validate,
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
+import { PincodeAction } from 'src/features/pincode/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'

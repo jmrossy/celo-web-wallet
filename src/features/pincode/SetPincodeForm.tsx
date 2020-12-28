@@ -7,13 +7,13 @@ import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import {
-  PincodeAction,
   pincodeActions,
   PincodeParams,
   pincodeSagaName,
   validate,
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
+import { PincodeAction, SecretType } from 'src/features/pincode/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -23,17 +23,17 @@ import { useInputValidation } from 'src/utils/validation'
 const initialValues = { action: PincodeAction.Set, value: '', valueConfirm: '' }
 
 export function SetPincodeForm() {
-  const [usingPin, setUsingPin] = useState(true)
-  const [label, labelC] = usingPin ? ['pin', 'Pin'] : ['password', 'Password']
-  const inputType = usingPin ? PincodeInputType.NewPincode : PincodeInputType.NewPassword
+  const [secretType, setSecretType] = useState<SecretType>('pincode')
+  const [label, labelC] = secretType === 'pincode' ? ['pin', 'Pin'] : ['password', 'Password']
+  const inputType =
+    secretType === 'pincode' ? PincodeInputType.NewPincode : PincodeInputType.NewPassword
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const onSubmit = (values: PincodeParams) => {
-    if (areInputsValid()) {
-      dispatch(pincodeActions.trigger({ action: PincodeAction.Set, value: values.value }))
-    }
+    if (!areInputsValid()) return
+    dispatch(pincodeActions.trigger({ ...values, type: secretType }))
   }
 
   const { values, touched, handleChange, handleSubmit, resetValues } = useCustomForm<PincodeParams>(
@@ -42,13 +42,13 @@ export function SetPincodeForm() {
   )
 
   const { inputErrors, areInputsValid, clearInputErrors } = useInputValidation(touched, () =>
-    validate(values)
+    validate({ ...values, type: secretType })
   )
 
   const onToggleSecretType = (index: number) => {
     resetValues(initialValues)
     clearInputErrors()
-    setUsingPin(index === 0)
+    setSecretType(index === 0 ? 'pincode' : 'password')
   }
 
   const onSuccess = () => {
@@ -69,9 +69,7 @@ export function SetPincodeForm() {
           <HelpIcon width="1.5em" modal={{ head: 'Pincode vs Password', content: <HelpModal /> }} />
         </div>
       </div>
-      <div css={[style.description, Font.extraBold]}>
-        {`Don't lose this ${label}, you need it to unlock your account!`}
-      </div>
+      <div css={style.description}>{`Don't lose this ${label}, it unlocks your account!`}</div>
       <div css={style.inputRowContainer}>
         <form onSubmit={handleSubmit}>
           <PincodeInputRow
@@ -92,7 +90,7 @@ export function SetPincodeForm() {
             autoFocus={false}
             {...inputErrors['valueConfirm']}
           />
-          <Box styles={{ width: '100%' }} justify="end">
+          <Box styles={style.buttonContainer} justify="end">
             <Button
               size="l"
               type="submit"
@@ -135,9 +133,13 @@ const style: Stylesheet = {
   },
   description: {
     ...Font.body,
+    ...Font.extraBold,
     margin: '1.75em 0.5em 0.75em 0.5em',
   },
   inputRowContainer: {
     marginLeft: '-9em',
+  },
+  buttonContainer: {
+    width: '100%',
   },
 }
