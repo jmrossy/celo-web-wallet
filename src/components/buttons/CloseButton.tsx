@@ -1,4 +1,4 @@
-import { Button } from 'src/components/Button'
+import { Button } from 'src/components/buttons/Button'
 import CloseIcon from 'src/components/icons/close.svg'
 import { Styles } from 'src/styles/types'
 

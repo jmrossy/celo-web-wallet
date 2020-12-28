@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { Address } from 'src/components/Address'
-import { Button } from 'src/components/Button'
+import { Button } from 'src/components/buttons/Button'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
 import {

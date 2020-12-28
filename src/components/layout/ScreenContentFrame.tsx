@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { CloseButton } from 'src/components/CloseButton'
+import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'

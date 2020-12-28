@@ -1,4 +1,4 @@
-import { transparentButtonStyles } from 'src/components/Button'
+import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Font } from 'src/styles/fonts'
 import { Styles } from 'src/styles/types'
 

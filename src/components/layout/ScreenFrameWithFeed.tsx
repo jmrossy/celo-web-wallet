@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
-import { Button } from 'src/components/Button'
+import { Button } from 'src/components/buttons/Button'
 import PlusIcon from 'src/components/icons/plus.svg'
 import SendIcon from 'src/components/icons/send_payment.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'

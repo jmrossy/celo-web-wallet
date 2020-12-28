@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router'
-import { Button } from 'src/components/Button'
+import { Button } from 'src/components/buttons/Button'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import KeyIcon from 'src/components/icons/key.svg'
 import LedgerIcon from 'src/components/icons/logos/ledger.svg'

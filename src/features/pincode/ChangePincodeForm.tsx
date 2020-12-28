@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { Button } from 'src/components/Button'
+import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'

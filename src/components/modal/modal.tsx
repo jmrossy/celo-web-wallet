@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react'
-import { Button } from 'src/components/Button'
-import { CloseButton } from 'src/components/CloseButton'
+import { Button } from 'src/components/buttons/Button'
+import { CloseButton } from 'src/components/buttons/CloseButton'
 import { CheckmarkInElipseIcon } from 'src/components/icons/Checkmark'
 import { Box } from 'src/components/layout/Box'
 import { LoadingIndicator } from 'src/components/LoadingIndicator'

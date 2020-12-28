@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router'
-import { transparentButtonStyles } from 'src/components/Button'
+import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'

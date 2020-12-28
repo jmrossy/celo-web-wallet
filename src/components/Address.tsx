@@ -1,7 +1,7 @@
 import { utils } from 'ethers'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { defaultButtonStyles } from 'src/components/Button'
+import { defaultButtonStyles } from 'src/components/buttons/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
 import QrCodeIcon from 'src/components/icons/qr_code.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
