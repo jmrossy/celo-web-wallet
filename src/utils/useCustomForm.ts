@@ -10,6 +10,7 @@ export function useCustomForm<V, E = any>(
   const [, setOnSubmitting] = useState<boolean>(false)
   const [, setOnBlur] = useState<boolean>(false)
 
+  // TODO rename to reset
   const resetValues = (resetValues: V) => {
     setValues(resetValues)
     setErrors({})

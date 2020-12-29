@@ -12,8 +12,9 @@
   "scripts": {
     "dev": "NODE_ENV=development webpack serve --devtool inline-cheap-source-map --mode development",
     "dev-win": "SET NODE_ENV=development && webpack serve --devtool inline-cheap-source-map --mode development",
-    "build": "NODE_ENV=development webpack --devtool source-map --mode development",
-    "build:prod": "yarn clean && NODE_ENV=production webpack --mode production",
+    "build:dev": "NODE_ENV=development webpack --devtool source-map --mode development",
+    "build:staging": "./scripts/build.sh -n Alfajores",
+    "build:prod": "./scripts/build.sh -n Mainnet",
     "clean": "rm -rf dist",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
     "test": "NODE_ENV=test jasmine --random=false",

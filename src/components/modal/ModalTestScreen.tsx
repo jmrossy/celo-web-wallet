@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button } from 'src/components/Button'
+import { Button } from 'src/components/buttons/Button'
 import Elipse from 'src/components/icons/celo_elipse.svg'
 import { HelpIcon } from 'src/components/icons/HelpIcon'
 import Lightbulb from 'src/components/icons/lightbulb.svg'

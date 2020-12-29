@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { Button } from 'src/components/Button'
+import { Button } from 'src/components/buttons/Button'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'

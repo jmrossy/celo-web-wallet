@@ -1,3 +1,4 @@
+import { PropsWithChildren } from 'react'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
@@ -16,7 +17,7 @@ interface ButtonProps {
   height?: number | string
 }
 
-export function Button(props: React.PropsWithChildren<ButtonProps>) {
+export function Button(props: PropsWithChildren<ButtonProps>) {
   const {
     size,
     width: widthOverride,

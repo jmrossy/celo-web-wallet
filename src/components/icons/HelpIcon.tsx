@@ -35,7 +35,7 @@ export function HelpIcon(props: IconProps) {
       showModalWithContent(modal.head, modal.content, ModalOkAction)
     }
     return (
-      <button onClick={onClick} css={[style.button, { margin }]}>
+      <button onClick={onClick} css={[style.button, { margin }]} type="button">
         <img src={QuestionIcon} css={styles} />
       </button>
     )

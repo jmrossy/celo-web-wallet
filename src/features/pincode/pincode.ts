@@ -1,78 +1,65 @@
 import { isSignerSet } from 'src/blockchain/signer'
+import { ACCOUNT_UNLOCK_TIMEOUT } from 'src/consts'
+import { PincodeAction, SecretType } from 'src/features/pincode/types'
+import { isSecretTooSimple, secretTypeToLabel } from 'src/features/pincode/utils'
 import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage'
-import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
+import { setSecretType, setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { ErrorState, invalidInput } from 'src/utils/validation'
+import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
 import { call, put } from 'typed-redux-saga'
 
-const CACHE_TIMEOUT = 600000 // 10 minutes
 const PIN_LENGTH = 6
-
-const PIN_BLACKLIST = [
-  '000000',
-  '111111',
-  '222222',
-  '333333',
-  '444444',
-  '555555',
-  '666666',
-  '777777',
-  '888888',
-  '999999',
-  '123456',
-  '654321',
-]
-
-export enum PincodeAction {
-  Set,
-  Unlock,
-  Change,
-}
 
 export interface PincodeParams {
   action: PincodeAction
   value: string
   valueConfirm?: string
   newValue?: string
-}
-
-export function isPinValid(pin: string) {
-  return pin.length === PIN_LENGTH && !PIN_BLACKLIST.includes(pin)
+  type?: SecretType
 }
 
 export function validate(params: PincodeParams): ErrorState {
-  const { action, value, newValue, valueConfirm } = params
+  const { action, value, newValue, valueConfirm, type } = params
+  const isPin = type === 'pincode'
+
   let errors: ErrorState = { isValid: true }
 
   if (!value) {
-    errors = { ...errors, ...invalidInput('value', 'Pincode is required') }
-  } else {
-    if (value.length !== PIN_LENGTH) {
-      errors = { ...errors, ...invalidInput('value', 'Pincode must be 6 numbers') }
-    } else if (!isPinValid(value)) {
-      errors = { ...errors, ...invalidInput('value', 'Pincode is too simple') }
-    }
+    return { ...errors, ...invalidInput('value', 'Value is required') }
+  } else if (value.length < PIN_LENGTH) {
+    return { ...errors, ...invalidInput('value', 'Value is too short') }
   }
+
   if (action === PincodeAction.Set) {
+    if (isPin && value.length !== PIN_LENGTH) {
+      errors = { ...errors, ...invalidInput('value', 'Pincode must be 6 digits') }
+    } else if (isSecretTooSimple(value, type)) {
+      errors = { ...errors, ...invalidInput('value', 'Value is too simple') }
+    }
     if (!valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
     } else if (value !== valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', "Values don't match") }
     }
-  } else if (action === PincodeAction.Change) {
+  }
+
+  if (action === PincodeAction.Change) {
     if (!newValue) {
-      errors = { ...errors, ...invalidInput('newValue', 'New Pincode is required') }
+      errors = { ...errors, ...invalidInput('newValue', 'New value is required') }
     } else {
-      if (newValue.length !== PIN_LENGTH) {
+      if (isPin && newValue.length !== PIN_LENGTH) {
         errors = { ...errors, ...invalidInput('newValue', 'New Pincode must be 6 numbers') }
-      } else if (!isPinValid(newValue)) {
-        errors = { ...errors, ...invalidInput('newValue', 'New Pincode is too simple') }
-      } else if (newValue !== valueConfirm) {
-        errors = { ...errors, ...invalidInput('valueConfirm', "New Pincodes don't match") }
+      } else if (isSecretTooSimple(newValue, type)) {
+        errors = { ...errors, ...invalidInput('newValue', 'New value is too simple') }
       } else if (newValue === value) {
-        errors = { ...errors, ...invalidInput('newValue', 'New Pincodes is unchanged') }
+        errors = { ...errors, ...invalidInput('newValue', 'New value is unchanged') }
+      }
+      if (!valueConfirm) {
+        errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
+      } else if (newValue !== valueConfirm) {
+        errors = { ...errors, ...invalidInput('valueConfirm', "New values don't match") }
       }
     }
   }
@@ -80,47 +67,32 @@ export function validate(params: PincodeParams): ErrorState {
   return errors
 }
 
-interface SecretCache {
-  timestamp?: number
-  secret?: string
-}
-let pinCache: SecretCache = {}
-
-function getCachedPin() {
-  if (pinCache.secret && pinCache.timestamp && Date.now() - pinCache.timestamp < CACHE_TIMEOUT) {
-    return pinCache.secret
-  } else {
-    // Clear values in cache when they're expired
-    clearPinCache()
-    return null
-  }
-}
-
-function setCachedPin(pin: string | null | undefined) {
-  if (pin) {
-    pinCache.timestamp = Date.now()
-    pinCache.secret = pin
-  } else {
-    clearPinCache()
-  }
-}
-
-function clearPinCache() {
-  pinCache = {}
-}
+let accountUnlockedTime: number
 
 export function isAccountUnlocked() {
-  return !!getCachedPin()
+  return accountUnlockedTime && Date.now() - accountUnlockedTime < ACCOUNT_UNLOCK_TIMEOUT
 }
 
-function* pincode({ value, newValue, action }: PincodeParams) {
+function updateUnlockedTime() {
+  accountUnlockedTime = Date.now()
+}
+
+function* pincode(params: PincodeParams) {
+  const validateResult = yield* call(validate, params)
+  if (!validateResult.isValid) {
+    throw new Error(errorStateToString(validateResult, 'Invalid Pincode or Password'))
+  }
+
+  const { action, value, newValue, type } = params
+  if (!type) throw new Error('Missing secret type')
+
   if (action === PincodeAction.Set) {
-    yield* call(setPin, value)
+    yield* call(setPin, value, type)
   } else if (action === PincodeAction.Unlock) {
-    yield* call(unlockWallet, value)
+    yield* call(unlockWallet, value, type)
   } else if (action === PincodeAction.Change) {
-    if (!newValue) throw new Error('Missing new pin')
-    yield* call(changePin, value, newValue)
+    if (!newValue) throw new Error('Missing new value')
+    yield* call(changePin, value, newValue, type)
   }
 }
 
@@ -131,33 +103,26 @@ export const {
   actions: pincodeActions,
 } = createMonitoredSaga<PincodeParams>(pincode, 'pincode')
 
-function* setPin(pin: string) {
-  if (!isPinValid(pin)) {
-    throw new Error('Invalid Pin')
-  }
-
+function* setPin(pin: string, type: SecretType) {
   if (!isSignerSet()) {
     throw new Error('Account not setup yet')
   }
 
   yield* call(saveWallet, pin)
+  yield* put(setSecretType(type))
   yield* put(setWalletUnlocked(true))
 
-  setCachedPin(pin)
-  logger.info('Pin set')
+  updateUnlockedTime()
+  logger.info(`${type} set`)
 }
 
-function* unlockWallet(pin: string) {
-  if (!isPinValid(pin)) {
-    throw new Error('Invalid Pin')
-  }
-
+function* unlockWallet(pin: string, type: SecretType) {
   const mnemonic = yield* call(loadWallet, pin)
   if (!mnemonic) {
-    throw new Error('Incorrect Pin or Missing Wallet')
+    throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
   }
 
-  setCachedPin(pin)
+  updateUnlockedTime()
   logger.info('Account unlocked')
 
   // If account has not yet been imported
@@ -167,26 +132,20 @@ function* unlockWallet(pin: string) {
   yield* put(setWalletUnlocked(true))
 }
 
-function* changePin(existingPin: string, newPin: string) {
-  if (!isPinValid(existingPin)) {
-    throw new Error('Invalid Existing Pin')
-  }
-
-  if (!isPinValid(newPin)) {
-    throw new Error('Invalid New Pin')
-  }
-
+function* changePin(existingPin: string, newPin: string, type: SecretType) {
   if (!isSignerSet()) {
     throw new Error('Account not setup yet')
   }
 
   const mnemonic = yield* call(loadWallet, existingPin)
   if (!mnemonic) {
-    throw new Error('Incorrect Pin or Missing Wallet')
+    throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
   }
 
   yield* call(saveWallet, newPin)
+  yield* put(setSecretType(type))
+  yield* put(setWalletUnlocked(true))
 
-  setCachedPin(newPin)
-  logger.info('Pin changed')
+  updateUnlockedTime()
+  logger.info(`${type} changed`)
 }

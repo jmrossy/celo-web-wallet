@@ -1,6 +1,6 @@
 import { keyframes } from '@emotion/react'
 import { useEffect, useState } from 'react'
-import { CloseButton } from 'src/components/CloseButton'
+import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 

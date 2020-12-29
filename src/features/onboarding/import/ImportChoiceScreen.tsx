@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router'
-import { Button } from 'src/components/Button'
+import { Button } from 'src/components/buttons/Button'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import KeyIcon from 'src/components/icons/key.svg'
 import LedgerIcon from 'src/components/icons/logos/ledger.svg'
@@ -21,12 +21,6 @@ export function ImportChoiceScreen() {
     navigate('/setup/ledger')
   }
 
-  const helpModal = (
-    <BasicHelpIconModal>
-      <HelpModal />
-    </BasicHelpIconModal>
-  )
-
   return (
     <OnboardingScreenFrame current={2} total={4}>
       <h1 css={Font.h1Green}>Import Your Celo Account</h1>
@@ -38,7 +32,7 @@ export function ImportChoiceScreen() {
         <HelpIcon
           width="1.5em"
           margin="0 0 0.2em 0.5em"
-          modal={{ head: 'About Importing Wallets', content: helpModal }}
+          modal={{ head: 'About Importing Wallets', content: <HelpModal /> }}
         />
       </Box>
       <div css={style.buttonContainer}>
@@ -55,7 +49,7 @@ export function ImportChoiceScreen() {
 
 function HelpModal() {
   return (
-    <>
+    <BasicHelpIconModal>
       <p>
         If you already have a Celo account, you can use the Account Key to load it here. Account
         Keys are 24 random words (<q>dog chair hello</q>). They are secret so handle them carefully.
@@ -72,7 +66,7 @@ function HelpModal() {
         </a>
         , you can use the Web Wallet to safely interact with it.
       </p>
-    </>
+    </BasicHelpIconModal>
   )
 }
 

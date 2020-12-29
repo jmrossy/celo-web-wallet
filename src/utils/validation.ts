@@ -16,7 +16,6 @@ export type ErrorState = {
   isValid: boolean
 }
 
-//--
 // Helper method to create an invalid field for use in validation
 export function invalidInput(fieldName: string, helpText: string) {
   return {
@@ -45,7 +44,6 @@ export function errorStateToString(error: ErrorState, summary: string) {
   }
 }
 
-//--
 // Handles the validation of input components
 export function useInputValidation(touched: any, validateFn: () => ErrorState) {
   const [inputErrors, setInputErrors] = useState<ErrorState>({ isValid: true })
@@ -56,7 +54,7 @@ export function useInputValidation(touched: any, validateFn: () => ErrorState) {
     if (!inputErrors || Object.keys(inputErrors).length === 0) return
     const nextErrors = { ...inputErrors }
 
-    //Enumerate the touched fields and create a list of fields that were touched
+    // Enumerate the touched fields and create a list of fields that were touched
     Object.keys(touched).forEach((key: string) => {
       if ((touched as any)[key] === true && nextErrors[key]) {
         delete nextErrors[key]
