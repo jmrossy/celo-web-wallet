@@ -24,12 +24,14 @@ export function ButtonToggle(props: Props) {
   return (
     <Box direction="row" align="center" styles={style.container}>
       <button
+        type="button"
         css={selected === 0 ? style.buttonSelected : style.buttonUnselected}
         onClick={onClick(0)}
       >
         {label1}
       </button>
       <button
+        type="button"
         css={selected === 1 ? style.buttonSelected : style.buttonUnselected}
         onClick={onClick(1)}
       >

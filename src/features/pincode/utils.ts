@@ -20,17 +20,18 @@ export function isSecretTooSimple(value: string, type: SecretType | undefined) {
     return PIN_BLACKLIST.includes(value)
   }
   if (type === 'password') {
+    // 6-30 characters with a number, lower case, and upper case
     return !value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,30}$/)
   }
   throw new Error(`Invalid secret type: ${type}`)
 }
 
-export function secretTypeToLabel(type: SecretType | undefined, capitalize = false) {
+export function secretTypeToLabel(type: SecretType | undefined) {
   if (type === 'pincode') {
-    return capitalize ? 'Pincode' : 'pincode'
+    return ['pincode', 'Pincode']
   }
   if (type === 'password') {
-    return capitalize ? 'Password' : 'password'
+    return ['password', 'Password']
   }
   throw new Error(`Invalid secret type: ${type}`)
 }

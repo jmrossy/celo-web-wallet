@@ -28,6 +28,8 @@ export function validate(params: PincodeParams): ErrorState {
 
   if (!value) {
     return { ...errors, ...invalidInput('value', 'Value is required') }
+  } else if (value.length < PIN_LENGTH) {
+    return { ...errors, ...invalidInput('value', 'Value is too short') }
   }
 
   if (action === PincodeAction.Set) {
@@ -111,13 +113,13 @@ function* setPin(pin: string, type: SecretType) {
   yield* put(setWalletUnlocked(true))
 
   updateUnlockedTime()
-  logger.info('Pin set')
+  logger.info(`${type} set`)
 }
 
 function* unlockWallet(pin: string, type: SecretType) {
   const mnemonic = yield* call(loadWallet, pin)
   if (!mnemonic) {
-    throw new Error(`Incorrect ${secretTypeToLabel(type)} or Missing Wallet`)
+    throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
   }
 
   updateUnlockedTime()
@@ -137,7 +139,7 @@ function* changePin(existingPin: string, newPin: string, type: SecretType) {
 
   const mnemonic = yield* call(loadWallet, existingPin)
   if (!mnemonic) {
-    throw new Error(`Incorrect ${secretTypeToLabel(type)} or Missing Wallet`)
+    throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
   }
 
   yield* call(saveWallet, newPin)
@@ -145,5 +147,5 @@ function* changePin(existingPin: string, newPin: string, type: SecretType) {
   yield* put(setWalletUnlocked(true))
 
   updateUnlockedTime()
-  logger.info('Pin changed')
+  logger.info(`${type} changed`)
 }

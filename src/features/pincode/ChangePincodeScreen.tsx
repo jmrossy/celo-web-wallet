@@ -18,7 +18,7 @@ export function ChangePincodeScreen() {
 
   return (
     <OnboardingScreenFrame>
-      <h1 css={Font.h1Green}>Change your Pincode</h1>
+      <h1 css={{ ...Font.h1Green, marginBottom: '0.5em' }}>Change your Pincode or Password</h1>
       <ChangePincodeForm />
     </OnboardingScreenFrame>
   )

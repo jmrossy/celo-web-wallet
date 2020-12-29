@@ -162,6 +162,7 @@ const style: Stylesheet = {
   bodyText: {
     margin: '2em 0 0 0',
     textAlign: 'center',
+    lineHeight: '1.4em',
   },
   closeIcon: {
     position: 'absolute',

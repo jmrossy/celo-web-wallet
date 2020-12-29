@@ -41,5 +41,11 @@ export function useSagaStatusWithErrorModal(
     }
   }, [status, error])
 
+  useEffect(() => {
+    return () => {
+      if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
+    }
+  }, [])
+
   return status
 }
