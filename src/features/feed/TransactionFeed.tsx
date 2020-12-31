@@ -9,6 +9,7 @@ import { TransactionMap } from 'src/features/types'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function TransactionFeed(props: { collapsed?: boolean }) {
@@ -67,13 +68,19 @@ const style: Stylesheet = {
     flex: 1,
     overflowX: 'hidden',
     overflowY: 'auto',
-    scrollbarWidth: 'thin',
-    scrollbarColor: 'var(--thumbBG) #fcfcfc',
+    scrollbarWidth: 'none',
     '::-webkit-scrollbar': {
-      width: 6,
-      height: 6,
-      borderLeft: `1px solid ${Color.borderLight}`,
-      backgroundColor: '#fcfcfc',
+      width: 0,
+    },
+    [mq[768]]: {
+      scrollbarWidth: 'thin',
+      scrollbarColor: 'var(--thumbBG) #fcfcfc',
+      '::-webkit-scrollbar': {
+        width: 6,
+        height: 6,
+        borderLeft: `1px solid ${Color.borderLight}`,
+        backgroundColor: '#fcfcfc',
+      },
     },
   },
   ol: {
