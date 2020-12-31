@@ -67,6 +67,14 @@ const style: Stylesheet = {
     flex: 1,
     overflowX: 'hidden',
     overflowY: 'auto',
+    scrollbarWidth: 'thin',
+    scrollbarColor: 'var(--thumbBG) #fcfcfc',
+    '::-webkit-scrollbar': {
+      width: 6,
+      height: 6,
+      borderLeft: `1px solid ${Color.borderLight}`,
+      backgroundColor: '#fcfcfc',
+    },
   },
   ol: {
     listStyle: 'none',
