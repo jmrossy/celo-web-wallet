@@ -15,7 +15,7 @@ export function Header() {
   return (
     <Box align="center" justify="between" styles={style.container}>
       <Link to={'/'}>
-        <img width={'130em'} src={Logo} alt="Celo Logo" css={style.logo} />
+        <img width="130em" height="46.05em" src={Logo} alt="Celo Logo" css={style.logo} />
       </Link>
       <span css={style.balances}>
         <MoneyValue

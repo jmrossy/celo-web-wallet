@@ -14,7 +14,7 @@ export function OnboardingScreenFrame({ current, total, children }: PropsWithChi
   return (
     <Box direction="column" align="center" styles={style.container}>
       <div css={style.logoContainer}>
-        <img width={'150em'} src={Logo} alt="Celo Logo" css={style.logo} />
+        <img width="150em" height="53.125em" src={Logo} alt="Celo Logo" css={style.logo} />
       </div>
       <div css={style.content}>
         <Box align="center" justify="center" direction="column" styles={style.childrenContainer}>

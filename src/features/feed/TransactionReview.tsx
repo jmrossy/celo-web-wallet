@@ -121,7 +121,7 @@ function TransactionAdvancedDetails({ tx }: { tx: CeloTransaction }) {
     <div css={style.contentContainer}>
       <h2 css={sectionHeaderAdvanced} onClick={onClickHeader}>
         Advanced Details
-        <img width={'18em'} src={Chevron} alt="chevron" css={chevronStyle} />
+        <img width="18em" height="10.28em" src={Chevron} alt="chevron" css={chevronStyle} />
       </h2>
       <div css={showContent ? null : style.contentHidden}>
         <TransactionPropertyGroup>

@@ -55,10 +55,10 @@ export function Mnemonic(props: Props) {
       {!unavailable && (
         <Box direction="column" justify="between" align="center" margin="0 0 0 -10px">
           <button css={style.button} onClick={onShowButtonClick} title="Show Key">
-            <img width={'20px'} height={'20px'} src={Eye} alt="Show/Hide" />
+            <img width="20px" height="20px" src={Eye} alt="Show/Hide" />
           </button>
           <button css={style.button} onClick={onCopyButtonClick} title="Copy Key">
-            <img width={'17px'} height={'17px'} src={Paste} alt="Copy" />
+            <img width="17px" height="17px" src={Paste} alt="Copy" />
           </button>
         </Box>
       )}

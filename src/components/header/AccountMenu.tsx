@@ -97,7 +97,7 @@ export const AccountMenu = () => {
     <>
       <div css={style.container} onClick={() => setOpen(true)}>
         <Box styles={style.caretContainer} align="center">
-          <img src={ChevronIcon} width="14px" css={rotated(isOpen)} />
+          <img src={ChevronIcon} width="14px" height="8px" css={rotated(isOpen)} />
         </Box>
         <Box styles={style.addressContainer} align="center">
           <span css={style.address}>{addressStub}</span>

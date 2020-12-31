@@ -37,7 +37,7 @@ export function FailScreen() {
   return (
     <OnboardingScreenFrame>
       <h1 css={Font.h1}>Something went wrong, sorry!</h1>
-      <img width={'200em'} src={SadFace} alt="Sad Face" css={style.img} />
+      <img width="200em" src={SadFace} alt="Sad Face" css={style.img} />
       <h3 css={style.h3}>
         Please refresh the page. If the problem persists, you can{' '}
         <a css={Font.linkLight} href={config.discordUrl} target="_blank" rel="noopener noreferrer">

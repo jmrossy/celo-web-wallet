@@ -9,7 +9,7 @@ export function NotFoundScreen() {
   return (
     <OnboardingScreenFrame>
       <h1 css={Font.h1}>This page could not be found, sorry!</h1>
-      <img width={'200em'} src={NotFoundIcon} alt="Not Found" css={style.img} />
+      <img width="200em" src={NotFoundIcon} alt="Not Found" css={style.img} />
       <h3 css={style.h3}>
         Please check the URL or go{' '}
         <Link to="/" css={{ color: Color.primaryBlack }}>

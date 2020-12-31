@@ -20,7 +20,7 @@ export function WelcomeScreen() {
   return (
     <Box direction="column" justify="between" align="center" styles={style.frame}>
       <Box direction="column" justify="center" align="center" styles={style.container}>
-        <img width={'500rem'} src={Logo} alt="Celo Logo" css={style.logo} />
+        <img width="500rem" height="107.5rem" src={Logo} alt="Celo Logo" css={style.logo} />
         <div css={style.buttonContainer}>
           <Button
             size="l"

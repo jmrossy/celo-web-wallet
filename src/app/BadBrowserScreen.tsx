@@ -7,7 +7,7 @@ export function BadBrowserScreen() {
   return (
     <OnboardingScreenFrame>
       <h1 css={Font.h1}>Your browser is not supported, sorry!</h1>
-      <img width={'200em'} src={WebIcon} alt="Browser" css={style.img} />
+      <img width="200em" src={WebIcon} alt="Browser" css={style.img} />
       <h3 css={style.h3}>
         The wallet requires modern browsers that support the WebCrypto standard. Please try the
         latest Chrome, Firefox, Safari, or Brave browsers instead.

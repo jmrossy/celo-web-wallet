@@ -32,7 +32,7 @@ export function TransactionFeed(props: { collapsed?: boolean }) {
       {isFeedEmpty ? (
         <Box direction="column" align="center" justify="center" styles={style.tipContainer}>
           <div>
-            <img width={'110em'} src={Nurture} alt="Plant seed" css={style.logo} />
+            <img width="110em" height="110em" src={Nurture} alt="Plant seed" css={style.logo} />
           </div>
           <div style={style.tipText}>You have no wallet activity yet.</div>
           <div style={style.tipText}>
