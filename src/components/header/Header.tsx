@@ -8,6 +8,7 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/consts'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
+import { Stylesheet } from 'src/styles/types'
 
 export function Header() {
   const balances = useSelector((s: RootState) => s.wallet.balances, shallowEqual)
@@ -17,7 +18,7 @@ export function Header() {
       <Link to={'/'}>
         <img width="130em" height="46.05em" src={Logo} alt="Celo Logo" css={style.logo} />
       </Link>
-      <span css={style.balances}>
+      <Box direction="row" align="center" justify="center" wrap={true} css={style.balances}>
         <MoneyValue
           amountInWei={balances.cUsd}
           currency={Currency.cUSD}
@@ -30,13 +31,13 @@ export function Header() {
           containerCss={style.balanceContainer}
           baseFontSize={1.4}
         />
-      </span>
+      </Box>
       <AccountMenu />
     </Box>
   )
 }
 
-const style = {
+const style: Stylesheet = {
   container: {
     borderBottom: `1px solid ${Color.borderLight}`,
     padding: '0.4em 0.5em 0.4em 0.2em',
@@ -46,12 +47,13 @@ const style = {
   },
   balances: {
     letterSpacing: '0.05em',
-    [mq[768]]: {
-      paddingLeft: '1.5em',
-    },
   },
   balanceContainer: {
     margin: '0 0.5em',
+    fontSize: '0.9em',
+    [mq[480]]: {
+      fontSize: '1em',
+    },
     [mq[768]]: {
       margin: '0 1.6em',
     },

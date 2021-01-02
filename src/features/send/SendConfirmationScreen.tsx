@@ -99,7 +99,7 @@ export function SendConfirmationScreen() {
         <h1 css={Font.h2Green}>Review {isRequest ? 'Request' : 'Payment'}</h1>
 
         <Box align="center" styles={style.inputRow} justify="between">
-          <label css={style.labelCol}>Recipient</label>
+          <label css={style.labelCol}>To</label>
           <Box direction="row" align="center" justify="end" styles={style.valueCol}>
             <Address address={tx.recipient} />
           </Box>

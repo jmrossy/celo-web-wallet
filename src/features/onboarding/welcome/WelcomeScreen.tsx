@@ -19,13 +19,14 @@ export function WelcomeScreen() {
 
   return (
     <Box direction="column" justify="between" align="center" styles={style.frame}>
-      <Box direction="column" justify="center" align="center" styles={style.container}>
+      <div css={style.topPadding}></div>
+      <Box direction="column" justify="center" align="center">
         <img width="500rem" height="107.5rem" src={Logo} alt="Celo Logo" css={style.logo} />
         <div css={style.buttonContainer}>
           <Button
             size="l"
             onClick={onClickCreateNew}
-            margin={'1em 1.5em'}
+            margin="1em 1.5em"
             styles={{ fontSize: '1.1em' }}
           >
             Create New Account
@@ -33,7 +34,7 @@ export function WelcomeScreen() {
           <Button
             size="l"
             onClick={onClickUseExisting}
-            margin={'1em 1.5em'}
+            margin="1em 1.5em"
             styles={{ fontSize: '1.1em' }}
           >
             Use Existing Account
@@ -49,22 +50,20 @@ const style: Stylesheet = {
   frame: {
     minHeight: '100vh',
   },
-  container: {
-    marginTop: '30vh',
-    [mq[768]]: {
-      marginTop: '33vh',
-    },
+  topPadding: {
+    height: '2em',
   },
   logo: {
     maxWidth: '75%',
   },
   buttonContainer: {
-    marginTop: '3em',
+    marginTop: '0.5em',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     [mq[768]]: {
+      marginTop: '3em',
       flexDirection: 'row',
     },
   },

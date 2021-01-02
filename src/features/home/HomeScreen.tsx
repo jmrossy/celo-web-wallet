@@ -24,10 +24,12 @@ export function HomeScreen() {
   const onClickDismiss = () => {
     dispatch(toggleHomeHeaderDismissed())
   }
+  const onClose = isMobile && !isWalletEmpty ? onClickDismiss : undefined
+
   if (isDismissed) return null
 
   return (
-    <ScreenContentFrame onClose={isMobile ? onClickDismiss : undefined}>
+    <ScreenContentFrame onClose={onClose}>
       {!isMobile && (
         <div css={style.warningContainer}>
           <HomeScreenWarnings />

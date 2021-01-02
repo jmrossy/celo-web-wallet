@@ -10,6 +10,7 @@ import { createWalletActions, createWalletSagaName } from 'src/features/wallet/c
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
 import { clearWallet } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
@@ -77,7 +78,9 @@ export function NewWalletScreen() {
 const style: Stylesheet = {
   header: {
     ...Font.h1Green,
-    marginBottom: '2em',
+    [mq[768]]: {
+      marginBottom: '2em',
+    },
   },
   container: {
     position: 'relative',

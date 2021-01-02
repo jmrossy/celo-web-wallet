@@ -47,6 +47,7 @@ const containerStyle: Styles = {
   justifyContent: 'center',
   alignItems: 'center',
   padding: '0.1em 0.5em',
+  outline: 'none',
   border: sharedInputStyles.border,
   borderColor: Color.primaryGrey,
   borderRadius: sharedInputStyles.borderRadius,
@@ -67,6 +68,7 @@ const inputStyle: Styles = {
   position: 'absolute',
   opacity: 0,
   cursor: 'pointer',
+  outline: 'none',
 }
 
 const labelStyle: Styles = {

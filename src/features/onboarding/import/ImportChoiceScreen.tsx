@@ -24,14 +24,14 @@ export function ImportChoiceScreen() {
   return (
     <OnboardingScreenFrame current={2} total={4}>
       <h1 css={Font.h1Green}>Import Your Celo Account</h1>
-      <Box direction="row" align="end" justify="center" margin="0 0 0 2em">
-        <p css={onboardingStyles.description}>
+      <Box direction="row" align="center" justify="center" margin="0 0 0 2em">
+        <p css={style.description}>
           To import your account, use your secret Account Key (mnemonic) or a Ledger hardware
           wallet.{' '}
         </p>
         <HelpIcon
           width="1.5em"
-          margin="0 0 0.2em 0.5em"
+          margin="0 0.5em 0 0.25em"
           modal={{ head: 'About Importing Wallets', content: <HelpModal /> }}
         />
       </Box>
@@ -71,6 +71,10 @@ function HelpModal() {
 }
 
 const style: Stylesheet = {
+  description: {
+    ...onboardingStyles.description,
+    maxWidth: 'calc(min(70vw, 22em))',
+  },
   buttonContainer: {
     marginTop: '2em',
     display: 'flex',

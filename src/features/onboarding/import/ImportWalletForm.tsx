@@ -66,10 +66,10 @@ export function ImportWalletForm() {
               name="mnemonic"
               value={mnemonic}
               error={!isMnemonicValid}
-              helpText={!isMnemonicValid ? 'invalid account key' : undefined}
+              helpText={!isMnemonicValid ? 'Invalid account key' : undefined}
               placeholder="fish boot jump hand..."
               onChange={onInputChange}
-              minWidth="22em"
+              minWidth="calc(min(22em, 85vw))"
               maxWidth="26em"
               minHeight="6.5em"
               maxHeight="8em"

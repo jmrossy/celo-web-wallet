@@ -6,6 +6,7 @@ import { Box } from 'src/components/layout/Box'
 import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
 import { NULL_ADDRESS } from 'src/consts'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
+import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import {
   pincodeActions,
   PincodeParams,
@@ -97,7 +98,7 @@ export function EnterPincodeScreen() {
 }
 const style: Stylesheet = {
   description: {
-    ...Font.body,
+    ...onboardingStyles.description,
     marginBottom: '1.5em',
   },
 }

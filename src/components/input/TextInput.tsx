@@ -17,6 +17,7 @@ export interface TextInputProps {
   placeholder?: string
   fillWidth?: boolean
   type?: 'text' | 'number' // For use by NumberInput, don't use this directly
+  step?: string // For use by NumberInput, don't use this directly
 }
 
 export function TextInput(props: PropsWithChildren<TextInputProps>) {
@@ -34,6 +35,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
     placeholder,
     fillWidth,
     type,
+    step,
   } = props
 
   const sharedStyles = getSharedInputStyles(error)
@@ -43,6 +45,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
     <Box direction="column" styles={containerStyles}>
       <input
         type={type ?? 'text'}
+        step={type === 'number' ? step : undefined}
         name={name}
         css={{
           ...sharedStyles,

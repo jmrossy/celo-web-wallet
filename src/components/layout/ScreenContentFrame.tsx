@@ -23,7 +23,7 @@ const style: Stylesheet = {
   contentContainer: {
     padding: '1.2em 1.4em',
     position: 'relative',
-    height: '100%',
+    minHeight: '100%',
     [mq[768]]: {
       padding: '1.5em 2em 1.5em 2em',
     },

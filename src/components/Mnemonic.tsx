@@ -4,6 +4,7 @@ import Paste from 'src/components/icons/paste.svg'
 import { Box } from 'src/components/layout/Box'
 import { isValidMnemonic } from 'src/features/wallet/importWallet'
 import { Color } from 'src/styles/Color'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { tryClipboardSet } from 'src/utils/clipboard'
 import { chunk } from 'src/utils/string'
@@ -76,7 +77,9 @@ const style: Stylesheet = {
     backgroundColor: Color.fillLight,
     padding: '5px 18px 5px 5px',
     borderRadius: 3,
-    minWidth: '20em',
+    [mq[768]]: {
+      minWidth: '20em',
+    },
   },
   containerUnavailable: {
     zIndex: 5,

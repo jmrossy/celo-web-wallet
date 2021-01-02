@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react'
 /**
  * Example usage with Emotion:
  * css={{
- *   font-size: 1.5rem,
+ *   font-size: 1.5em,
  *   [mq[480]]: {
- *     font-size: 2rem,
+ *     font-size: 2em,
  *   }
  * }
  */
@@ -59,4 +59,13 @@ export function isMobile(windowWidth: number | undefined) {
 export function useIsMobile() {
   const windowSize = useWindowSize()
   return isMobile(windowSize.width)
+}
+
+export function isSmallMobile(windowWidth: number | undefined) {
+  return !!(windowWidth && windowWidth < 360)
+}
+
+export function useIsSmallMobile() {
+  const windowSize = useWindowSize()
+  return isSmallMobile(windowSize.width)
 }

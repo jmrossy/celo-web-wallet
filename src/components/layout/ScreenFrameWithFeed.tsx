@@ -13,7 +13,7 @@ import { HomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
 import { sendReset } from 'src/features/send/sendSlice'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
-import { mq, useIsMobile } from 'src/styles/mediaQueries'
+import { mq, useIsMobile, useIsSmallMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function ScreenFrameWithFeed(props: PropsWithChildren<any>) {
@@ -103,6 +103,7 @@ function MobileHomeEmpty(props: PropsWithChildren<any>) {
 }
 
 function MobileNotHome(props: PropsWithChildren<any>) {
+  const isSmallMobile = useIsSmallMobile()
   const navigate = useNavigate()
 
   const onButtonClick = () => {
@@ -112,12 +113,14 @@ function MobileNotHome(props: PropsWithChildren<any>) {
 
   return (
     <Box direction="row" styles={style.contentContainer}>
-      <Box direction="column" align="center" styles={style.feedContainer}>
-        <Button onClick={onButtonClick} margin={'0.75em 0'} size="icon" width="34px" height="34px">
-          <img width="22px" height="22px" src={PlusIcon} alt="Plus" />
-        </Button>
-        <TransactionFeed collapsed={true} />
-      </Box>
+      {!isSmallMobile && (
+        <Box direction="column" align="center" styles={style.feedContainer}>
+          <Button onClick={onButtonClick} margin="0.75em 0" size="icon" width="34px" height="34px">
+            <img width="22px" height="22px" src={PlusIcon} alt="Plus" />
+          </Button>
+          <TransactionFeed collapsed={true} />
+        </Box>
+      )}
       <div css={style.childContent}>{props.children}</div>
     </Box>
   )

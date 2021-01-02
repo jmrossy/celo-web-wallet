@@ -25,8 +25,9 @@ export const Font: Stylesheet = {
   h1Green: {
     fontSize: '1.6em',
     fontWeight: 400,
-    marginBottom: '1em',
+    margin: '0 0 1em 0',
     color: Color.primaryGreen,
+    textAlign: 'center',
   },
   h2: {
     fontSize: '1.4em',

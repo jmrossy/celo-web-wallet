@@ -81,11 +81,12 @@ export function ExchangeFormScreen() {
     <ScreenContentFrame onClose={onClose}>
       <h2 css={Font.h2Green}>Make an Exchange</h2>
       <Box styles={style.containerBox}>
-        <Box direction="column" styles={style.txnColumn}>
+        <Box direction="column">
           <form onSubmit={handleSubmit}>
             <Box direction="row" align="center" styles={style.inputRow}>
               <label css={style.inputLabel}>Amount to Exchange</label>
               <NumberInput
+                step="0.01"
                 name="amount"
                 width="7.4em"
                 onChange={handleChange}

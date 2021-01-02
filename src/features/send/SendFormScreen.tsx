@@ -110,6 +110,7 @@ export function SendFormScreen() {
             <Box direction="column" justify="end" align="start">
               <label css={style.inputLabel}>Amount to Send</label>
               <NumberInput
+                step="0.01"
                 width="6em"
                 name="amount"
                 onChange={handleChange}
@@ -159,14 +160,9 @@ export function SendFormScreen() {
             />
           </Box>
 
-          <Box direction="row" justify="start">
-            <Button type="submit" size="m" margin="0 1em 0 0">
-              Continue
-            </Button>
-            {/* <Button type="button" size="m" onClick={onRequest} icon={RequestPaymentIcon}>
-              Request Payment
-            </Button> */}
-          </Box>
+          <Button type="submit" size="m" margin="0 1em 0 0">
+            Continue
+          </Button>
         </form>
       </div>
     </ScreenContentFrame>
@@ -211,6 +207,7 @@ const style: Stylesheet = {
   content: {
     width: '100%',
     maxWidth: '26em',
+    paddingBottom: '1em',
   },
   inputRow: {
     marginBottom: '2em',
