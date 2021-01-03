@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
+import { TextButton } from 'src/components/buttons/TextButton'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
@@ -16,6 +17,7 @@ import { Currency } from 'src/consts'
 import { sendStarted } from 'src/features/send/sendSlice'
 import { SendTokenParams, validate } from 'src/features/send/sendToken'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
@@ -82,7 +84,7 @@ export function SendFormScreen() {
         <form onSubmit={handleSubmit}>
           <h1 css={Font.h2Green}>Send Payment</h1>
 
-          <Box direction="column" styles={style.inputRow}>
+          <Box direction="column" margin="0 0 2em 0">
             <label css={style.inputLabel}>Recipient Address</label>
 
             <Box direction="row" justify="start" align="end">
@@ -101,24 +103,30 @@ export function SendFormScreen() {
                   <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
                 </Button>
               ) : (
-                <div css={[style.copyIcon, { marginLeft: '0.5em' }]}></div>
+                <div css={[style.copyIcon, { marginLeft: '0.75em' }]}></div>
               )}
             </Box>
           </Box>
 
-          <Box direction="row" styles={style.inputRow} justify="between" margin="0 2.1em 0 0">
+          <Box direction="row" styles={style.inputRow} justify="between">
             <Box direction="column" justify="end" align="start">
-              <label css={style.inputLabel}>Amount to Send</label>
-              <NumberInput
-                step="0.01"
-                width="6em"
-                name="amount"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.amount.toString()}
-                {...inputErrors['amount']}
-                placeholder="1.00"
-              />
+              <label css={style.inputLabel}>Amount</label>
+              <Box direction="row" align="center">
+                <NumberInput
+                  step="0.01"
+                  width="3.5em"
+                  margin="0 0.75em 0 0"
+                  name="amount"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.amount.toString()}
+                  {...inputErrors['amount']}
+                  placeholder="1.00"
+                />
+                <TextButton onClick={() => alert('max')} styles={style.maxAmountButton}>
+                  Max Amount
+                </TextButton>
+              </Box>
             </Box>
             <Box direction="column" align="start" margin="0 0 0 2em">
               <label css={style.inputLabel}>Currency</label>
@@ -144,7 +152,7 @@ export function SendFormScreen() {
             </Box>
           </Box>
 
-          <Box direction="column" align="start" styles={style.inputRow} margin="0 2.1em 0 0">
+          <Box direction="column" align="start" styles={style.inputRow}>
             <label css={style.inputLabel}>Comment (optional)</label>
             <TextArea
               name="comment"
@@ -210,7 +218,10 @@ const style: Stylesheet = {
     paddingBottom: '1em',
   },
   inputRow: {
-    marginBottom: '2em',
+    margin: '0 0 2em 0',
+    [mq[768]]: {
+      margin: '0 2.1em 2em 0',
+    },
   },
   inputLabel: {
     ...Font.inputLabel,
@@ -223,5 +234,12 @@ const style: Stylesheet = {
   radioBox: {
     height: '100%',
     width: '100%',
+  },
+  maxAmountButton: {
+    fontWeight: 300,
+    fontSize: '0.9em',
+    [mq[768]]: {
+      fontSize: '1em',
+    },
   },
 }
