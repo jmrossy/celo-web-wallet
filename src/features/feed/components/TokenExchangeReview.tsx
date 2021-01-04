@@ -1,5 +1,5 @@
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import {
   TransactionProperty,
   TransactionPropertyGroup,

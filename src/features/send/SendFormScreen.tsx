@@ -13,13 +13,14 @@ import { NumberInput } from 'src/components/input/NumberInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { sendStarted } from 'src/features/send/sendSlice'
 import { SendTokenParams, validate } from 'src/features/send/sendToken'
+import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { fromWei, toWei } from 'src/utils/amount'
+import { fromWei, fromWeiRounded, toWei } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
@@ -43,10 +44,9 @@ export function SendFormScreen() {
   const tx = useSelector((state: RootState) => state.send.transaction)
 
   const onSubmit = (values: SendTokenForm) => {
-    if (areInputsValid()) {
-      dispatch(sendStarted(toSendTokenParams(values)))
-      navigate('/send-review')
-    }
+    if (!areInputsValid()) return
+    dispatch(sendStarted(toSendTokenParams(values)))
+    navigate('/send-review')
   }
 
   const {
@@ -72,6 +72,13 @@ export function SendFormScreen() {
     const value = await tryClipboardGet()
     if (!value || !utils.isAddress(value)) return
     setValues({ ...values, recipient: value })
+  }
+
+  const onUseMax = () => {
+    const currency = values.currency
+    const balance = getCurrencyBalance(balances, currency)
+    const maxAmount = fromWeiRounded(balance, currency)
+    setValues({ ...values, amount: maxAmount })
   }
 
   const onClose = () => {
@@ -123,7 +130,7 @@ export function SendFormScreen() {
                   {...inputErrors['amount']}
                   placeholder="1.00"
                 />
-                <TextButton onClick={() => alert('max')} styles={style.maxAmountButton}>
+                <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
                   Max Amount
                 </TextButton>
               </Box>

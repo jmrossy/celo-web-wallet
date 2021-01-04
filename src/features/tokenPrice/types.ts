@@ -1,4 +1,4 @@
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 
 export enum QuoteCurrency {
   cUSD = 'cusd',

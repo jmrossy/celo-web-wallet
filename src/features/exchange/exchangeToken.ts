@@ -2,12 +2,8 @@ import { BigNumber, Contract, providers } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
-import {
-  Currency,
-  EXCHANGE_RATE_STALE_TIME,
-  MAX_EXCHANGE_TOKEN_SIZE,
-  MIN_EXCHANGE_RATE,
-} from 'src/consts'
+import { EXCHANGE_RATE_STALE_TIME, MAX_EXCHANGE_TOKEN_SIZE, MIN_EXCHANGE_RATE } from 'src/consts'
+import { Currency } from 'src/currency'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'

@@ -2,7 +2,7 @@ import { getContractName } from 'src/blockchain/contracts'
 import { Address } from 'src/components/Address'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { config } from 'src/config'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import {
   TransactionProperty,
   TransactionPropertyGroup,

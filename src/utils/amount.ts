@@ -1,5 +1,6 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
-import { Currency, WEI_PER_UNIT } from 'src/consts'
+import { WEI_PER_UNIT } from 'src/consts'
+import { Currency, getCurrencyProps } from 'src/currency'
 import { ExchangeRate } from 'src/features/exchange/types'
 import { FeeEstimate } from 'src/features/fees/types'
 import { TokenExchangeTx } from 'src/features/types'
@@ -84,6 +85,24 @@ export function validateAmountWithFees(
 export function fromWei(value: BigNumberish | null | undefined): number {
   if (!value) return 0
   return parseFloat(utils.formatEther(value))
+}
+
+// Similar to fromWei above but rounds to set number of decimals
+// with a minimum floor, configured per currency
+export function fromWeiRounded(value: BigNumberish | null | undefined, currency: Currency): string {
+  if (!value) return '0'
+
+  const { decimals, minValue: _minValue } = getCurrencyProps(currency)
+  const minValue = FixedNumber.from(`${_minValue}`) // FixedNumber throws error when given number for some reason
+
+  const amount = FixedNumber.from(utils.formatEther(value))
+  if (amount.isZero()) {
+    return '0'
+  } else if (amount.subUnsafe(minValue).isNegative()) {
+    return minValue.toString()
+  } else {
+    return amount.round(decimals).toString()
+  }
 }
 
 export function toWei(value: BigNumberish | null | undefined): BigNumber {

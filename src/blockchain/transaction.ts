@@ -2,7 +2,7 @@ import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 
 /**

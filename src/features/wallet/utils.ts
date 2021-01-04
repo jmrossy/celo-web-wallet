@@ -1,7 +1,8 @@
 import { BigNumber } from 'ethers'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import { Currency, NULL_ADDRESS } from 'src/consts'
+import { NULL_ADDRESS } from 'src/consts'
+import { Currency } from 'src/currency'
 import { Balances } from 'src/features/wallet/types'
 
 export function useAreBalancesEmpty() {

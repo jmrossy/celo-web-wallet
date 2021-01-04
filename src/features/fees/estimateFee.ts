@@ -1,6 +1,6 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { estimateGas } from 'src/features/fees/estimateGas'
 import { setFeeEstimate } from 'src/features/fees/feeSlice'
 import { fetchGasPriceIfStale } from 'src/features/fees/gasPrice'

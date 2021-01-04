@@ -1,7 +1,7 @@
 import { Contract, ethers } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { areAddressesEqual } from 'src/utils/addresses'
 
 let contractCache: Partial<Record<CeloContract, Contract>> = {}

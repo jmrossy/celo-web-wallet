@@ -1,8 +1,3 @@
-export enum Currency {
-  cUSD = 'cusd',
-  CELO = 'celo',
-}
-
 export const WEI_PER_UNIT = '1000000000000000000' // 1 'Celo' or 'Ether'
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const TEST_ADDRESS = '0x35b74Ed5038bf0488Ff33bD9819b9D12D10A7560'
