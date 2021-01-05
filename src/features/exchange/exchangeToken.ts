@@ -1,8 +1,14 @@
 import { BigNumber, Contract, providers } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
+import { isSignerLedger } from 'src/blockchain/signer'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
-import { EXCHANGE_RATE_STALE_TIME, MAX_EXCHANGE_TOKEN_SIZE, MIN_EXCHANGE_RATE } from 'src/consts'
+import {
+  EXCHANGE_RATE_STALE_TIME,
+  MAX_EXCHANGE_TOKEN_SIZE,
+  MAX_EXCHANGE_TOKEN_SIZE_LEDGER,
+  MIN_EXCHANGE_RATE,
+} from 'src/consts'
 import { Currency, getOtherCurrency } from 'src/currency'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
@@ -31,9 +37,10 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
+    const maxAmount = isSignerLedger() ? MAX_EXCHANGE_TOKEN_SIZE_LEDGER : MAX_EXCHANGE_TOKEN_SIZE
     errors = {
       ...errors,
-      ...validateAmount(amountInWei, fromCurrency, balances, MAX_EXCHANGE_TOKEN_SIZE),
+      ...validateAmount(amountInWei, fromCurrency, balances, maxAmount),
     }
   }
 

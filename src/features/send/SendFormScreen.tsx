@@ -102,8 +102,8 @@ export function SendFormScreen() {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.recipient}
-                {...inputErrors['recipient']}
                 placeholder="0x1234..."
+                {...inputErrors['recipient']}
               />
               {isClipboardReadSupported() ? (
                 <Button size="icon" type="button" margin="0 0 0 0.5em" onClick={onPasteAddress}>
@@ -127,8 +127,8 @@ export function SendFormScreen() {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.amount.toString()}
-                  {...inputErrors['amount']}
                   placeholder="1.00"
+                  {...inputErrors['amount']}
                 />
                 <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
                   Max Amount
@@ -172,6 +172,7 @@ export function SendFormScreen() {
               minHeight="5em"
               maxHeight="7em"
               fillWidth={true}
+              {...inputErrors['comment']}
             />
           </Box>
 
