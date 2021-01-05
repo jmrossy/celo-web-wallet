@@ -34,6 +34,11 @@ export function getSigner() {
   return signer
 }
 
+export function isSignerLedger() {
+  const signer = getSigner()
+  return signer.type === SignerType.Ledger
+}
+
 export function setSigner(_signer: CeloSigner) {
   if (!_signer || !_signer.signer || !_signer.type) {
     throw new Error('Signer is invalid')

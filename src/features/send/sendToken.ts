@@ -1,8 +1,14 @@
 import { BigNumber, providers, utils } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
+import { isSignerLedger } from 'src/blockchain/signer'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
-import { Currency, MAX_COMMENT_CHAR_LENGTH, MAX_SEND_TOKEN_SIZE } from 'src/consts'
+import {
+  Currency,
+  MAX_COMMENT_CHAR_LENGTH,
+  MAX_SEND_TOKEN_SIZE,
+  MAX_SEND_TOKEN_SIZE_LEDGER,
+} from 'src/consts'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
@@ -35,7 +41,8 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    errors = { ...errors, ...validateAmount(amountInWei, currency, balances, MAX_SEND_TOKEN_SIZE) }
+    const maxAmount = isSignerLedger() ? MAX_SEND_TOKEN_SIZE_LEDGER : MAX_SEND_TOKEN_SIZE
+    errors = { ...errors, ...validateAmount(amountInWei, currency, balances, maxAmount) }
   }
 
   if (!utils.isAddress(recipient)) {
