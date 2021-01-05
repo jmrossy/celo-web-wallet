@@ -13,12 +13,13 @@ import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { exchangeStarted } from 'src/features/exchange/exchangeSlice'
 import { validate } from 'src/features/exchange/exchangeToken'
 import { ExchangeTokenParams } from 'src/features/exchange/types'
+import { useExchangeValues } from 'src/features/exchange/utils'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { fromWei, toWei, useExchangeValues } from 'src/utils/amount'
+import { fromWei, toWei } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
 
@@ -42,10 +43,9 @@ export function ExchangeFormScreen() {
   }, [])
 
   const onSubmit = (values: ExchangeTokenForm) => {
-    if (areInputsValid()) {
-      dispatch(exchangeStarted(toExchangeTokenParams(values)))
-      navigate('/exchange-review')
-    }
+    if (!areInputsValid()) return
+    dispatch(exchangeStarted(toExchangeTokenParams(values)))
+    navigate('/exchange-review')
   }
 
   const {

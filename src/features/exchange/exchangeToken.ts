@@ -3,7 +3,7 @@ import { getContract } from 'src/blockchain/contracts'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import { EXCHANGE_RATE_STALE_TIME, MAX_EXCHANGE_TOKEN_SIZE, MIN_EXCHANGE_RATE } from 'src/consts'
-import { Currency } from 'src/currency'
+import { Currency, getOtherCurrency } from 'src/currency'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
@@ -12,13 +12,7 @@ import { validateFeeEstimate } from 'src/features/fees/utils'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import {
-  fromWei,
-  getOtherCurrency,
-  toWei,
-  validateAmount,
-  validateAmountWithFees,
-} from 'src/utils/amount'
+import { fromWei, toWei, validateAmount, validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'

@@ -6,6 +6,7 @@ import { fromWeiRounded } from 'src/utils/amount'
 interface MoneyValueProps {
   amountInWei: BigNumberish
   currency: Currency
+  roundDownIfSmall?: boolean
   baseFontSize?: number // in em units
   margin?: string | number
   hideSymbol?: boolean
@@ -20,6 +21,7 @@ export function MoneyValue(props: MoneyValueProps) {
   const {
     amountInWei,
     currency,
+    roundDownIfSmall,
     baseFontSize,
     margin,
     hideSymbol,
@@ -33,7 +35,7 @@ export function MoneyValue(props: MoneyValueProps) {
   const { symbol, color } = getCurrencyProps(currency)
   const fontStyles = getFonts(baseFontSize, fontWeight)
 
-  const formattedAmount = fromWeiRounded(amountInWei, currency)
+  const formattedAmount = fromWeiRounded(amountInWei, currency, roundDownIfSmall)
   const isZero = formattedAmount === '0'
 
   return (

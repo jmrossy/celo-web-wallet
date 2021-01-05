@@ -32,3 +32,7 @@ export function getCurrencyProps(currency: Currency) {
   if (!props) throw new Error(`Unsupported currency ${currency}`)
   return props
 }
+
+export function getOtherCurrency(currency: Currency) {
+  return currency === Currency.CELO ? Currency.cUSD : Currency.CELO
+}

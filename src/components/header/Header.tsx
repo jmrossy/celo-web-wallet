@@ -22,11 +22,13 @@ export function Header() {
         <MoneyValue
           amountInWei={balances.cUsd}
           currency={Currency.cUSD}
+          roundDownIfSmall={true}
           baseFontSize={1.4}
           containerCss={style.balanceContainer}
         />
         <MoneyValue
           amountInWei={balances.celo}
+          roundDownIfSmall={true}
           currency={Currency.CELO}
           containerCss={style.balanceContainer}
           baseFontSize={1.4}

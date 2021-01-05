@@ -77,7 +77,7 @@ export function SendFormScreen() {
   const onUseMax = () => {
     const currency = values.currency
     const balance = getCurrencyBalance(balances, currency)
-    const maxAmount = fromWeiRounded(balance, currency)
+    const maxAmount = fromWeiRounded(balance, currency, true)
     setValues({ ...values, amount: maxAmount })
   }
 

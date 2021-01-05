@@ -1,9 +1,6 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
-import { WEI_PER_UNIT } from 'src/consts'
 import { Currency, getCurrencyProps } from 'src/currency'
-import { ExchangeRate } from 'src/features/exchange/types'
 import { FeeEstimate } from 'src/features/fees/types'
-import { TokenExchangeTx } from 'src/features/types'
 import { Balances } from 'src/features/wallet/types'
 import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { logger } from 'src/utils/logger'
@@ -18,20 +15,20 @@ export function range(length: number, start = 0, step = 1) {
 }
 
 export function validateAmount(
-  amountInWei: BigNumberish,
+  _amountInWei: BigNumberish,
   currency: Currency,
   balances: Balances,
   max: string
 ): ErrorState | null {
-  const _amountInWei = BigNumber.from(amountInWei)
+  const amountInWei = BigNumber.from(_amountInWei)
 
-  if (_amountInWei.lte(0)) {
-    logger.warn(`Invalid amount, too small: ${_amountInWei.toString()}`)
+  if (amountInWei.lte(0)) {
+    logger.warn(`Invalid amount, too small: ${amountInWei.toString()}`)
     return invalidInput('amount', 'Amount too small')
   }
 
-  if (_amountInWei.gte(max)) {
-    logger.warn(`Invalid amount, too big: ${_amountInWei.toString()}`)
+  if (amountInWei.gte(max)) {
+    logger.warn(`Invalid amount, too big: ${amountInWei.toString()}`)
     return invalidInput('amount', 'Amount too big')
   }
 
@@ -40,9 +37,13 @@ export function validateAmount(
   }
 
   const balance = getCurrencyBalance(balances, currency)
-  if (_amountInWei.gt(balance)) {
-    logger.warn(`Exceeds ${currency} balance: ${_amountInWei.toString()}`)
-    return invalidInput('amount', 'Amount too big')
+  if (amountInWei.gt(balance)) {
+    if (areAmountsNearlyEqual(amountInWei, balance, currency)) {
+      logger.debug('Validation allowing amount that nearly equals balance')
+    } else {
+      logger.warn(`Exceeds ${currency} balance: ${amountInWei.toString()}`)
+      return invalidInput('amount', 'Amount too big')
+    }
   }
 
   return null
@@ -55,7 +56,7 @@ export function validateAmountWithFees(
   feeEstimates: FeeEstimate[] | undefined
 ): ErrorState | null {
   if (!feeEstimates || !feeEstimates.length) {
-    logger.error(`No fee set`)
+    logger.error('No fee set')
     return invalidInput('fee', 'No fee set')
   }
 
@@ -67,9 +68,14 @@ export function validateAmountWithFees(
 
   if (feeCurrency === txCurrency) {
     const balance = getCurrencyBalance(balances, txCurrency)
-    if (totalFee.add(txAmountInWei).gt(balance)) {
-      logger.error(`Fee plus amount exceeds ${txCurrency} balance`)
-      return invalidInput('fee', 'Fee plus amount exceeds balance')
+    const amountWithFee = totalFee.add(txAmountInWei)
+    if (amountWithFee.gt(balance)) {
+      if (areAmountsNearlyEqual(amountWithFee, balance, txCurrency)) {
+        logger.debug('Validation allowing amount that nearly equals balance')
+      } else {
+        logger.error(`Fee plus amount exceeds ${txCurrency} balance`)
+        return invalidInput('fee', 'Fee plus amount exceeds balance')
+      }
     }
   } else {
     const balance = getCurrencyBalance(balances, feeCurrency)
@@ -82,6 +88,19 @@ export function validateAmountWithFees(
   return null
 }
 
+// Checks if an amount is equal of nearly equal to balance within a small margin of error
+// Necessary because amounts in the UI are often rounded
+export function areAmountsNearlyEqual(
+  amountInWei1: BigNumber,
+  amountInWei2: BigNumberish,
+  currency: Currency
+) {
+  const { minValue } = getCurrencyProps(currency)
+  const minValueWei = toWei(minValue)
+  // Is difference btwn amount and balance less than min amount shown for currency
+  return amountInWei1.sub(amountInWei2).abs().lt(minValueWei)
+}
+
 export function fromWei(value: BigNumberish | null | undefined): number {
   if (!value) return 0
   return parseFloat(utils.formatEther(value))
@@ -89,20 +108,30 @@ export function fromWei(value: BigNumberish | null | undefined): number {
 
 // Similar to fromWei above but rounds to set number of decimals
 // with a minimum floor, configured per currency
-export function fromWeiRounded(value: BigNumberish | null | undefined, currency: Currency): string {
+export function fromWeiRounded(
+  value: BigNumberish | null | undefined,
+  currency: Currency,
+  roundDownIfSmall = false
+): string {
   if (!value) return '0'
 
   const { decimals, minValue: _minValue } = getCurrencyProps(currency)
   const minValue = FixedNumber.from(`${_minValue}`) // FixedNumber throws error when given number for some reason
+  const bareMinValue = FixedNumber.from(`${_minValue / 10}`)
 
   const amount = FixedNumber.from(utils.formatEther(value))
-  if (amount.isZero()) {
-    return '0'
-  } else if (amount.subUnsafe(minValue).isNegative()) {
+  if (amount.isZero()) return '0'
+
+  // If amount is less than min value
+  if (amount.subUnsafe(minValue).isNegative()) {
+    // If we should round and amount is really small
+    if (roundDownIfSmall && amount.subUnsafe(bareMinValue).isNegative()) {
+      return '0'
+    }
     return minValue.toString()
-  } else {
-    return amount.round(decimals).toString()
   }
+
+  return amount.round(decimals).toString()
 }
 
 export function toWei(value: BigNumberish | null | undefined): BigNumber {
@@ -115,96 +144,4 @@ export function fromFixidity(value: BigNumberish | null | undefined): number {
   return FixedNumber.from(value)
     .divUnsafe(FixedNumber.from('1000000000000000000000000'))
     .toUnsafeFloat()
-}
-
-export function useExchangeValues(
-  fromAmount: number | string | null | undefined,
-  fromCurrency: Currency | null | undefined,
-  cUsdToCelo: ExchangeRate | null | undefined,
-  isFromAmountWei: boolean
-) {
-  if (!fromCurrency || !cUsdToCelo) {
-    // Return some defaults when values are missing
-    return getDefaultExchangeValues()
-  }
-
-  try {
-    const toCurrency = getOtherCurrency(fromCurrency)
-    const exchangeRate = fromCurrency === Currency.cUSD ? cUsdToCelo.rate : 1 / cUsdToCelo.rate
-    const exchangeRateWei = toWei(exchangeRate)
-
-    const fromAmountWei = isFromAmountWei ? BigNumber.from(fromAmount) : toWei(fromAmount)
-    const fromAmountNum = isFromAmountWei ? fromWei(fromAmount) : parseFloat('' + fromAmount)
-    const toAmountWei = toWei(fromAmountNum * exchangeRate)
-
-    return {
-      from: {
-        weiAmount: fromAmountWei.toString(),
-        currency: fromCurrency,
-      },
-      to: {
-        weiAmount: toAmountWei.toString(),
-        currency: toCurrency,
-      },
-      rate: {
-        weiBasis: WEI_PER_UNIT,
-        weiRate: exchangeRateWei.toString(),
-        rate: exchangeRate,
-        lastUpdated: cUsdToCelo.lastUpdated,
-      },
-    }
-  } catch (error) {
-    logger.warn('Error computing exchange values')
-    return getDefaultExchangeValues(fromCurrency)
-  }
-}
-
-function getDefaultExchangeValues(fromCurrency?: Currency | null) {
-  const _fromCurrency = fromCurrency || Currency.cUSD
-  const _toCurrency = getOtherCurrency(_fromCurrency)
-
-  return {
-    from: {
-      weiAmount: '0',
-      currency: _fromCurrency,
-    },
-    to: {
-      weiAmount: '0',
-      currency: _toCurrency,
-    },
-    rate: {
-      rate: 0,
-      lastUpdated: 0,
-      weiBasis: WEI_PER_UNIT,
-      weiRate: '0',
-    },
-  }
-}
-
-export function computeRate(tx: TokenExchangeTx) {
-  if (!tx) {
-    return {
-      weiRate: 0,
-      weiBasis: WEI_PER_UNIT,
-    }
-  }
-  const fromValue = fromWei(tx.fromValue)
-  const toValue = fromWei(tx.toValue)
-
-  if (!fromValue || !toValue) {
-    return {
-      weiRate: 0,
-      weiBasis: WEI_PER_UNIT,
-    }
-  }
-
-  const rate = tx.fromToken === Currency.cUSD ? fromValue / toValue : toValue / fromValue
-  return {
-    weiRate: toWei(rate).toString(),
-    weiBasis: WEI_PER_UNIT,
-  }
-}
-
-export function getOtherCurrency(currency: Currency) {
-  return currency === Currency.CELO ? Currency.cUSD : Currency.CELO
 }
