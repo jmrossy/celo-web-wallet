@@ -140,7 +140,7 @@ export function fromWeiRounded(
 
   const { decimals, minValue: _minValue } = getCurrencyProps(currency)
   const minValue = FixedNumber.from(`${_minValue}`) // FixedNumber throws error when given number for some reason
-  const bareMinValue = FixedNumber.from(`${_minValue / 10}`)
+  const bareMinValue = FixedNumber.from(`${_minValue / 5}`)
 
   const amount = FixedNumber.from(utils.formatEther(value))
   if (amount.isZero()) return '0'

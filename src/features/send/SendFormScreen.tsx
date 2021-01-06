@@ -110,7 +110,7 @@ export function SendFormScreen() {
                   <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
                 </Button>
               ) : (
-                <div css={[style.copyIcon, { marginLeft: '0.75em' }]}></div>
+                <div css={style.copyIconPlaceholder}></div>
               )}
             </Box>
           </Box>
@@ -135,7 +135,7 @@ export function SendFormScreen() {
                 </TextButton>
               </Box>
             </Box>
-            <Box direction="column" align="start" margin="0 0 0 2em">
+            <Box direction="column" align="start" margin="0 0 0 1.5em">
               <label css={style.inputLabel}>Currency</label>
               <Box direction="row" justify="between" align="end" styles={style.radioBox}>
                 <CurrencyRadioBox
@@ -238,6 +238,15 @@ const style: Stylesheet = {
   copyIcon: {
     height: '1em',
     width: '1.25em',
+  },
+  copyIconPlaceholder: {
+    display: 'none',
+    [mq[768]]: {
+      display: 'block',
+      height: '1em',
+      width: '1.25em',
+      marginLeft: '0.75em',
+    },
   },
   radioBox: {
     height: '100%',
