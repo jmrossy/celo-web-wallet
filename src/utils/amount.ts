@@ -1,6 +1,7 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
 import { Currency, getCurrencyProps } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
+import { getTotalFee } from 'src/features/fees/utils'
 import { Balances } from 'src/features/wallet/types'
 import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { logger } from 'src/utils/logger'
@@ -60,11 +61,7 @@ export function validateAmountWithFees(
     return invalidInput('fee', 'No fee set')
   }
 
-  const totalFee = feeEstimates.reduce(
-    (total: BigNumber, curr: FeeEstimate) => total.add(curr.fee),
-    BigNumber.from(0)
-  )
-  const feeCurrency = feeEstimates[0].currency // assumes same fee currency for all estimates
+  const { totalFee, feeCurrency } = getTotalFee(feeEstimates)
 
   if (feeCurrency === txCurrency) {
     const balance = getCurrencyBalance(balances, txCurrency)
@@ -86,6 +83,32 @@ export function validateAmountWithFees(
   }
 
   return null
+}
+
+// Get amount that is adjusted when user input is nearly the same as their balance
+export function getAdjustedAmount(
+  _amountInWei: string,
+  txCurrency: Currency,
+  balances: Balances,
+  feeEstimates: FeeEstimate[]
+): BigNumber {
+  const amountInWei = BigNumber.from(_amountInWei)
+  const balance = BigNumber.from(getCurrencyBalance(balances, txCurrency))
+
+  if (areAmountsNearlyEqual(amountInWei, balance, txCurrency)) {
+    const { totalFee, feeCurrency } = getTotalFee(feeEstimates)
+    if (txCurrency === feeCurrency) {
+      // TODO this still leaves a small bit in the account because
+      // the static gas limit is higher than needed. Fix will require
+      // computing exact gas, but that still doesn't work well for feeCurrency=cUSD
+      return balance.sub(totalFee)
+    } else {
+      return balance
+    }
+  } else {
+    // Just the amount entered, no adjustment needed
+    return amountInWei
+  }
 }
 
 // Checks if an amount is equal of nearly equal to balance within a small margin of error

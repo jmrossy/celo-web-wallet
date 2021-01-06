@@ -87,3 +87,15 @@ export function useFee(amountInWei: string | null | undefined, txCount = 1) {
     feeEstimates,
   }
 }
+
+export function getTotalFee(feeEstimates: FeeEstimate[]) {
+  const totalFee = feeEstimates.reduce(
+    (total: BigNumber, curr: FeeEstimate) => total.add(curr.fee),
+    BigNumber.from(0)
+  )
+  const feeCurrency = feeEstimates[0].currency // assumes same fee currency for all estimates
+  return {
+    totalFee,
+    feeCurrency,
+  }
+}

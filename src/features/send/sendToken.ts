@@ -16,8 +16,7 @@ import { validateFeeEstimate } from 'src/features/fees/utils'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import { getCurrencyBalance } from 'src/features/wallet/utils'
-import { areAmountsNearlyEqual, validateAmount, validateAmountWithFees } from 'src/utils/amount'
+import { getAdjustedAmount, validateAmount, validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
@@ -102,38 +101,15 @@ async function _sendToken(params: SendTokenParams, balances: Balances) {
   if (!feeEstimate) throw new Error('Fee estimate is missing')
 
   // Need to account for case where user intends to send entire balance
-  const adjustedAmount = getAdjustedAmount(amountInWei, currency, balances, feeEstimate)
+  const adjustedAmount = getAdjustedAmount(amountInWei, currency, balances, [feeEstimate])
 
   const { tx, type } = await getTokenTransferTx(currency, recipient, adjustedAmount, comment)
+
   logger.info(`Sending ${amountInWei} ${currency} to ${recipient}`)
   const txReceipt = await sendTransaction(tx, feeEstimate)
   logger.info(`Token transfer hash received: ${txReceipt.transactionHash}`)
+
   return getPlaceholderTx(params, txReceipt, type)
-}
-
-// Get amount that is adjusted when user input is nearly the same as their balance
-function getAdjustedAmount(
-  _amountInWei: string,
-  txCurrency: Currency,
-  balances: Balances,
-  feeEstimate: FeeEstimate
-) {
-  const amountInWei = BigNumber.from(_amountInWei)
-  const balance = BigNumber.from(getCurrencyBalance(balances, txCurrency))
-
-  if (areAmountsNearlyEqual(amountInWei, balance, txCurrency)) {
-    const feeCurrency = feeEstimate.currency
-    if (txCurrency === feeCurrency) {
-      // TODO this still leaves a small bit in the account because
-      // the static gas limit is higher than needed
-      return balance.sub(feeEstimate.fee)
-    } else {
-      return balance
-    }
-  } else {
-    // Just the amount entered, no adjustment needed
-    return amountInWei
-  }
 }
 
 async function getTokenTransferTx(

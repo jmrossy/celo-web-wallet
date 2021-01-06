@@ -27,6 +27,6 @@ export const EXCHANGE_RATE_STALE_TIME = 15000 // 15 seconds
 export const PLACEHOLDER_MNEMONIC =
   'wage bitter silk coin door shine orphan quote witness ticket venture undo grief sense write limit famous always wage pink fresh gold carpet adult'
 
-export const HIGH_VALUE_THRESHOLD = '25000000000000000000' // 25 cusd - threshold balance for a "high-value" wallet
+export const HIGH_VALUE_THRESHOLD = '50000000000000000000' // 50 cusd/celo - threshold balance for a "high-value" wallet
 
 export const CELO_LEDGER_APP_VERSION = '1.0.3' // Only allow latest ledger app version

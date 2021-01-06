@@ -18,7 +18,13 @@ import { validateFeeEstimate } from 'src/features/fees/utils'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import { fromWei, toWei, validateAmount, validateAmountWithFees } from 'src/utils/amount'
+import {
+  fromWei,
+  getAdjustedAmount,
+  toWei,
+  validateAmount,
+  validateAmountWithFees,
+} from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -91,12 +97,12 @@ function* exchangeToken(params: ExchangeTokenParams) {
     throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }
 
-  const placeholderTx = yield* call(_exchangeToken, params)
+  const placeholderTx = yield* call(_exchangeToken, params, balances)
   yield* put(addPlaceholderTransaction(placeholderTx))
   yield* put(fetchBalancesActions.trigger())
 }
 
-async function _exchangeToken(params: ExchangeTokenParams) {
+async function _exchangeToken(params: ExchangeTokenParams, balances: Balances) {
   const { amountInWei, fromCurrency, feeEstimates, exchangeRate } = params
   logger.info(`Exchanging ${amountInWei} ${fromCurrency}`)
 
@@ -107,11 +113,14 @@ async function _exchangeToken(params: ExchangeTokenParams) {
     throw new Error('Exchange rate not provided correctly')
   }
 
-  const amountInWeiBn = BigNumber.from(amountInWei)
+  // Need to account for case where user intends to send entire balance
+  const adjustedAmount = getAdjustedAmount(amountInWei, fromCurrency, balances, feeEstimates)
+
   // TODO create placeholder for approve as well?
-  await approveExchange(amountInWeiBn, fromCurrency, feeEstimates[0])
+  await approveExchange(adjustedAmount, fromCurrency, feeEstimates[0])
+
   const placeholderTx = await executeExchange(
-    amountInWeiBn,
+    adjustedAmount,
     fromCurrency,
     exchangeRate,
     feeEstimates[1]
