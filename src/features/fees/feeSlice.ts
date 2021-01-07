@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { FeeEstimate, GasPrice } from 'src/features/fees/types'
 
 interface FeeState {

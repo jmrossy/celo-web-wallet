@@ -3,7 +3,8 @@ import { RootState } from 'src/app/rootReducer'
 import { getContract, getCurrencyFromContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { Currency, MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
+import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
+import { Currency } from 'src/currency'
 import { addTransactions } from 'src/features/feed/feedSlice'
 import {
   CeloNativeTransferTx,

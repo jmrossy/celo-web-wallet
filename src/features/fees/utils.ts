@@ -1,7 +1,8 @@
 import { BigNumber } from 'ethers'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import { Currency, MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
+import { MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
+import { Currency } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { CeloTransaction } from 'src/features/types'
 import { logger } from 'src/utils/logger'
@@ -84,5 +85,17 @@ export function useFee(amountInWei: string | null | undefined, txCount = 1) {
     feeAmount: feeAmount.toString(),
     feeCurrency,
     feeEstimates,
+  }
+}
+
+export function getTotalFee(feeEstimates: FeeEstimate[]) {
+  const totalFee = feeEstimates.reduce(
+    (total: BigNumber, curr: FeeEstimate) => total.add(curr.fee),
+    BigNumber.from(0)
+  )
+  const feeCurrency = feeEstimates[0].currency // assumes same fee currency for all estimates
+  return {
+    totalFee,
+    feeCurrency,
   }
 }

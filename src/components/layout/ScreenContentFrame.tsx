@@ -21,7 +21,7 @@ export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
 
 const style: Stylesheet = {
   contentContainer: {
-    padding: '1.2em 1.4em',
+    padding: '1.2em',
     position: 'relative',
     minHeight: '100%',
     [mq[768]]: {

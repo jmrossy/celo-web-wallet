@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react'
 import { RadioBox, RadioBoxInputProps } from 'src/components/input/RadioBox'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
 

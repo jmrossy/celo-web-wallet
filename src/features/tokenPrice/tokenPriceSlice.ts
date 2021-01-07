@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { PairPriceUpdate, QuoteCurrency, TokenPriceHistory } from 'src/features/tokenPrice/types'
 
 interface TokenPrices {

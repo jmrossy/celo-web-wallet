@@ -4,11 +4,11 @@ import { isSignerLedger } from 'src/blockchain/signer'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import {
-  Currency,
   MAX_COMMENT_CHAR_LENGTH,
   MAX_SEND_TOKEN_SIZE,
   MAX_SEND_TOKEN_SIZE_LEDGER,
 } from 'src/consts'
+import { Currency } from 'src/currency'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
@@ -16,7 +16,7 @@ import { validateFeeEstimate } from 'src/features/fees/utils'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import { validateAmount, validateAmountWithFees } from 'src/utils/amount'
+import { getAdjustedAmount, validateAmount, validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
@@ -91,23 +91,24 @@ function* sendToken(params: SendTokenParams) {
     throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }
 
-  const placeholderTx = yield* call(_sendToken, params)
+  const placeholderTx = yield* call(_sendToken, params, balances)
   yield* put(addPlaceholderTransaction(placeholderTx))
   yield* put(fetchBalancesActions.trigger())
 }
 
-async function _sendToken(params: SendTokenParams) {
+async function _sendToken(params: SendTokenParams, balances: Balances) {
   const { recipient, amountInWei, currency, comment, feeEstimate } = params
+  if (!feeEstimate) throw new Error('Fee estimate is missing')
 
-  const { tx, type } = await getTokenTransferTx(
-    currency,
-    recipient,
-    BigNumber.from(amountInWei),
-    comment
-  )
+  // Need to account for case where user intends to send entire balance
+  const adjustedAmount = getAdjustedAmount(amountInWei, currency, balances, [feeEstimate])
+
+  const { tx, type } = await getTokenTransferTx(currency, recipient, adjustedAmount, comment)
+
   logger.info(`Sending ${amountInWei} ${currency} to ${recipient}`)
   const txReceipt = await sendTransaction(tx, feeEstimate)
   logger.info(`Token transfer hash received: ${txReceipt.transactionHash}`)
+
   return getPlaceholderTx(params, txReceipt, type)
 }
 

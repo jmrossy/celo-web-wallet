@@ -1,4 +1,4 @@
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 
 export interface ExchangeRate {

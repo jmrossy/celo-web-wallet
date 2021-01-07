@@ -4,12 +4,12 @@ import { isSignerLedger } from 'src/blockchain/signer'
 import { sendTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import {
-  Currency,
   EXCHANGE_RATE_STALE_TIME,
   MAX_EXCHANGE_TOKEN_SIZE,
   MAX_EXCHANGE_TOKEN_SIZE_LEDGER,
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
+import { Currency, getOtherCurrency } from 'src/currency'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
@@ -20,7 +20,7 @@ import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/
 import { Balances } from 'src/features/wallet/types'
 import {
   fromWei,
-  getOtherCurrency,
+  getAdjustedAmount,
   toWei,
   validateAmount,
   validateAmountWithFees,
@@ -97,12 +97,12 @@ function* exchangeToken(params: ExchangeTokenParams) {
     throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }
 
-  const placeholderTx = yield* call(_exchangeToken, params)
+  const placeholderTx = yield* call(_exchangeToken, params, balances)
   yield* put(addPlaceholderTransaction(placeholderTx))
   yield* put(fetchBalancesActions.trigger())
 }
 
-async function _exchangeToken(params: ExchangeTokenParams) {
+async function _exchangeToken(params: ExchangeTokenParams, balances: Balances) {
   const { amountInWei, fromCurrency, feeEstimates, exchangeRate } = params
   logger.info(`Exchanging ${amountInWei} ${fromCurrency}`)
 
@@ -113,11 +113,14 @@ async function _exchangeToken(params: ExchangeTokenParams) {
     throw new Error('Exchange rate not provided correctly')
   }
 
-  const amountInWeiBn = BigNumber.from(amountInWei)
+  // Need to account for case where user intends to send entire balance
+  const adjustedAmount = getAdjustedAmount(amountInWei, fromCurrency, balances, feeEstimates)
+
   // TODO create placeholder for approve as well?
-  await approveExchange(amountInWeiBn, fromCurrency, feeEstimates[0])
+  await approveExchange(adjustedAmount, fromCurrency, feeEstimates[0])
+
   const placeholderTx = await executeExchange(
-    amountInWeiBn,
+    adjustedAmount,
     fromCurrency,
     exchangeRate,
     feeEstimates[1]

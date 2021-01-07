@@ -5,7 +5,7 @@ import { AccountMenu } from 'src/components/header/AccountMenu'
 import Logo from 'src/components/icons/logo.svg'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -22,11 +22,13 @@ export function Header() {
         <MoneyValue
           amountInWei={balances.cUsd}
           currency={Currency.cUSD}
+          roundDownIfSmall={true}
           baseFontSize={1.4}
           containerCss={style.balanceContainer}
         />
         <MoneyValue
           amountInWei={balances.celo}
+          roundDownIfSmall={true}
           currency={Currency.CELO}
           containerCss={style.balanceContainer}
           baseFontSize={1.4}

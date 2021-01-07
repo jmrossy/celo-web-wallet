@@ -12,7 +12,7 @@ export function TextButton(props: PropsWithChildren<ButtonProps>) {
   const { onClick, styles } = props
 
   return (
-    <button css={[defaultStyle, styles]} onClick={onClick}>
+    <button css={[defaultStyle, styles]} onClick={onClick} type="button">
       {props.children}
     </button>
   )

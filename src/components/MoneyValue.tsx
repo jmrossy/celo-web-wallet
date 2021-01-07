@@ -1,11 +1,12 @@
-import { BigNumberish, FixedNumber, utils } from 'ethers'
-import { Currency } from 'src/consts'
-import { Color } from 'src/styles/Color'
+import { BigNumberish } from 'ethers'
+import { Currency, getCurrencyProps } from 'src/currency'
 import { Styles } from 'src/styles/types'
+import { fromWeiRounded } from 'src/utils/amount'
 
 interface MoneyValueProps {
   amountInWei: BigNumberish
   currency: Currency
+  roundDownIfSmall?: boolean
   baseFontSize?: number // in em units
   margin?: string | number
   hideSymbol?: boolean
@@ -20,6 +21,7 @@ export function MoneyValue(props: MoneyValueProps) {
   const {
     amountInWei,
     currency,
+    roundDownIfSmall,
     baseFontSize,
     margin,
     hideSymbol,
@@ -29,36 +31,20 @@ export function MoneyValue(props: MoneyValueProps) {
     containerCss,
     fontWeight,
   } = props
-  const { symbol, decimals, color, minValue } = getCurrencyProps(currency)
 
-  const amount = FixedNumber.from(utils.formatEther(amountInWei))
-  let formattedAmount: string
-  if (amount.isZero()) {
-    formattedAmount = '0'
-  } else if (amount.subUnsafe(minValue).isNegative()) {
-    formattedAmount = minValue.toString()
-  } else {
-    formattedAmount = amount.round(decimals).toString()
-  }
+  const { symbol, color } = getCurrencyProps(currency)
   const fontStyles = getFonts(baseFontSize, fontWeight)
+
+  const formattedAmount = fromWeiRounded(amountInWei, currency, roundDownIfSmall)
+  const isZero = formattedAmount === '0'
 
   return (
     <span css={{ margin: margin, ...containerCss }}>
-      {!!sign && !amount.isZero() && <span css={fontStyles.amount}>{sign}</span>}
+      {!!sign && !isZero && <span css={fontStyles.amount}>{sign}</span>}
       {!hideSymbol && <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{symbol}</span>}
       <span css={{ ...fontStyles.amount, ...amountCss }}>{' ' + formattedAmount}</span>
     </span>
   )
-}
-
-export function getCurrencyProps(currency: Currency) {
-  if (currency === Currency.cUSD) {
-    return cUsdProps
-  }
-  if (currency === Currency.CELO) {
-    return celoProps
-  }
-  throw new Error(`Unsupported currency ${currency}`)
 }
 
 const getFonts = (baseSize?: number, weight?: number) => {
@@ -72,18 +58,4 @@ const getFonts = (baseSize?: number, weight?: number) => {
       fontWeight: weight ?? 400,
     },
   }
-}
-
-const cUsdProps = {
-  symbol: 'cUSD',
-  decimals: 2,
-  minValue: FixedNumber.from('0.01'),
-  color: Color.primaryGreen,
-}
-
-const celoProps = {
-  symbol: 'CELO',
-  decimals: 3,
-  minValue: FixedNumber.from('0.001'),
-  color: Color.primaryGold,
 }

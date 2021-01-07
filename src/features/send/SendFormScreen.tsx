@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
+import { TextButton } from 'src/components/buttons/TextButton'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
@@ -12,12 +13,14 @@ import { NumberInput } from 'src/components/input/NumberInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { sendStarted } from 'src/features/send/sendSlice'
 import { SendTokenParams, validate } from 'src/features/send/sendToken'
+import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { fromWei, toWei } from 'src/utils/amount'
+import { fromWei, fromWeiRounded, toWei } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useInputValidation } from 'src/utils/validation'
@@ -41,10 +44,9 @@ export function SendFormScreen() {
   const tx = useSelector((state: RootState) => state.send.transaction)
 
   const onSubmit = (values: SendTokenForm) => {
-    if (areInputsValid()) {
-      dispatch(sendStarted(toSendTokenParams(values)))
-      navigate('/send-review')
-    }
+    if (!areInputsValid()) return
+    dispatch(sendStarted(toSendTokenParams(values)))
+    navigate('/send-review')
   }
 
   const {
@@ -72,6 +74,13 @@ export function SendFormScreen() {
     setValues({ ...values, recipient: value })
   }
 
+  const onUseMax = () => {
+    const currency = values.currency
+    const balance = getCurrencyBalance(balances, currency)
+    const maxAmount = fromWeiRounded(balance, currency, true)
+    setValues({ ...values, amount: maxAmount })
+  }
+
   const onClose = () => {
     navigate('/')
   }
@@ -82,7 +91,7 @@ export function SendFormScreen() {
         <form onSubmit={handleSubmit}>
           <h1 css={Font.h2Green}>Send Payment</h1>
 
-          <Box direction="column" styles={style.inputRow}>
+          <Box direction="column" margin="0 0 2em 0">
             <label css={style.inputLabel}>Recipient Address</label>
 
             <Box direction="row" justify="start" align="end">
@@ -101,26 +110,32 @@ export function SendFormScreen() {
                   <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
                 </Button>
               ) : (
-                <div css={[style.copyIcon, { marginLeft: '0.5em' }]}></div>
+                <div css={style.copyIconPlaceholder}></div>
               )}
             </Box>
           </Box>
 
-          <Box direction="row" styles={style.inputRow} justify="between" margin="0 2.1em 0 0">
+          <Box direction="row" styles={style.inputRow} justify="between">
             <Box direction="column" justify="end" align="start">
-              <label css={style.inputLabel}>Amount to Send</label>
-              <NumberInput
-                step="0.01"
-                width="6em"
-                name="amount"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.amount.toString()}
-                placeholder="1.00"
-                {...inputErrors['amount']}
-              />
+              <label css={style.inputLabel}>Amount</label>
+              <Box direction="row" align="center">
+                <NumberInput
+                  step="0.01"
+                  width="3.5em"
+                  margin="0 0.75em 0 0"
+                  name="amount"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.amount.toString()}
+                  placeholder="1.00"
+                  {...inputErrors['amount']}
+                />
+                <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
+                  Max Amount
+                </TextButton>
+              </Box>
             </Box>
-            <Box direction="column" align="start" margin="0 0 0 2em">
+            <Box direction="column" align="start" margin="0 0 0 1.5em">
               <label css={style.inputLabel}>Currency</label>
               <Box direction="row" justify="between" align="end" styles={style.radioBox}>
                 <CurrencyRadioBox
@@ -144,7 +159,7 @@ export function SendFormScreen() {
             </Box>
           </Box>
 
-          <Box direction="column" align="start" styles={style.inputRow} margin="0 2.1em 0 0">
+          <Box direction="column" align="start" styles={style.inputRow}>
             <label css={style.inputLabel}>Comment (optional)</label>
             <TextArea
               name="comment"
@@ -211,7 +226,10 @@ const style: Stylesheet = {
     paddingBottom: '1em',
   },
   inputRow: {
-    marginBottom: '2em',
+    margin: '0 0 2em 0',
+    [mq[768]]: {
+      margin: '0 2.1em 2em 0',
+    },
   },
   inputLabel: {
     ...Font.inputLabel,
@@ -221,8 +239,24 @@ const style: Stylesheet = {
     height: '1em',
     width: '1.25em',
   },
+  copyIconPlaceholder: {
+    display: 'none',
+    [mq[768]]: {
+      display: 'block',
+      height: '1em',
+      width: '1.25em',
+      marginLeft: '0.75em',
+    },
+  },
   radioBox: {
     height: '100%',
     width: '100%',
+  },
+  maxAmountButton: {
+    fontWeight: 300,
+    fontSize: '0.9em',
+    [mq[768]]: {
+      fontSize: '1em',
+    },
   },
 }

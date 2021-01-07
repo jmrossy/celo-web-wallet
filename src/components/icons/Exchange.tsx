@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import SwapIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
 import { Color } from 'src/styles/Color'
 
 function _ExchangeIcon({ toToken }: { toToken: Currency }) {

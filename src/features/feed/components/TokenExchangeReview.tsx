@@ -1,5 +1,6 @@
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency } from 'src/consts'
+import { Currency } from 'src/currency'
+import { computeRate } from 'src/features/exchange/utils'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
@@ -8,7 +9,6 @@ import { TransactionStatusProperty } from 'src/features/feed/components/Transact
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { TokenExchangeTx } from 'src/features/types'
 import { Stylesheet } from 'src/styles/types'
-import { computeRate } from 'src/utils/amount'
 
 interface Props {
   tx: TokenExchangeTx
