@@ -6,6 +6,7 @@ export interface ExchangeState {
   cUsdToUsd: ExchangeRate | null
   transaction: ExchangeTokenParams | null
   transactionError: string | null
+  numSignatures: number
 }
 
 export const exchangeInitialState: ExchangeState = {
@@ -13,6 +14,7 @@ export const exchangeInitialState: ExchangeState = {
   cUsdToUsd: null,
   transaction: null,
   transactionError: null,
+  numSignatures: 0,
 }
 
 const exchangeSlice = createSlice({
@@ -25,23 +27,31 @@ const exchangeSlice = createSlice({
     setUsdExchangeRate: (state, action: PayloadAction<ExchangeRate | null>) => {
       state.cUsdToUsd = action.payload
     },
+    setNumSignatures: (state, action: PayloadAction<number>) => {
+      state.numSignatures = action.payload
+    },
     exchangeStarted: (state, action: PayloadAction<ExchangeTokenParams>) => {
       state.transactionError = null //clear out the previous error
+      state.numSignatures = 0
       state.transaction = action.payload
     },
     exchangeCanceled: (state) => {
       state.transactionError = null
+      state.numSignatures = 0
     },
     exchangeSent: (state) => {
       state.transaction = null
       state.transactionError = null
+      state.numSignatures = 0
     },
     exchangeFailed: (state, action: PayloadAction<string | null>) => {
+      state.numSignatures = 0
       state.transactionError = action.payload
     },
     exchangeReset: (state) => {
       state.transaction = null
       state.transactionError = null
+      state.numSignatures = 0
     },
   },
 })
@@ -49,6 +59,7 @@ const exchangeSlice = createSlice({
 export const {
   setCeloExchangeRate,
   setUsdExchangeRate,
+  setNumSignatures,
   exchangeStarted,
   exchangeCanceled,
   exchangeSent,
