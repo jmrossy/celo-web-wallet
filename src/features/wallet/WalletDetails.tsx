@@ -72,7 +72,7 @@ const style: Stylesheet = {
   container: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(20em, 1fr))',
-    gap: '1em 2em',
+    gap: '1em 0.5em',
     alignItems: 'center',
     justifyItems: 'center',
     [mq[768]]: {
