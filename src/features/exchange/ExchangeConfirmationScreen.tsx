@@ -18,6 +18,7 @@ import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
 import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
+import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -88,7 +89,18 @@ export function ExchangeConfirmationScreen() {
   const { showSuccessModal, showErrorModal, showWorkingModal, showModalWithContent } = useModal()
 
   const onNeedSignature = (index: number) => {
-    showModalWithContent(`Signature Required (${index}/2)`, <div>TODO</div>)
+    const modalText = [
+      'Exchanges require two transactions',
+      'Confirm both transactions on your Ledger',
+    ]
+    showModalWithContent(
+      `Signature Required (${index}/2)`,
+      <SignatureRequiredModal text={modalText} />,
+      null,
+      null,
+      null,
+      false
+    )
   }
 
   const onSuccess = () => {
