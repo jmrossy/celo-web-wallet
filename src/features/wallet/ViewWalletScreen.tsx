@@ -20,7 +20,12 @@ export function ViewWalletScreen() {
       <Box direction="column" align="center">
         <h2 css={style.header}>Your Celo Account</h2>
         <WalletDetails />
-        <Button color={Color.altGrey} icon={ArrowBackIcon} onClick={onClickBack} margin="3em 0">
+        <Button
+          color={Color.altGrey}
+          icon={ArrowBackIcon}
+          onClick={onClickBack}
+          margin="3em 0 1em 0"
+        >
           Back
         </Button>
       </Box>

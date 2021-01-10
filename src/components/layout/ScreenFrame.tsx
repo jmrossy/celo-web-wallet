@@ -23,7 +23,6 @@ import { Stylesheet } from 'src/styles/types'
 
 const SCREENS_WITHOUT_FEED: Record<string, boolean> = {
   '/wallet': true,
-  '/change-pin': true,
   '/settings': true,
 }
 

@@ -6,10 +6,10 @@ import ChevronIcon from 'src/components/icons/chevron.svg'
 import CoinSwapIcon from 'src/components/icons/coin_swap.svg'
 import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
-import LockIcon from 'src/components/icons/lock.svg'
 import Discord from 'src/components/icons/logos/discord.svg'
 import Github from 'src/components/icons/logos/github.svg'
 import QrCodeIcon from 'src/components/icons/qr_code_big.svg'
+import SettingsIcon from 'src/components/icons/settings.svg'
 import SignPostIcon from 'src/components/icons/sign_post.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
@@ -29,9 +29,9 @@ import { logger } from 'src/utils/logger'
 const MenuItems = [
   { id: 'qr', label: 'Qr Code', icon: QrCodeIcon },
   { id: 'account', label: 'Account Details', icon: IdCardIcon },
-  { id: 'pin', label: 'Change Pin', icon: LockIcon },
   { id: 'fund', label: 'Fund Wallet', icon: CoinSwapIcon },
   { id: 'help', label: 'Help', icon: HelpIcon },
+  { id: 'settings', label: 'Settings', icon: SettingsIcon, iconWidth: '1.8em' },
   { id: 'logout', label: 'Logout', icon: SignPostIcon },
 ]
 
@@ -67,8 +67,8 @@ export const AccountMenu = () => {
       case 'account':
         navigate('/wallet')
         break
-      case 'pin':
-        navigate('/change-pin')
+      case 'settings':
+        navigate('/settings')
         break
       case 'fund':
         showFundModal()
@@ -113,6 +113,7 @@ export const AccountMenu = () => {
                 key={item.id}
                 label={item.label}
                 icon={item.icon}
+                iconWidth={item.iconWidth}
                 onClick={onItemClick(item.id)}
               />
             ))}

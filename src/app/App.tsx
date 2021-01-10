@@ -21,6 +21,7 @@ import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { DevTools } from 'src/features/settings/DevTools'
+import { SettingsScreen } from 'src/features/settings/SettingsScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
@@ -46,6 +47,7 @@ export const App = () => {
               <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
               <Route path="exchange" element={<ExchangeFormScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
+              <Route path="settings" element={<SettingsScreen />} />
             </Route>
 
             <Route path="/setup" element={<OnboardingNavigator />}>
