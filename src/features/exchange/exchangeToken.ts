@@ -1,4 +1,5 @@
 import { BigNumber, Contract, providers } from 'ethers'
+import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
@@ -30,11 +31,12 @@ import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 export function validate(
   params: ExchangeTokenParams,
   balances: Balances,
+  validateMaxAmount = true,
   validateRate = false,
   validateFee = false
 ): ErrorState {
@@ -44,7 +46,11 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    const maxAmount = isSignerLedger() ? MAX_EXCHANGE_TOKEN_SIZE_LEDGER : MAX_EXCHANGE_TOKEN_SIZE
+    const maxAmount = validateMaxAmount
+      ? isSignerLedger()
+        ? MAX_EXCHANGE_TOKEN_SIZE_LEDGER
+        : MAX_EXCHANGE_TOKEN_SIZE
+      : undefined
     errors = {
       ...errors,
       ...validateAmount(amountInWei, fromCurrency, balances, maxAmount),
@@ -92,8 +98,9 @@ export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState | 
 
 function* exchangeToken(params: ExchangeTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
+  const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
 
-  const validateResult = yield* call(validate, params, balances, true, true)
+  const validateResult = yield* call(validate, params, balances, txSizeLimitEnabled, true, true)
   if (!validateResult.isValid) {
     throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }

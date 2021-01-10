@@ -1,5 +1,7 @@
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { Link } from 'react-router-dom'
+import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { SwitchButton } from 'src/components/buttons/SwitchButton'
 import { HrDivider } from 'src/components/HrDivider'
@@ -9,16 +11,23 @@ import LockIcon from 'src/components/icons/lock.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MAX_SEND_TOKEN_SIZE, MAX_SEND_TOKEN_SIZE_LEDGER } from 'src/consts'
+import { setTxSizeLimitEnabled } from 'src/features/settings/settingsSlice'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei } from 'src/utils/amount'
 
 export function SettingsScreen() {
+  const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
+  const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const onClickBack = () => {
     navigate(-1)
+  }
+
+  const onTxLimitToggle = (value: boolean) => {
+    dispatch(setTxSizeLimitEnabled(value))
   }
 
   const tokenLimitLocal = fromWei(MAX_SEND_TOKEN_SIZE)
@@ -67,17 +76,15 @@ export function SettingsScreen() {
           styles={style.toggleSettingContainer}
         >
           <div>
-            <h3 css={style.h3}>Transaction Limits</h3>
+            <h3 css={style.h3}>Transaction Size Limits</h3>
             <div css={style.description}>
-              By default, this wallet prevents large payments / exchanges.
-              {`The limits are ${tokenLimitLocal} tokens for local accounts or ${tokenLimitLedger} for Ledger.`}
+              {`By default, this wallet prevents large payments / exchanges. The limits are ${tokenLimitLocal} tokens for local accounts or ${tokenLimitLedger} for Ledger.`}
             </div>
           </div>
           <div css={style.switchContainer}>
             <SwitchButton
-              onToggle={(value) => {
-                console.log('checked:' + value)
-              }}
+              onToggle={onTxLimitToggle}
+              initialStatus={txSizeLimitEnabled}
               showStatus={true}
             />
           </div>
@@ -142,6 +149,6 @@ const style: Stylesheet = {
     width: 'calc(100% - 2em)',
   },
   switchContainer: {
-    paddingLeft: '1.5em',
+    padding: '0.5em 0 0 1.5em',
   },
 }

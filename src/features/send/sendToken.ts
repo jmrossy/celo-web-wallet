@@ -1,4 +1,5 @@
 import { BigNumber, providers, utils } from 'ethers'
+import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
@@ -21,7 +22,7 @@ import { getAdjustedAmount, validateAmount, validateAmountWithFees } from 'src/u
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 export interface SendTokenParams {
   recipient: string
@@ -34,6 +35,7 @@ export interface SendTokenParams {
 export function validate(
   params: SendTokenParams,
   balances: Balances,
+  validateMaxAmount = true,
   validateFee = false
 ): ErrorState {
   const { recipient, amountInWei, currency, comment, feeEstimate } = params
@@ -42,7 +44,11 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    const maxAmount = isSignerLedger() ? MAX_SEND_TOKEN_SIZE_LEDGER : MAX_SEND_TOKEN_SIZE
+    const maxAmount = validateMaxAmount
+      ? isSignerLedger()
+        ? MAX_SEND_TOKEN_SIZE_LEDGER
+        : MAX_SEND_TOKEN_SIZE
+      : undefined
     errors = { ...errors, ...validateAmount(amountInWei, currency, balances, maxAmount) }
   }
 
@@ -86,8 +92,9 @@ export function validate(
 
 function* sendToken(params: SendTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
+  const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
 
-  const validateResult = yield* call(validate, params, balances, true)
+  const validateResult = yield* call(validate, params, balances, txSizeLimitEnabled, true)
   if (!validateResult.isValid) {
     throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }

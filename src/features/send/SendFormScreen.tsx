@@ -42,6 +42,7 @@ export function SendFormScreen() {
   const location = useLocation()
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const tx = useSelector((state: RootState) => state.send.transaction)
+  const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
 
   const onSubmit = (values: SendTokenForm) => {
     if (!areInputsValid()) return
@@ -65,7 +66,7 @@ export function SendFormScreen() {
   }, [tx])
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
-    validate(toSendTokenParams(values), balances)
+    validate(toSendTokenParams(values), balances, txSizeLimitEnabled)
   )
 
   const onPasteAddress = async () => {
