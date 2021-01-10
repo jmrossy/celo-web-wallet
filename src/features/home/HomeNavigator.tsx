@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
-import { ScreenFrameWithFeed } from 'src/components/layout/ScreenFrameWithFeed'
+import { ScreenFrame } from 'src/components/layout/ScreenFrame'
 import { config } from 'src/config'
 import { LedgerUnlockScreen } from 'src/features/ledger/LedgerUnlockScreen'
 import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
@@ -22,9 +22,9 @@ export function HomeNavigator() {
     (isUnlocked && (isAccountUnlocked() || type === SignerType.Ledger)) || !!config.defaultAccount
   if (address && unlocked) {
     return (
-      <ScreenFrameWithFeed>
+      <ScreenFrame>
         <Outlet />
-      </ScreenFrameWithFeed>
+      </ScreenFrame>
     )
   }
 

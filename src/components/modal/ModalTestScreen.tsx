@@ -8,6 +8,7 @@ import { ModalAction, ModalOkAction, ModalSize } from 'src/components/modal/moda
 import { useModal } from 'src/components/modal/useModal'
 import { Notification } from 'src/components/Notification'
 import { Tooltip } from 'src/components/Tooltip'
+import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { testInvalidFeatures, useBrowserFeatureChecks } from 'src/utils/browsers'
@@ -141,6 +142,17 @@ export function ModalTestScreen() {
     }, 2000)
   }
 
+  const ledgerSignature = () => {
+    showModalWithContent(
+      'Signature Required (1/2)',
+      <SignatureRequiredModal text={['test modal']} />,
+      null,
+      null,
+      null,
+      false
+    )
+  }
+
   return (
     <div>
       <Notification
@@ -207,6 +219,9 @@ export function ModalTestScreen() {
         </Button>
         <Button onClick={backToBack} margin="1em">
           Show back-to-back
+        </Button>
+        <Button onClick={ledgerSignature} margin="1em">
+          Show ledger signature modal
         </Button>
       </Box>
 

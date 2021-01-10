@@ -6,7 +6,6 @@ import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function ViewWalletScreen() {
@@ -16,16 +15,17 @@ export function ViewWalletScreen() {
     navigate(-1)
   }
 
-  // TODO the routes and HomeFrame need to be refactored a bit
-  // to have this render without the feed on the left
   return (
     <ScreenContentFrame>
-      <Box direction="column" align="center" styles={style.contentContainer}>
+      <Box direction="column" align="center">
         <h2 css={style.header}>Your Celo Account</h2>
-        <div css={style.detailsContainer}>
-          <WalletDetails />
-        </div>
-        <Button color={Color.altGrey} icon={ArrowBackIcon} onClick={onClickBack} margin="3em 0">
+        <WalletDetails />
+        <Button
+          color={Color.altGrey}
+          icon={ArrowBackIcon}
+          onClick={onClickBack}
+          margin="3em 0 1em 0"
+        >
           Back
         </Button>
       </Box>
@@ -34,22 +34,9 @@ export function ViewWalletScreen() {
 }
 
 const style: Stylesheet = {
-  contentContainer: {
-    [mq[768]]: {
-      alignItems: 'flex-start',
-    },
-  },
   header: {
     ...Font.h2Green,
-    margin: '0 0 1.2em 0',
+    margin: '0 0 1.4em 0',
     textAlign: 'center',
-    [mq[768]]: {
-      textAlign: 'left',
-    },
-  },
-  detailsContainer: {
-    [mq[768]]: {
-      paddingRight: '1em',
-    },
   },
 }

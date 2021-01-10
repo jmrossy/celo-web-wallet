@@ -37,6 +37,7 @@ export function ExchangeFormScreen() {
   const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const { transaction: tx, cUsdToCelo } = useSelector((state: RootState) => state.exchange)
+  const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
 
   useEffect(() => {
     dispatch(fetchExchangeRateActions.trigger({}))
@@ -63,7 +64,7 @@ export function ExchangeFormScreen() {
   }, [tx])
 
   const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
-    validate(toExchangeTokenParams(values), balances)
+    validate(toExchangeTokenParams(values), balances, txSizeLimitEnabled)
   )
 
   const { to, from, rate } = useExchangeValues(

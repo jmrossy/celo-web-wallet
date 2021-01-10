@@ -2,10 +2,10 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
+import { isSignerLedger } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { HelpIcon } from 'src/components/icons/HelpIcon'
-import RequestPaymentIcon from 'src/components/icons/request_payment.svg'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -14,6 +14,7 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { Notification } from 'src/components/Notification'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
+import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
 import { sendCanceled, sendSucceeded } from 'src/features/send/sendSlice'
 import { sendTokenActions } from 'src/features/send/sendToken'
 import { TransactionType } from 'src/features/types'
@@ -27,7 +28,7 @@ export function SendConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { transaction: tx, transactionError: txError } = useSelector(
+  const { transaction: tx, transactionError: txError, transactionSigned: txSigned } = useSelector(
     (state: RootState) => state.send
   )
 
@@ -57,9 +58,6 @@ export function SendConfirmationScreen() {
     dispatch(sendTokenActions.trigger({ ...tx, feeEstimate: feeEstimates[0] }))
   }
 
-  // TODO support requets
-  const isRequest = false
-
   //TODO: Wrap the following in a hook to simplify?
   const { status: sagaStatus, error: sagaError } = useSelector(
     (state: RootState) => state.saga.sendToken
@@ -67,17 +65,29 @@ export function SendConfirmationScreen() {
 
   const isSagaWorking = sagaStatus === SagaStatus.Started
 
-  const modal = useModal()
+  const { showSuccessModal, showErrorModal, showWorkingModal, showModalWithContent } = useModal()
 
-  const confirm = () => {
-    modal.showSuccessModal('Payment Sent!', 'Your payment has been sent successfully')
+  const onNeedSignature = () => {
+    const modalText = ['Confirm the transaction on your Ledger']
+    showModalWithContent(
+      'Signature Required',
+      <SignatureRequiredModal text={modalText} />,
+      null,
+      null,
+      null,
+      false
+    )
+  }
+
+  const onConfirm = () => {
+    showSuccessModal('Payment Sent!', 'Your payment has been sent successfully')
     dispatch(sendTokenActions.reset())
     dispatch(sendSucceeded())
     navigate('/')
   }
 
-  const failure = (error: string | undefined) => {
-    modal.showErrorModal('Payment Failed', 'Your payment could not be processed', error)
+  const onFailure = (error: string | undefined) => {
+    showErrorModal('Payment Failed', 'Your payment could not be processed', error)
   }
 
   const onClose = () => {
@@ -85,10 +95,15 @@ export function SendConfirmationScreen() {
   }
 
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Started) modal.showWorkingModal('Sending Payment...')
-    else if (sagaStatus === SagaStatus.Success) confirm()
-    else if (sagaStatus === SagaStatus.Failure) failure(sagaError?.toString())
-  }, [sagaStatus, sagaError])
+    if (sagaStatus === SagaStatus.Started) {
+      if (isSignerLedger() && !txSigned) onNeedSignature()
+      else showWorkingModal('Sending Payment...')
+    } else if (sagaStatus === SagaStatus.Success) {
+      onConfirm()
+    } else if (sagaStatus === SagaStatus.Failure) {
+      onFailure(sagaError?.toString())
+    }
+  }, [sagaStatus, sagaError, txSigned])
 
   if (!tx) return null
 
@@ -96,7 +111,7 @@ export function SendConfirmationScreen() {
     <ScreenContentFrame onClose={onClose}>
       {txError && <Notification message={txError.toString()} color={Color.borderError} />}
       <div css={style.content}>
-        <h1 css={Font.h2Green}>Review {isRequest ? 'Request' : 'Payment'}</h1>
+        <h1 css={Font.h2Green}>Review Payment</h1>
 
         <Box align="center" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>To</label>
@@ -185,10 +200,10 @@ export function SendConfirmationScreen() {
             type="submit"
             size="m"
             onClick={onSend}
-            icon={isRequest ? RequestPaymentIcon : SendPaymentIcon}
+            icon={SendPaymentIcon}
             disabled={isSagaWorking || !feeAmount}
           >
-            Send {isRequest ? 'Request' : 'Payment'}
+            Send Payment
           </Button>
         </Box>
       </div>

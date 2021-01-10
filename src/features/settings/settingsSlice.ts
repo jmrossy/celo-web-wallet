@@ -7,12 +7,14 @@ interface settings {
   homeHeaderDismissed: boolean
   highValueWarningDismissed: boolean
   backupReminderDismissed: boolean //persisted
+  txSizeLimitEnabled: boolean //persisted
 }
 
 export const settingsInitialState: settings = {
   homeHeaderDismissed: false,
   highValueWarningDismissed: false,
   backupReminderDismissed: false,
+  txSizeLimitEnabled: true,
 }
 
 const settingsSlice = createSlice({
@@ -28,10 +30,14 @@ const settingsSlice = createSlice({
     setBackupReminderDismissed: (state, action: PayloadAction<boolean>) => {
       state.backupReminderDismissed = action.payload
     },
+    setTxSizeLimitEnabled: (state, action: PayloadAction<boolean>) => {
+      state.txSizeLimitEnabled = action.payload
+    },
     resetSettingFlags: (state) => {
       state.homeHeaderDismissed = false
       state.backupReminderDismissed = false
       state.highValueWarningDismissed = false
+      state.txSizeLimitEnabled = true
     },
   },
 })
@@ -40,15 +46,17 @@ export const {
   toggleHomeHeaderDismissed,
   setHighValueWarningDismissed,
   setBackupReminderDismissed,
+  setTxSizeLimitEnabled,
   resetSettingFlags,
 } = settingsSlice.actions
+
 export const settingsReducer = settingsSlice.reducer
 
 const settingPersistConfig = {
   key: 'setting',
   storage: storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['backupReminderDismissed'], //only persist this flag
+  whitelist: ['backupReminderDismissed', 'txSizeLimitEnabled'], //only persist these values
 }
 export const persistedSettingsReducer = persistReducer<ReturnType<typeof settingsReducer>>(
   settingPersistConfig,

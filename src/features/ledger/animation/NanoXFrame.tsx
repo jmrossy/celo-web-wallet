@@ -1,9 +1,15 @@
 import { PropsWithChildren } from 'react'
 import { DeviceColor } from 'src/features/ledger/animation/DeviceColors'
 
-export function NanoXFrame(props: PropsWithChildren<any>) {
+interface Props {
+  x?: string
+  y?: string
+}
+
+export function NanoXFrame(props: PropsWithChildren<Props>) {
+  const { x, y, children } = props
   return (
-    <svg width="156" height="42">
+    <svg width="156" height="42" x={x} y={y}>
       <defs />
       <defs>
         <circle id="NanoXFrame-a" cx="135" cy="21" r="11" />
@@ -21,7 +27,7 @@ export function NanoXFrame(props: PropsWithChildren<any>) {
         />
         <circle cx="21" cy="21" r="10.5" stroke={DeviceColor.Dark} strokeLinejoin="miter" />
         <circle cx="21" cy="21" r="11.5" stroke={DeviceColor.Dark} opacity={0.4} />
-        {props.children}
+        {children}
         <g>
           <use fill="#131415" xlinkHref="#NanoXFrame-a" />
           <circle

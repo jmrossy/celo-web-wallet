@@ -3,13 +3,15 @@ import { DeviceColor } from 'src/features/ledger/animation/DeviceColors'
 import { Color } from 'src/styles/Color'
 
 interface Props {
+  fadein: boolean
   x?: string
   y?: string
 }
 
 export function NanoXScreen(props: Props) {
+  const { x, y, fadein } = props
   return (
-    <svg {...props} width="70" height="31" css={{ overflow: 'visible' }}>
+    <svg x={x} y={y} width="70" height="31" css={{ overflow: 'visible' }}>
       <defs />
       <g id="NanoXScreen-screen" css={{ transform: 'translate(0%, -50%)' }}>
         <rect
@@ -23,7 +25,14 @@ export function NanoXScreen(props: Props) {
           transform="translate(-40 -6)"
         />
         <g id="NanoXScreen-screen-content">
-          <svg height="18" width="18" viewBox="0 0 950 950" x="25" y="6" css={coinStyle}>
+          <svg
+            height="18"
+            width="18"
+            viewBox="0 0 950 950"
+            x="25"
+            y="6"
+            css={fadein ? coinStyle : undefined}
+          >
             <defs />
             <path
               fill={Color.primaryGreen}
@@ -42,17 +51,17 @@ export function NanoXScreen(props: Props) {
 
 const coinFadeAnim = keyframes`
   0% {
-      opacity: 0;
+    opacity: 0;
   }
   50% {
-      opacity: 0;
+    opacity: 0;
   }
   90% {
-      opacity: 1;
+    opacity: 1;
   }
   100% {
     opacity: 0;
-}
+  }
 `
 
 const coinStyle = css({

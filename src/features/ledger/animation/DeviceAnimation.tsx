@@ -14,7 +14,7 @@ function _DeviceAnimation({ xOffset = 0 }: Props) {
       <g className="device" transform={`translate(${xOffset}, 0)`}>
         <UsbCable x="-112" y="9" />
         <NanoXFrame>
-          <NanoXScreen x="41" y="50%" />
+          <NanoXScreen x="41" y="50%" fadein={true} />
         </NanoXFrame>
       </g>
     </svg>

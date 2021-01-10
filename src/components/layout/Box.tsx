@@ -1,3 +1,4 @@
+import { PropsWithChildren } from 'react'
 import { Styles } from 'src/styles/types'
 
 interface BoxProps {
@@ -12,7 +13,7 @@ interface BoxProps {
 }
 
 // Just a handy component for a display: flex wrapper
-export function Box(props: React.PropsWithChildren<BoxProps>) {
+export function Box(props: PropsWithChildren<BoxProps>) {
   const styles = transformPropStyles(props)
   return (
     <div

@@ -52,20 +52,15 @@ export function useWindowSize() {
   return windowSize
 }
 
-export function isMobile(windowWidth: number | undefined) {
+export function isWindowSizeMobile(windowWidth: number | undefined) {
   return !!(windowWidth && windowWidth < 768)
+}
+
+export function isWindowSizeSmallMobile(windowWidth: number | undefined) {
+  return !!(windowWidth && windowWidth < 360)
 }
 
 export function useIsMobile() {
   const windowSize = useWindowSize()
-  return isMobile(windowSize.width)
-}
-
-export function isSmallMobile(windowWidth: number | undefined) {
-  return !!(windowWidth && windowWidth < 360)
-}
-
-export function useIsSmallMobile() {
-  const windowSize = useWindowSize()
-  return isSmallMobile(windowSize.width)
+  return isWindowSizeMobile(windowSize.width)
 }

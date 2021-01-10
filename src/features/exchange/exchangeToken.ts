@@ -1,7 +1,8 @@
 import { BigNumber, Contract, providers } from 'ethers'
+import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
-import { sendTransaction } from 'src/blockchain/transaction'
+import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import {
   EXCHANGE_RATE_STALE_TIME,
@@ -10,6 +11,7 @@ import {
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
 import { Currency, getOtherCurrency } from 'src/currency'
+import { setNumSignatures } from 'src/features/exchange/exchangeSlice'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
@@ -29,11 +31,12 @@ import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 export function validate(
   params: ExchangeTokenParams,
   balances: Balances,
+  validateMaxAmount = true,
   validateRate = false,
   validateFee = false
 ): ErrorState {
@@ -43,7 +46,11 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    const maxAmount = isSignerLedger() ? MAX_EXCHANGE_TOKEN_SIZE_LEDGER : MAX_EXCHANGE_TOKEN_SIZE
+    const maxAmount = validateMaxAmount
+      ? isSignerLedger()
+        ? MAX_EXCHANGE_TOKEN_SIZE_LEDGER
+        : MAX_EXCHANGE_TOKEN_SIZE
+      : undefined
     errors = {
       ...errors,
       ...validateAmount(amountInWei, fromCurrency, balances, maxAmount),
@@ -91,18 +98,13 @@ export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState | 
 
 function* exchangeToken(params: ExchangeTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
+  const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
 
-  const validateResult = yield* call(validate, params, balances, true, true)
+  const validateResult = yield* call(validate, params, balances, txSizeLimitEnabled, true, true)
   if (!validateResult.isValid) {
     throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }
 
-  const placeholderTx = yield* call(_exchangeToken, params, balances)
-  yield* put(addPlaceholderTransaction(placeholderTx))
-  yield* put(fetchBalancesActions.trigger())
-}
-
-async function _exchangeToken(params: ExchangeTokenParams, balances: Balances) {
   const { amountInWei, fromCurrency, feeEstimates, exchangeRate } = params
   logger.info(`Exchanging ${amountInWei} ${fromCurrency}`)
 
@@ -115,20 +117,41 @@ async function _exchangeToken(params: ExchangeTokenParams, balances: Balances) {
 
   // Need to account for case where user intends to send entire balance
   const adjustedAmount = getAdjustedAmount(amountInWei, fromCurrency, balances, feeEstimates)
+  const minBuyAmount = getMinBuyAmount(adjustedAmount, exchangeRate)
 
-  // TODO create placeholder for approve as well?
-  await approveExchange(adjustedAmount, fromCurrency, feeEstimates[0])
-
-  const placeholderTx = await executeExchange(
+  const signedApproveTx = yield* call(
+    createApproveTx,
     adjustedAmount,
     fromCurrency,
-    exchangeRate,
+    feeEstimates[0]
+  )
+  yield* put(setNumSignatures(1))
+
+  const signedExchangeTx = yield* call(
+    createExchangeTx,
+    adjustedAmount,
+    fromCurrency,
+    minBuyAmount,
     feeEstimates[1]
   )
-  return placeholderTx
+  yield* put(setNumSignatures(2))
+
+  const txReceipt = yield* call(executeExchange, signedApproveTx, signedExchangeTx)
+
+  // TODO consider making a placeholder for the approval as well
+  const placeholderTx = getExchangePlaceholderTx(
+    adjustedAmount,
+    fromCurrency,
+    feeEstimates[1],
+    txReceipt,
+    minBuyAmount
+  )
+  yield* put(addPlaceholderTransaction(placeholderTx))
+
+  yield* put(fetchBalancesActions.trigger())
 }
 
-async function approveExchange(
+async function createApproveTx(
   amountInWei: BigNumber,
   fromCurrency: Currency,
   feeEstimate: FeeEstimate
@@ -145,17 +168,15 @@ async function approveExchange(
   }
 
   const txRequest = await tokenContract.populateTransaction.approve(exchange.address, amountInWei)
-  const txReceipt = await sendTransaction(txRequest, feeEstimate)
-  logger.info(`Exchange approval hash received: ${txReceipt.transactionHash}`)
+  return signTransaction(txRequest, feeEstimate)
 }
 
-async function executeExchange(
+async function createExchangeTx(
   amountInWei: BigNumber,
   fromCurrency: Currency,
-  exchangeRate: ExchangeRate,
+  minBuyAmount: BigNumber,
   feeEstimate: FeeEstimate
 ) {
-  const minBuyAmount = getMinBuyAmount(amountInWei, exchangeRate)
   const exchange = await getContract(CeloContract.Exchange)
   // TODO swap method for .sell once updated contract is live
   const txRequest = await exchange.populateTransaction.exchange(
@@ -163,9 +184,26 @@ async function executeExchange(
     minBuyAmount,
     fromCurrency === Currency.CELO
   )
-  const txReceipt = await sendTransaction(txRequest, feeEstimate)
-  logger.info(`Exchange hash received: ${txReceipt.transactionHash}`)
-  return getExchangePlaceholderTx(amountInWei, fromCurrency, feeEstimate, txReceipt, minBuyAmount)
+
+  // For a smoother experience on Ledger, the approval and exchange txs
+  // are both created and signed before sending. This requires the exchange tx
+  // have it's nonce set manually:
+  const currentNonce = await getCurrentNonce()
+  txRequest.nonce = currentNonce + 1
+
+  const signedTx = await signTransaction(txRequest, feeEstimate)
+  return signedTx
+}
+
+async function executeExchange(signedApproveTx: string, signedExchangeTx: string) {
+  logger.info('Sending exchange approval tx')
+  const txReceipt1 = await sendSignedTransaction(signedApproveTx)
+  logger.info(`Exchange approval hash received: ${txReceipt1.transactionHash}`)
+
+  logger.info('Sending exchange tx')
+  const txReceipt2 = await sendSignedTransaction(signedExchangeTx)
+  logger.info(`Exchange hash received: ${txReceipt2.transactionHash}`)
+  return txReceipt2
 }
 
 function getExchangePlaceholderTx(

@@ -35,7 +35,7 @@ export const ModalProvider = ({ children }: any) => {
 
   const showModal = (props: ModalProps, content: any = null) => {
     const isDismissable = !props.isLoading && Boolean(props.onClose)
-    if (content) setContent(content)
+    setContent(content)
     closeRef.current = () => {
       setModal(null)
       setContent(null)
@@ -53,7 +53,7 @@ export const ModalProvider = ({ children }: any) => {
 
   const showModalAsync = async (props: ModalProps, content: any = null) => {
     const isDismissable = !props.isLoading && Boolean(props.onClose)
-    if (content) setContent(content)
+    setContent(content)
 
     const modalPromise = new Promise<ModalAction | null>((resolve) => {
       closeRef.current = (action?: ModalAction | null) => {

@@ -1,7 +1,8 @@
 import { BigNumber, providers, utils } from 'ethers'
+import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
-import { sendTransaction } from 'src/blockchain/transaction'
+import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import {
   MAX_COMMENT_CHAR_LENGTH,
@@ -13,6 +14,7 @@ import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimate } from 'src/features/fees/utils'
+import { setTransactionSigned } from 'src/features/send/sendSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
@@ -20,7 +22,7 @@ import { getAdjustedAmount, validateAmount, validateAmountWithFees } from 'src/u
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 export interface SendTokenParams {
   recipient: string
@@ -33,6 +35,7 @@ export interface SendTokenParams {
 export function validate(
   params: SendTokenParams,
   balances: Balances,
+  validateMaxAmount = true,
   validateFee = false
 ): ErrorState {
   const { recipient, amountInWei, currency, comment, feeEstimate } = params
@@ -41,7 +44,11 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    const maxAmount = isSignerLedger() ? MAX_SEND_TOKEN_SIZE_LEDGER : MAX_SEND_TOKEN_SIZE
+    const maxAmount = validateMaxAmount
+      ? isSignerLedger()
+        ? MAX_SEND_TOKEN_SIZE_LEDGER
+        : MAX_SEND_TOKEN_SIZE
+      : undefined
     errors = { ...errors, ...validateAmount(amountInWei, currency, balances, maxAmount) }
   }
 
@@ -85,18 +92,26 @@ export function validate(
 
 function* sendToken(params: SendTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
+  const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
 
-  const validateResult = yield* call(validate, params, balances, true)
+  const validateResult = yield* call(validate, params, balances, txSizeLimitEnabled, true)
   if (!validateResult.isValid) {
     throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
   }
 
-  const placeholderTx = yield* call(_sendToken, params, balances)
+  const { signedTx, type } = yield* call(createSendTx, params, balances)
+  yield* put(setTransactionSigned(true))
+
+  const txReceipt = yield* call(sendSignedTransaction, signedTx)
+  logger.info(`Token transfer hash received: ${txReceipt.transactionHash}`)
+
+  const placeholderTx = getPlaceholderTx(params, txReceipt, type)
   yield* put(addPlaceholderTransaction(placeholderTx))
+
   yield* put(fetchBalancesActions.trigger())
 }
 
-async function _sendToken(params: SendTokenParams, balances: Balances) {
+async function createSendTx(params: SendTokenParams, balances: Balances) {
   const { recipient, amountInWei, currency, comment, feeEstimate } = params
   if (!feeEstimate) throw new Error('Fee estimate is missing')
 
@@ -106,10 +121,8 @@ async function _sendToken(params: SendTokenParams, balances: Balances) {
   const { tx, type } = await getTokenTransferTx(currency, recipient, adjustedAmount, comment)
 
   logger.info(`Sending ${amountInWei} ${currency} to ${recipient}`)
-  const txReceipt = await sendTransaction(tx, feeEstimate)
-  logger.info(`Token transfer hash received: ${txReceipt.transactionHash}`)
-
-  return getPlaceholderTx(params, txReceipt, type)
+  const signedTx = await signTransaction(tx, feeEstimate)
+  return { signedTx, type }
 }
 
 async function getTokenTransferTx(

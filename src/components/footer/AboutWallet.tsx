@@ -20,6 +20,7 @@ export function AboutWalletLink({ styles }: { styles: Styles }) {
 }
 
 function AboutWalletModal() {
+  // TODO include version number here
   return (
     <Box direction="column" align="center" styles={style.container}>
       <p style={style.text}>

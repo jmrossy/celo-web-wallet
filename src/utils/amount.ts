@@ -19,7 +19,7 @@ export function validateAmount(
   _amountInWei: BigNumberish,
   currency: Currency,
   balances: Balances,
-  max: string
+  max?: string
 ): ErrorState | null {
   const amountInWei = BigNumber.from(_amountInWei)
 
@@ -28,7 +28,7 @@ export function validateAmount(
     return invalidInput('amount', 'Amount too small')
   }
 
-  if (amountInWei.gte(max)) {
+  if (max && amountInWei.gte(max)) {
     logger.warn(`Invalid amount, too big: ${amountInWei.toString()}`)
     return invalidInput('amount', 'Amount too big')
   }

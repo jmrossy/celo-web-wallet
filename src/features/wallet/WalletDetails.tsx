@@ -1,5 +1,6 @@
 import { getSigner, isSignerSet, SignerType } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
+import { HrDivider } from 'src/components/HrDivider'
 import { Identicon } from 'src/components/Identicon'
 import { Mnemonic } from 'src/components/Mnemonic'
 import { PLACEHOLDER_MNEMONIC } from 'src/consts'
@@ -37,7 +38,7 @@ export function WalletDetails() {
         <Address address={address} hideIdenticon={true} buttonType="qrAndCopy" />
       </div>
       <div css={style.hrContainer}>
-        <hr css={style.hr} />
+        <HrDivider />
       </div>
       <div css={style.itemContainer}>
         <h3 css={style.h3}>Unique Icon</h3>
@@ -51,7 +52,7 @@ export function WalletDetails() {
         <Identicon address={address} size={60} />
       </div>
       <div css={style.hrContainer}>
-        <hr css={style.hr} />
+        <HrDivider />
       </div>
       <div css={style.itemContainer}>
         <h3 css={style.h3}>Account Key</h3>
@@ -72,7 +73,7 @@ const style: Stylesheet = {
   container: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(20em, 1fr))',
-    gap: '1em 2em',
+    gap: '1.5em 0.5em',
     alignItems: 'center',
     justifyItems: 'center',
     [mq[768]]: {
@@ -103,12 +104,5 @@ const style: Stylesheet = {
       gridColumnStart: 1,
       gridColumnEnd: 3,
     },
-  },
-  hr: {
-    height: 1,
-    border: 'none',
-    backgroundColor: '#D1D5D8',
-    color: '#D1D5D8', //for IE
-    margin: 0,
   },
 }

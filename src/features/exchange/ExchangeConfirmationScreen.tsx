@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
+import { isSignerLedger } from 'src/blockchain/signer'
 import { Button } from 'src/components/buttons/Button'
 import { HelpIcon } from 'src/components/icons/HelpIcon'
 import ExchangeIcon from 'src/components/icons/swap.svg'
@@ -17,6 +18,7 @@ import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
 import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
+import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -28,7 +30,7 @@ export function ExchangeConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { transaction: tx, cUsdToCelo, transactionError: txnError } = useSelector(
+  const { transaction: tx, transactionError: txnError, cUsdToCelo, numSignatures } = useSelector(
     (state: RootState) => state.exchange
   )
 
@@ -84,24 +86,45 @@ export function ExchangeConfirmationScreen() {
     navigate('/')
   }
 
-  const modal = useModal()
+  const { showSuccessModal, showErrorModal, showWorkingModal, showModalWithContent } = useModal()
 
-  const confirm = () => {
-    modal.showSuccessModal('Exchange Complete!', 'Your exchange has been made successfully')
+  const onNeedSignature = (index: number) => {
+    const modalText = [
+      'Exchanges require two transactions',
+      'Confirm both transactions on your Ledger',
+    ]
+    showModalWithContent(
+      `Signature Required (${index}/2)`,
+      <SignatureRequiredModal text={modalText} />,
+      null,
+      null,
+      null,
+      false
+    )
+  }
+
+  const onSuccess = () => {
+    showSuccessModal('Exchange Complete!', 'Your exchange has been made successfully')
     dispatch(exchangeTokenActions.reset())
     dispatch(exchangeSent())
     navigate('/')
   }
 
-  const failure = (error: string | undefined) => {
-    modal.showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
+  const onFailure = (error: string | undefined) => {
+    showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
   }
 
   useEffect(() => {
-    if (sagaStatus === SagaStatus.Started) modal.showWorkingModal('Exchanging...')
-    else if (sagaStatus === SagaStatus.Success) confirm()
-    else if (sagaStatus === SagaStatus.Failure) failure(sagaError?.toString())
-  }, [sagaStatus, sagaError])
+    if (sagaStatus === SagaStatus.Started) {
+      if (isSignerLedger() && numSignatures === 0) onNeedSignature(1)
+      else if (isSignerLedger() && numSignatures === 1) onNeedSignature(2)
+      else showWorkingModal('Exchanging...')
+    } else if (sagaStatus === SagaStatus.Success) {
+      onSuccess()
+    } else if (sagaStatus === SagaStatus.Failure) {
+      onFailure(sagaError?.toString())
+    }
+  }, [sagaStatus, sagaError, numSignatures])
 
   if (!tx) return null
 
