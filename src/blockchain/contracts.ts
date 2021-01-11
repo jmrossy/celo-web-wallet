@@ -1,4 +1,9 @@
 import { Contract, ethers } from 'ethers'
+import { ABI as EscrowAbi } from 'src/blockchain/ABIs/escrow'
+import { ABI as ExchangeAbi } from 'src/blockchain/ABIs/exchange'
+import { ABI as GoldTokenAbi } from 'src/blockchain/ABIs/goldToken'
+import { ABI as SortedOraclesAbi } from 'src/blockchain/ABIs/sortedOracles'
+import { ABI as StableTokenAbi } from 'src/blockchain/ABIs/stableToken'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
 import { Currency } from 'src/currency'
@@ -22,15 +27,15 @@ export async function getContract(c: CeloContract) {
 async function getContractAbi(c: CeloContract) {
   switch (c) {
     case CeloContract.StableToken:
-      return (await import('src/blockchain/ABIs/stableToken')).ABI
+      return StableTokenAbi
     case CeloContract.GoldToken:
-      return (await import('src/blockchain/ABIs/goldToken')).ABI
+      return GoldTokenAbi
     case CeloContract.Exchange:
-      return (await import('src/blockchain/ABIs/exchange')).ABI
+      return ExchangeAbi
     case CeloContract.SortedOracles:
-      return (await import('src/blockchain/ABIs/sortedOracles')).ABI
+      return SortedOraclesAbi
     case CeloContract.Escrow:
-      return (await import('src/blockchain/ABIs/escrow')).ABI
+      return EscrowAbi
     default:
       throw new Error(`No ABI for contract ${c}`)
   }

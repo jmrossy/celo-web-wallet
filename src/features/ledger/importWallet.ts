@@ -87,12 +87,9 @@ async function createLedgerSigner(derivationPath: string) {
 async function dynamicImportLedgerSigner() {
   try {
     logger.debug('Fetching Ledger bundle')
-    const global = window as any
-    if (!global.Buffer) {
-      const buffer = await import('buffer')
-      global.Buffer = buffer.Buffer
-    }
-    const ledgerModule = await import('src/features/ledger/LedgerSigner')
+    const ledgerModule = await import(
+      /* webpackChunkName: "ledger" */ 'src/features/ledger/LedgerSigner'
+    )
     return ledgerModule.LedgerSigner
   } catch (error) {
     logger.error('Failed to load ledger bundle', error)

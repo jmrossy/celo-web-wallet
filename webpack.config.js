@@ -1,17 +1,24 @@
 const webpack = require('webpack')
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const SriPlugin = require('webpack-subresource-integrity')
 const packageJson = require('./package.json')
+
+const isDevelopment = process.env.NODE_ENV === 'development'
+const isProduction = process.env.NODE_ENV === 'production'
 
 const config = {
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
+    chunkFilename: 'bundle-[name].js',
+    crossOriginLoading: 'anonymous',
   },
   // https://github.com/webpack/webpack-dev-server/issues/2758
   // TODO remove when fixed
-  target: process.env.NODE_ENV === 'development' ? 'web' : 'browserslist',
+  target: isDevelopment ? 'web' : 'browserslist',
   module: {
     rules: [
       {
@@ -70,14 +77,21 @@ const config = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: './src/index.html', to: 'index.html' },
         { from: './src/_redirects', to: '_redirects', toType: 'file' },
         { from: './static/*', to: 'static/[name].[ext]' },
       ],
     }),
     new webpack.DefinePlugin({
       __VERSION__: JSON.stringify(packageJson.version),
-      __DEBUG__: process.env.NODE_ENV === 'development',
+      __DEBUG__: isDevelopment,
+    }),
+    new SriPlugin({
+      hashFuncNames: ['sha256'],
+      enabled: isProduction,
+    }),
+    new HtmlWebpackPlugin({
+      template: 'src/index.html',
+      minify: false,
     }),
     // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
   ],
