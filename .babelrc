@@ -1,10 +1,7 @@
 {
   "presets": [
     [
-      "@babel/preset-env",
-      {
-        "modules": false
-      }
+      "@babel/preset-env"
     ],
     [
       "@babel/preset-react",
@@ -56,5 +53,5 @@
       ]
     }
   },
-  "plugins": ["@emotion", "@babel/plugin-transform-runtime"]
+  "plugins": ["@emotion", "@babel/plugin-transform-runtime", "@babel/plugin-transform-strict-mode"]
 }

@@ -718,6 +718,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.10.4"
 
+"@babel/plugin-transform-strict-mode@^7.12.1":
+  version "7.12.1"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-strict-mode/-/plugin-transform-strict-mode-7.12.1.tgz#08212332b337db0119f92c5cb0e00d78e2b9746e"
+  integrity sha512-tckmpXXYU1Np2bg55PyhO3i6j1njUpMgKdtdHCegcWgPHpsRLDav1MJKI4bZEX53eEgoYu6Cic4Dshxjk9Hd5Q==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.10.4"
+
 "@babel/plugin-transform-template-literals@^7.12.1":
   version "7.12.1"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-template-literals/-/plugin-transform-template-literals-7.12.1.tgz#b43ece6ed9a79c0c71119f576d299ef09d942843"
