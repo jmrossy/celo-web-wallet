@@ -8,6 +8,15 @@ Ideal for managing small 'hot' wallets or Celo wallets on Ledger hardware.
 
 See the [FAQ](FAQ.md) for more details about common questions.
 
+## Bundle integrity hashes
+
+This wallet uses [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity). Current bundle hashes:
+
+* Main bundle: `bundle.js -> sha256-aGbbxjEZCtbeQXST64R3wEhx6sxbLCuyKi8kK6z8WQ0=`
+* Optional Ledger bundle: `bundle-ledger.js -> sha256-x3pznkpql8VYHe2fXwYmieWzmbTdlz3VKkwp2Sp/7Lg=`
+
+Advanced users can verify the source integrity by comparing the hashes in their page source to these values.
+
 ## Building and running locally
 
 First install dependencies:

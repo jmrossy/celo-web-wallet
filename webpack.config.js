@@ -14,7 +14,12 @@ const config = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     chunkFilename: 'bundle-[name].js',
-    crossOriginLoading: 'anonymous',
+    crossOriginLoading: 'anonymous', // For SriPlugin
+  },
+  optimization: {
+    splitChunks: {
+      minChunks: 3, // Prevents the ledger dyanmic bundle from getting split up into separate vendors + local
+    },
   },
   // https://github.com/webpack/webpack-dev-server/issues/2758
   // TODO remove when fixed
@@ -75,20 +80,24 @@ const config = {
     modules: [path.resolve('./node_modules'), path.resolve('./')],
   },
   plugins: [
+    // Copy over static files
     new CopyPlugin({
       patterns: [
         { from: './src/_redirects', to: '_redirects', toType: 'file' },
         { from: './static/*', to: 'static/[name].[ext]' },
       ],
     }),
+    // Inject some constants into the built code
     new webpack.DefinePlugin({
       __VERSION__: JSON.stringify(packageJson.version),
       __DEBUG__: isDevelopment,
     }),
+    // Inject Subresource Integrity hashes
     new SriPlugin({
       hashFuncNames: ['sha256'],
       enabled: isProduction,
     }),
+    // Copy over index.html - doesn't do much but needed for nice SriPlugin integration
     new HtmlWebpackPlugin({
       template: 'src/index.html',
       minify: false,
@@ -99,6 +108,21 @@ const config = {
     historyApiFallback: true,
     open: 'Google Chrome',
     hot: true,
+  },
+  // Show some extra info during build
+  stats: {
+    assets: true,
+    assetsSort: 'size',
+    nestedModules: true,
+    chunks: true,
+    chunkGroups: true,
+    chunkModules: true,
+    chunkOrigins: true,
+    modules: true,
+    modulesSort: 'size',
+    assetsSpace: 200,
+    modulesSpace: 200,
+    nestedModulesSpace: 50,
   },
 }
 
