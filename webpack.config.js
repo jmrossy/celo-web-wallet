@@ -83,7 +83,7 @@ const config = {
     // Copy over static files
     new CopyPlugin({
       patterns: [
-        { from: './src/_redirects', to: '_redirects', toType: 'file' },
+        { from: './netlify/*', to: '[name].[ext]' },
         { from: './static/*', to: 'static/[name].[ext]' },
       ],
     }),
