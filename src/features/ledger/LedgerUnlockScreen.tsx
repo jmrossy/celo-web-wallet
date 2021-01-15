@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
-import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
+import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
 import {
   importLedgerWalletActions,
@@ -27,7 +27,7 @@ export function LedgerUnlockScreen() {
 
   const onLogout = useLogoutModal()
 
-  const status = useSagaStatusWithErrorModal(
+  const status = useSagaStatus(
     importLedgerWalletSagaName,
     'Error Unlocking Wallet',
     'Something went wrong, sorry! Please ensure your Ledger is connected, unlocked, and running the latest Celo app.'

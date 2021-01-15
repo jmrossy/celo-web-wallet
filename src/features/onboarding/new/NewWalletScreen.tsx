@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
-import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
+import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { createWalletActions, createWalletSagaName } from 'src/features/wallet/createWallet'
@@ -36,7 +36,7 @@ export function NewWalletScreen() {
     }, 1000)
   }, [])
 
-  const status = useSagaStatusWithErrorModal(
+  const status = useSagaStatus(
     createWalletSagaName,
     'Error Creating Wallet',
     'Something went wrong when creating your new wallet, sorry! Please try again.',

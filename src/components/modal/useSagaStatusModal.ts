@@ -7,7 +7,7 @@ import { SagaStatus } from 'src/utils/saga'
 
 // Convenience hook to get the status + error of an active saga
 // And then show a generic error modal if something goes wrong
-export function useSagaStatusWithErrorModal(
+export function useSagaStatus(
   sagaName: string,
   errorTitle: string,
   errorMsg?: string,

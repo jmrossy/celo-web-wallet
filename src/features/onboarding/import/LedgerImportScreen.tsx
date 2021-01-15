@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { Box } from 'src/components/layout/Box'
-import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
+import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
 import {
   importLedgerWalletActions,
@@ -17,7 +17,6 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
-import { useInputValidation } from 'src/utils/validation'
 
 const initialValues = { index: '0' }
 
@@ -25,23 +24,22 @@ export function LedgerImportScreen() {
   const dispatch = useDispatch()
 
   const onSubmit = (values: ImportWalletParams) => {
-    if (areInputsValid()) {
-      dispatch(importLedgerWalletActions.trigger(values))
-    }
+    dispatch(importLedgerWalletActions.trigger(values))
   }
 
-  const { values, touched, handleChange, handleSubmit } = useCustomForm<ImportWalletParams>(
-    initialValues,
-    onSubmit
-  )
+  const validateForm = (values: ImportWalletParams) => validate(values)
 
-  const { inputErrors, areInputsValid } = useInputValidation(touched, () => validate(values))
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<ImportWalletParams>(
+    initialValues,
+    onSubmit,
+    validateForm
+  )
 
   const navigate = useNavigate()
   const onSuccess = () => {
     navigate('/', { replace: true })
   }
-  const status = useSagaStatusWithErrorModal(
+  const status = useSagaStatus(
     importLedgerWalletSagaName,
     'Error Importing Wallet',
     'Something went wrong, sorry! Please ensure your Ledger is connected, unlocked, and running the latest Celo app.',
@@ -65,7 +63,7 @@ export function LedgerImportScreen() {
             value={'' + values.index}
             onChange={handleChange}
             width="2em"
-            {...inputErrors['index']}
+            {...errors['index']}
           />
         </Box>
         <Button margin="2em 0 0 0" disabled={status === SagaStatus.Started} size="l" type="submit">

@@ -23,7 +23,6 @@ import { Stylesheet } from 'src/styles/types'
 import { fromWei, fromWeiRounded, toWei } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
-import { useInputValidation } from 'src/utils/validation'
 
 interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
   amount: number | string
@@ -45,29 +44,27 @@ export function SendFormScreen() {
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
 
   const onSubmit = (values: SendTokenForm) => {
-    if (!areInputsValid()) return
     dispatch(sendStarted(toSendTokenParams(values)))
     navigate('/send-review')
   }
 
+  const validateForm = (values: SendTokenForm) =>
+    validate(toSendTokenParams(values), balances, txSizeLimitEnabled)
+
   const {
     values,
-    touched,
+    errors,
     handleChange,
     handleBlur,
     handleSubmit,
     setValues,
     resetValues,
-  } = useCustomForm<SendTokenForm>(getFormInitialValues(location, tx), onSubmit)
+  } = useCustomForm<SendTokenForm>(getFormInitialValues(location, tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {
     resetValues(getFormInitialValues(location, tx))
   }, [tx])
-
-  const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
-    validate(toSendTokenParams(values), balances, txSizeLimitEnabled)
-  )
 
   const onPasteAddress = async () => {
     const value = await tryClipboardGet()
@@ -104,7 +101,7 @@ export function SendFormScreen() {
                 onBlur={handleBlur}
                 value={values.recipient}
                 placeholder="0x1234..."
-                {...inputErrors['recipient']}
+                {...errors['recipient']}
               />
               {isClipboardReadSupported() ? (
                 <Button size="icon" type="button" margin="0 0 0 0.5em" onClick={onPasteAddress}>
@@ -129,7 +126,7 @@ export function SendFormScreen() {
                   onBlur={handleBlur}
                   value={values.amount.toString()}
                   placeholder="1.00"
-                  {...inputErrors['amount']}
+                  {...errors['amount']}
                 />
                 <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
                   Max Amount
@@ -173,7 +170,7 @@ export function SendFormScreen() {
               minHeight="5em"
               maxHeight="7em"
               fillWidth={true}
-              {...inputErrors['comment']}
+              {...errors['comment']}
             />
           </Box>
 

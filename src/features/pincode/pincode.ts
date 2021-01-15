@@ -7,7 +7,7 @@ import { loadWallet, saveWallet } from 'src/features/wallet/storage'
 import { setSecretType, setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
+import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put } from 'typed-redux-saga'
 
 const PIN_LENGTH = 6
@@ -78,10 +78,7 @@ function updateUnlockedTime() {
 }
 
 function* pincode(params: PincodeParams) {
-  const validateResult = yield* call(validate, params)
-  if (!validateResult.isValid) {
-    throw new Error(errorStateToString(validateResult, 'Invalid Pincode or Password'))
-  }
+  validateOrThrow(() => validate(params), 'Invalid Pincode or Password')
 
   const { action, value, newValue, type } = params
   if (!type) throw new Error('Missing secret type')

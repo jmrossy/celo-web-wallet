@@ -53,7 +53,7 @@ export interface SagaState {
 
 interface MonitoredSagaOptions {
   timeoutDuration?: number // in milliseconds
-  // TODO add retry option
+  // If retry / or other options are ever needed, they can go here
 }
 
 /**

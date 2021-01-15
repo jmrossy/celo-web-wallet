@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
-import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
+import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { ImportWalletWarning } from 'src/features/onboarding/import/ImportWalletWarning'
 import {
   importWalletActions,
@@ -40,7 +40,7 @@ export function ImportWalletForm() {
   const onSuccess = () => {
     navigate('/setup/set-pin', { state: { pageNumber: 4 } })
   }
-  const status = useSagaStatusWithErrorModal(
+  const status = useSagaStatus(
     importWalletSagaName,
     'Error Importing Wallet',
     'Something went wrong when importing your wallet, sorry! Please check your account key and try again.',
