@@ -9,7 +9,7 @@ import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
+import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
 export interface ImportWalletParams {
@@ -35,10 +35,7 @@ export function validate(params: ImportWalletParams): ErrorState {
 }
 
 function* importLedgerWallet(params: ImportWalletParams) {
-  const validateResult = yield* call(validate, params)
-  if (!validateResult.isValid) {
-    throw new Error(errorStateToString(validateResult, 'Invalid Index'))
-  }
+  validateOrThrow(() => validate(params), 'Invalid Index')
 
   const { index, useExisting } = params
   let signer: LedgerSigner
@@ -87,12 +84,9 @@ async function createLedgerSigner(derivationPath: string) {
 async function dynamicImportLedgerSigner() {
   try {
     logger.debug('Fetching Ledger bundle')
-    const global = window as any
-    if (!global.Buffer) {
-      const buffer = await import('buffer')
-      global.Buffer = buffer.Buffer
-    }
-    const ledgerModule = await import('src/features/ledger/LedgerSigner')
+    const ledgerModule = await import(
+      /* webpackChunkName: "ledger" */ 'src/features/ledger/LedgerSigner'
+    )
     return ledgerModule.LedgerSigner
   } catch (error) {
     logger.error('Failed to load ledger bundle', error)

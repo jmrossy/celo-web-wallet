@@ -66,6 +66,7 @@ export function ExchangeConfirmationScreen() {
 
   const { from, to, rate } = useExchangeValues(tx?.amountInWei, tx?.fromCurrency, cUsdToCelo, true)
 
+  // TODO: DRY up code below with Exchange conf screen into singer-loader-fail/success modal hook
   const { status: sagaStatus, error: sagaError } = useSelector(
     (state: RootState) => state.saga.exchangeToken
   )

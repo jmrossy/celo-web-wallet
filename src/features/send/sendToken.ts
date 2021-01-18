@@ -21,7 +21,7 @@ import { Balances } from 'src/features/wallet/types'
 import { getAdjustedAmount, validateAmount, validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
+import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
 export interface SendTokenParams {
@@ -94,10 +94,7 @@ function* sendToken(params: SendTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
   const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
 
-  const validateResult = yield* call(validate, params, balances, txSizeLimitEnabled, true)
-  if (!validateResult.isValid) {
-    throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
-  }
+  validateOrThrow(() => validate(params, balances, txSizeLimitEnabled, true), 'Invalid transaction')
 
   const { signedTx, type } = yield* call(createSendTx, params, balances)
   yield* put(setTransactionSigned(true))

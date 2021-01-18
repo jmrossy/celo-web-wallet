@@ -30,7 +30,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { ErrorState, errorStateToString, invalidInput } from 'src/utils/validation'
+import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
 export function validate(
@@ -100,10 +100,10 @@ function* exchangeToken(params: ExchangeTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
   const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
 
-  const validateResult = yield* call(validate, params, balances, txSizeLimitEnabled, true, true)
-  if (!validateResult.isValid) {
-    throw new Error(errorStateToString(validateResult, 'Invalid transaction'))
-  }
+  validateOrThrow(
+    () => validate(params, balances, txSizeLimitEnabled, true, true),
+    'Invalid transaction'
+  )
 
   const { amountInWei, fromCurrency, feeEstimates, exchangeRate } = params
   logger.info(`Exchanging ${amountInWei} ${fromCurrency}`)

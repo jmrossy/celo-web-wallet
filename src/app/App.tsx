@@ -4,7 +4,6 @@ import { ErrorBoundary } from 'src/app/FailScreen'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
 import { useSplashScreen } from 'src/app/splash'
 import { ModalProvider } from 'src/components/modal/modalContext'
-import { ModalTestScreen } from 'src/components/modal/ModalTestScreen'
 import { ExchangeConfirmationScreen } from 'src/features/exchange/ExchangeConfirmationScreen'
 import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { TransactionReview } from 'src/features/feed/TransactionReview'
@@ -20,7 +19,6 @@ import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
 import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
-import { DevTools } from 'src/features/settings/DevTools'
 import { SettingsScreen } from 'src/features/settings/SettingsScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
@@ -62,9 +60,9 @@ export const App = () => {
             <Route path="change-pin" element={<ChangePincodeScreen />} />
 
             {/* To faciliatate testing */}
-            <Route path="/dev/home" element={<HomeScreen />} />
+            {/* <Route path="/dev/home" element={<HomeScreen />} />
             <Route path="/dev/modals" element={<ModalTestScreen />} />
-            <Route path="/dev/tools" element={<DevTools />} />
+            <Route path="/dev/tools" element={<DevTools />} /> */}
 
             <Route path="*" element={<NotFoundScreen />} />
           </Routes>

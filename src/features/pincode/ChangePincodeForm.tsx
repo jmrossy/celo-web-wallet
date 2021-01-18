@@ -6,7 +6,7 @@ import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
-import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
+import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import {
   pincodeActions,
   PincodeParams,
@@ -22,7 +22,6 @@ import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
-import { useInputValidation } from 'src/utils/validation'
 
 const initialValues = { action: PincodeAction.Change, value: '', newValue: '', valueConfirm: '' }
 
@@ -43,23 +42,20 @@ export function ChangePincodeForm() {
   const navigate = useNavigate()
 
   const onSubmit = (values: PincodeParams) => {
-    if (!areInputsValid()) return
     dispatch(pincodeActions.trigger({ ...values, type: secretType }))
   }
 
-  const { values, touched, handleChange, handleSubmit, resetValues } = useCustomForm<PincodeParams>(
-    initialValues,
-    onSubmit
-  )
+  const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
 
-  const { inputErrors, areInputsValid, clearInputErrors } = useInputValidation(touched, () =>
-    validate({ ...values, type: secretType })
+  const { values, errors, handleChange, handleSubmit, resetValues } = useCustomForm<PincodeParams>(
+    initialValues,
+    onSubmit,
+    validateForm
   )
 
   const onToggleSecretType = (index: number) => {
     // Reset but exclude current pincode field
     resetValues({ ...initialValues, value: values.value })
-    clearInputErrors()
     setSecretType(index === 0 ? 'pincode' : 'password')
   }
 
@@ -79,7 +75,7 @@ export function ChangePincodeForm() {
     navigate(-1)
   }
 
-  const status = useSagaStatusWithErrorModal(
+  const status = useSagaStatus(
     pincodeSagaName,
     `Error Changing ${currentLabelC}`,
     'Please check your values and try again.',
@@ -96,8 +92,8 @@ export function ChangePincodeForm() {
             name="value"
             value={values.value}
             onChange={handleChange}
-            {...inputErrors['value']}
             autoFocus={true}
+            {...errors['value']}
           />
           <PincodeTypeToggle onToggle={onToggleSecretType} margin="1.5em 0 0 8em" />
           <PincodeInputRow
@@ -106,7 +102,7 @@ export function ChangePincodeForm() {
             name="newValue"
             value={values.newValue}
             onChange={handleChange}
-            {...inputErrors['newValue']}
+            {...errors['newValue']}
           />
           <PincodeInputRow
             type={newInputType}
@@ -114,7 +110,7 @@ export function ChangePincodeForm() {
             name="valueConfirm"
             value={values.valueConfirm}
             onChange={handleChange}
-            {...inputErrors['valueConfirm']}
+            {...errors['valueConfirm']}
           />
         </div>
         <Box direction="row" margin="3em 0 0 0">

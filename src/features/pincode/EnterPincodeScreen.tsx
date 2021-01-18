@@ -3,7 +3,7 @@ import { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
-import { useSagaStatusWithErrorModal } from 'src/components/modal/useSagaStatusModal'
+import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { NULL_ADDRESS } from 'src/consts'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
@@ -22,7 +22,6 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
-import { useInputValidation } from 'src/utils/validation'
 
 const initialValues = { action: PincodeAction.Unlock, value: '' }
 
@@ -37,22 +36,20 @@ export function EnterPincodeScreen() {
   const dispatch = useDispatch()
 
   const onSubmit = (values: PincodeParams) => {
-    if (!areInputsValid()) return
     dispatch(pincodeActions.trigger({ ...values, type: secretType }))
   }
 
-  const { values, touched, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
-    initialValues,
-    onSubmit
-  )
+  const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
 
-  const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
-    validate({ ...values, type: secretType })
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
+    initialValues,
+    onSubmit,
+    validateForm
   )
 
   const onLogout = useLogoutModal()
 
-  const status = useSagaStatusWithErrorModal(
+  const status = useSagaStatus(
     pincodeSagaName,
     'Error Unlocking Account',
     `Unable to unlock your account, please check your ${label} and try again.`
@@ -73,7 +70,7 @@ export function EnterPincodeScreen() {
             value={values.value}
             onChange={handleChange}
             autoFocus={true}
-            {...inputErrors['value']}
+            {...errors['value']}
           />
           <Box direction="column" margin={'2em 0 0 0'}>
             <Button type="submit" disabled={status === SagaStatus.Started} size="l">

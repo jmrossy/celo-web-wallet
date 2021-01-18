@@ -21,7 +21,6 @@ import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { fromWei, toWei } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
-import { useInputValidation } from 'src/utils/validation'
 
 interface ExchangeTokenForm extends Omit<ExchangeTokenParams, 'amountInWei'> {
   amount: number | string
@@ -44,28 +43,26 @@ export function ExchangeFormScreen() {
   }, [])
 
   const onSubmit = (values: ExchangeTokenForm) => {
-    if (!areInputsValid()) return
     dispatch(exchangeStarted(toExchangeTokenParams(values)))
     navigate('/exchange-review')
   }
 
+  const validateForm = (values: ExchangeTokenForm) =>
+    validate(toExchangeTokenParams(values), balances, txSizeLimitEnabled)
+
   const {
     values,
-    touched,
+    errors,
     handleChange,
     handleBlur,
     handleSubmit,
     resetValues,
-  } = useCustomForm<ExchangeTokenForm>(getFormInitialValues(tx), onSubmit)
+  } = useCustomForm<ExchangeTokenForm>(getFormInitialValues(tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {
     resetValues(getFormInitialValues(tx))
   }, [tx])
-
-  const { inputErrors, areInputsValid } = useInputValidation(touched, () =>
-    validate(toExchangeTokenParams(values), balances, txSizeLimitEnabled)
-  )
 
   const { to, from, rate } = useExchangeValues(
     values.amount,
@@ -93,8 +90,8 @@ export function ExchangeFormScreen() {
                 onChange={handleChange}
                 value={values.amount.toString()}
                 onBlur={handleBlur}
-                {...inputErrors['amount']}
                 placeholder="1.00"
+                {...errors['amount']}
               />
             </Box>
             <Box direction="row" align="center" styles={style.inputRow}>

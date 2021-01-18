@@ -1,3 +1,4 @@
+import 'src/features/ledger/buffer' // Must be the first import
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
 import { TransportError, TransportStatusError } from '@ledgerhq/errors'
 import TransportU2F from '@ledgerhq/hw-transport-u2f'
