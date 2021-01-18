@@ -1,8 +1,6 @@
 const webpack = require('webpack')
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const SriPlugin = require('webpack-subresource-integrity')
 const packageJson = require('./package.json')
 
 const isDevelopment = process.env.NODE_ENV === 'development'
@@ -14,7 +12,6 @@ const config = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     chunkFilename: 'bundle-[name].js',
-    crossOriginLoading: 'anonymous', // For SriPlugin
   },
   optimization: {
     splitChunks: {
@@ -22,7 +19,7 @@ const config = {
     },
   },
   // https://github.com/webpack/webpack-dev-server/issues/2758
-  // TODO remove when fixed
+  // TODO remove when fixed, should be in v4 upgrade
   target: isDevelopment ? 'web' : 'browserslist',
   module: {
     rules: [
@@ -83,6 +80,7 @@ const config = {
     // Copy over static files
     new CopyPlugin({
       patterns: [
+        { from: './src/index.html', to: 'index.html' },
         { from: './netlify/*', to: '[name].[ext]' },
         { from: './static/*', to: 'static/[name].[ext]' },
       ],
@@ -91,16 +89,6 @@ const config = {
     new webpack.DefinePlugin({
       __VERSION__: JSON.stringify(packageJson.version),
       __DEBUG__: isDevelopment,
-    }),
-    // Inject Subresource Integrity hashes
-    new SriPlugin({
-      hashFuncNames: ['sha256'],
-      enabled: isProduction,
-    }),
-    // Copy over index.html - doesn't do much but needed for nice SriPlugin integration
-    new HtmlWebpackPlugin({
-      template: 'src/index.html',
-      minify: false,
     }),
     // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
   ],

@@ -34,13 +34,8 @@ echo "Bundle hash ${BUNDLE_HASH}"
 export LEDGER_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-ledger.js | awk '{ print $1 }' | xxd -r -p | base64`
 echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
 
-# TODO won't work until webpack-subresource-integrity is fixed
-grep -F "$BUNDLE_HASH" dist/index.html
-STATUS=$?
-if [ $STATUS  -eq 1 ] ; then
-    echo "Error: Hash not found in index.html"
-    exit 1
-fi
+echo "Updating Index.html"
+sed -i "" "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
 
 echo "Updating Readme"
 sed -i "" "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
