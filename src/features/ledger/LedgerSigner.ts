@@ -1,6 +1,7 @@
 import 'src/features/ledger/buffer' // Must be the first import
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
 import { TransportError, TransportStatusError } from '@ledgerhq/errors'
+import TransportNodeHid from '@ledgerhq/hw-transport-node-hid-noevents'
 import TransportU2F from '@ledgerhq/hw-transport-u2f'
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
 import { BigNumber, providers, Signer, utils } from 'ethers'
@@ -13,7 +14,7 @@ import { logger } from 'src/utils/logger'
 import { sleep } from 'src/utils/sleep'
 
 // Based partly on https://github.com/ethers-io/ethers.js/blob/master/packages/hardware-wallets/src.ts/ledger.ts
-// But with customizations for the Celo network
+// But with customizations for the Celo network and for electron
 export class LedgerSigner extends Signer {
   private celoApp: CeloLedgerApp | undefined
   address: string | undefined
@@ -26,15 +27,18 @@ export class LedgerSigner extends Signer {
     if (this.celoApp) throw new Error('Ledger Signer already initialized')
 
     let transport
-    if (await TransportWebUSB.isSupported()) {
+    if (!config.isElectron && (await TransportWebUSB.isSupported())) {
       logger.debug('WebUSB appears to be supported')
       transport = await TransportWebUSB.create()
-    } else if (await TransportU2F.isSupported()) {
+    } else if (!config.isElectron && (await TransportU2F.isSupported())) {
       logger.debug('U2F appears to be supported')
       // Note: Won't work when running from localhost
       transport = await TransportU2F.create()
+    } else if (config.isElectron && (await TransportNodeHid.isSupported())) {
+      logger.debug('NodeHid appears to be supported')
+      transport = await TransportNodeHid.open()
     } else {
-      throw new Error('Neither WebUsb nor U2F are supported')
+      throw new Error('No transport protocols are supported')
     }
 
     this.celoApp = new CeloLedgerApp(transport)

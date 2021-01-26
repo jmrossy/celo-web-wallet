@@ -6,10 +6,12 @@ set -euo pipefail
 # -n: Name of the network: 'Alfajores' or 'Mainnet'
 
 NETWORK=""
+ELECTRON=false
 
-while getopts 'n:' flag; do
+while getopts 'n:e' flag; do
   case "${flag}" in
     n) NETWORK="$OPTARG" ;;
+    e) ELECTRON=true ;;
     *) echo "Unexpected option ${flag}" ;;
   esac
 done
@@ -26,6 +28,9 @@ yarn run clean
 sed -i "" "s/freeze(config.*)/freeze(config${NETWORK})/g" src/config.ts
 
 export NODE_ENV=production 
+if [ "$ELECTRON" = true ]; then
+  export BUILD_TARGET=electron
+fi
 yarn run webpack --mode production
 
 echo "Checking bundle integrity"
@@ -34,7 +39,7 @@ echo "Bundle hash ${BUNDLE_HASH}"
 export LEDGER_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-ledger.js | awk '{ print $1 }' | xxd -r -p | base64`
 echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
 
-echo "Updating Index.html"
+echo "Updating index.html"
 sed -i "" "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
 
 echo "Updating Readme"

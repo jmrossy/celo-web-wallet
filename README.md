@@ -12,8 +12,8 @@ See the [FAQ](FAQ.md) for more details about common questions.
 
 This wallet uses [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity). Current bundle hashes:
 
-* Main bundle: `bundle.js -> sha256-9MTcW6OMeplVCmoKrOTSEqu0s/VRzh+j1P644oSFQpc=`
-* Optional Ledger bundle: `bundle-ledger.js -> sha256-F0NhZGZyPEb86ccx71+TYxoryxpYFXQTqOqgTuL582o=`
+* Main bundle: `bundle.js -> sha256-cuYXsofeYs9baapxn/c+lT9mqN1Va7rAylbQgOzTqEI=`
+* Optional Ledger bundle: `bundle-ledger.js -> sha256-Lfsf2Ka2IfvnJOal59kK7ThNswS4M81Z26bTak3r56s=`
 
 Advanced users can verify the source integrity by comparing the hashes in their page source to these values.
 
@@ -22,8 +22,7 @@ Advanced users can verify the source integrity by comparing the hashes in their 
 First install dependencies:
 
 ```sh
-# The --ignore-scripts flag here is optional but improves security
-yarn install --ignore-scripts
+yarn install 
 ```
 
 To create and run a development build:

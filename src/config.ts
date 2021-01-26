@@ -12,8 +12,17 @@ export enum CeloContract {
   StableToken = 'StableToken',
 }
 
+// @ts-ignore Defined by webpack define plugin
+const debugMode = __DEBUG__ ?? false
+// @ts-ignore Defined by webpack define plugin
+const isElectron = __IS_ELECTRON__ ?? false
+// @ts-ignore Defined by webpack define plugin
+const version = __VERSION__ || null
+
 interface Config {
   debug: boolean
+  isElectron: boolean
+  version: string | null
   jsonRpcUrlPrimary: string
   jsonRpcUrlSecondary?: string
   gatewayFeeRecipient?: string
@@ -24,13 +33,12 @@ interface Config {
   defaultAccount?: string // strictly for dev use, provide a backup phrase
 }
 
-// @ts-ignore Defined by webpack define plugin
-const debugMode = __DEBUG__ ?? false
-
 // TODO find a nice way to switch btwn configs at build/run time
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configMainnet: Config = {
   debug: debugMode,
+  isElectron,
+  version,
   jsonRpcUrlPrimary: 'https://node.celowallet.app',
   jsonRpcUrlSecondary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
@@ -57,6 +65,8 @@ const configMainnet: Config = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configAlfajores: Config = {
   debug: true,
+  isElectron,
+  version,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/783806028629934110',
@@ -79,8 +89,3 @@ const configAlfajores: Config = {
 }
 
 export const config = Object.freeze(configMainnet)
-
-export function getVersion(): string | null {
-  // @ts-ignore Defined by webpack define plugin
-  return __VERSION__ || null
-}
