@@ -7,7 +7,7 @@ const isDevelopment = process.env.NODE_ENV === 'development'
 const isProduction = process.env.NODE_ENV === 'production'
 const targetElectron = process.env.BUILD_TARGET === 'electron'
 
-console.log(`Building webpack. isProduction:${isProduction}, targetElectron:${targetElectron}`)
+console.log(`Building with webpack. isProduction:${isProduction}, targetElectron:${targetElectron}`)
 
 const config = {
   entry: './src/index.tsx',
@@ -79,6 +79,11 @@ const config = {
     ],
   },
   resolve: {
+    alias: {
+      'src/features/storage/storageProvider$': targetElectron
+        ? 'src/features/storage/storageProvider-electron.ts'
+        : 'src/features/storage/storageProvider.ts',
+    },
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
     modules: [path.resolve('./node_modules'), path.resolve('./')],
   },

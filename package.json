@@ -21,7 +21,8 @@
     "test:all": "yarn test && yarn lint",
     "electron:postinstall": "electron-builder install-app-deps",
     "electron:build": "./scripts/build.sh -n Mainnet -e",
-    "electron:dev": "yarn electron:build && electron ./dist/main.js --enable-logging"
+    "electron:dev": "yarn electron:build && electron ./dist/main.js --enable-logging",
+    "electron:start": "electron ./dist/main.js --enable-logging"
   },
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "^0.0.5",
