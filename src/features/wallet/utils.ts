@@ -1,7 +1,7 @@
-import { BigNumber } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import { NULL_ADDRESS } from 'src/consts'
+import { MNEMONIC_LENGTH_MAX, MNEMONIC_LENGTH_MIN, NULL_ADDRESS } from 'src/consts'
 import { Currency } from 'src/currency'
 import { Balances } from 'src/features/wallet/types'
 
@@ -20,4 +20,22 @@ export function getCurrencyBalance(balances: Balances, currency: Currency) {
   if (currency === Currency.CELO) return balances.celo
   if (currency === Currency.cUSD) return balances.cUsd
   throw new Error(`Unsupported currency ${currency}`)
+}
+
+export function isValidMnemonic(mnemonic: string) {
+  if (!mnemonic) return false
+  const trimmed = mnemonic.trim()
+  const split = trimmed.split(' ')
+  return (
+    utils.isValidMnemonic(trimmed) &&
+    split.length >= MNEMONIC_LENGTH_MIN &&
+    split.length <= MNEMONIC_LENGTH_MAX
+  )
+}
+
+export function isValidDerivationPath(derivationPath: string) {
+  if (!derivationPath) return false
+  const split = derivationPath.trim().split('/')
+  // TODO validate each path segment individually here
+  return split[0] === 'm' && split.length === 6
 }

@@ -1,3 +1,4 @@
+import { RootState } from 'src/app/rootReducer'
 import { isSignerSet } from 'src/blockchain/signer'
 import { ACCOUNT_UNLOCK_TIMEOUT } from 'src/consts'
 import { PincodeAction, SecretType } from 'src/features/pincode/types'
@@ -8,7 +9,7 @@ import { setSecretType, setWalletUnlocked } from 'src/features/wallet/walletSlic
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 const PIN_LENGTH = 6
 
@@ -119,12 +120,17 @@ function* unlockWallet(pin: string, type: SecretType) {
     throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
   }
 
+  const derivationPath = yield* select((s: RootState) => s.wallet.derivationPath)
+  if (!derivationPath) {
+    throw new Error('Key found but derivation path is missing')
+  }
+
   updateUnlockedTime()
   logger.info('Account unlocked')
 
   // If account has not yet been imported
   if (!isSignerSet()) {
-    yield* call(importWallet, mnemonic)
+    yield* call(importWallet, { mnemonic, derivationPath })
   }
   yield* put(setWalletUnlocked(true))
 }

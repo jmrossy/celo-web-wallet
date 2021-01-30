@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage'
 import { SignerType } from 'src/blockchain/signer'
 import { SecretType } from 'src/features/pincode/types'
 import { Balances } from 'src/features/wallet/types'
+import { isValidDerivationPath } from 'src/features/wallet/utils'
 import { assert } from 'src/utils/validation'
 
 interface Wallet {
@@ -43,10 +44,7 @@ const walletSlice = createSlice({
       const { address, type, derivationPath } = action.payload
       assert(address && address.length === 42, `Invalid address ${address}`)
       assert(type === SignerType.Local || type === SignerType.Ledger, `Invalid type ${address}`)
-      assert(
-        derivationPath && derivationPath.length >= 19,
-        `Invalid derivation path ${derivationPath}`
-      )
+      assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
       state.address = address
       state.type = type
       state.derivationPath = derivationPath

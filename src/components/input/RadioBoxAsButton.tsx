@@ -9,15 +9,13 @@ export interface RadioBoxInputProps {
   value: string
   checked?: boolean
   tabIndex?: number
-  onBlur?: (event: ChangeEvent<HTMLInputElement>) => void
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
   containerCss?: Styles
   inputCss?: Styles
   labelCss?: Styles
-  // TODO add validation hook
 }
 
-export function RadioBox(props: PropsWithChildren<RadioBoxInputProps>) {
+export function RadioBoxAsButton(props: PropsWithChildren<RadioBoxInputProps>) {
   const { name, label, value, checked, onChange, tabIndex } = props
 
   const containerCss = checked

@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { RadioBox, RadioBoxInputProps } from 'src/components/input/RadioBox'
+import { RadioBoxAsButton, RadioBoxInputProps } from 'src/components/input/RadioBoxAsButton'
 import { Currency } from 'src/currency'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
@@ -18,7 +18,7 @@ export function CurrencyRadioBox(props: PropsWithChildren<CurrencyRadioBoxInputP
   }
 
   return (
-    <RadioBox
+    <RadioBoxAsButton
       value={value}
       checked={checked}
       {...passThroughProps}

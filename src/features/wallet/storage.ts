@@ -2,7 +2,7 @@ import { getSigner, SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { storageProvider } from 'src/features/storage/storageProvider'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
-import { isValidMnemonic } from 'src/features/wallet/importWallet'
+import { isValidMnemonic } from 'src/features/wallet/utils'
 import { logger } from 'src/utils/logger'
 
 const MNEMONIC_STORAGE_KEY = 'wallet/mnemonic' // for web
