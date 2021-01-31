@@ -9,19 +9,17 @@ export interface RadioBoxRowProps {
   labels: Array<{ value: string; label: string }>
   startTabIndex?: number
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
-  containerStyles?: Styles
   margin?: string | number
+  containerStyles?: Styles
 }
 
 export function RadioBoxRow(props: RadioBoxRowProps) {
-  const { name, value, labels, onChange, startTabIndex, margin } = props
-
-  const containerStyle = { ...style.container, ...props.containerStyles }
+  const { name, value, labels, onChange, startTabIndex, margin, containerStyles } = props
 
   return (
-    <Box direction="row" align="center" justify="center" margin={margin}>
+    <Box direction="row" align="center" justify="center" margin={margin} styles={containerStyles}>
       {labels.map((l, i) => (
-        <label css={containerStyle} tabIndex={(startTabIndex ?? 0) + i} key={`radio-box-row-${i}`}>
+        <label css={style.container} tabIndex={(startTabIndex ?? 0) + i} key={`radio-box-row-${i}`}>
           <Box direction="row" align="center" justify="center">
             <input
               name={name}

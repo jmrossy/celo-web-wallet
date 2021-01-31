@@ -34,7 +34,7 @@ export function SettingsScreen() {
   const tokenLimitLedger = fromWei(MAX_SEND_TOKEN_SIZE_LEDGER)
 
   return (
-    <ScreenContentFrame>
+    <ScreenContentFrame onClose={onClickBack}>
       <Box direction="column" align="center">
         <h2 css={style.sectionHeader}>Account Settings</h2>
         <Box direction="row" align="center" justify="center" wrap={true} margin="0.5em 0 0 0">
@@ -94,6 +94,7 @@ export function SettingsScreen() {
           icon={ArrowBackIcon}
           onClick={onClickBack}
           margin="3.5em 0 1em 0"
+          width="9em"
         >
           Back
         </Button>

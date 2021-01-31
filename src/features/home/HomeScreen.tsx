@@ -30,7 +30,7 @@ export function HomeScreen() {
   if (isDismissed) return null
 
   return (
-    <ScreenContentFrame onClose={onClose}>
+    <ScreenContentFrame onClose={onClose} hideCloseButton={!onClose}>
       {!isMobile && (
         <div css={style.warningContainer}>
           <HomeScreenWarnings />

@@ -41,7 +41,8 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   }
 
   const onLockClick = () => {
-    alert('TODO')
+    // TODO reset?
+    navigate('/lock')
   }
 
   const onVoteClick = () => {

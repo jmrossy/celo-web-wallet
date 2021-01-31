@@ -16,7 +16,7 @@ export function ViewWalletScreen() {
   }
 
   return (
-    <ScreenContentFrame>
+    <ScreenContentFrame onClose={onClickBack}>
       <Box direction="column" align="center">
         <h2 css={style.header}>Your Celo Account</h2>
         <WalletDetails />
@@ -25,6 +25,7 @@ export function ViewWalletScreen() {
           icon={ArrowBackIcon}
           onClick={onClickBack}
           margin="3em 0 1em 0"
+          width="9em"
         >
           Back
         </Button>

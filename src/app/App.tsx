@@ -9,6 +9,7 @@ import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { TransactionReview } from 'src/features/feed/TransactionReview'
 import { HomeNavigator } from 'src/features/home/HomeNavigator'
 import { HomeScreen } from 'src/features/home/HomeScreen'
+import { LockFormScreen } from 'src/features/lock/lockFormScreen'
 import { ImportChoiceScreen } from 'src/features/onboarding/import/ImportChoiceScreen'
 import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletScreen'
 import { LedgerImportScreen } from 'src/features/onboarding/import/LedgerImportScreen'
@@ -44,6 +45,7 @@ export const App = () => {
               <Route path="send-review" element={<SendConfirmationScreen />} />
               <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
               <Route path="exchange" element={<ExchangeFormScreen />} />
+              <Route path="lock" element={<LockFormScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
               <Route path="settings" element={<SettingsScreen />} />
             </Route>

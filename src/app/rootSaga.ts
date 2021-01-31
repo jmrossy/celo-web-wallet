@@ -33,6 +33,12 @@ import {
   importLedgerWalletSagaName,
 } from 'src/features/ledger/importWallet'
 import {
+  lockTokenActions,
+  lockTokenReducer,
+  lockTokenSaga,
+  lockTokenSagaName,
+} from 'src/features/lock/lockToken'
+import {
   pincodeActions,
   pincodeReducer,
   pincodeSaga,
@@ -143,6 +149,11 @@ export const monitoredSagas: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
+  },
+  [lockTokenSagaName]: {
+    saga: lockTokenSaga,
+    reducer: lockTokenReducer,
+    actions: lockTokenActions,
   },
   [logoutSagaName]: {
     saga: logoutSaga,

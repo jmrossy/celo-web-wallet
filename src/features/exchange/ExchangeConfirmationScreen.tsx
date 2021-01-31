@@ -83,10 +83,6 @@ export function ExchangeConfirmationScreen() {
     dispatch(exchangeTokenActions.trigger({ ...tx, exchangeRate: rate, feeEstimates }))
   }
 
-  const onClose = () => {
-    navigate('/')
-  }
-
   const { showSuccessModal, showErrorModal, showWorkingModal, showModalWithContent } = useModal()
 
   const onNeedSignature = (index: number) => {
@@ -130,7 +126,7 @@ export function ExchangeConfirmationScreen() {
   if (!tx) return null
 
   return (
-    <ScreenContentFrame onClose={onClose}>
+    <ScreenContentFrame>
       {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
       <h1 css={Font.h2Green}>Review Exchange</h1>
       <div css={style.container}>

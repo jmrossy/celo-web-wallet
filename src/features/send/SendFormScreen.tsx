@@ -79,12 +79,8 @@ export function SendFormScreen() {
     setValues({ ...values, amount: maxAmount })
   }
 
-  const onClose = () => {
-    navigate('/')
-  }
-
   return (
-    <ScreenContentFrame onClose={onClose}>
+    <ScreenContentFrame>
       <div css={style.content}>
         <form onSubmit={handleSubmit}>
           <h1 css={Font.h2Green}>Send Payment</h1>

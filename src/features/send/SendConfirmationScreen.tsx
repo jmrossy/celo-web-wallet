@@ -90,10 +90,6 @@ export function SendConfirmationScreen() {
     showErrorModal('Payment Failed', 'Your payment could not be processed', error)
   }
 
-  const onClose = () => {
-    navigate('/')
-  }
-
   useEffect(() => {
     if (sagaStatus === SagaStatus.Started) {
       if (isSignerLedger() && !txSigned) onNeedSignature()
@@ -108,7 +104,7 @@ export function SendConfirmationScreen() {
   if (!tx) return null
 
   return (
-    <ScreenContentFrame onClose={onClose}>
+    <ScreenContentFrame>
       {txError && <Notification message={txError.toString()} color={Color.borderError} />}
       <div css={style.content}>
         <h1 css={Font.h2Green}>Review Payment</h1>
