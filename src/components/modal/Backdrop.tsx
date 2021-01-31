@@ -1,4 +1,3 @@
-import { PropsWithChildren } from 'react'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 
@@ -8,7 +7,7 @@ interface BackdropProps {
   onClick: () => void
 }
 
-export const Backdrop = (props: PropsWithChildren<BackdropProps>) => {
+export const Backdrop = (props: BackdropProps) => {
   const { opacity, color, onClick } = props
 
   return (
