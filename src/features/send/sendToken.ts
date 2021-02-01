@@ -12,9 +12,9 @@ import {
 import { Currency } from 'src/currency'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
-import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimate } from 'src/features/fees/utils'
-import { setTransactionSigned } from 'src/features/send/sendSlice'
+import { SendTokenParams } from 'src/features/send/types'
+import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
@@ -23,14 +23,6 @@ import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
-
-export interface SendTokenParams {
-  recipient: string
-  amountInWei: string
-  currency: Currency
-  comment?: string
-  feeEstimate?: FeeEstimate
-}
 
 export function validate(
   params: SendTokenParams,
@@ -97,7 +89,7 @@ function* sendToken(params: SendTokenParams) {
   validateOrThrow(() => validate(params, balances, txSizeLimitEnabled, true), 'Invalid transaction')
 
   const { signedTx, type } = yield* call(createSendTx, params, balances)
-  yield* put(setTransactionSigned(true))
+  yield* put(setNumSignatures(1))
 
   const txReceipt = yield* call(sendSignedTransaction, signedTx)
   logger.info(`Token transfer hash received: ${txReceipt.transactionHash}`)

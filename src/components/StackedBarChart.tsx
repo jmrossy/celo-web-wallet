@@ -1,4 +1,3 @@
-import { memo } from 'react'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
@@ -19,7 +18,7 @@ interface Props {
   remainingLabel?: string
 }
 
-function _StackedBarChart(props: Props) {
+export function StackedBarChart(props: Props) {
   const { width, data, total, showTotal, showLabels, showRemaining, remainingLabel } = props
 
   const remainingValue = total.value - data.reduce((sum, d) => (sum += d.value), 0)
@@ -55,8 +54,8 @@ function _StackedBarChart(props: Props) {
       )}
       {showRemaining && remainingLabel && (
         <Box direction="row" align="center" justify="between" margin="0.7em 0 0 0">
-          <div css={{ color: '#969DA5' }}>{remainingLabel}</div>
-          <div css={{ color: '#969DA5' }}>{remainingValue}</div>
+          <div css={style.remainingLabel}>{remainingLabel}</div>
+          <div css={style.remainingLabel}>{remainingValue}</div>
         </Box>
       )}
       {showTotal && (
@@ -77,6 +76,7 @@ const style: Stylesheet = {
   element: {
     height: 14,
   },
+  remainingLabel: {
+    color: '#969DA5',
+  },
 }
-
-export const StackedBarChart = memo(_StackedBarChart)

@@ -14,18 +14,20 @@ import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Currency } from 'src/currency'
-import { sendStarted } from 'src/features/send/sendSlice'
-import { SendTokenParams, validate } from 'src/features/send/sendToken'
+import { validate } from 'src/features/send/sendToken'
+import { SendTokenParams } from 'src/features/send/types'
+import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
+import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { fromWei, fromWeiRounded, toWei } from 'src/utils/amount'
+import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
 interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
-  amount: number | string
+  amount: string
 }
 
 const initialValues: SendTokenForm = {
@@ -40,16 +42,16 @@ export function SendFormScreen() {
   const navigate = useNavigate()
   const location = useLocation()
   const balances = useSelector((state: RootState) => state.wallet.balances)
-  const tx = useSelector((state: RootState) => state.send.transaction)
+  const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
 
   const onSubmit = (values: SendTokenForm) => {
-    dispatch(sendStarted(toSendTokenParams(values)))
+    dispatch(txFlowStarted({ type: TxFlowType.Send, params: amountFieldToWei(values) }))
     navigate('/send-review')
   }
 
   const validateForm = (values: SendTokenForm) =>
-    validate(toSendTokenParams(values), balances, txSizeLimitEnabled)
+    validate(amountFieldToWei(values), balances, txSizeLimitEnabled)
 
   const {
     values,
@@ -59,11 +61,11 @@ export function SendFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
-  } = useCustomForm<SendTokenForm>(getFormInitialValues(location, tx), onSubmit, validateForm)
+  } = useCustomForm<SendTokenForm>(getInitialValues(location, tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {
-    resetValues(getFormInitialValues(location, tx))
+    resetValues(getInitialValues(location, tx))
   }, [tx])
 
   const onPasteAddress = async () => {
@@ -87,7 +89,6 @@ export function SendFormScreen() {
 
           <Box direction="column" margin="0 0 2em 0">
             <label css={style.inputLabel}>Recipient Address</label>
-
             <Box direction="row" justify="start" align="end">
               <AddressInput
                 fillWidth={true}
@@ -120,7 +121,7 @@ export function SendFormScreen() {
                   name="amount"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.amount.toString()}
+                  value={values.amount}
                   placeholder="1.00"
                   {...errors['amount']}
                 />
@@ -179,37 +180,16 @@ export function SendFormScreen() {
   )
 }
 
-function getFormInitialValues(location: Location<any>, tx: SendTokenParams | null) {
+function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null): SendTokenForm {
   const recipient = location?.state?.recipient
   const initialRecipient = recipient && utils.isAddress(recipient) ? recipient : ''
-  if (!tx) {
+  if (!tx || !tx.params || tx.type !== TxFlowType.Send) {
     return {
       ...initialValues,
       recipient: initialRecipient,
     }
   } else {
-    return toSendTokenForm(tx)
-  }
-}
-
-function toSendTokenParams(values: SendTokenForm): SendTokenParams {
-  try {
-    return {
-      ...values,
-      amountInWei: toWei(values.amount).toString(),
-    }
-  } catch (error) {
-    return {
-      ...values,
-      amountInWei: '0',
-    }
-  }
-}
-
-function toSendTokenForm(values: SendTokenParams): SendTokenForm {
-  return {
-    ...values,
-    amount: fromWei(values.amountInWei),
+    return amountFieldFromWei(tx.params)
   }
 }
 

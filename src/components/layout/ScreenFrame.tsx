@@ -34,7 +34,7 @@ export function ScreenFrame(props: PropsWithChildren<any>) {
         <DesktopHome isWalletEmpty={true}>{props.children}</DesktopHome>
       )}
       {frameState === FrameState.DesktopNotHome && (
-        <DesktopHome isWalletEmpty={false}>{props.children}</DesktopHome>
+        <DesktopNotHome>{props.children}</DesktopNotHome>
       )}
       {frameState === FrameState.DesktopNotHomeNoFeed && (
         <DesktopNotHomeNoFeed>{props.children}</DesktopNotHomeNoFeed>
@@ -88,6 +88,7 @@ function useFrameState() {
 
 interface DesktopHomeProps {
   isWalletEmpty: boolean
+  hideWarnings?: boolean
 }
 
 function DesktopHome(props: PropsWithChildren<DesktopHomeProps>) {
@@ -97,13 +98,23 @@ function DesktopHome(props: PropsWithChildren<DesktopHomeProps>) {
         <NavButtonRow disabled={props.isWalletEmpty} />
         <TransactionFeed />
       </Box>
-      <div css={style.childContent}>{props.children}</div>
+      <div css={style.childContent}>
+        {!props.hideWarnings && <HomeScreenWarnings />}
+        <div>{props.children}</div>
+      </div>
     </Box>
   )
 }
 
+function DesktopNotHome(props: PropsWithChildren<any>) {
+  return (
+    <DesktopHome isWalletEmpty={false} hideWarnings={true}>
+      {props.children}
+    </DesktopHome>
+  )
+}
+
 function DesktopNotHomeNoFeed(props: PropsWithChildren<any>) {
-  // TODO max size and center
   return (
     <Box direction="column" align="center" styles={style.contentContainerNoFeed}>
       <div css={style.childContentNoFeed}>{props.children}</div>

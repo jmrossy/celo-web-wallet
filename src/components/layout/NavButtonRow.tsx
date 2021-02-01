@@ -10,8 +10,7 @@ import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
 import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { config } from 'src/config'
-import { exchangeReset } from 'src/features/exchange/exchangeSlice'
-import { sendReset } from 'src/features/send/sendSlice'
+import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -27,12 +26,12 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const dispatch = useDispatch()
 
   const onSendClick = () => {
-    dispatch(sendReset())
+    dispatch(txFlowReset())
     navigate('/send')
   }
 
   const onExchangeClick = () => {
-    dispatch(exchangeReset())
+    dispatch(txFlowReset())
     navigate('/exchange')
   }
 
@@ -42,10 +41,14 @@ export function NavButtonRow({ mobile, disabled }: Props) {
 
   const onLockClick = () => {
     // TODO reset?
+    setShowDropdown(false)
+    dispatch(txFlowReset())
     navigate('/lock')
   }
 
   const onVoteClick = () => {
+    setShowDropdown(false)
+    dispatch(txFlowReset())
     alert('TODO')
   }
 

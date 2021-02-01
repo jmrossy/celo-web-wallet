@@ -1,4 +1,3 @@
-import 'src/features/ledger/buffer' // Must be the first import
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
 import { TransportError, TransportStatusError } from '@ledgerhq/errors'
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid-noevents'
@@ -7,6 +6,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
 import { BigNumber, providers, Signer, utils } from 'ethers'
 import { config } from 'src/config'
 import { CELO_LEDGER_APP_VERSION } from 'src/consts'
+import 'src/features/ledger/buffer' // Must be the first import
 import { CeloLedgerApp } from 'src/features/ledger/CeloLedgerApp'
 import { getTokenData } from 'src/features/ledger/tokenData'
 import { areAddressesEqual, ensureLeading0x, trimLeading0x } from 'src/utils/addresses'
@@ -34,6 +34,7 @@ export class LedgerSigner extends Signer {
       logger.debug('U2F appears to be supported')
       // Note: Won't work when running from localhost
       transport = await TransportU2F.create()
+      // TODO throws errors on web, need to seperate this into two files
     } else if (config.isElectron && (await TransportNodeHid.isSupported())) {
       logger.debug('NodeHid appears to be supported')
       transport = await TransportNodeHid.open()

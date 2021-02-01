@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
@@ -9,17 +10,20 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { StackedBarChart } from 'src/components/StackedBarChart'
 import { Currency } from 'src/currency'
-import { LockActionType, LockTokenParams, validate } from 'src/features/lock/lockToken'
+import { validate } from 'src/features/lock/lockToken'
+import { LockActionType, LockTokenParams } from 'src/features/lock/types'
+import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
+import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { fromWei, fromWeiRounded, toWei } from 'src/utils/amount'
+import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
 interface LockTokenForm extends Omit<LockTokenParams, 'amountInWei'> {
-  amount: number | string
+  amount: string
 }
 
 const initialValues: LockTokenForm = {
@@ -34,19 +38,17 @@ const radioBoxLabels = [
 ]
 
 export function LockFormScreen() {
-  // const dispatch = useDispatch()
-  // const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
-  // const tx = useSelector((state: RootState) => state.lock.transaction)
-  const tx = null
+  const tx = useSelector((state: RootState) => state.txFlow.transaction)
 
   const onSubmit = (values: LockTokenForm) => {
-    // dispatch(sendStarted(toLockTokenParams(values)))
-    // navigate('/send-review')
-    alert('hi')
+    dispatch(txFlowStarted({ type: TxFlowType.Lock, params: amountFieldToWei(values) }))
+    navigate('/lock-review')
   }
 
-  const validateForm = (values: LockTokenForm) => validate(toLockTokenParams(values), balances)
+  const validateForm = (values: LockTokenForm) => validate(amountFieldToWei(values), balances)
 
   const {
     values,
@@ -56,14 +58,15 @@ export function LockFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
-  } = useCustomForm<LockTokenForm>(getFormInitialValues(tx), onSubmit, validateForm)
+  } = useCustomForm<LockTokenForm>(getInitialValues(tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {
-    resetValues(getFormInitialValues(tx))
+    resetValues(getInitialValues(tx))
   }, [tx])
 
   const onUseMax = () => {
+    // TODO diff things for diff actions
     const balance = getCurrencyBalance(balances, Currency.CELO)
     const maxAmount = fromWeiRounded(balance, Currency.CELO, true)
     setValues({ ...values, amount: maxAmount })
@@ -139,34 +142,11 @@ export function LockFormScreen() {
   )
 }
 
-function getFormInitialValues(tx: LockTokenParams | null) {
-  if (!tx) {
-    return {
-      ...initialValues,
-    }
+function getInitialValues(tx: TxFlowTransaction | null) {
+  if (!tx || !tx.params || tx.type !== TxFlowType.Lock) {
+    return initialValues
   } else {
-    return toLockTokenForm(tx)
-  }
-}
-
-function toLockTokenParams(values: LockTokenForm): LockTokenParams {
-  try {
-    return {
-      ...values,
-      amountInWei: toWei(values.amount).toString(),
-    }
-  } catch (error) {
-    return {
-      ...values,
-      amountInWei: '0',
-    }
-  }
-}
-
-function toLockTokenForm(values: LockTokenParams): LockTokenForm {
-  return {
-    ...values,
-    amount: fromWei(values.amountInWei),
+    return amountFieldFromWei(tx.params)
   }
 }
 

@@ -2,40 +2,36 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
-import { isSignerLedger } from 'src/blockchain/signer'
 import { Button } from 'src/components/buttons/Button'
 import { HelpIcon } from 'src/components/icons/HelpIcon'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { useModal } from 'src/components/modal/useModal'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Notification } from 'src/components/Notification'
 import { Currency } from 'src/currency'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
-import { exchangeCanceled, exchangeSent } from 'src/features/exchange/exchangeSlice'
 import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
 import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
-import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
+import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
+import { TxFlowType } from 'src/features/txFlow/types'
+import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { SagaStatus } from 'src/utils/saga'
 
 export function ExchangeConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { transaction: tx, transactionError: txnError, cUsdToCelo, numSignatures } = useSelector(
-    (state: RootState) => state.exchange
-  )
+  const { cUsdToCelo } = useSelector((state: RootState) => state.exchange)
+  const { transaction: tx } = useSelector((state: RootState) => state.txFlow)
 
   useEffect(() => {
-    if (!tx) {
+    if (!tx || tx.type !== TxFlowType.Exchange) {
       // Make sure we belong on this screen
       navigate('/exchange')
       return
@@ -43,91 +39,62 @@ export function ExchangeConfirmationScreen() {
 
     dispatch(
       fetchExchangeRateActions.trigger({
-        sellGold: tx.fromCurrency === Currency.CELO,
-        sellAmount: tx.amountInWei,
+        sellGold: tx.params.fromCurrency === Currency.CELO,
+        sellAmount: tx.params.amountInWei,
         force: true,
       })
     )
 
     const approveType =
-      tx.fromCurrency === Currency.CELO
+      tx.params.fromCurrency === Currency.CELO
         ? TransactionType.CeloTokenApprove
         : TransactionType.StableTokenApprove
 
     dispatch(
       estimateFeeActions.trigger({
-        preferredCurrency: tx.fromCurrency,
+        preferredCurrency: tx.params.fromCurrency,
         txs: [{ type: approveType }, { type: TransactionType.TokenExchange }],
       })
     )
   }, [tx])
 
-  const { total: totalIn, feeAmount, feeCurrency, feeEstimates } = useFee(tx?.amountInWei, 2)
+  if (!tx || tx.type !== TxFlowType.Exchange) return null
+  const params = tx.params
 
-  const { from, to, rate } = useExchangeValues(tx?.amountInWei, tx?.fromCurrency, cUsdToCelo, true)
+  const { total: totalIn, feeAmount, feeCurrency, feeEstimates } = useFee(params.amountInWei, 2)
 
-  // TODO: DRY up code below with Exchange conf screen into singer-loader-fail/success modal hook
-  const { status: sagaStatus, error: sagaError } = useSelector(
-    (state: RootState) => state.saga.exchangeToken
+  const { from, to, rate } = useExchangeValues(
+    params.amountInWei,
+    params.fromCurrency,
+    cUsdToCelo,
+    true
   )
-  const isWorking = sagaStatus === SagaStatus.Started
 
-  async function onGoBack() {
+  const onGoBack = () => {
     dispatch(exchangeTokenActions.reset())
-    dispatch(exchangeCanceled())
+    dispatch(txFlowCanceled())
     navigate(-1)
   }
 
-  async function onExchange() {
+  const onExchange = () => {
     if (!tx || !cUsdToCelo || !feeEstimates) return
-    dispatch(exchangeTokenActions.trigger({ ...tx, exchangeRate: rate, feeEstimates }))
+    dispatch(exchangeTokenActions.trigger({ ...params, exchangeRate: rate, feeEstimates }))
   }
 
-  const { showSuccessModal, showErrorModal, showWorkingModal, showModalWithContent } = useModal()
-
-  const onNeedSignature = (index: number) => {
-    const modalText = [
-      'Exchanges require two transactions',
-      'Confirm both transactions on your Ledger',
-    ]
-    showModalWithContent(
-      `Signature Required (${index}/2)`,
-      <SignatureRequiredModal text={modalText} />,
-      null,
-      null,
-      null,
-      false
-    )
-  }
-
-  const onSuccess = () => {
-    showSuccessModal('Exchange Complete!', 'Your exchange has been made successfully')
-    dispatch(exchangeTokenActions.reset())
-    dispatch(exchangeSent())
-    navigate('/')
-  }
-
-  const onFailure = (error: string | undefined) => {
-    showErrorModal('Exchange Failed', 'Your exchange could not be processed', error)
-  }
-
-  useEffect(() => {
-    if (sagaStatus === SagaStatus.Started) {
-      if (isSignerLedger() && numSignatures === 0) onNeedSignature(1)
-      else if (isSignerLedger() && numSignatures === 1) onNeedSignature(2)
-      else showWorkingModal('Exchanging...')
-    } else if (sagaStatus === SagaStatus.Success) {
-      onSuccess()
-    } else if (sagaStatus === SagaStatus.Failure) {
-      onFailure(sagaError?.toString())
-    }
-  }, [sagaStatus, sagaError, numSignatures])
-
-  if (!tx) return null
+  // TODO need dynamic onNeedSig text
+  const { isWorking } = useTxFlowStatusModals(
+    'exchangeToken',
+    2,
+    'Exchanging...',
+    'Exchange Complete!',
+    'Your exchange has been made successfully',
+    'Exchange Failed',
+    'Your exchange could not be processed',
+    ['Exchanges require two transactions', 'Confirm both transactions on your Ledger']
+  )
 
   return (
     <ScreenContentFrame>
-      {txnError && <Notification message={txnError.toString()} color={Color.borderError} />}
       <h1 css={Font.h2Green}>Review Exchange</h1>
       <div css={style.container}>
         <Box direction="column">

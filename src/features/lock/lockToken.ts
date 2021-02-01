@@ -1,8 +1,8 @@
 import { providers } from 'ethers'
 import { Currency } from 'src/currency'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
-import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimate } from 'src/features/fees/utils'
+import { LockActionType, LockTokenParams } from 'src/features/lock/types'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
@@ -10,18 +10,6 @@ import { validateAmount, validateAmountWithFees } from 'src/utils/amount'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put } from 'typed-redux-saga'
-
-export enum LockActionType {
-  Lock = 'lock',
-  Unlock = 'unlock',
-  Withdraw = 'withdraw',
-}
-
-export interface LockTokenParams {
-  amountInWei: string
-  action: LockActionType
-  feeEstimate?: FeeEstimate
-}
 
 export function validate(
   params: LockTokenParams,

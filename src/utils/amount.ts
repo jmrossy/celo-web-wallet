@@ -162,6 +162,40 @@ export function toWei(value: BigNumberish | null | undefined): BigNumber {
   return utils.parseEther('' + value)
 }
 
+// Take an object with an amount field and convert it to amountInWei
+// Useful in converting for form <-> saga communication
+export function amountFieldToWei<T extends { amount: string }>(fields: T) {
+  try {
+    return {
+      ...fields,
+      amountInWei: toWei(fields.amount).toString(),
+    }
+  } catch (error) {
+    logger.warn('Error converting amount to wei', error)
+    return {
+      ...fields,
+      amountInWei: '0',
+    }
+  }
+}
+
+// Take an object with an amountInWei field and convert it amount (in 'ether')
+// Useful in converting for saga <-> form communication
+export function amountFieldFromWei<T extends { amountInWei: string }>(fields: T) {
+  try {
+    return {
+      ...fields,
+      amount: fromWei(fields.amountInWei).toString(),
+    }
+  } catch (error) {
+    logger.warn('Error converting amount from wei', error)
+    return {
+      ...fields,
+      amount: '0',
+    }
+  }
+}
+
 export function fromFixidity(value: BigNumberish | null | undefined): number {
   if (!value) return 0
   return FixedNumber.from(value)

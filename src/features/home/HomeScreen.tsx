@@ -6,7 +6,6 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
-import { HomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
 import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
@@ -31,11 +30,6 @@ export function HomeScreen() {
 
   return (
     <ScreenContentFrame onClose={onClose} hideCloseButton={!onClose}>
-      {!isMobile && (
-        <div css={style.warningContainer}>
-          <HomeScreenWarnings />
-        </div>
-      )}
       <div css={style.container}>
         {!isWalletEmpty && <HeaderSection />}
         {isWalletEmpty && <HeaderSectionEmpty />}
@@ -69,10 +63,6 @@ const style: Stylesheet = {
     margin: '2.2em 0',
     backgroundColor: Color.altGrey,
     color: Color.altGrey, //for IE
-  },
-  warningContainer: {
-    margin: '-1.5em 0 2em -2em',
-    width: 'calc(100% + 4em)',
   },
   celoPriceLabel: {
     ...Font.body,
