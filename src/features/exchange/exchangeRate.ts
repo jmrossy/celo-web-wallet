@@ -54,7 +54,7 @@ async function fetchCeloExchangeRate(
   const sellGold = _sellGold || false
   const sellAmount = _sellAmount || WEI_PER_UNIT
 
-  const exchange = await getContract(CeloContract.Exchange)
+  const exchange = getContract(CeloContract.Exchange)
   const buyAmount = await exchange.getBuyTokenAmount(sellAmount, sellGold)
 
   // Example:

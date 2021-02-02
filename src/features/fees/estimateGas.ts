@@ -62,9 +62,9 @@ async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: Curr
 // export async function precomputeGasEstimates() {
 //   const signer = getSigner()
 
-//   const stableToken = await getContract(CeloContract.StableToken)
-//   const goldToken = await getContract(CeloContract.GoldToken)
-//   const exchange = await getContract(CeloContract.Exchange)
+//   const stableToken = getContract(CeloContract.StableToken)
+//   const goldToken = getContract(CeloContract.GoldToken)
+//   const exchange = getContract(CeloContract.Exchange)
 
 //   let comment = ''
 //   for (let i = 0; i < MAX_COMMENT_CHAR_LENGTH; i++) {

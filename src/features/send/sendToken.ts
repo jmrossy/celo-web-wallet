@@ -122,7 +122,7 @@ async function getTokenTransferTx(
 ) {
   if (currency === Currency.CELO) {
     if (comment) {
-      const goldToken = await getContract(CeloContract.GoldToken)
+      const goldToken = getContract(CeloContract.GoldToken)
       const tx = await goldToken.populateTransaction.transferWithComment(
         recipient,
         amountInWei,
@@ -139,7 +139,7 @@ async function getTokenTransferTx(
       }
     }
   } else if (currency === Currency.cUSD) {
-    const stableToken = await getContract(CeloContract.StableToken)
+    const stableToken = getContract(CeloContract.StableToken)
     if (comment) {
       const tx = await stableToken.populateTransaction.transferWithComment(
         recipient,

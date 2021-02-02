@@ -77,66 +77,83 @@ export function LockFormScreen() {
       { label: 'Locked CELO', value: 100, color: Color.primaryGold },
       { label: 'Pending CELO', value: 20, color: Color.accentBlue },
     ],
-    total: { label: 'Total CELO', value: 200, color: Color.primaryBlack },
+    total: { label: 'Total', value: 200, color: Color.primaryBlack },
   }
 
   return (
     <ScreenContentFrame>
-      <div css={style.content}>
-        <form onSubmit={handleSubmit}>
-          <h1 css={Font.h2Green}>Lock or Unlock CELO</h1>
-
-          <Box direction="column">
-            <label css={style.inputLabel}>Action</label>
-
-            <RadioBoxRow
-              value={values.action}
-              startTabIndex={0}
-              labels={radioBoxLabels}
-              name="action"
-              onChange={handleChange}
-              margin="0.5em 0 0 -1.3em"
-              containerStyles={style.radioBox}
-            />
-          </Box>
-
-          <Box direction="column" justify="end" align="start" margin="2em 0 0 0">
-            <label css={style.inputLabel}>Amount</label>
-            <Box direction="row" align="center">
-              <NumberInput
-                step="0.01"
-                width="11em"
-                margin="0 1.6em 0 0"
-                name="amount"
+      <h1 css={Font.h2Green}>Lock or Unlock CELO</h1>
+      <div css={style.container}>
+        <div css={style.content}>
+          <form onSubmit={handleSubmit}>
+            <Box direction="column">
+              <label css={style.inputLabel}>Action</label>
+              <RadioBoxRow
+                value={values.action}
+                startTabIndex={0}
+                labels={radioBoxLabels}
+                name="action"
                 onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.amount.toString()}
-                placeholder="1.00"
-                {...errors['amount']}
+                margin="0.5em 0 0 -1.3em"
+                containerStyles={style.radioBox}
               />
-              <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
-                Max Amount
-              </TextButton>
             </Box>
-          </Box>
 
-          <Box direction="column" justify="end" align="start" margin="2em 0 0 0">
-            <label css={style.inputLabel}>Result</label>
-            <StackedBarChart
-              data={stackedBarResult.data}
-              total={stackedBarResult.total}
-              showTotal={true}
-              showLabels={true}
-              showRemaining={true}
-              remainingLabel="Unlocked CELO"
-              width="19.25em"
-            />
-          </Box>
+            <Box direction="column" justify="end" align="start" margin="2em 0 0 0">
+              <label css={style.inputLabel}>Amount</label>
+              <Box direction="row" align="center">
+                <NumberInput
+                  step="0.01"
+                  width="11em"
+                  margin="0 1.6em 0 0"
+                  name="amount"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.amount.toString()}
+                  placeholder="1.00"
+                  {...errors['amount']}
+                />
+                <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
+                  Max Amount
+                </TextButton>
+              </Box>
+            </Box>
 
-          <Button type="submit" size="m" margin="2.5em 1em 0 0">
-            Continue
-          </Button>
-        </form>
+            <Box direction="column" justify="end" align="start" margin="2em 0 0 0">
+              <label css={style.inputLabel}>Result</label>
+              <StackedBarChart
+                data={stackedBarResult.data}
+                total={stackedBarResult.total}
+                showTotal={false}
+                showLabels={true}
+                showRemaining={false}
+                width="19.25em"
+              />
+            </Box>
+
+            <Button type="submit" size="m" margin="2.5em 1em 0 0">
+              Continue
+            </Button>
+          </form>
+        </div>
+        <Box
+          direction="column"
+          justify="end"
+          align="start"
+          margin="0 0 1.5em 0"
+          styles={style.currentSummaryContainer}
+        >
+          <label css={style.inputLabel}>Current Summary</label>
+          <StackedBarChart
+            data={stackedBarResult.data}
+            total={stackedBarResult.total}
+            showTotal={true}
+            showLabels={true}
+            showRemaining={true}
+            remainingLabel="Unlocked CELO"
+            width="18em"
+          />
+        </Box>
       </div>
     </ScreenContentFrame>
   )
@@ -151,6 +168,15 @@ function getInitialValues(tx: TxFlowTransaction | null) {
 }
 
 const style: Stylesheet = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column-reverse',
+    alignItems: 'flex-start',
+    [mq[1024]]: {
+      marginTop: '0.5em',
+      flexDirection: 'row',
+    },
+  },
   content: {
     width: '100%',
     maxWidth: '26em',
@@ -158,7 +184,7 @@ const style: Stylesheet = {
   },
   inputLabel: {
     ...Font.inputLabel,
-    marginBottom: '0.5em',
+    marginBottom: '0.6em',
   },
   radioBox: {
     justifyContent: 'flex-start',
@@ -169,5 +195,9 @@ const style: Stylesheet = {
     [mq[768]]: {
       fontSize: '1em',
     },
+  },
+  currentSummaryContainer: {
+    background: Color.fillLighter,
+    padding: '1.2em',
   },
 }

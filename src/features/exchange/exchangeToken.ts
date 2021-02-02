@@ -156,13 +156,13 @@ async function createApproveTx(
   fromCurrency: Currency,
   feeEstimate: FeeEstimate
 ) {
-  const exchange = await getContract(CeloContract.Exchange)
+  const exchange = getContract(CeloContract.Exchange)
 
   let tokenContract: Contract
   if (fromCurrency === Currency.cUSD) {
-    tokenContract = await getContract(CeloContract.StableToken)
+    tokenContract = getContract(CeloContract.StableToken)
   } else if (fromCurrency === Currency.CELO) {
-    tokenContract = await getContract(CeloContract.GoldToken)
+    tokenContract = getContract(CeloContract.GoldToken)
   } else {
     throw new Error(`Unsupported currency: ${fromCurrency}`)
   }
@@ -177,7 +177,7 @@ async function createExchangeTx(
   minBuyAmount: BigNumber,
   feeEstimate: FeeEstimate
 ) {
-  const exchange = await getContract(CeloContract.Exchange)
+  const exchange = getContract(CeloContract.Exchange)
   // TODO swap method for .sell once updated contract is live
   const txRequest = await exchange.populateTransaction.exchange(
     amountInWei,

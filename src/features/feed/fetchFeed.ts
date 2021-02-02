@@ -109,9 +109,8 @@ export const {
 } = createMonitoredSaga(fetchFeed, 'fetchFeed')
 
 async function doFetchFeed(address: string, lastBlockNumber: number | null) {
-  const txListP = fetchTxsFromBlockscout(address, lastBlockNumber)
-  const abiInterfacesP = getAbiInterfacesForParsing()
-  const [txList, abiInterfaces] = await Promise.all([txListP, abiInterfacesP])
+  const txList = await fetchTxsFromBlockscout(address, lastBlockNumber)
+  const abiInterfaces = getAbiInterfacesForParsing()
 
   const newTransactions: TransactionMap = {}
   let newLastBlockNumber = lastBlockNumber || 0
@@ -176,22 +175,12 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
 
 type AbiInterfaceMap = Partial<Record<CeloContract, utils.Interface>>
 
-async function getAbiInterfacesForParsing(): Promise<AbiInterfaceMap> {
-  const goldTokenContractP = getContract(CeloContract.GoldToken)
-  const stableTokenContractP = getContract(CeloContract.StableToken)
-  const exchangeContractP = getContract(CeloContract.Exchange)
-  const escrowContractP = getContract(CeloContract.Escrow)
-  const [
-    goldTokenContract,
-    stableTokenContract,
-    exchangeContract,
-    escrowContract,
-  ] = await Promise.all([
-    goldTokenContractP,
-    stableTokenContractP,
-    exchangeContractP,
-    escrowContractP,
-  ])
+function getAbiInterfacesForParsing(): AbiInterfaceMap {
+  const goldTokenContract = getContract(CeloContract.GoldToken)
+  const stableTokenContract = getContract(CeloContract.StableToken)
+  const exchangeContract = getContract(CeloContract.Exchange)
+  const escrowContract = getContract(CeloContract.Escrow)
+
   return {
     [CeloContract.GoldToken]: goldTokenContract.interface,
     [CeloContract.StableToken]: stableTokenContract.interface,

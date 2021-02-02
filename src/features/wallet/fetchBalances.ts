@@ -2,8 +2,9 @@ import { BigNumber } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
-import { CeloContract } from 'src/config'
+import { CeloContract, config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
+import { fetchLockedCeloBalances } from 'src/features/lock/fetchLockedBalances'
 import { updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -17,6 +18,9 @@ function* fetchBalances() {
   }
 
   const { celo, cUsd } = yield* call(_fetchBalances, address)
+  if (config.isElectron) {
+    const { locked, pending } = yield* call(fetchLockedCeloBalances, address)
+  }
   const balances = { cUsd, celo, lastUpdated: Date.now() }
   yield* put(updateBalances(balances))
   return balances
@@ -49,7 +53,7 @@ async function fetchCeloBalance(address: string) {
 }
 
 async function fetchDollarBalance(address: string) {
-  const stableToken = await getContract(CeloContract.StableToken)
+  const stableToken = getContract(CeloContract.StableToken)
   const balance: BigNumber = await stableToken.balanceOf(address)
   return balance.toString()
 }

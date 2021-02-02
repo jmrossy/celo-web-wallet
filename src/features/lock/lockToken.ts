@@ -71,7 +71,7 @@ async function createLockTx(params: LockTokenParams, balances: Balances) {
   // Need to account for case where user intends to send entire balance
   // const adjustedAmount = getAdjustedAmount(amountInWei, currency, balances, [feeEstimate])
 
-  // const goldToken = await getContract(CeloContract.GoldToken)
+  // const goldToken = getContract(CeloContract.GoldToken)
   // const tx = await goldToken.populateTransaction.transferWithComment(
   //   recipient,
   //   amountInWei,

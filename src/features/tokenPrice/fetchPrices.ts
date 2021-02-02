@@ -90,7 +90,7 @@ async function fetchTokenPriceFromBlockscout(
 
   const baseUrl = config.blockscoutUrl
   const oracleContractAddress = config.contractAddresses[CeloContract.SortedOracles]
-  const oracleContract = await getContract(CeloContract.SortedOracles)
+  const oracleContract = getContract(CeloContract.SortedOracles)
   const numBlocksPerDay = getNumBlocksPerInterval(86400)
   const numBlocksPerInterval = getNumBlocksPerInterval(BLOCK_FETCHING_INTERVAL_SIZE)
   const prices: TokenPriceHistory = []

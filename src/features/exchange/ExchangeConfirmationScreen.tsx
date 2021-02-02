@@ -81,7 +81,6 @@ export function ExchangeConfirmationScreen() {
     dispatch(exchangeTokenActions.trigger({ ...params, exchangeRate: rate, feeEstimates }))
   }
 
-  // TODO need dynamic onNeedSig text
   const { isWorking } = useTxFlowStatusModals(
     'exchangeToken',
     2,

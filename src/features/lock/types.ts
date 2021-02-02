@@ -1,5 +1,10 @@
 import { FeeEstimate } from 'src/features/fees/types'
 
+export interface LockedCeloBalances {
+  locked: string
+  pending: string
+}
+
 export enum LockActionType {
   Lock = 'lock',
   Unlock = 'unlock',

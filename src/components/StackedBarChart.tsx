@@ -11,7 +11,7 @@ interface DataElement {
 interface Props {
   width: string | number
   data: Array<DataElement>
-  total: DataElement
+  total: Omit<DataElement, 'color'>
   showTotal: boolean
   showLabels: boolean
   showRemaining: boolean
@@ -46,26 +46,34 @@ export function StackedBarChart(props: Props) {
               justify="between"
               margin="0.7em 0 0 0"
             >
-              <div css={{ color: d.color }}>{d.label}</div>
-              <div css={{ color: d.color }}>{d.value}</div>
+              <div css={getLabelStyle(d.color)}>{d.label}</div>
+              <div css={getLabelStyle(d.color)}>{d.value}</div>
             </Box>
           ))}
         </>
       )}
       {showRemaining && remainingLabel && (
         <Box direction="row" align="center" justify="between" margin="0.7em 0 0 0">
-          <div css={style.remainingLabel}>{remainingLabel}</div>
-          <div css={style.remainingLabel}>{remainingValue}</div>
+          <div css={getLabelStyle('#969DA5')}>{remainingLabel}</div>
+          <div css={getLabelStyle('#969DA5')}>{remainingValue}</div>
         </Box>
       )}
       {showTotal && (
         <Box direction="row" align="center" justify="between" margin="0.7em 0 0 0">
-          <div css={{ color: total.color, fontWeight: 500 }}>{total.label}</div>
-          <div css={{ color: total.color, fontWeight: 500 }}>{total.value}</div>
+          <div css={style.totalLabel}>{total.label}</div>
+          <div css={style.totalLabel}>{total.value}</div>
         </Box>
       )}
     </div>
   )
+}
+
+function getLabelStyle(color: string) {
+  return {
+    color,
+    fontSize: '1em',
+    fontWeight: 500,
+  }
 }
 
 const style: Stylesheet = {
@@ -76,7 +84,9 @@ const style: Stylesheet = {
   element: {
     height: 14,
   },
-  remainingLabel: {
-    color: '#969DA5',
+  totalLabel: {
+    color: Color.primaryBlack,
+    fontSize: '1em',
+    fontWeight: 600,
   },
 }

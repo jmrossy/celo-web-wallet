@@ -19,7 +19,7 @@ import {
   fetchFeedReducer,
   fetchFeedSaga,
   fetchFeedSagaName,
-} from 'src/features/feed/fetch'
+} from 'src/features/feed/fetchFeed'
 import {
   estimateFeeActions,
   estimateFeeReducer,
