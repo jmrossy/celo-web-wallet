@@ -5,6 +5,8 @@ import { getProvider } from 'src/blockchain/provider'
 import { CeloContract, config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
 import { fetchLockedCeloBalances } from 'src/features/lock/fetchLockedBalances'
+import { LockedCeloBalances } from 'src/features/lock/types'
+import { Balances } from 'src/features/wallet/types'
 import { updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -12,16 +14,11 @@ import { call, put, select } from 'typed-redux-saga'
 
 function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
-
   if (!address) {
     throw new Error('Cannot fetch balances before address is set')
   }
 
-  const { celo, cUsd } = yield* call(_fetchBalances, address)
-  if (config.isElectron) {
-    const { locked, pending } = yield* call(fetchLockedCeloBalances, address)
-  }
-  const balances = { cUsd, celo, lastUpdated: Date.now() }
+  const balances = yield* call(_fetchBalances, address)
   yield* put(updateBalances(balances))
   return balances
 }
@@ -41,9 +38,21 @@ export function* fetchBalancesIfStale() {
   }
 }
 
-async function _fetchBalances(address: string) {
+async function _fetchBalances(address: string): Promise<Balances> {
   const [celo, cUsd] = await Promise.all([fetchCeloBalance(address), fetchDollarBalance(address)])
-  return { celo, cUsd }
+
+  let lockedCelo: LockedCeloBalances
+  if (config.isElectron) {
+    lockedCelo = await fetchLockedCeloBalances(address)
+  } else {
+    lockedCelo = {
+      locked: '0',
+      pendingBlocked: '0',
+      pendingFree: '0',
+    }
+  }
+
+  return { celo, cUsd, lockedCelo, lastUpdated: Date.now() }
 }
 
 async function fetchCeloBalance(address: string) {

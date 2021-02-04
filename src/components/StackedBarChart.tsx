@@ -6,6 +6,7 @@ interface DataElement {
   label: string
   value: number
   color: string
+  labelColor?: string
 }
 
 interface Props {
@@ -14,20 +15,16 @@ interface Props {
   total: Omit<DataElement, 'color'>
   showTotal: boolean
   showLabels: boolean
-  showRemaining: boolean
-  remainingLabel?: string
 }
 
 export function StackedBarChart(props: Props) {
-  const { width, data, total, showTotal, showLabels, showRemaining, remainingLabel } = props
-
-  const remainingValue = total.value - data.reduce((sum, d) => (sum += d.value), 0)
+  const { width, data, total, showTotal, showLabels } = props
 
   return (
     <div>
       <Box direction="row" align="center" styles={{ ...style.container, width }}>
         {data.map((d, i) => {
-          const width = Math.floor((d.value / total.value) * 100) + '%'
+          const width = Math.round((d.value / total.value) * 100) + '%'
           return (
             <div
               key={`stacked-bar-area-${i}`}
@@ -38,25 +35,22 @@ export function StackedBarChart(props: Props) {
       </Box>
       {showLabels && (
         <>
-          {data.map((d, i) => (
-            <Box
-              key={`stacked-bar-label-${i}`}
-              direction="row"
-              align="center"
-              justify="between"
-              margin="0.7em 0 0 0"
-            >
-              <div css={getLabelStyle(d.color)}>{d.label}</div>
-              <div css={getLabelStyle(d.color)}>{d.value}</div>
-            </Box>
-          ))}
+          {data.map((d, i) => {
+            const labelStyle = getLabelStyle(d.labelColor || d.color)
+            return (
+              <Box
+                key={`stacked-bar-label-${i}`}
+                direction="row"
+                align="center"
+                justify="between"
+                margin="0.7em 0 0 0"
+              >
+                <div css={labelStyle}>{d.label}</div>
+                <div css={labelStyle}>{d.value}</div>
+              </Box>
+            )
+          })}
         </>
-      )}
-      {showRemaining && remainingLabel && (
-        <Box direction="row" align="center" justify="between" margin="0.7em 0 0 0">
-          <div css={getLabelStyle('#969DA5')}>{remainingLabel}</div>
-          <div css={getLabelStyle('#969DA5')}>{remainingValue}</div>
-        </Box>
       )}
       {showTotal && (
         <Box direction="row" align="center" justify="between" margin="0.7em 0 0 0">

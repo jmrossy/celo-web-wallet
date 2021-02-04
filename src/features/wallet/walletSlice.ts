@@ -30,6 +30,11 @@ export const walletInitialState: Wallet = {
   balances: {
     cUsd: '0',
     celo: '0',
+    lockedCelo: {
+      locked: '0',
+      pendingBlocked: '0',
+      pendingFree: '0',
+    },
     lastUpdated: null,
   },
   secretType: 'pincode',
@@ -50,8 +55,8 @@ const walletSlice = createSlice({
       state.derivationPath = derivationPath
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {
-      const { cUsd, celo, lastUpdated } = action.payload
-      assert(cUsd && celo && lastUpdated, `Invalid balance`)
+      const { cUsd, celo, lockedCelo, lastUpdated } = action.payload
+      assert(cUsd && celo && lockedCelo && lastUpdated, 'Invalid balance')
       state.balances = action.payload
     },
     setWalletUnlocked: (state, action: PayloadAction<boolean>) => {

@@ -2,7 +2,8 @@ import { FeeEstimate } from 'src/features/fees/types'
 
 export interface LockedCeloBalances {
   locked: string
-  pending: string
+  pendingBlocked: string
+  pendingFree: string
 }
 
 export enum LockActionType {
@@ -14,5 +15,5 @@ export enum LockActionType {
 export interface LockTokenParams {
   amountInWei: string
   action: LockActionType
-  feeEstimate?: FeeEstimate
+  feeEstimates?: FeeEstimate[]
 }

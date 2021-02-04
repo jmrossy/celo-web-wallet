@@ -9,12 +9,12 @@ type PendingWithdrawals = [string[], string[]] // values and times
 export async function fetchLockedCeloBalances(address: string): Promise<LockedCeloBalances> {
   const accounts = getContract(CeloContract.Accounts)
   const isRegisteredAccount = await accounts.isAccount(address)
-
   if (!isRegisteredAccount) {
     logger.debug('Account not yet registered, skipping locked balance check')
     return {
       locked: '0',
-      pending: '0',
+      pendingBlocked: '0',
+      pendingFree: '0',
     }
   }
 
@@ -26,17 +26,32 @@ export async function fetchLockedCeloBalances(address: string): Promise<LockedCe
     pendingWithdrawalsP,
   ])
 
-  // TODO differentiate from pending blocked and pending open
-  let pendingAmount = '0'
-  if (pendingWithdrawals && pendingWithdrawals.length && pendingWithdrawals[0].length) {
+  let pendingBlocked = BigNumber.from(0)
+  let pendingFree = BigNumber.from(0)
+  if (pendingWithdrawals && pendingWithdrawals.length === 2) {
     const values = pendingWithdrawals[0]
-    pendingAmount = values.reduce((sum, value) => sum.add(value), BigNumber.from(0)).toString()
+    const timestamps = pendingWithdrawals[1]
+    if (!values || !timestamps || values.length !== timestamps.length) {
+      throw new Error('Invalid pending withdrawals data')
+    }
+
+    const now = Date.now()
+    for (let i = 0; i < values.length; i++) {
+      const value = values[i]
+      const timestamp = BigNumber.from(timestamps[i])
+      if (timestamp.gte(now)) {
+        pendingFree = pendingFree.add(value)
+      } else {
+        pendingBlocked = pendingBlocked.add(value)
+      }
+    }
   }
 
-  console.log('locked balances', lockedAmount.toString(), pendingAmount)
+  console.log('locked balances', lockedAmount.toString(), pendingBlocked, pendingFree)
 
   return {
     locked: lockedAmount.toString(),
-    pending: pendingAmount,
+    pendingBlocked: pendingBlocked.toString(),
+    pendingFree: pendingBlocked.toString(),
   }
 }

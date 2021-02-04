@@ -22,4 +22,8 @@ export enum Color {
   fillLight = '#F4F5F6',
   fillLighter = '#F8FAF9',
   fillError = '#ffcdd2',
+
+  chartBlueGreen = '#3E7688',
+  chartPurple = '#BB6BD9',
+  chartGrey = '#969DA5',
 }

@@ -1,3 +1,4 @@
+import { BigNumber, BigNumberish } from 'ethers'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
@@ -12,9 +13,15 @@ import { StackedBarChart } from 'src/components/StackedBarChart'
 import { Currency } from 'src/currency'
 import { validate } from 'src/features/lock/lockToken'
 import { LockActionType, LockTokenParams } from 'src/features/lock/types'
+import {
+  getTotalCelo,
+  getTotalPendingCelo,
+  getTotalUnlockedCelo,
+  hasPendingCelo,
+} from 'src/features/lock/utils'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
-import { getCurrencyBalance } from 'src/features/wallet/utils'
+import { Balances } from 'src/features/wallet/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -66,19 +73,20 @@ export function LockFormScreen() {
   }, [tx])
 
   const onUseMax = () => {
-    // TODO diff things for diff actions
-    const balance = getCurrencyBalance(balances, Currency.CELO)
-    const maxAmount = fromWeiRounded(balance, Currency.CELO, true)
+    const { locked, pendingFree } = balances.lockedCelo
+    let maxAmount = '0'
+    if (values.action === LockActionType.Lock) {
+      maxAmount = fromWeiRounded(getTotalUnlockedCelo(balances), Currency.CELO, true)
+    } else if (values.action === LockActionType.Unlock) {
+      maxAmount = fromWeiRounded(locked, Currency.CELO, true)
+    } else if (values.action === LockActionType.Withdraw) {
+      maxAmount = fromWeiRounded(pendingFree, Currency.CELO, true)
+    }
     setValues({ ...values, amount: maxAmount })
   }
 
-  const stackedBarResult = {
-    data: [
-      { label: 'Locked CELO', value: 100, color: Color.primaryGold },
-      { label: 'Pending CELO', value: 20, color: Color.accentBlue },
-    ],
-    total: { label: 'Total', value: 200, color: Color.primaryBlack },
-  }
+  const summaryData = getSummaryChartData(balances)
+  const resultData = getResultChartData(values, balances)
 
   return (
     <ScreenContentFrame>
@@ -122,11 +130,10 @@ export function LockFormScreen() {
             <Box direction="column" justify="end" align="start" margin="2em 0 0 0">
               <label css={style.inputLabel}>Result</label>
               <StackedBarChart
-                data={stackedBarResult.data}
-                total={stackedBarResult.total}
+                data={resultData.data}
+                total={resultData.total}
                 showTotal={false}
                 showLabels={true}
-                showRemaining={false}
                 width="19.25em"
               />
             </Box>
@@ -145,12 +152,10 @@ export function LockFormScreen() {
         >
           <label css={style.inputLabel}>Current Summary</label>
           <StackedBarChart
-            data={stackedBarResult.data}
-            total={stackedBarResult.total}
+            data={summaryData.data}
+            total={summaryData.total}
             showTotal={true}
             showLabels={true}
-            showRemaining={true}
-            remainingLabel="Unlocked CELO"
             width="18em"
           />
         </Box>
@@ -164,6 +169,97 @@ function getInitialValues(tx: TxFlowTransaction | null) {
     return initialValues
   } else {
     return amountFieldFromWei(tx.params)
+  }
+}
+
+// Just for convinience / shortness cause this file has lots of conversions
+function fromWei(value: BigNumberish) {
+  return parseFloat(fromWeiRounded(value, Currency.CELO, true))
+}
+
+function getSummaryChartData(balances: Balances) {
+  const hasPending = hasPendingCelo(balances)
+  const total = getTotalCelo(balances)
+
+  const unlocked = { label: 'Unlocked', value: fromWei(balances.celo), color: Color.primaryGold }
+  const locked = {
+    label: 'Locked',
+    value: fromWei(balances.lockedCelo.locked),
+    color: Color.altGrey,
+    labelColor: Color.chartGrey,
+  }
+  const pending = hasPending
+    ? [
+        {
+          label: 'Pending (Free)',
+          value: fromWei(balances.lockedCelo.pendingFree),
+          color: Color.chartBlueGreen,
+        },
+        {
+          label: 'Pending (On Hold)',
+          value: fromWei(balances.lockedCelo.pendingBlocked),
+          color: Color.accentBlue,
+        },
+      ]
+    : [
+        {
+          label: 'Pending',
+          value: 0,
+          color: Color.accentBlue,
+        },
+      ]
+
+  return {
+    data: [unlocked, ...pending, locked],
+    total: { label: 'Total', value: fromWei(total) },
+  }
+}
+
+function subtractTil0(v1: BigNumber, v2: BigNumberish) {
+  if (v1.gt(v2)) return v1.sub(v2)
+  else return BigNumber.from('0')
+}
+
+function addUpToMax(v1: BigNumber, toAdd: BigNumberish, max: BigNumberish) {
+  if (BigNumber.from(toAdd).gt(max)) return v1.add(max)
+  else return v1.add(toAdd)
+}
+
+function getResultChartData(values: LockTokenForm, balances: Balances) {
+  let unlocked = BigNumber.from(balances.celo)
+  let pending = getTotalPendingCelo(balances)
+  let locked = BigNumber.from(balances.lockedCelo.locked)
+  const total = getTotalCelo(balances)
+
+  const valuesInWei = amountFieldToWei(values)
+  const { action, amountInWei } = valuesInWei
+  if (action === LockActionType.Lock) {
+    locked = addUpToMax(locked, amountInWei, unlocked)
+    unlocked = subtractTil0(unlocked, amountInWei)
+  } else if (action === LockActionType.Unlock) {
+    pending = addUpToMax(pending, amountInWei, locked)
+    locked = subtractTil0(locked, amountInWei)
+  } else if (action === LockActionType.Withdraw) {
+    unlocked = addUpToMax(unlocked, amountInWei, pending)
+    pending = subtractTil0(pending, amountInWei)
+  }
+
+  return {
+    data: [
+      { label: 'Unlocked', value: fromWei(unlocked), color: Color.primaryGold },
+      {
+        label: 'Pending',
+        value: fromWei(pending),
+        color: Color.accentBlue,
+      },
+      {
+        label: 'Locked',
+        value: fromWei(locked),
+        color: Color.altGrey,
+        labelColor: Color.chartGrey,
+      },
+    ],
+    total: { label: 'Total', value: fromWei(total) },
   }
 }
 
