@@ -19,7 +19,7 @@ export function validateAmount(
   _amountInWei: BigNumberish,
   currency: Currency,
   balances: Balances,
-  max?: string
+  max?: BigNumberish
 ): ErrorState | null {
   const amountInWei = BigNumber.from(_amountInWei)
 
@@ -28,7 +28,7 @@ export function validateAmount(
     return invalidInput('amount', 'Amount too small')
   }
 
-  if (max && amountInWei.gte(max)) {
+  if (max && amountInWei.gte(max) && !areAmountsNearlyEqual(amountInWei, max, currency)) {
     logger.warn(`Invalid amount, too big: ${amountInWei.toString()}`)
     return invalidInput('amount', 'Amount too big')
   }
@@ -201,4 +201,9 @@ export function fromFixidity(value: BigNumberish | null | undefined): number {
   return FixedNumber.from(value)
     .divUnsafe(FixedNumber.from('1000000000000000000000000'))
     .toUnsafeFloat()
+}
+
+// Strangely the Ethers BN doesn't have a min function
+export function BigNumberMin(bn1: BigNumber, bn2: BigNumber) {
+  return bn1.gte(bn2) ? bn2 : bn1
 }

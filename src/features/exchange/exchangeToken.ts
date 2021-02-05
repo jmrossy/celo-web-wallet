@@ -15,7 +15,7 @@ import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
-import { validateFeeEstimate } from 'src/features/fees/utils'
+import { validateFeeEstimates } from 'src/features/fees/utils'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
@@ -67,8 +67,7 @@ export function validate(
   if (validateFee) {
     errors = {
       ...errors,
-      ...validateFeeEstimate(feeEstimates && feeEstimates[0]),
-      ...validateFeeEstimate(feeEstimates && feeEstimates[1]),
+      ...validateFeeEstimates(feeEstimates),
       ...validateAmountWithFees(amountInWei, fromCurrency, balances, feeEstimates),
     }
   }

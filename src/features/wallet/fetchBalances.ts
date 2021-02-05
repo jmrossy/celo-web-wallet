@@ -4,9 +4,9 @@ import { getContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { CeloContract, config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
-import { fetchLockedCeloBalances } from 'src/features/lock/fetchLockedBalances'
+import { fetchLockedCeloStatus } from 'src/features/lock/fetchLockedStatus'
+import { setLockedCeloStatus } from 'src/features/lock/lockSlice'
 import { LockedCeloBalances } from 'src/features/lock/types'
-import { Balances } from 'src/features/wallet/types'
 import { updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -18,7 +18,22 @@ function* fetchBalances() {
     throw new Error('Cannot fetch balances before address is set')
   }
 
-  const balances = yield* call(_fetchBalances, address)
+  const { celo, cUsd } = yield* call(fetchTokenBalances, address)
+
+  let lockedCelo: LockedCeloBalances
+  if (config.isElectron) {
+    const lockedCeloStatus = yield* call(fetchLockedCeloStatus, address)
+    yield* put(setLockedCeloStatus(lockedCeloStatus))
+    lockedCelo = lockedCeloStatus
+  } else {
+    lockedCelo = {
+      locked: '0',
+      pendingBlocked: '0',
+      pendingFree: '0',
+    }
+  }
+
+  const balances = { celo, cUsd, lockedCelo, lastUpdated: Date.now() }
   yield* put(updateBalances(balances))
   return balances
 }
@@ -38,21 +53,9 @@ export function* fetchBalancesIfStale() {
   }
 }
 
-async function _fetchBalances(address: string): Promise<Balances> {
+async function fetchTokenBalances(address: string) {
   const [celo, cUsd] = await Promise.all([fetchCeloBalance(address), fetchDollarBalance(address)])
-
-  let lockedCelo: LockedCeloBalances
-  if (config.isElectron) {
-    lockedCelo = await fetchLockedCeloBalances(address)
-  } else {
-    lockedCelo = {
-      locked: '0',
-      pendingBlocked: '0',
-      pendingFree: '0',
-    }
-  }
-
-  return { celo, cUsd, lockedCelo, lastUpdated: Date.now() }
+  return { celo, cUsd }
 }
 
 async function fetchCeloBalance(address: string) {

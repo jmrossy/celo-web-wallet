@@ -142,7 +142,7 @@ export function SendConfirmationScreen() {
           </Box>
         </Box>
 
-        <Box direction="row" justify="between" margin={'3em 0 0 0'}>
+        <Box direction="row" justify="between" margin="3em 0 0 0">
           <Button
             type="button"
             size="m"

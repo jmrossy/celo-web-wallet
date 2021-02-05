@@ -2,20 +2,21 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
-import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { HelpIcon } from 'src/components/icons/HelpIcon'
-import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
+import { StackedBarChart } from 'src/components/StackedBarChart'
+import { Currency } from 'src/currency'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
-import { sendTokenActions } from 'src/features/send/sendToken'
+import { getResultChartData } from 'src/features/lock/barCharts'
+import { getLockActionTxPlan, lockTokenActions } from 'src/features/lock/lockToken'
+import { lockActionLabel } from 'src/features/lock/types'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
-import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -25,70 +26,70 @@ export function LockConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const { pendingWithdrawals, isAccountRegistered } = useSelector((state: RootState) => state.lock)
   const { transaction: tx } = useSelector((state: RootState) => state.txFlow)
 
   useEffect(() => {
     // Make sure we belong on this screen
-    if (!tx || tx.type !== TxFlowType.Send) {
-      navigate('/send')
+    if (!tx || tx.type !== TxFlowType.Lock) {
+      navigate('/lock')
       return
     }
 
-    const type = tx.params.comment
-      ? TransactionType.StableTokenTransferWithComment
-      : TransactionType.StableTokenTransfer
-    dispatch(estimateFeeActions.trigger({ txs: [{ type }] }))
+    const txs = getLockActionTxPlan(tx.params, pendingWithdrawals, isAccountRegistered)
+    dispatch(estimateFeeActions.trigger({ txs }))
   }, [tx])
 
-  if (!tx || tx.type !== TxFlowType.Send) return null
-  const params = tx.params
+  if (!tx || tx.type !== TxFlowType.Lock) return null
 
-  const { amount, total, feeAmount, feeCurrency, feeEstimates } = useFee(params.amountInWei)
+  const params = tx.params
+  const { action, amountInWei } = params
+  const txPlan = getLockActionTxPlan(params, pendingWithdrawals, isAccountRegistered)
+
+  const { amount, feeAmount, feeCurrency, feeEstimates } = useFee(amountInWei, txPlan.length)
 
   const onGoBack = () => {
-    dispatch(sendTokenActions.reset())
+    dispatch(lockTokenActions.reset())
     dispatch(txFlowCanceled())
     navigate(-1)
   }
 
   const onSend = () => {
     if (!tx || !feeEstimates) return
-    dispatch(sendTokenActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
+    dispatch(lockTokenActions.trigger({ ...params, feeEstimates }))
   }
 
   const { isWorking } = useTxFlowStatusModals(
-    'sendToken',
-    1,
-    'Sending Payment...',
-    'Payment Sent!',
-    'Your payment has been sent successfully',
-    'Payment Failed',
-    'Your payment could not be processed'
+    'lockToken',
+    txPlan.length,
+    `${lockActionLabel(action, true)} CELO...`,
+    `${lockActionLabel(action)} Complete!`,
+    `Your ${lockActionLabel(action)} request was successful`,
+    `${lockActionLabel(action)} Failed`,
+    `Your ${lockActionLabel(action)} request could not be processed`,
+    [
+      `${lockActionLabel(action)} requests sometimes need several transactions`,
+      'Confirm all transactions on your Ledger',
+    ]
   )
+
+  const resultData = getResultChartData(params, balances)
 
   return (
     <ScreenContentFrame>
       <div css={style.content}>
-        <h1 css={Font.h2Green}>Review Payment</h1>
+        <h1 css={Font.h2Green}>{`Review ${lockActionLabel(action)} Request`}</h1>
 
-        <Box align="center" styles={style.inputRow} justify="between">
-          <label css={style.labelCol}>To</label>
-          <Box direction="row" align="center" justify="end" styles={style.valueCol}>
-            <Address address={params.recipient} />
-          </Box>
+        <Box direction="row" styles={style.inputRow} justify="between">
+          <label css={style.labelCol}>Action</label>
+          <label css={[style.valueLabel, style.valueCol]}>{lockActionLabel(action)}</label>
         </Box>
-
-        {params.comment && (
-          <Box direction="row" styles={style.inputRow} justify="between">
-            <label css={style.labelCol}>Comment</label>
-            <label css={[style.valueLabel, style.valueCol]}>{params.comment}</label>
-          </Box>
-        )}
 
         <Box direction="row" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>Value</label>
           <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue amountInWei={amount} currency={params.currency} baseFontSize={1.2} />
+            <MoneyValue amountInWei={amount} currency={Currency.CELO} baseFontSize={1.2} />
           </Box>
         </Box>
 
@@ -116,7 +117,6 @@ export function LockConfirmationScreen() {
           </Box>
           {feeAmount && feeCurrency ? (
             <Box justify="end" align="end" styles={style.valueCol}>
-              <label>+</label>
               <MoneyValue
                 amountInWei={feeAmount}
                 currency={feeCurrency}
@@ -130,19 +130,17 @@ export function LockConfirmationScreen() {
           )}
         </Box>
 
-        <Box direction="row" styles={style.inputRow} justify="between">
-          <label css={[style.labelCol, style.totalLabel]}>Total</label>
-          <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue
-              amountInWei={total}
-              currency={params.currency}
-              baseFontSize={1.2}
-              fontWeight={700}
-            />
-          </Box>
-        </Box>
+        <div css={style.inputRow}>
+          <StackedBarChart
+            data={resultData.data}
+            total={resultData.total}
+            showTotal={false}
+            showLabels={true}
+            width="23em"
+          />
+        </div>
 
-        <Box direction="row" justify="between" margin={'3em 0 0 0'}>
+        <Box direction="row" justify="between" margin="3em 0 0 0">
           <Button
             type="button"
             size="m"
@@ -158,10 +156,10 @@ export function LockConfirmationScreen() {
             type="submit"
             size="m"
             onClick={onSend}
-            icon={SendPaymentIcon}
             disabled={isWorking || !feeAmount}
+            width="10em"
           >
-            Send Payment
+            {lockActionLabel(action)}
           </Button>
         </Box>
       </div>
@@ -193,10 +191,6 @@ const style: Stylesheet = {
     width: '12em',
     textAlign: 'end',
   },
-  totalLabel: {
-    color: Color.primaryGrey,
-    fontWeight: 600,
-  },
   valueLabel: {
     color: Color.primaryBlack,
     fontSize: '1.2em',
@@ -205,11 +199,5 @@ const style: Stylesheet = {
   bottomBorder: {
     paddingBottom: '1.25em',
     borderBottom: `1px solid ${Color.borderMedium}`,
-  },
-  iconRight: {
-    marginLeft: '0.5em',
-  },
-  icon: {
-    marginBottom: '-0.3em',
   },
 }

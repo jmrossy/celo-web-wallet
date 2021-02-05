@@ -13,6 +13,11 @@ const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.CeloTokenApprove]: 95000,
   [TransactionType.CeloNativeTransfer]: 40000,
   [TransactionType.TokenExchange]: 350000,
+  [TransactionType.AccountRegistration]: 100000,
+  [TransactionType.LockCelo]: 95000,
+  [TransactionType.RelockCelo]: 150000,
+  [TransactionType.UnlockCelo]: 260000,
+  [TransactionType.WithdrawLockedCelo]: 150000,
 }
 
 const STABLE_TOKEN_GAS_MULTIPLIER = 5
@@ -60,11 +65,13 @@ async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: Curr
 // Do not use in production
 // Kept for convinence to compute the consts above
 // export async function precomputeGasEstimates() {
-//   const signer = getSigner()
+//   const signer = getSigner().signer
 
 //   const stableToken = getContract(CeloContract.StableToken)
 //   const goldToken = getContract(CeloContract.GoldToken)
 //   const exchange = getContract(CeloContract.Exchange)
+//   const lockedGold = getContract(CeloContract.LockedGold)
+//   const accounts = getContract(CeloContract.Accounts)
 
 //   let comment = ''
 //   for (let i = 0; i < MAX_COMMENT_CHAR_LENGTH; i++) {
@@ -109,4 +116,10 @@ async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: Curr
 //   await txResponse.wait()
 //   const ex = await signer.estimateGas(await exchange.populateTransaction.exchange(value, 10, true))
 //   logger.info('token exchange:' + ex.toString())
+
+//   const createAccount = await signer.estimateGas(await accounts.populateTransaction.createAccount())
+//   console.info('create account:' + createAccount.toString())
+
+//   const lock = await signer.estimateGas(await lockedGold.populateTransaction.lock())
+//   console.info('lock celo:' + lock.toString())
 // }

@@ -27,6 +27,11 @@ export enum TransactionType {
   EscrowTransfer,
   EscrowWithdraw,
   TokenExchange,
+  AccountRegistration,
+  LockCelo,
+  RelockCelo,
+  UnlockCelo,
+  WithdrawLockedCelo,
   Other,
 }
 

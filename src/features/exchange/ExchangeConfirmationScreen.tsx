@@ -157,7 +157,7 @@ export function ExchangeConfirmationScreen() {
             />
           </Box>
 
-          <Box direction="row" justify="between" margin={'2em 0 0 0'}>
+          <Box direction="row" justify="between" margin="2em 0 0 0">
             <Button
               type="button"
               onClick={onGoBack}

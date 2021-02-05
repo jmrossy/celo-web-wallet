@@ -41,7 +41,7 @@ export function useTxFlowStatusModals(
   const onNeedSignature = (index: number) => {
     const modalText = reqSignatureMsg ?? ['Confirm the transaction on your Ledger']
     let modalTitle = 'Signature Required'
-    if (signaturesNeeded > 1) modalTitle += ` (${index + 1}/2)`
+    if (signaturesNeeded > 1) modalTitle += ` (${index + 1}/${signaturesNeeded})`
     showModalWithContent(
       modalTitle,
       <SignatureRequiredModal text={modalText} />,
@@ -72,7 +72,7 @@ export function useTxFlowStatusModals(
     } else if (sagaStatus === SagaStatus.Failure) {
       onFailure(sagaError?.toString())
     }
-  }, [sagaStatus, sagaError, numSignatures])
+  }, [sagaStatus, sagaError, numSignatures, signaturesNeeded])
 
   return { status, isWorking: sagaStatus === SagaStatus.Started }
 }

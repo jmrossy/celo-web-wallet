@@ -1,12 +1,12 @@
 import { BigNumber } from 'ethers'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
-import { LockedCeloBalances } from 'src/features/lock/types'
+import { LockedCeloStatus, PendingWithdrawal } from 'src/features/lock/types'
 import { logger } from 'src/utils/logger'
 
-type PendingWithdrawals = [string[], string[]] // values and times
+type PendingWithdrawalsRaw = [string[], string[]] // values and times
 
-export async function fetchLockedCeloBalances(address: string): Promise<LockedCeloBalances> {
+export async function fetchLockedCeloStatus(address: string): Promise<LockedCeloStatus> {
   const accounts = getContract(CeloContract.Accounts)
   const isRegisteredAccount = await accounts.isAccount(address)
   if (!isRegisteredAccount) {
@@ -15,43 +15,52 @@ export async function fetchLockedCeloBalances(address: string): Promise<LockedCe
       locked: '0',
       pendingBlocked: '0',
       pendingFree: '0',
+      pendingWithdrawals: [],
+      isAccountRegistered: false,
     }
   }
 
   const lockedGold = getContract(CeloContract.LockedGold)
   const lockedAmountP = lockedGold.getAccountTotalLockedGold(address)
   const pendingWithdrawalsP = lockedGold.getPendingWithdrawals(address)
-  const [lockedAmount, pendingWithdrawals]: [BigNumber, PendingWithdrawals] = await Promise.all([
-    lockedAmountP,
-    pendingWithdrawalsP,
-  ])
+  const [lockedAmount, pendingWithdrawalsRaw]: [
+    BigNumber,
+    PendingWithdrawalsRaw
+  ] = await Promise.all([lockedAmountP, pendingWithdrawalsP])
 
   let pendingBlocked = BigNumber.from(0)
   let pendingFree = BigNumber.from(0)
-  if (pendingWithdrawals && pendingWithdrawals.length === 2) {
-    const values = pendingWithdrawals[0]
-    const timestamps = pendingWithdrawals[1]
+  const pendingWithdrawals: PendingWithdrawal[] = []
+
+  if (pendingWithdrawalsRaw && pendingWithdrawalsRaw.length === 2) {
+    const values = pendingWithdrawalsRaw[0]
+    const timestamps = pendingWithdrawalsRaw[1]
     if (!values || !timestamps || values.length !== timestamps.length) {
       throw new Error('Invalid pending withdrawals data')
     }
 
     const now = Date.now()
     for (let i = 0; i < values.length; i++) {
-      const value = values[i]
-      const timestamp = BigNumber.from(timestamps[i])
-      if (timestamp.gte(now)) {
+      const value = BigNumber.from(values[i])
+      const timestamp = BigNumber.from(timestamps[i]).mul(1000)
+      if (timestamp.lte(now)) {
         pendingFree = pendingFree.add(value)
       } else {
         pendingBlocked = pendingBlocked.add(value)
       }
+      pendingWithdrawals.push({
+        index: i,
+        value: value.toString(),
+        timestamp: timestamp.toNumber(),
+      })
     }
   }
-
-  console.log('locked balances', lockedAmount.toString(), pendingBlocked, pendingFree)
 
   return {
     locked: lockedAmount.toString(),
     pendingBlocked: pendingBlocked.toString(),
-    pendingFree: pendingBlocked.toString(),
+    pendingFree: pendingFree.toString(),
+    pendingWithdrawals,
+    isAccountRegistered: true,
   }
 }
