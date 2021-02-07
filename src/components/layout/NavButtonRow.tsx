@@ -40,7 +40,6 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   }
 
   const onLockClick = () => {
-    // TODO reset?
     setShowDropdown(false)
     dispatch(txFlowReset())
     navigate('/lock')
@@ -49,7 +48,8 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const onVoteClick = () => {
     setShowDropdown(false)
     dispatch(txFlowReset())
-    alert('TODO')
+    // TODO change to staking dashboard when ready
+    navigate('/validators')
   }
 
   const showExtraOptions = config.isElectron && !mobile

@@ -1,4 +1,5 @@
 import { TextButton } from 'src/components/buttons/TextButton'
+import { TextLink } from 'src/components/buttons/TextLink'
 import { Box } from 'src/components/layout/Box'
 import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
@@ -25,48 +26,17 @@ function AboutWalletModal() {
     <Box direction="column" align="center" styles={style.container}>
       <p style={style.text}>
         The Celo Wallet is a free, open source wallet for the{' '}
-        <a css={Font.linkLight} href="https://celo.org" target="_blank" rel="noopener noreferrer">
-          Celo network
-        </a>
-        . It was created by{' '}
-        <a
-          css={Font.linkLight}
-          href="https://twitter.com/RossyWrote"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          J M Rossy
-        </a>{' '}
-        and{' '}
-        <a
-          css={Font.linkLight}
-          href="https://www.linkedin.com/in/brianschwalm/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Brian Schwalm
-        </a>
-        .
+        <TextLink link="https://celo.org">Celo network</TextLink>. It was created by{' '}
+        <TextLink link="https://twitter.com/RossyWrote">J M Rossy</TextLink> and{' '}
+        <TextLink link="https://www.linkedin.com/in/brianschwalm/">Brian Schwalm</TextLink>.
       </p>
       <p style={style.text}>
         The source code for the wallet can be found{' '}
-        <a
-          css={Font.linkLight}
-          href="https://github.com/celo-tools/celo-web-wallet"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          on Github
-        </a>{' '}
-        and includes answers to{' '}
-        <a
-          css={Font.linkLight}
-          href="https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <TextLink link="https://github.com/celo-tools/celo-web-wallet">on Github</TextLink> and
+        includes answers to{' '}
+        <TextLink link="https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md">
           Frequently Asked Questions
-        </a>
+        </TextLink>
         .
       </p>
     </Box>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ExchangesModal } from 'src/components/ExchangesModal'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
-import ChevronIcon from 'src/components/icons/chevron.svg'
+import { ChevronIcon } from 'src/components/icons/Chevron'
 import CoinSwapIcon from 'src/components/icons/coin_swap.svg'
 import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
@@ -97,7 +97,7 @@ export const AccountMenu = () => {
     <>
       <div css={style.container} onClick={() => setOpen(true)}>
         <Box styles={style.caretContainer} align="center">
-          <img src={ChevronIcon} width="14px" height="8px" css={rotated(isOpen)} />
+          <ChevronIcon width="14px" height="8px" direction={isOpen ? 'n' : 's'} />
         </Box>
         <Box styles={style.addressContainer} align="center">
           <span css={style.address}>{addressStub}</span>
@@ -188,5 +188,3 @@ const style: Stylesheet = {
     boxShadow: '2px 4px 2px -2px #ccc',
   },
 }
-
-const rotated = (isOpen: boolean) => (isOpen ? { transform: 'rotate(180deg)' } : null)
