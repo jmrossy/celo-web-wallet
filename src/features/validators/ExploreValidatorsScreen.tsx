@@ -12,6 +12,7 @@ export function ExploreValidatorsScreen() {
   const data = useMemo(
     () => [
       {
+        id: '1',
         name: 'Anchorage',
         elected: '5/5',
         votes: '15,965,203',
@@ -19,6 +20,7 @@ export function ExploreValidatorsScreen() {
         status: 'Good',
       },
       {
+        id: '2',
         name: 'Polychain Labs',
         elected: '3/4',
         votes: '6,382,029',
@@ -26,6 +28,7 @@ export function ExploreValidatorsScreen() {
         status: 'Good',
       },
       {
+        id: '3',
         name: 'Unnamed Group',
         elected: '2/2',
         votes: '3,293,103',
