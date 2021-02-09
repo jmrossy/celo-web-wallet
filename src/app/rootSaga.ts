@@ -57,6 +57,12 @@ import {
   fetchTokenPriceSagaName,
 } from 'src/features/tokenPrice/fetchPrices'
 import {
+  fetchValidatorsActions,
+  fetchValidatorsReducer,
+  fetchValidatorsSaga,
+  fetchValidatorsSagaName,
+} from 'src/features/validators/fetchValidators'
+import {
   createWalletActions,
   createWalletReducer,
   createWalletSaga,
@@ -149,6 +155,11 @@ export const monitoredSagas: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
+  },
+  [fetchValidatorsSagaName]: {
+    saga: fetchValidatorsSaga,
+    reducer: fetchValidatorsReducer,
+    actions: fetchValidatorsActions,
   },
   [lockTokenSagaName]: {
     saga: lockTokenSaga,

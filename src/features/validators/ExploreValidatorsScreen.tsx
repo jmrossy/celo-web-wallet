@@ -1,43 +1,28 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from 'src/app/rootReducer'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Table } from 'src/components/Table'
+import { fetchValidatorsActions } from 'src/features/validators/fetchValidators'
+import { ValidatorGroupTableRow } from 'src/features/validators/types'
+import { validatorGroupsToTableData } from 'src/features/validators/utils'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
 export function ExploreValidatorsScreen() {
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
   // const navigate = useNavigate()
 
-  const data = useMemo(
-    () => [
-      {
-        id: '1',
-        name: 'Anchorage',
-        elected: '5/5',
-        votes: '15,965,203',
-        percent: '5.77%',
-        status: 'Good',
-      },
-      {
-        id: '2',
-        name: 'Polychain Labs',
-        elected: '3/4',
-        votes: '6,382,029',
-        percent: '3.87%',
-        status: 'Good',
-      },
-      {
-        id: '3',
-        name: 'Unnamed Group',
-        elected: '2/2',
-        votes: '3,293,103',
-        percent: '2.50%',
-        status: 'Poor',
-      },
-    ],
-    []
-  )
+  useEffect(() => {
+    dispatch(fetchValidatorsActions.trigger())
+  }, [])
+
+  const groups = useSelector((state: RootState) => state.validators.groups)
+
+  const data = useMemo(() => {
+    return validatorGroupsToTableData(groups)
+  }, [groups])
 
   const columns = useMemo(
     () => [
@@ -74,10 +59,18 @@ export function ExploreValidatorsScreen() {
           <TextLink link="https://celo.org/validators/explore">celo.org</TextLink> or{' '}
           <TextLink link="https://thecelo.com/">thecelo.com</TextLink>
         </h3>
-        <Table columns={columns} data={data} />
+        <Table<ValidatorGroupTableRow>
+          columns={columns}
+          data={data}
+          renderExpanded={renderExpanded}
+        />
       </div>
     </ScreenContentFrame>
   )
+}
+
+function renderExpanded(group: ValidatorGroupTableRow) {
+  return <div>{group.name}</div>
 }
 
 const style: Stylesheet = {

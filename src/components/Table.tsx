@@ -8,23 +8,24 @@ interface Column {
   id: string // it's key in the data
 }
 
-type DataElement = { id: string } & Record<string, string | ReactElement>
+type DataElement = { id: string } & Record<string, any>
 
-interface Props {
+interface Props<T extends DataElement> {
   columns: Column[]
-  data: DataElement[]
+  data: T[]
+  renderExpanded: (data: T) => ReactElement
   initialSortBy?: string // column id
 }
 
-export function Table(props: Props) {
-  const { columns, data, initialSortBy } = props
+export function Table<T extends DataElement>(props: Props<T>) {
+  const { columns, data, renderExpanded, initialSortBy } = props
 
   const [sortBy, setSortBy] = useState(initialSortBy ?? columns[0].id)
   const [sortDesc, setSortDesc] = useState(true)
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
 
   const sortedData = useMemo(() => {
-    return sortDataBy(data, sortBy, sortDesc)
+    return sortDataBy<T>(data, sortBy, sortDesc)
   }, [data, sortBy, sortDesc])
 
   const onColumnClick = (columnId: string) => {
@@ -99,7 +100,7 @@ export function Table(props: Props) {
               </tr>
               {isExpanded && (
                 <tr>
-                  <td colSpan={columns.length}>More Stuff</td>
+                  <td colSpan={columns.length}>{renderExpanded(row)}</td>
                 </tr>
               )}
             </Fragment>
@@ -110,7 +111,7 @@ export function Table(props: Props) {
   )
 }
 
-function sortDataBy(data: DataElement[], columnId: string, decending: boolean) {
+function sortDataBy<T extends DataElement>(data: T[], columnId: string, decending: boolean) {
   return [...data].sort((a, b) => {
     const order = decending ? a[columnId] < b[columnId] : a[columnId] >= b[columnId]
     return order ? -1 : 1
@@ -165,8 +166,8 @@ const style: Stylesheet = {
     cursor: 'pointer',
   },
   rowChevron: {
-    marginRight: 10,
+    marginRight: 12,
     marginBottom: 2,
-    opacity: 0.7,
+    opacity: 0.5,
   },
 }
