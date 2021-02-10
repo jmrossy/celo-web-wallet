@@ -1,24 +1,27 @@
-import { Fragment, ReactElement, useMemo, useState } from 'react'
+import { Fragment, FunctionComponent, ReactElement, useMemo, useState } from 'react'
 import { ChevronIcon } from 'src/components/icons/Chevron'
+import { Spinner } from 'src/components/Spinner'
 import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
+import { Styles, Stylesheet } from 'src/styles/types'
 
-interface Column {
+export interface TableColumn {
+  id: string // its key in the data
   header: string
-  id: string // it's key in the data
+  renderer?: (dataCell: any) => string | ReactElement
 }
 
 type DataElement = { id: string } & Record<string, any>
 
 interface Props<T extends DataElement> {
-  columns: Column[]
+  columns: TableColumn[]
   data: T[]
-  renderExpanded: (data: T) => ReactElement
+  ExpandedRow: FunctionComponent<{ row: T }>
   initialSortBy?: string // column id
+  isLoading?: boolean
 }
 
 export function Table<T extends DataElement>(props: Props<T>) {
-  const { columns, data, renderExpanded, initialSortBy } = props
+  const { columns, data, ExpandedRow, initialSortBy, isLoading } = props
 
   const [sortBy, setSortBy] = useState(initialSortBy ?? columns[0].id)
   const [sortDesc, setSortDesc] = useState(true)
@@ -42,78 +45,86 @@ export function Table<T extends DataElement>(props: Props<T>) {
   }
 
   return (
-    <table css={style.table}>
-      <thead>
-        <tr>
-          {columns.map((column) => {
-            const isSelected = column.id === sortBy
-            const thStyle = isSelected ? [style.headerTh, style.headerThSelected] : style.headerTh
+    <div css={style.container}>
+      <table css={isLoading ? tableLoading : style.table}>
+        <thead>
+          <tr>
+            {columns.map((column) => {
+              const isSelected = column.id === sortBy
+              const thStyle = isSelected ? headerThSelected : style.headerTh
+              return (
+                <th
+                  key={`table-column-${column.id}`}
+                  onClick={() => onColumnClick(column.id)}
+                  css={thStyle}
+                >
+                  <>
+                    {column.header}
+                    {isSelected && (
+                      <ChevronIcon
+                        width="12px"
+                        height="7px"
+                        direction={sortDesc ? 's' : 'n'}
+                        styles={style.headerChevron}
+                      />
+                    )}
+                  </>
+                </th>
+              )
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={columns.length} css={style.spacerTh}></td>
+          </tr>
+          {sortedData.map((row, i) => {
+            const isExpanded = !!expandedRows[row.id]
             return (
-              <th
-                key={`table-column-${column.id}`}
-                onClick={() => onColumnClick(column.id)}
-                css={thStyle}
-              >
-                <>
-                  {column.header}
-                  {isSelected && (
-                    <ChevronIcon
-                      width="12px"
-                      height="7px"
-                      direction={sortDesc ? 's' : 'n'}
-                      styles={style.headerChevron}
-                    />
-                  )}
-                </>
-              </th>
+              <Fragment key={`table-row-${i}`}>
+                <tr onClick={() => onRowClick(row.id)}>
+                  {columns.map((column, j) => {
+                    return (
+                      <td key={`table-cell-${i}-${j}`} css={style.td}>
+                        <>
+                          {j === 0 && (
+                            <ChevronIcon
+                              width="8px"
+                              height="6px"
+                              direction={isExpanded ? 's' : 'e'}
+                              styles={style.rowChevron}
+                            />
+                          )}
+                          {column.renderer ? column.renderer(row) : row[column.id]}
+                        </>
+                      </td>
+                    )
+                  })}
+                </tr>
+                {isExpanded && (
+                  <tr>
+                    <td colSpan={columns.length}>
+                      <ExpandedRow row={row} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             )
           })}
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colSpan={columns.length} css={style.spacerTh}></td>
-        </tr>
-        {sortedData.map((row, i) => {
-          const isExpanded = !!expandedRows[row.id]
-          return (
-            <Fragment key={`table-row-${i}`}>
-              <tr onClick={() => onRowClick(row.id)}>
-                {columns.map((column, j) => {
-                  const cell = row[column.id]
-                  return (
-                    <td key={`table-cell-${i}-${j}`} css={style.td}>
-                      <>
-                        {j === 0 && (
-                          <ChevronIcon
-                            width="10px"
-                            height="6px"
-                            direction={isExpanded ? 's' : 'e'}
-                            styles={style.rowChevron}
-                          />
-                        )}
-                        {cell}
-                      </>
-                    </td>
-                  )
-                })}
-              </tr>
-              {isExpanded && (
-                <tr>
-                  <td colSpan={columns.length}>{renderExpanded(row)}</td>
-                </tr>
-              )}
-            </Fragment>
-          )
-        })}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+      {isLoading && (
+        <div css={style.spinner}>
+          <Spinner />
+        </div>
+      )}
+    </div>
   )
 }
 
 function sortDataBy<T extends DataElement>(data: T[], columnId: string, decending: boolean) {
   return [...data].sort((a, b) => {
-    const order = decending ? a[columnId] < b[columnId] : a[columnId] >= b[columnId]
+    const order = decending ? a[columnId] > b[columnId] : a[columnId] <= b[columnId]
     return order ? -1 : 1
   })
 }
@@ -131,6 +142,9 @@ const thTextAlign = {
 }
 
 const style: Stylesheet = {
+  container: {
+    position: 'relative',
+  },
   table: {
     width: '100%',
     maxWidth: '80em',
@@ -144,20 +158,16 @@ const style: Stylesheet = {
     ...Font.bold,
     opacity: 0.7,
     ...thTextAlign,
-    padding: '0 20px 15px 20px',
+    padding: '0 20px 17px 20px',
     borderBottom: '1px solid #D8DADB',
     cursor: 'pointer',
-  },
-  headerThSelected: {
-    opacity: 0.9,
-    paddingRight: 0,
   },
   headerChevron: {
     opacity: 0.9,
     marginLeft: 8,
   },
   spacerTh: {
-    height: 15,
+    height: 17,
   },
   td: {
     ...Font.body2,
@@ -170,4 +180,28 @@ const style: Stylesheet = {
     marginBottom: 2,
     opacity: 0.5,
   },
+  spinner: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 400,
+    zIndex: 100,
+    opacity: 0.7,
+  },
+}
+
+const tableLoading: Styles = {
+  ...style.table,
+  opacity: 0.7,
+  filter: 'blur(3px)',
+}
+
+const headerThSelected: Styles = {
+  ...style.headerTh,
+  opacity: 0.9,
+  paddingRight: 0,
 }

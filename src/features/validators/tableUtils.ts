@@ -6,39 +6,35 @@ import {
   ValidatorGroupTableRow,
   ValidatorStatus,
 } from 'src/features/validators/types'
-import { formatNumberWithCommas, fromWei } from 'src/utils/amount'
+import { fromWei } from 'src/utils/amount'
 
 export function validatorGroupsToTableData(groups: ValidatorGroup[]): ValidatorGroupTableRow[] {
   const tableRows: ValidatorGroupTableRow[] = []
-  const totalVotes = groups.reduce((sum, g) => sum.add(g.votes), BigNumber.from(0))
+  const totalVotesWei = groups.reduce((sum, g) => sum.add(g.votes), BigNumber.from(0))
 
   for (const group of groups) {
     const members = Object.values(group.members)
     const { numMembers, numElected, averageScore } = getValidatorMemberStats(members)
     const status = getValidatorGroupStatus(group, averageScore)
-    const { votes, percent } = getVoteStats(group.votes, totalVotes)
-    const displayName = group.name ? group.name.trim().substring(0, 30) : 'Unnamed Group'
+    const votes = fromWei(group.votes)
+    const totalVotes = fromWei(totalVotesWei)
+    const percent = (votes / totalVotes) * 100
     const row = {
       id: group.address,
       address: group.address,
-      name: displayName,
-      elected: `${numElected}/${numMembers}`,
-      votes: votes,
-      percent: `${percent}%`,
-      status: status,
+      name: group.name || 'Unnamed Group',
+      url: group.url,
+      members: group.members,
+      numMembers,
+      numElected,
+      votes,
+      percent,
+      status,
     }
     tableRows.push(row)
   }
 
   return tableRows
-}
-
-function getVoteStats(votesWei: string, totalVotesWei: BigNumber) {
-  const votes = fromWei(votesWei)
-  const votesFormatted = formatNumberWithCommas(Math.round(votes))
-  const totalVotes = fromWei(totalVotesWei)
-  const percent = (votes / totalVotes) * 100
-  return { votes: votesFormatted, percent: percent.toFixed(2) }
 }
 
 function getValidatorMemberStats(members: Validator[]) {

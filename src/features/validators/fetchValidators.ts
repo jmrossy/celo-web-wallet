@@ -5,14 +5,12 @@ import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
 import {
   MAX_NUM_ELECTABLE_VALIDATORS,
+  NULL_ADDRESS,
   VALIDATOR_LIST_STALE_TIME,
   VALIDATOR_VOTES_STALE_TIME,
 } from 'src/consts'
 import { Validator, ValidatorGroup, ValidatorStatus } from 'src/features/validators/types'
-import {
-  resetValidatorGroups,
-  updateValidatorGroups,
-} from 'src/features/validators/validatorsSlice'
+import { updateValidatorGroups } from 'src/features/validators/validatorsSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
@@ -35,7 +33,6 @@ function* fetchValidators({ force }: fetchValidatorsParams) {
   const { groups, lastUpdated } = yield* select((state: RootState) => state.validators)
 
   if (force || !groups.length || !lastUpdated || isStale(lastUpdated, VALIDATOR_LIST_STALE_TIME)) {
-    yield* put(resetValidatorGroups())
     const validatorGroups = yield* call(fetchValidatorGroupInfo)
     yield* put(updateValidatorGroups({ groups: validatorGroups, lastUpdated: Date.now() }))
   } else if (isStale(lastUpdated, VALIDATOR_VOTES_STALE_TIME)) {
@@ -70,8 +67,13 @@ async function fetchValidatorGroupInfo() {
     'getValidator',
     200
   )
+  const validatorNames: string[] = await batchCall(validatorAddrs, accounts, 'getName', 200)
   console.log('valdetails', validatorDetails)
-  if (validatorAddrs.length !== validatorDetails.length) {
+
+  if (
+    validatorAddrs.length !== validatorDetails.length ||
+    validatorAddrs.length !== validatorNames.length
+  ) {
     throw new Error('Validator list / details size mismatch')
   }
 
@@ -80,6 +82,7 @@ async function fetchValidatorGroupInfo() {
   for (let i = 0; i < validatorAddrs.length; i++) {
     const valAddr = validatorAddrs[i]
     const valDetails = validatorDetails[i]
+    const valName = validatorNames[i]
     const groupAddr = valDetails.affiliation
     // Create new group if there isn't one yet
     if (!groups[groupAddr]) {
@@ -99,7 +102,7 @@ async function fetchValidatorGroupInfo() {
       : ValidatorStatus.NotElected
     const validator: Validator = {
       address: valAddr,
-      name: valAddr,
+      name: valName,
       score: BigNumber.from(valDetails.score).toString(),
       signer: valDetails.signer,
       status: validatorStatus,
@@ -107,14 +110,19 @@ async function fetchValidatorGroupInfo() {
     groups[groupAddr].members[valAddr] = validator
   }
 
+  // Remove 'null' group with unaffiliated validators
+  if (groups[NULL_ADDRESS]) {
+    delete groups[NULL_ADDRESS]
+  }
+
   // Fetch details about the validator groups
   const groupAddrs = Object.keys(groups)
   const groupNames: string[] = await batchCall(groupAddrs, accounts, 'getName', 200)
-  const groupUrls: string[] = await batchCall(groupAddrs, accounts, 'getMetadataURL', 200)
+  // Skipping URL retrieval for now, may revisit this later
+  // const groupUrls: string[] = await batchCall(groupAddrs, accounts, 'getMetadataURL', 200)
   console.log('groups', groupAddrs)
   console.log('groupNames', groupNames)
-  console.log('groupUrls', groupUrls)
-  if (groupAddrs.length !== groupNames.length || groupAddrs.length !== groupUrls.length) {
+  if (groupAddrs.length !== groupNames.length) {
     throw new Error('Group list / details size mismatch')
   }
 
@@ -122,9 +130,7 @@ async function fetchValidatorGroupInfo() {
   for (let i = 0; i < groupAddrs.length; i++) {
     const groupAddr = groupAddrs[i]
     const name = groupNames[i]
-    const url = groupUrls[i]
     groups[groupAddr].name = name
-    groups[groupAddr].url = url
   }
 
   // Fetch vote-related details about the validator groups

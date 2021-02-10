@@ -63,14 +63,12 @@ async function executeBatchCall(txRequests: PopulatedTransaction[]) {
       JSON.stringify(requests),
       getPayloadResult
     )
-    console.log(result)
 
     if (!result || result.length !== txRequests.length) {
       throw new Error('Result size / request size mismatch')
     }
 
     const hexlifiedResults = result.map((r) => utils.hexlify(r))
-    console.log(hexlifiedResults)
     return hexlifiedResults
   } catch (error) {
     logger.error('Failed to perform batch call', error)
@@ -79,7 +77,6 @@ async function executeBatchCall(txRequests: PopulatedTransaction[]) {
 }
 
 function getPayloadResult(payload: JsonRpcResult[]) {
-  console.log('result payload', payload)
   if (!payload || !payload.length) {
     throw new Error('Empty JSON RPC payload')
   }

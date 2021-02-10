@@ -23,6 +23,7 @@ import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { SettingsScreen } from 'src/features/settings/SettingsScreen'
 import { ExploreValidatorsScreen } from 'src/features/validators/ExploreValidatorsScreen'
+import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
@@ -50,6 +51,8 @@ export const App = () => {
               <Route path="lock" element={<LockFormScreen />} />
               <Route path="lock-review" element={<LockConfirmationScreen />} />
               <Route path="validators" element={<ExploreValidatorsScreen />} />
+              <Route path="stake" element={<StakeFormScreen />} />
+              <Route path="stake-review" element={<ExploreValidatorsScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
               <Route path="settings" element={<SettingsScreen />} />
             </Route>
