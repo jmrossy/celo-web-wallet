@@ -25,6 +25,8 @@ export const ACCOUNT_UNLOCK_TIMEOUT = 600000 // 10 minutes
 export const BALANCE_STALE_TIME = 15000 // 15 seconds
 export const GAS_PRICE_STALE_TIME = 10000 // 10 seconds
 export const EXCHANGE_RATE_STALE_TIME = 15000 // 15 seconds
+export const VALIDATOR_LIST_STALE_TIME = 86400000 // 1 day
+export const VALIDATOR_VOTES_STALE_TIME = 300000 // 5 minutes
 
 export const PLACEHOLDER_MNEMONIC =
   'wage bitter silk coin door shine orphan quote witness ticket venture undo grief sense write limit famous always wage pink fresh gold carpet adult'

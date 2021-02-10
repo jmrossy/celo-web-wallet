@@ -6,7 +6,7 @@ import { lockReducer } from 'src/features/lock/lockSlice'
 import { persistedSettingsReducer } from 'src/features/settings/settingsSlice'
 import { tokenPriceReducer } from 'src/features/tokenPrice/tokenPriceSlice'
 import { txFlowReducer } from 'src/features/txFlow/txFlowSlice'
-import { validatorsReducer } from 'src/features/validators/validatorsSlice'
+import { persistedValidatorsReducer } from 'src/features/validators/validatorsSlice'
 import { persistedWalletReducer } from 'src/features/wallet/walletSlice'
 import { monitoredSagaReducers } from './rootSaga'
 
@@ -17,7 +17,7 @@ export const rootReducer = combineReducers({
   lock: lockReducer,
   fees: feeReducer,
   tokenPrice: tokenPriceReducer,
-  validators: validatorsReducer,
+  validators: persistedValidatorsReducer,
   settings: persistedSettingsReducer,
   txFlow: txFlowReducer,
   saga: monitoredSagaReducers,

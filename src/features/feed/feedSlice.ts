@@ -71,7 +71,7 @@ export const {
   toggleAdvancedDetails,
 } = feedSlice.actions
 
-export const feedReducer = feedSlice.reducer
+const feedReducer = feedSlice.reducer
 
 const feedPersistConfig = {
   key: 'feed',

@@ -85,7 +85,7 @@ export const {
   setSecretType,
   clearWallet,
 } = walletSlice.actions
-export const walletReducer = walletSlice.reducer
+const walletReducer = walletSlice.reducer
 
 const walletPersistConfig = {
   key: 'wallet',

@@ -50,7 +50,7 @@ export const {
   resetSettingFlags,
 } = settingsSlice.actions
 
-export const settingsReducer = settingsSlice.reducer
+const settingsReducer = settingsSlice.reducer
 
 const settingPersistConfig = {
   key: 'setting',

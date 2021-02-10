@@ -1,12 +1,21 @@
 import { BigNumber, BigNumberish } from 'ethers'
+import { RootState } from 'src/app/rootReducer'
 import { batchCall } from 'src/blockchain/batchCall'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
-import { MAX_NUM_ELECTABLE_VALIDATORS } from 'src/consts'
+import {
+  MAX_NUM_ELECTABLE_VALIDATORS,
+  VALIDATOR_LIST_STALE_TIME,
+  VALIDATOR_VOTES_STALE_TIME,
+} from 'src/consts'
 import { Validator, ValidatorGroup, ValidatorStatus } from 'src/features/validators/types'
-import { updateValidatorGroups } from 'src/features/validators/validatorsSlice'
+import {
+  resetValidatorGroups,
+  updateValidatorGroups,
+} from 'src/features/validators/validatorsSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { call, put } from 'typed-redux-saga'
+import { isStale } from 'src/utils/time'
+import { call, put, select } from 'typed-redux-saga'
 
 interface ValidatorRaw {
   ecdsaPublicKey: string
@@ -18,17 +27,27 @@ interface ValidatorRaw {
 
 type VotesRaw = [string[], BigNumberish[]] // group addresses then votes
 
-function* fetchValidators() {
-  // TODO cache n check
-  const validatorGroups = yield* call(fetchValidatorGroupInfo)
-  yield* put(updateValidatorGroups(validatorGroups))
+interface fetchValidatorsParams {
+  force?: boolean
+}
+
+function* fetchValidators({ force }: fetchValidatorsParams) {
+  const { groups, lastUpdated } = yield* select((state: RootState) => state.validators)
+
+  if (force || !groups.length || !lastUpdated || isStale(lastUpdated, VALIDATOR_LIST_STALE_TIME)) {
+    yield* put(resetValidatorGroups())
+    const validatorGroups = yield* call(fetchValidatorGroupInfo)
+    yield* put(updateValidatorGroups({ groups: validatorGroups, lastUpdated: Date.now() }))
+  } else if (isStale(lastUpdated, VALIDATOR_VOTES_STALE_TIME)) {
+    const updatedGroups = yield* call(fetchValidatorGroupVotes, groups)
+    yield* put(updateValidatorGroups({ groups: updatedGroups, lastUpdated: Date.now() }))
+  }
 }
 
 async function fetchValidatorGroupInfo() {
   // Get contracts
   const accounts = getContract(CeloContract.Accounts)
   const validators = getContract(CeloContract.Validators)
-  const lockedGold = getContract(CeloContract.LockedGold)
   const election = getContract(CeloContract.Election)
 
   // Fetch list of validators and list of elected signers
@@ -109,11 +128,7 @@ async function fetchValidatorGroupInfo() {
   }
 
   // Fetch vote-related details about the validator groups
-  const votesP: Promise<VotesRaw> = election.getTotalVotesForEligibleValidatorGroups()
-  const totalLockedP: Promise<BigNumberish> = lockedGold.getTotalLockedGold()
-  const [votes, totalLocked] = await Promise.all([votesP, totalLockedP])
-  const eligibleGroups = votes[0]
-  const groupVotes = votes[1]
+  const { eligibleGroups, groupVotes, totalLocked } = await fetchVotesAndTotalLocked()
 
   // Process vote-related details about the validator groups
   for (let i = 0; i < eligibleGroups.length; i++) {
@@ -128,6 +143,49 @@ async function fetchValidatorGroupInfo() {
 
   return Object.values(groups)
 }
+
+// Just fetch latest vote counts, not the entire groups + validators info set
+async function fetchValidatorGroupVotes(groups: ValidatorGroup[]) {
+  let totalValidators = groups.reduce((total, g) => total + Object.keys(g.members).length, 0)
+  // Only bother to fetch actual num validators on the off chance there are fewer members than MAX
+  if (totalValidators < MAX_NUM_ELECTABLE_VALIDATORS) {
+    const validators = getContract(CeloContract.Validators)
+    const validatorAddrs: string[] = await validators.getRegisteredValidators()
+    totalValidators = validatorAddrs.length
+  }
+
+  // Fetch vote-related details about the validator groups
+  const { eligibleGroups, groupVotes, totalLocked } = await fetchVotesAndTotalLocked()
+
+  // Create map from list provided
+  const groupsMap: Record<string, ValidatorGroup> = {}
+  for (const group of groups) {
+    groupsMap[group.address] = { ...group }
+  }
+
+  // Process vote-related details about the validator groups
+  for (let i = 0; i < eligibleGroups.length; i++) {
+    const groupAddr = eligibleGroups[i]
+    const numVotes = groupVotes[i]
+    const group = groupsMap[groupAddr]
+    group.eligible = true
+    group.capacity = getValidatorGroupCapacity(group, totalValidators, totalLocked)
+    group.votes = numVotes.toString()
+  }
+  return Object.values(groupsMap)
+}
+
+async function fetchVotesAndTotalLocked() {
+  const lockedGold = getContract(CeloContract.LockedGold)
+  const election = getContract(CeloContract.Election)
+  const votesP: Promise<VotesRaw> = election.getTotalVotesForEligibleValidatorGroups()
+  const totalLockedP: Promise<BigNumberish> = lockedGold.getTotalLockedGold()
+  const [votes, totalLocked] = await Promise.all([votesP, totalLockedP])
+  const eligibleGroups = votes[0]
+  const groupVotes = votes[1]
+  return { eligibleGroups, groupVotes, totalLocked }
+}
+
 function getValidatorGroupCapacity(
   group: ValidatorGroup,
   totalValidators: number,
@@ -145,4 +203,4 @@ export const {
   wrappedSaga: fetchValidatorsSaga,
   reducer: fetchValidatorsReducer,
   actions: fetchValidatorsActions,
-} = createMonitoredSaga<void>(fetchValidators, 'fetchValidators')
+} = createMonitoredSaga<fetchValidatorsParams>(fetchValidators, 'fetchValidators')

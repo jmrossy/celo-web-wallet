@@ -3,8 +3,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Table } from 'src/components/Table'
-import { fetchValidatorsActions } from 'src/features/validators/fetchValidators'
+import {
+  fetchValidatorsActions,
+  fetchValidatorsSagaName,
+} from 'src/features/validators/fetchValidators'
 import { ValidatorGroupTableRow } from 'src/features/validators/types'
 import { validatorGroupsToTableData } from 'src/features/validators/utils'
 import { Font } from 'src/styles/fonts'
@@ -15,8 +19,14 @@ export function ExploreValidatorsScreen() {
   // const navigate = useNavigate()
 
   useEffect(() => {
-    dispatch(fetchValidatorsActions.trigger())
+    dispatch(fetchValidatorsActions.trigger({}))
   }, [])
+
+  const status = useSagaStatus(
+    fetchValidatorsSagaName,
+    'Error Fetching Validator Info',
+    'Something went wrong when finding validators, sorry! Please try again later.'
+  )
 
   const groups = useSelector((state: RootState) => state.validators.groups)
 
