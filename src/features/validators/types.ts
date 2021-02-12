@@ -59,6 +59,7 @@ export function stakeActionLabel(type: StakeActionType, activeTense = false) {
 }
 
 export interface StakeTokenParams {
+  groupAddress: string
   amountInWei: string
   action: StakeActionType
   feeEstimates?: FeeEstimate[]

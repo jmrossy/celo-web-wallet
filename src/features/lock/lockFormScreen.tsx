@@ -67,9 +67,14 @@ export function LockFormScreen() {
   }, [tx])
 
   const onSelectAction = (event: ChangeEvent<HTMLInputElement>) => {
-    const maxAmount = fromWeiRounded(balances.lockedCelo.pendingFree, Currency.CELO, true)
     const { name, value } = event.target
-    setValues({ ...values, [name]: value, amount: maxAmount })
+    let autoSetAmount: string
+    if (value === LockActionType.Withdraw) {
+      autoSetAmount = fromWeiRounded(balances.lockedCelo.pendingFree, Currency.CELO, true)
+    } else {
+      autoSetAmount = '0'
+    }
+    setValues({ ...values, [name]: value, amount: autoSetAmount })
   }
 
   const onUseMax = () => {

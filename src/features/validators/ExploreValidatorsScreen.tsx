@@ -151,8 +151,8 @@ function ExpandedRow({ row: group }: { row: ValidatorGroupTableRow }) {
   const { address, members } = group
   const sortedMembers = Object.values(members).sort((a, b) => b.status - a.status)
 
-  const onClickVote = (groupAddr: string) => {
-    navigate('/stake', { state: { groupAddr } })
+  const onClickVote = (groupAddress: string) => {
+    navigate('/stake', { state: { groupAddress } })
   }
 
   return (

@@ -1,11 +1,14 @@
-import { ChangeEvent, useEffect } from 'react'
+import { utils } from 'ethers'
+import { Location } from 'history'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
+import { TextInput } from 'src/components/input/TextInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Currency } from 'src/currency'
@@ -13,11 +16,17 @@ import { getTotalUnlockedCelo } from 'src/features/lock/utils'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { validate } from 'src/features/validators/stakeToken'
-import { stakeActionLabel, StakeActionType, StakeTokenParams } from 'src/features/validators/types'
+import {
+  stakeActionLabel,
+  StakeActionType,
+  StakeTokenParams,
+  ValidatorGroup,
+} from 'src/features/validators/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { shortenAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
@@ -26,6 +35,7 @@ interface StakeTokenForm extends Omit<StakeTokenParams, 'amountInWei'> {
 }
 
 const initialValues: StakeTokenForm = {
+  groupAddress: '',
   action: StakeActionType.Vote,
   amount: '',
 }
@@ -38,8 +48,10 @@ const radioBoxLabels = [
 export function StakeFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const groups = useSelector((state: RootState) => state.validators.groups)
 
   const onSubmit = (values: StakeTokenForm) => {
     dispatch(txFlowStarted({ type: TxFlowType.Stake, params: amountFieldToWei(values) }))
@@ -56,20 +68,21 @@ export function StakeFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
-  } = useCustomForm<StakeTokenForm>(getInitialValues(tx), onSubmit, validateForm)
+  } = useCustomForm<StakeTokenForm>(getInitialValues(location, tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {
-    resetValues(getInitialValues(tx))
+    const initialValues = getInitialValues(location, tx)
+    resetValues(initialValues)
+
+    // Ensure we have the info needed otherwise send user back
+    if (!initialValues.groupAddress || !groups || !groups.length) {
+      navigate('/validators')
+    }
   }, [tx])
 
-  const onSelectAction = (event: ChangeEvent<HTMLInputElement>) => {
-    const maxAmount = fromWeiRounded(balances.lockedCelo.pendingFree, Currency.CELO, true)
-    const { name, value } = event.target
-    setValues({ ...values, [name]: value, amount: maxAmount })
-  }
-
   const onUseMax = () => {
+    //TODO
     const { locked, pendingFree } = balances.lockedCelo
     let maxAmount = '0'
     if (values.action === StakeActionType.Vote) {
@@ -78,6 +91,10 @@ export function StakeFormScreen() {
       maxAmount = fromWeiRounded(locked, Currency.CELO, true)
     }
     setValues({ ...values, amount: maxAmount })
+  }
+
+  const onGoBack = () => {
+    navigate(-1)
   }
 
   // const summaryData = getSummaryChartData(balances)
@@ -90,14 +107,28 @@ export function StakeFormScreen() {
         <div css={style.content}>
           <form onSubmit={handleSubmit}>
             <Box direction="column">
+              <label css={style.inputLabel}>Validator Group</label>
+              <TextInput
+                width="18em"
+                margin="0 1.6em 0 0"
+                name="groupAddress"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={getGroupDisplayName(groups, values.groupAddress)}
+                disabled={true}
+                {...errors['group']}
+              />
+            </Box>
+
+            <Box direction="column" margin="2em 0 0 0">
               <label css={style.inputLabel}>Action</label>
               <RadioBoxRow
                 value={values.action}
                 startTabIndex={0}
                 labels={radioBoxLabels}
                 name="action"
-                onChange={onSelectAction}
-                margin="0.5em 0 0 -1.3em"
+                onChange={handleChange}
+                margin="0.3em 0 0 -1.3em"
                 containerStyles={style.radioBox}
               />
             </Box>
@@ -133,9 +164,21 @@ export function StakeFormScreen() {
               /> */}
             </Box>
 
-            <Button type="submit" size="m" margin="2.5em 1em 0 0">
-              Continue
-            </Button>
+            <Box direction="row" margin="2.5em 0 0 0">
+              <Button
+                type="button"
+                size="m"
+                color={Color.altGrey}
+                onClick={onGoBack}
+                margin="0 4em 0 0"
+                width="5em"
+              >
+                Back
+              </Button>
+              <Button type="submit" size="m" width="10em">
+                Continue
+              </Button>
+            </Box>
           </form>
         </div>
         <Box
@@ -159,12 +202,24 @@ export function StakeFormScreen() {
   )
 }
 
-function getInitialValues(tx: TxFlowTransaction | null) {
+function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null): StakeTokenForm {
+  const groupAddress = location?.state?.groupAddress
+  const initialGroup = groupAddress && utils.isAddress(groupAddress) ? groupAddress : ''
   if (!tx || !tx.params || tx.type !== TxFlowType.Stake) {
-    return initialValues
+    return {
+      ...initialValues,
+      groupAddress: initialGroup,
+    }
   } else {
     return amountFieldFromWei(tx.params)
   }
+}
+
+function getGroupDisplayName(groups: ValidatorGroup[], groupAddress: string) {
+  if (!groups || !groups.length || !groupAddress) return ''
+  const group = groups.find((g) => g.address === groupAddress)
+  if (!group) return ''
+  else return `${group.name.trim().substring(0, 30)} - ${shortenAddress(groupAddress, true)}`
 }
 
 const style: Stylesheet = {
