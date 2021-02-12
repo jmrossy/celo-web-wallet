@@ -29,4 +29,4 @@ export const PLACEHOLDER_MNEMONIC =
 
 export const HIGH_VALUE_THRESHOLD = '25000000000000000000' // 25 cusd - threshold balance for a "high-value" wallet
 
-export const CELO_LEDGER_APP_VERSION = '1.0.3' // Only allow latest ledger app version
+export const CELO_LEDGER_APP_MIN_VERSION = '1.0.3' // Only allow this ledger app versions or newer

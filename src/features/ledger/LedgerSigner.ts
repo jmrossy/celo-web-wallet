@@ -5,7 +5,7 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f'
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
 import { BigNumber, providers, Signer, utils } from 'ethers'
 import { config } from 'src/config'
-import { CELO_LEDGER_APP_VERSION } from 'src/consts'
+import { CELO_LEDGER_APP_MIN_VERSION } from 'src/consts'
 import { CeloLedgerApp } from 'src/features/ledger/CeloLedgerApp'
 import { getTokenData } from 'src/features/ledger/tokenData'
 import { areAddressesEqual, ensureLeading0x, trimLeading0x } from 'src/utils/addresses'
@@ -46,16 +46,25 @@ export class LedgerSigner extends Signer {
 
   private async validateCeloAppVersion() {
     const appConfiguration = await this.perform((celoApp) => celoApp.getAppConfiguration())
+    if (!appConfiguration) throw new Error('Unable to retrieve Ledger app configuration')
+    if (!appConfiguration.version) throw new Error('Ledger app configuration missing version info')
 
-    if (appConfiguration?.version !== CELO_LEDGER_APP_VERSION) {
-      throw new Error(`Unsupported Ledger app version, must be ${CELO_LEDGER_APP_VERSION}`)
-    }
+    const version: string = appConfiguration.version
+    const versionSegments = version.split('.').map((s) => parseInt(s))
+    const minVersionSegments = CELO_LEDGER_APP_MIN_VERSION.split('.').map((s) => parseInt(s))
 
-    if (!appConfiguration?.arbitraryDataEnabled) {
+    if (versionSegments.length !== 3) throw new Error('Invalid Ledger app version segments')
+    if (versionSegments[0] !== minVersionSegments[0])
+      throw new Error(`Unsupported Ledger app major version, must be ${minVersionSegments[0]}`)
+    if (versionSegments[1] < minVersionSegments[1] || versionSegments[2] < minVersionSegments[2])
+      throw new Error(
+        `Unsupported Ledger app version, must be at least ${CELO_LEDGER_APP_MIN_VERSION}`
+      )
+
+    if (!appConfiguration?.arbitraryDataEnabled)
       throw new Error(
         'Ledger does not allow contract data. Required for safe token transfers. Enable it from the ledger app settings.'
       )
-    }
   }
 
   async populateTransaction(transaction: utils.Deferrable<CeloTransactionRequest>): Promise<any> {
