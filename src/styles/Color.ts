@@ -9,7 +9,7 @@ export enum Color {
   altGrey = '#B2B7BC',
   accentBlue = '#6A9EDC',
 
-  textGrey = '#8A8A8A',
+  textGrey = '#818181',
   textError = '#e53935',
   textWarning = '#f3c335',
 

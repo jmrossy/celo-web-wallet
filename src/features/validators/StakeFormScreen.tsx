@@ -85,7 +85,7 @@ export function StakeFormScreen() {
 
   return (
     <ScreenContentFrame>
-      <h1 css={Font.h2Green}>Stake with Validators</h1>
+      <h1 css={Font.h2Green}>Vote for Validators</h1>
       <div css={style.container}>
         <div css={style.content}>
           <form onSubmit={handleSubmit}>
