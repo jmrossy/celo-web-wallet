@@ -64,3 +64,5 @@ export interface StakeTokenParams {
   action: StakeActionType
   feeEstimates?: FeeEstimate[]
 }
+
+export type GroupVotes = Record<string, { active: string; pending: string }> // address to votes

@@ -21,21 +21,24 @@ interface JsonRpcResult {
 
 // Ethers.js doesn't natively support JSON RPC batch call
 // This uses Ethers utilities to manually form a request array, send it, and parse the result
-// Callers must still create tx requests and decode results using the contract interface
 // Based on https://github.com/ethers-io/ethers.js/blob/master/packages/providers/src.ts/json-rpc-provider.ts
 export async function batchCall(
-  callArgsList: Array<any>,
   contract: Contract,
   functionName: string,
+  callArgsList: Array<Array<any> | any>,
   maxChunkSize: number
 ) {
   const functionFragment = contract.interface.getFunction(functionName)
   const contractFunction = contract.populateTransaction[functionName]
+  const contractCaller = (args: any) => {
+    if (Array.isArray(args)) return contractFunction(...args)
+    else return contractFunction(args)
+  }
 
   let results: any = []
   const chunks = chunk(callArgsList, maxChunkSize)
   for (const chunk of chunks) {
-    const txRequestPromises = chunk.map((args) => contractFunction(args))
+    const txRequestPromises = chunk.map(contractCaller)
     const txRequests = await Promise.all(txRequestPromises)
     const encodedResults = await executeBatchCall(txRequests)
     const decodedResults = decodeResults(encodedResults, contract, functionFragment)

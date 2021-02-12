@@ -44,7 +44,7 @@ export function ExploreValidatorsScreen() {
     'Something went wrong when finding validators, sorry! Please try again later.'
   )
 
-  const groups = useSelector((state: RootState) => state.validators.groups)
+  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
 
   const data = useMemo(() => {
     return validatorGroupsToTableData(groups)

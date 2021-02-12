@@ -2,16 +2,22 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
-import { ValidatorGroup } from 'src/features/validators/types'
+import { GroupVotes, ValidatorGroup } from 'src/features/validators/types'
 
 interface ValidatorsState {
-  groups: ValidatorGroup[]
-  lastUpdated: number | null
+  validatorGroups: {
+    groups: ValidatorGroup[]
+    lastUpdated: number | null
+  }
+  groupVotes: GroupVotes
 }
 
 export const validatorsInitialState: ValidatorsState = {
-  groups: [],
-  lastUpdated: null,
+  validatorGroups: {
+    groups: [],
+    lastUpdated: null,
+  },
+  groupVotes: {},
 }
 
 const validatorsSlice = createSlice({
@@ -22,16 +28,19 @@ const validatorsSlice = createSlice({
       state,
       action: PayloadAction<{ groups: ValidatorGroup[]; lastUpdated: number }>
     ) => {
-      state.groups = action.payload.groups
-      state.lastUpdated = action.payload.lastUpdated
+      const { groups, lastUpdated } = action.payload
+      state.validatorGroups = {
+        groups,
+        lastUpdated,
+      }
     },
-    resetValidatorGroups: (state) => {
-      state.groups = []
+    updateGroupVotes: (state, action: PayloadAction<GroupVotes>) => {
+      state.groupVotes = action.payload
     },
   },
 })
 
-export const { updateValidatorGroups, resetValidatorGroups } = validatorsSlice.actions
+export const { updateValidatorGroups, updateGroupVotes } = validatorsSlice.actions
 const validatorsReducer = validatorsSlice.reducer
 
 const validatorsPersistConfig = {

@@ -11,10 +11,12 @@ import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
 import { TextInput } from 'src/components/input/TextInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { StackedBarChart } from 'src/components/StackedBarChart'
 import { Currency } from 'src/currency'
 import { getTotalUnlockedCelo } from 'src/features/lock/utils'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
+import { getResultChartData, getSummaryChartData } from 'src/features/validators/barCharts'
 import { validate } from 'src/features/validators/stakeToken'
 import {
   stakeActionLabel,
@@ -51,7 +53,8 @@ export function StakeFormScreen() {
   const location = useLocation()
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
-  const groups = useSelector((state: RootState) => state.validators.groups)
+  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
+  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
 
   const onSubmit = (values: StakeTokenForm) => {
     dispatch(txFlowStarted({ type: TxFlowType.Stake, params: amountFieldToWei(values) }))
@@ -97,8 +100,8 @@ export function StakeFormScreen() {
     navigate(-1)
   }
 
-  // const summaryData = getSummaryChartData(balances)
-  // const resultData = getResultChartData(amountFieldToWei(values), balances)
+  const summaryData = getSummaryChartData(balances, groupVotes)
+  const resultData = getResultChartData(amountFieldToWei(values), balances, groupVotes)
 
   return (
     <ScreenContentFrame>
@@ -120,7 +123,7 @@ export function StakeFormScreen() {
               />
             </Box>
 
-            <Box direction="column" margin="2em 0 0 0">
+            <Box direction="column" margin="1.5em 0 0 0">
               <label css={style.inputLabel}>Action</label>
               <RadioBoxRow
                 value={values.action}
@@ -133,7 +136,7 @@ export function StakeFormScreen() {
               />
             </Box>
 
-            <Box direction="column" justify="end" align="start" margin="2em 0 0 0">
+            <Box direction="column" justify="end" align="start" margin="1.5em 0 0 0">
               <label css={style.inputLabel}>Amount</label>
               <Box direction="row" align="center">
                 <NumberInput
@@ -153,18 +156,18 @@ export function StakeFormScreen() {
               </Box>
             </Box>
 
-            <Box direction="column" justify="end" align="start" margin="2em 0 0 0">
+            <Box direction="column" justify="end" align="start" margin="1.5em 0 0 0">
               <label css={style.inputLabel}>Result</label>
-              {/* <StackedBarChart
+              <StackedBarChart
                 data={resultData.data}
                 total={resultData.total}
                 showTotal={false}
                 showLabels={true}
                 width="19.25em"
-              /> */}
+              />
             </Box>
 
-            <Box direction="row" margin="2.5em 0 0 0">
+            <Box direction="row" margin="2em 0 0 0">
               <Button
                 type="button"
                 size="m"
@@ -189,13 +192,13 @@ export function StakeFormScreen() {
           styles={style.currentSummaryContainer}
         >
           <label css={style.inputLabel}>Current Summary</label>
-          {/* <StackedBarChart
+          <StackedBarChart
             data={summaryData.data}
             total={summaryData.total}
             showTotal={true}
             showLabels={true}
             width="18em"
-          /> */}
+          />
         </Box>
       </div>
     </ScreenContentFrame>

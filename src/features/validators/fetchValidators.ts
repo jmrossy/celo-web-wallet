@@ -30,7 +30,9 @@ interface fetchValidatorsParams {
 }
 
 function* fetchValidators({ force }: fetchValidatorsParams) {
-  const { groups, lastUpdated } = yield* select((state: RootState) => state.validators)
+  const { groups, lastUpdated } = yield* select(
+    (state: RootState) => state.validators.validatorGroups
+  )
 
   if (force || !groups.length || !lastUpdated || isStale(lastUpdated, VALIDATOR_LIST_STALE_TIME)) {
     const validatorGroups = yield* call(fetchValidatorGroupInfo)
@@ -58,17 +60,15 @@ async function fetchValidatorGroupInfo() {
     throw new Error('No elected signers found')
   }
   const electedSignersSet = new Set<string>(electedSigners)
-  console.log('elected', electedSigners)
 
   // Fetch validator details, needed for their scores and signers
   const validatorDetails: ValidatorRaw[] = await batchCall(
-    validatorAddrs,
     validators,
     'getValidator',
+    validatorAddrs,
     200
   )
-  const validatorNames: string[] = await batchCall(validatorAddrs, accounts, 'getName', 200)
-  console.log('valdetails', validatorDetails)
+  const validatorNames: string[] = await batchCall(accounts, 'getName', validatorAddrs, 200)
 
   if (
     validatorAddrs.length !== validatorDetails.length ||
@@ -117,11 +117,9 @@ async function fetchValidatorGroupInfo() {
 
   // Fetch details about the validator groups
   const groupAddrs = Object.keys(groups)
-  const groupNames: string[] = await batchCall(groupAddrs, accounts, 'getName', 200)
+  const groupNames: string[] = await batchCall(accounts, 'getName', groupAddrs, 200)
   // Skipping URL retrieval for now, may revisit this later
-  // const groupUrls: string[] = await batchCall(groupAddrs, accounts, 'getMetadataURL', 200)
-  console.log('groups', groupAddrs)
-  console.log('groupNames', groupNames)
+  // const groupUrls: string[] = await batchCall(accounts, 'getMetadataURL',groupAddrs,  200)
   if (groupAddrs.length !== groupNames.length) {
     throw new Error('Group list / details size mismatch')
   }
@@ -145,7 +143,6 @@ async function fetchValidatorGroupInfo() {
     group.capacity = getValidatorGroupCapacity(group, validatorAddrs.length, totalLocked)
     group.votes = numVotes.toString()
   }
-  console.log('groups', groups)
 
   return Object.values(groups)
 }

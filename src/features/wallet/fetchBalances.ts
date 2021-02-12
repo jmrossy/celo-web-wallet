@@ -7,11 +7,15 @@ import { BALANCE_STALE_TIME } from 'src/consts'
 import { fetchLockedCeloStatus } from 'src/features/lock/fetchLockedStatus'
 import { setLockedCeloStatus } from 'src/features/lock/lockSlice'
 import { LockedCeloBalances } from 'src/features/lock/types'
+import { fetchGroupVotes } from 'src/features/validators/fetchGroupVotes'
+import { updateGroupVotes } from 'src/features/validators/validatorsSlice'
 import { updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
 
+// Fetch wallet balances and other frequently used data like votes
+// Essentially, fetch all the data that forms need to validate inputs
 function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
   if (!address) {
@@ -35,6 +39,11 @@ function* fetchBalances() {
 
   const balances = { celo, cUsd, lockedCelo, lastUpdated: Date.now() }
   yield* put(updateBalances(balances))
+
+  // TODO need to support signer indirection
+  const validatorGroupVotes = yield* call(fetchGroupVotes, address)
+  yield* put(updateGroupVotes(validatorGroupVotes))
+
   return balances
 }
 
