@@ -41,6 +41,7 @@ function* fetchBalances() {
   yield* put(updateBalances(balances))
 
   // TODO need to support signer indirection
+  // TODO pop warning on pending votes here?
   const validatorGroupVotes = yield* call(fetchGroupVotes, address)
   yield* put(updateGroupVotes(validatorGroupVotes))
 

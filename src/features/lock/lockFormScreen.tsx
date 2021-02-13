@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect } from 'react'
+import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
@@ -90,8 +90,11 @@ export function LockFormScreen() {
     setValues({ ...values, amount: maxAmount })
   }
 
-  const summaryData = getSummaryChartData(balances)
-  const resultData = getResultChartData(amountFieldToWei(values), balances)
+  const summaryData = useMemo(() => getSummaryChartData(balances), [balances])
+  const resultData = useMemo(() => getResultChartData(amountFieldToWei(values), balances), [
+    values,
+    balances,
+  ])
 
   return (
     <ScreenContentFrame>

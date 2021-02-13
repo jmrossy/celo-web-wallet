@@ -1,6 +1,6 @@
-import { utils } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { Location } from 'history'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
@@ -13,7 +13,6 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { StackedBarChart } from 'src/components/StackedBarChart'
 import { Currency } from 'src/currency'
-import { getTotalUnlockedCelo } from 'src/features/lock/utils'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { getResultChartData, getSummaryChartData } from 'src/features/validators/barCharts'
@@ -24,6 +23,7 @@ import {
   StakeTokenParams,
   ValidatorGroup,
 } from 'src/features/validators/types'
+import { getTotalNonvotingLocked, getValidatorGroupName } from 'src/features/validators/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -85,13 +85,14 @@ export function StakeFormScreen() {
   }, [tx])
 
   const onUseMax = () => {
-    //TODO
-    const { locked, pendingFree } = balances.lockedCelo
     let maxAmount = '0'
     if (values.action === StakeActionType.Vote) {
-      maxAmount = fromWeiRounded(getTotalUnlockedCelo(balances), Currency.CELO, true)
+      const totalNonvoting = getTotalNonvotingLocked(balances, groupVotes)
+      maxAmount = fromWeiRounded(totalNonvoting, Currency.CELO, true)
     } else if (values.action === StakeActionType.Revoke) {
-      maxAmount = fromWeiRounded(locked, Currency.CELO, true)
+      const groupVote = groupVotes[values.groupAddress]
+      const totalVoted = groupVote ? BigNumber.from(groupVote.active).add(groupVote.pending) : 0
+      maxAmount = fromWeiRounded(totalVoted, Currency.CELO, true)
     }
     setValues({ ...values, amount: maxAmount })
   }
@@ -100,8 +101,15 @@ export function StakeFormScreen() {
     navigate(-1)
   }
 
-  const summaryData = getSummaryChartData(balances, groupVotes)
-  const resultData = getResultChartData(amountFieldToWei(values), balances, groupVotes)
+  const summaryData = useMemo(() => getSummaryChartData(balances, groups, groupVotes), [
+    balances,
+    groups,
+    groupVotes,
+  ])
+  const resultData = useMemo(
+    () => getResultChartData(amountFieldToWei(values), balances, groups, groupVotes),
+    [values, balances, groups, groupVotes]
+  )
 
   return (
     <ScreenContentFrame>
@@ -219,10 +227,9 @@ function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null)
 }
 
 function getGroupDisplayName(groups: ValidatorGroup[], groupAddress: string) {
-  if (!groups || !groups.length || !groupAddress) return ''
-  const group = groups.find((g) => g.address === groupAddress)
-  if (!group) return ''
-  else return `${group.name.trim().substring(0, 30)} - ${shortenAddress(groupAddress, true)}`
+  const name = getValidatorGroupName(groups, groupAddress)
+  if (!name) return ''
+  else return `${name} - ${shortenAddress(groupAddress, true)}`
 }
 
 const style: Stylesheet = {
