@@ -1,4 +1,4 @@
-import { BigNumber, utils } from 'ethers'
+import { utils } from 'ethers'
 import { Location } from 'history'
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,7 +8,7 @@ import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
-import { TextInput } from 'src/components/input/TextInput'
+import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { StackedBarChart } from 'src/components/StackedBarChart'
@@ -23,7 +23,7 @@ import {
   StakeTokenParams,
   ValidatorGroup,
 } from 'src/features/validators/types'
-import { getTotalNonvotingLocked, getValidatorGroupName } from 'src/features/validators/utils'
+import { getStakingMaxAmount, getValidatorGroupName } from 'src/features/validators/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -61,7 +61,8 @@ export function StakeFormScreen() {
     navigate('/stake-review')
   }
 
-  const validateForm = (values: StakeTokenForm) => validate(amountFieldToWei(values), balances)
+  const validateForm = (values: StakeTokenForm) =>
+    validate(amountFieldToWei(values), balances, groups, groupVotes)
 
   const {
     values,
@@ -77,29 +78,23 @@ export function StakeFormScreen() {
   useEffect(() => {
     const initialValues = getInitialValues(location, tx)
     resetValues(initialValues)
-
     // Ensure we have the info needed otherwise send user back
-    if (!initialValues.groupAddress || !groups || !groups.length) {
+    if (!groups || !groups.length) {
       navigate('/validators')
     }
   }, [tx])
 
   const onUseMax = () => {
-    let maxAmount = '0'
-    if (values.action === StakeActionType.Vote) {
-      const totalNonvoting = getTotalNonvotingLocked(balances, groupVotes)
-      maxAmount = fromWeiRounded(totalNonvoting, Currency.CELO, true)
-    } else if (values.action === StakeActionType.Revoke) {
-      const groupVote = groupVotes[values.groupAddress]
-      const totalVoted = groupVote ? BigNumber.from(groupVote.active).add(groupVote.pending) : 0
-      maxAmount = fromWeiRounded(totalVoted, Currency.CELO, true)
-    }
-    setValues({ ...values, amount: maxAmount })
+    const maxAmount = getStakingMaxAmount(values.action, balances, groupVotes, values.groupAddress)
+    setValues({ ...values, amount: fromWeiRounded(maxAmount, Currency.CELO, true) })
   }
 
   const onGoBack = () => {
     navigate(-1)
   }
+
+  const selectOptions = useMemo(() => getSelectOptions(groups), [groups])
+  // const selectOptions = getSelectOptions(groups)
 
   const summaryData = useMemo(() => getSummaryChartData(balances, groups, groupVotes), [
     balances,
@@ -107,7 +102,7 @@ export function StakeFormScreen() {
     groupVotes,
   ])
   const resultData = useMemo(
-    () => getResultChartData(amountFieldToWei(values), balances, groups, groupVotes),
+    () => getResultChartData(balances, groups, groupVotes, amountFieldToWei(values)),
     [values, balances, groups, groupVotes]
   )
 
@@ -119,15 +114,15 @@ export function StakeFormScreen() {
           <form onSubmit={handleSubmit}>
             <Box direction="column">
               <label css={style.inputLabel}>Validator Group</label>
-              <TextInput
+              <SelectInput
                 width="18em"
-                margin="0 1.6em 0 0"
                 name="groupAddress"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={getGroupDisplayName(groups, values.groupAddress)}
+                value={values.groupAddress}
+                options={selectOptions}
                 disabled={true}
-                {...errors['group']}
+                {...errors['groupAddress']}
               />
             </Box>
 
@@ -181,7 +176,7 @@ export function StakeFormScreen() {
                 size="m"
                 color={Color.altGrey}
                 onClick={onGoBack}
-                margin="0 4em 0 0"
+                margin="0 4.4em 0 0"
                 width="5em"
               >
                 Back
@@ -226,10 +221,14 @@ function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null)
   }
 }
 
-function getGroupDisplayName(groups: ValidatorGroup[], groupAddress: string) {
-  const name = getValidatorGroupName(groups, groupAddress)
-  if (!name) return ''
-  else return `${name} - ${shortenAddress(groupAddress, true)}`
+function getSelectOptions(groups: ValidatorGroup[]) {
+  return groups.map((g) => {
+    const display = `${getValidatorGroupName(g, true)} - ${shortenAddress(g.address, true)}`
+    return {
+      display,
+      value: g.address,
+    }
+  })
 }
 
 const style: Stylesheet = {

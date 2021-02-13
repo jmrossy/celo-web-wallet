@@ -43,7 +43,7 @@ export function StackedBarChart(props: Props) {
                 direction="row"
                 align="center"
                 justify="between"
-                margin="0.7em 0 0 0"
+                margin="0.8em 0.1em 0 0"
               >
                 <div css={labelStyle}>{d.label}</div>
                 <div css={labelStyle}>{d.value}</div>
@@ -53,7 +53,7 @@ export function StackedBarChart(props: Props) {
         </>
       )}
       {showTotal && (
-        <Box direction="row" align="center" justify="between" margin="0.7em 0 0 0">
+        <Box direction="row" align="center" justify="between" margin="0.8em 0 0 0">
           <div css={style.totalLabel}>{total.label}</div>
           <div css={style.totalLabel}>{total.value}</div>
         </Box>

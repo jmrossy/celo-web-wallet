@@ -40,10 +40,12 @@ function* fetchBalances() {
   const balances = { celo, cUsd, lockedCelo, lastUpdated: Date.now() }
   yield* put(updateBalances(balances))
 
-  // TODO need to support signer indirection
-  // TODO pop warning on pending votes here?
-  const validatorGroupVotes = yield* call(fetchGroupVotes, address)
-  yield* put(updateGroupVotes(validatorGroupVotes))
+  if (config.isElectron) {
+    // TODO need to support signer indirection
+    // TODO pop warning on pending votes here?
+    const validatorGroupVotes = yield* call(fetchGroupVotes, address)
+    yield* put(updateGroupVotes(validatorGroupVotes))
+  }
 
   return balances
 }

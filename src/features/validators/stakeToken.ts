@@ -1,21 +1,33 @@
+import { RootState } from 'src/app/rootReducer'
 import { Currency } from 'src/currency'
 import { validateFeeEstimates } from 'src/features/fees/utils'
-import { getTotalUnlockedCelo } from 'src/features/lock/utils'
-import { StakeActionType, StakeTokenParams } from 'src/features/validators/types'
+import {
+  GroupVotes,
+  StakeActionType,
+  StakeTokenParams,
+  ValidatorGroup,
+} from 'src/features/validators/types'
+import { getStakingMaxAmount } from 'src/features/validators/utils'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { validateAmount, validateAmountWithFees } from 'src/utils/amount'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 export function validate(
   params: StakeTokenParams,
   balances: Balances,
+  groups: ValidatorGroup[],
+  votes: GroupVotes,
   validateFee = false
 ): ErrorState {
-  const { amountInWei, action, feeEstimates } = params
+  const { amountInWei, groupAddress, action, feeEstimates } = params
   let errors: ErrorState = { isValid: true }
+
+  if (!groupAddress || groups.findIndex((g) => g.address === groupAddress) < 0) {
+    errors = { ...errors, ...invalidInput('groupAddress', 'Invalid Validator Group') }
+  }
 
   if (!Object.values(StakeActionType).includes(action)) {
     errors = { ...errors, ...invalidInput('action', 'Invalid Action Type') }
@@ -25,11 +37,8 @@ export function validate(
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
     const adjustedBalances = { ...balances }
-    if (action === StakeActionType.Vote) {
-      adjustedBalances.celo = getTotalUnlockedCelo(balances).toString()
-    } else if (action === StakeActionType.Revoke) {
-      adjustedBalances.celo = balances.lockedCelo.locked
-    }
+    const maxAmount = getStakingMaxAmount(params.action, balances, votes, params.groupAddress)
+    adjustedBalances.celo = maxAmount.toString()
     errors = { ...errors, ...validateAmount(amountInWei, Currency.CELO, adjustedBalances) }
   }
 
@@ -48,11 +57,12 @@ function* stakeToken(params: StakeTokenParams) {
   const { amountInWei, action, feeEstimates } = params
 
   const balances = yield* call(fetchBalancesIfStale)
-  // const { pendingWithdrawals, isAccountRegistered } = yield* select(
-  //   (state: RootState) => state.lock
-  // )
+  const { validatorGroups, groupVotes } = yield* select((state: RootState) => state.validators)
 
-  validateOrThrow(() => validate(params, balances, true), 'Invalid transaction')
+  validateOrThrow(
+    () => validate(params, balances, validatorGroups.groups, groupVotes, true),
+    'Invalid transaction'
+  )
 
   // if (!feeEstimates || feeEstimates.length !== txPlan.length) {
   //   throw new Error('Fee estimates missing or do not match txPlan')

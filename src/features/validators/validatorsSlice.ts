@@ -47,7 +47,7 @@ const validatorsPersistConfig = {
   key: 'validators',
   storage: storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['groups', 'lastUpdated'],
+  whitelist: ['validatorGroups', 'groupVotes'],
 }
 export const persistedValidatorsReducer = persistReducer<ReturnType<typeof validatorsReducer>>(
   validatorsPersistConfig,
