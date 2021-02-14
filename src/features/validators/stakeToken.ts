@@ -64,6 +64,8 @@ function* stakeToken(params: StakeTokenParams) {
     'Invalid transaction'
   )
 
+  alert('Staking :)')
+
   // if (!feeEstimates || feeEstimates.length !== txPlan.length) {
   //   throw new Error('Fee estimates missing or do not match txPlan')
   // }

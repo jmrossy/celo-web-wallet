@@ -32,6 +32,9 @@ export enum TransactionType {
   RelockCelo,
   UnlockCelo,
   WithdrawLockedCelo,
+  ValidatorStakeCelo,
+  ValidatorRevokeCelo,
+  GovernanceVote,
   Other,
 }
 

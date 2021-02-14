@@ -9,8 +9,8 @@ import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { TransactionReview } from 'src/features/feed/TransactionReview'
 import { HomeNavigator } from 'src/features/home/HomeNavigator'
 import { HomeScreen } from 'src/features/home/HomeScreen'
-import { LockConfirmationScreen } from 'src/features/lock/lockConfirmationScreen'
-import { LockFormScreen } from 'src/features/lock/lockFormScreen'
+import { LockConfirmationScreen } from 'src/features/lock/LockConfirmationScreen'
+import { LockFormScreen } from 'src/features/lock/LockFormScreen'
 import { ImportChoiceScreen } from 'src/features/onboarding/import/ImportChoiceScreen'
 import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletScreen'
 import { LedgerImportScreen } from 'src/features/onboarding/import/LedgerImportScreen'
@@ -23,6 +23,7 @@ import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { SettingsScreen } from 'src/features/settings/SettingsScreen'
 import { ExploreValidatorsScreen } from 'src/features/validators/ExploreValidatorsScreen'
+import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmationScreen'
 import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
@@ -52,7 +53,7 @@ export const App = () => {
               <Route path="lock-review" element={<LockConfirmationScreen />} />
               <Route path="validators" element={<ExploreValidatorsScreen />} />
               <Route path="stake" element={<StakeFormScreen />} />
-              <Route path="stake-review" element={<ExploreValidatorsScreen />} />
+              <Route path="stake-review" element={<StakeConfirmationScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
               <Route path="settings" element={<SettingsScreen />} />
             </Route>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -26,9 +26,9 @@ export function LockConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const { pendingWithdrawals, isAccountRegistered } = useSelector((state: RootState) => state.lock)
-  const { transaction: tx } = useSelector((state: RootState) => state.txFlow)
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -74,7 +74,7 @@ export function LockConfirmationScreen() {
     ]
   )
 
-  const resultData = getResultChartData(params, balances)
+  const resultData = useMemo(() => getResultChartData(balances, params), [balances, params])
 
   return (
     <ScreenContentFrame>

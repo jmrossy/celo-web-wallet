@@ -91,9 +91,9 @@ export function LockFormScreen() {
   }
 
   const summaryData = useMemo(() => getSummaryChartData(balances), [balances])
-  const resultData = useMemo(() => getResultChartData(amountFieldToWei(values), balances), [
-    values,
+  const resultData = useMemo(() => getResultChartData(balances, amountFieldToWei(values)), [
     balances,
+    values,
   ])
 
   return (

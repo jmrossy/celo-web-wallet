@@ -59,7 +59,7 @@ function addUpToMax(v1: BigNumber, toAdd: BigNumber, max: BigNumber) {
   else return v1.add(toAdd)
 }
 
-export function getResultChartData(values: LockTokenParams, balances: Balances) {
+export function getResultChartData(balances: Balances, values: LockTokenParams) {
   let unlocked = BigNumber.from(balances.celo)
   let pending = getTotalPendingCelo(balances)
   let locked = BigNumber.from(balances.lockedCelo.locked)

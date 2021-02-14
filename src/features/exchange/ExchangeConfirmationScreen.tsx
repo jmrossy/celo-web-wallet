@@ -27,8 +27,8 @@ export function ExchangeConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const { cUsdToCelo } = useSelector((state: RootState) => state.exchange)
-  const { transaction: tx } = useSelector((state: RootState) => state.txFlow)
 
   useEffect(() => {
     if (!tx || tx.type !== TxFlowType.Exchange) {

@@ -63,6 +63,12 @@ import {
   fetchValidatorsSagaName,
 } from 'src/features/validators/fetchValidators'
 import {
+  stakeTokenActions,
+  stakeTokenReducer,
+  stakeTokenSaga,
+  stakeTokenSagaName,
+} from 'src/features/validators/stakeToken'
+import {
   createWalletActions,
   createWalletReducer,
   createWalletSaga,
@@ -165,6 +171,11 @@ export const monitoredSagas: {
     saga: lockTokenSaga,
     reducer: lockTokenReducer,
     actions: lockTokenActions,
+  },
+  [stakeTokenSagaName]: {
+    saga: stakeTokenSaga,
+    reducer: stakeTokenReducer,
+    actions: stakeTokenActions,
   },
   [logoutSagaName]: {
     saga: logoutSaga,

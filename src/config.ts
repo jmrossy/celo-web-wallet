@@ -94,4 +94,4 @@ const configAlfajores: Config = {
     'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
-export const config = Object.freeze(configMainnet)
+export const config = Object.freeze(configAlfajores)

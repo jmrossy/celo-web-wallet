@@ -51,8 +51,8 @@ export function StakeFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const balances = useSelector((state: RootState) => state.wallet.balances)
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const balances = useSelector((state: RootState) => state.wallet.balances)
   const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
   const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
 
@@ -103,7 +103,7 @@ export function StakeFormScreen() {
   ])
   const resultData = useMemo(
     () => getResultChartData(balances, groups, groupVotes, amountFieldToWei(values)),
-    [values, balances, groups, groupVotes]
+    [balances, groups, groupVotes, values]
   )
 
   return (
