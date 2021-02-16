@@ -9,7 +9,12 @@ import {
   VALIDATOR_LIST_STALE_TIME,
   VALIDATOR_VOTES_STALE_TIME,
 } from 'src/consts'
-import { Validator, ValidatorGroup, ValidatorStatus } from 'src/features/validators/types'
+import {
+  EligibleGroupsVotesRaw,
+  Validator,
+  ValidatorGroup,
+  ValidatorStatus,
+} from 'src/features/validators/types'
 import { updateValidatorGroups } from 'src/features/validators/validatorsSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -22,8 +27,6 @@ interface ValidatorRaw {
   score: BigNumberish
   signer: string
 }
-
-type VotesRaw = [string[], BigNumberish[]] // group addresses then votes
 
 interface fetchValidatorsParams {
   force?: boolean
@@ -181,7 +184,7 @@ async function fetchValidatorGroupVotes(groups: ValidatorGroup[]) {
 async function fetchVotesAndTotalLocked() {
   const lockedGold = getContract(CeloContract.LockedGold)
   const election = getContract(CeloContract.Election)
-  const votesP: Promise<VotesRaw> = election.getTotalVotesForEligibleValidatorGroups()
+  const votesP: Promise<EligibleGroupsVotesRaw> = election.getTotalVotesForEligibleValidatorGroups()
   const totalLockedP: Promise<BigNumberish> = lockedGold.getTotalLockedGold()
   const [votes, totalLocked] = await Promise.all([votesP, totalLockedP])
   const eligibleGroups = votes[0]

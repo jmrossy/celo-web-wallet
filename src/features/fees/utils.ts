@@ -68,7 +68,7 @@ export function getFeeFromConfirmedTx(tx: CeloTransaction) {
 export function useFee(amountInWei: string | null | undefined, txCount = 1) {
   const feeEstimates = useSelector((state: RootState) => state.fees.estimates)
 
-  if (!feeEstimates || !amountInWei) {
+  if (!feeEstimates || !feeEstimates.length || !amountInWei) {
     return {
       amount: amountInWei ?? '',
       total: amountInWei ?? '',

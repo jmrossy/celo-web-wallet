@@ -29,3 +29,4 @@ export enum Color {
 }
 
 export const ChartDataColors = ['#6A9EDC', '#CAA1DA', '#85B3AD', '#C38A7E', '#75AD5A']
+export const ChartDataColorsLighter = ['#A0BEE3', '#DCC2E5', '#ADCFCA', '#DAB9B1', '#B0CFA1']

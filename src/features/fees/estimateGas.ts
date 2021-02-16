@@ -17,7 +17,11 @@ const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.LockCelo]: 95000,
   [TransactionType.RelockCelo]: 150000,
   [TransactionType.UnlockCelo]: 260000,
-  [TransactionType.WithdrawLockedCelo]: 150000,
+  [TransactionType.WithdrawLockedCelo]: 140000,
+  [TransactionType.ValidatorVoteCelo]: 550000, //TODO
+  [TransactionType.ValidatorRevokeActiveCelo]: 250000, //TODO
+  [TransactionType.ValidatorRevokePendingCelo]: 250000, //TODO
+  [TransactionType.ValidatorActivateCelo]: 250000, //TODO
 }
 
 const STABLE_TOKEN_GAS_MULTIPLIER = 5

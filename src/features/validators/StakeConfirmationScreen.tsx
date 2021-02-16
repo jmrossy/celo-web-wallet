@@ -14,10 +14,9 @@ import { useFee } from 'src/features/fees/utils'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
-import { TransactionType } from 'src/features/types'
 import { getResultChartData } from 'src/features/validators/barCharts'
-import { stakeTokenActions } from 'src/features/validators/stakeToken'
-import { stakeActionLabel, StakeActionType } from 'src/features/validators/types'
+import { getStakeActionTxPlan, stakeTokenActions } from 'src/features/validators/stakeToken'
+import { stakeActionLabel } from 'src/features/validators/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -39,11 +38,7 @@ export function StakeConfirmationScreen() {
       return
     }
 
-    const txType =
-      tx.params.action === StakeActionType.Vote
-        ? TransactionType.ValidatorStakeCelo
-        : TransactionType.ValidatorRevokeCelo
-    const txs = [{ type: txType }]
+    const txs = getStakeActionTxPlan(tx.params, groupVotes)
     dispatch(estimateFeeActions.trigger({ txs }))
   }, [tx])
 
@@ -51,8 +46,9 @@ export function StakeConfirmationScreen() {
 
   const params = tx.params
   const { action, amountInWei } = params
+  const txPlan = getStakeActionTxPlan(tx.params, groupVotes)
 
-  const { amount, feeAmount, feeCurrency, feeEstimates } = useFee(amountInWei)
+  const { amount, feeAmount, feeCurrency, feeEstimates } = useFee(amountInWei, txPlan.length)
 
   const onGoBack = () => {
     dispatch(stakeTokenActions.reset())
@@ -67,12 +63,18 @@ export function StakeConfirmationScreen() {
 
   const { isWorking } = useTxFlowStatusModals(
     'stakeToken',
-    1,
+    txPlan.length,
     `${stakeActionLabel(action, true)} CELO...`,
     `${stakeActionLabel(action)} Complete!`,
     `Your ${stakeActionLabel(action)} request was successful`,
     `${stakeActionLabel(action)} Failed`,
-    `Your ${stakeActionLabel(action)} request could not be processed`
+    `Your ${stakeActionLabel(action)} request could not be processed`,
+    txPlan.length > 1
+      ? [
+          `${stakeActionLabel(action)} requests sometimes need several transactions`,
+          'Confirm all transactions on your Ledger',
+        ]
+      : undefined
   )
 
   const resultData = useMemo(() => getResultChartData(balances, groups, groupVotes, params), [

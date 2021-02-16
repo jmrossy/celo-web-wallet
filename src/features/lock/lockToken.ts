@@ -2,14 +2,14 @@ import { BigNumber } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { getSigner } from 'src/blockchain/signer'
-import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
+import { signTransaction } from 'src/blockchain/transaction'
+import { executeTxPlan, TxPlanExecutor } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { Currency } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
 import { LockActionType, LockTokenParams, PendingWithdrawal } from 'src/features/lock/types'
 import { getTotalUnlockedCelo } from 'src/features/lock/utils'
-import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
@@ -83,35 +83,15 @@ function* lockToken(params: LockTokenParams) {
   }
 
   logger.info(`Executing ${action} for ${amountInWei} CELO`)
-  yield* call(executeLockTokenTxPlan, action, txPlan, feeEstimates)
+  yield* call<TxPlanExecutor<LockTokenTxPlanItem>>(
+    executeTxPlan,
+    txPlan,
+    feeEstimates,
+    createActionTx,
+    'lockToken'
+  )
 
   yield* put(fetchBalancesActions.trigger())
-}
-
-function* executeLockTokenTxPlan(
-  action: string,
-  txPlan: LockTokenTxPlan,
-  feeEstimates: FeeEstimate[]
-) {
-  const signedTxs: string[] = []
-  const currentNonce = yield* call(getCurrentNonce)
-
-  for (let i = 0; i < txPlan.length; i++) {
-    const tx = txPlan[i]
-    const feeEstimate = feeEstimates[i]
-    const signedTx = yield* call(createActionTx, tx, feeEstimate, currentNonce + i)
-    signedTxs.push(signedTx)
-    yield* put(setNumSignatures(i + 1))
-  }
-
-  for (let i = 0; i < signedTxs.length; i++) {
-    logger.info(`Sending ${action} token tx ${i + 1} of ${signedTxs.length}`)
-    const txReceipt = yield* call(sendSignedTransaction, signedTxs[i])
-    logger.info(`${action} token tx has received: ${txReceipt.transactionHash}`)
-    // TODO add placeholder txs
-    // const placeholderTx = getPlaceholderTx(params, txReceipt, type)
-    // yield* put(addPlaceholderTransaction(placeholderTx))
-  }
 }
 
 function createActionTx(txPlanItem: LockTokenTxPlanItem, feeEstimate: FeeEstimate, nonce: number) {
@@ -181,7 +161,7 @@ export function getLockActionTxPlan(
     const now = Date.now()
     // Withdraw all available pendings
     for (const p of pendingWithdrawals) {
-      if (p.timestamp >= now)
+      if (p.timestamp <= now)
         txs.push({
           type: TransactionType.WithdrawLockedCelo,
           pendingWithdrawal: p,
@@ -262,11 +242,6 @@ async function createWithdrawCeloTx(
   const { pendingWithdrawal } = txPlanItem
   if (!pendingWithdrawal) throw new Error('Pending withdrawal missing from withdraw tx')
   const lockedGold = getContract(CeloContract.LockedGold)
-  //TODO remove
-  const lock = await getSigner().signer.estimateGas(
-    await lockedGold.populateTransaction.withdraw(pendingWithdrawal.index)
-  )
-  console.info('===withdraw gas:' + lock.toString())
   const tx = await lockedGold.populateTransaction.withdraw(pendingWithdrawal.index)
   tx.nonce = nonce
   logger.info('Signing withdraw celo tx')

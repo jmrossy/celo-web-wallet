@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 import { Location } from 'history'
-import { useEffect, useMemo } from 'react'
+import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
@@ -44,6 +44,7 @@ const initialValues: StakeTokenForm = {
 
 const radioBoxLabels = [
   { value: StakeActionType.Vote, label: stakeActionLabel(StakeActionType.Vote) },
+  { value: StakeActionType.Activate, label: stakeActionLabel(StakeActionType.Activate) },
   { value: StakeActionType.Revoke, label: stakeActionLabel(StakeActionType.Revoke) },
 ]
 
@@ -84,6 +85,23 @@ export function StakeFormScreen() {
     }
   }, [tx])
 
+  const onSelectAction = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target
+    let autoSetAmount: string
+    if (value === StakeActionType.Activate) {
+      const maxAmount = getStakingMaxAmount(
+        StakeActionType.Activate,
+        balances,
+        groupVotes,
+        values.groupAddress
+      )
+      autoSetAmount = fromWeiRounded(maxAmount, Currency.CELO, true)
+    } else {
+      autoSetAmount = '0'
+    }
+    setValues({ ...values, [name]: value, amount: autoSetAmount })
+  }
+
   const onUseMax = () => {
     const maxAmount = getStakingMaxAmount(values.action, balances, groupVotes, values.groupAddress)
     setValues({ ...values, amount: fromWeiRounded(maxAmount, Currency.CELO, true) })
@@ -94,7 +112,6 @@ export function StakeFormScreen() {
   }
 
   const selectOptions = useMemo(() => getSelectOptions(groups), [groups])
-  // const selectOptions = getSelectOptions(groups)
 
   const summaryData = useMemo(() => getSummaryChartData(balances, groups, groupVotes), [
     balances,
@@ -115,7 +132,7 @@ export function StakeFormScreen() {
             <Box direction="column">
               <label css={style.inputLabel}>Validator Group</label>
               <SelectInput
-                width="18em"
+                width="19em"
                 name="groupAddress"
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -133,7 +150,7 @@ export function StakeFormScreen() {
                 startTabIndex={0}
                 labels={radioBoxLabels}
                 name="action"
-                onChange={handleChange}
+                onChange={onSelectAction}
                 margin="0.3em 0 0 -1.3em"
                 containerStyles={style.radioBox}
               />
@@ -144,13 +161,14 @@ export function StakeFormScreen() {
               <Box direction="row" align="center">
                 <NumberInput
                   step="0.01"
-                  width="11em"
+                  width="12em"
                   margin="0 1.6em 0 0"
                   name="amount"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.amount.toString()}
                   placeholder="1.00"
+                  disabled={values.action === StakeActionType.Activate}
                   {...errors['amount']}
                 />
                 <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
@@ -166,7 +184,7 @@ export function StakeFormScreen() {
                 total={resultData.total}
                 showTotal={false}
                 showLabels={true}
-                width="19.25em"
+                width="20.25em"
               />
             </Box>
 
@@ -176,7 +194,7 @@ export function StakeFormScreen() {
                 size="m"
                 color={Color.altGrey}
                 onClick={onGoBack}
-                margin="0 4.4em 0 0"
+                margin="0 5.4em 0 0"
                 width="5em"
               >
                 Back

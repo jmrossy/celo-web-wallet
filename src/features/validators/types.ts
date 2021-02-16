@@ -1,4 +1,7 @@
+import { BigNumberish } from 'ethers'
 import { FeeEstimate } from 'src/features/fees/types'
+
+export type EligibleGroupsVotesRaw = [string[], BigNumberish[]] // group addresses then votes
 
 export interface ValidatorGroup {
   address: string
@@ -45,12 +48,15 @@ export interface ValidatorGroupTableRow {
 
 export enum StakeActionType {
   Vote = 'vote',
+  Activate = 'activate',
   Revoke = 'revoke',
 }
 
 export function stakeActionLabel(type: StakeActionType, activeTense = false) {
   if (type === StakeActionType.Vote) {
     return activeTense ? 'Voting' : 'Vote'
+  } else if (type === StakeActionType.Activate) {
+    return activeTense ? 'Activating' : 'Activate'
   } else if (type === StakeActionType.Revoke) {
     return activeTense ? 'Revoking' : 'Revoke'
   } else {
