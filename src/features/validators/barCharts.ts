@@ -1,12 +1,17 @@
 import { BigNumber, BigNumberish } from 'ethers'
 import { Currency } from 'src/currency'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
-import { GroupVotes, StakeTokenParams, ValidatorGroup } from 'src/features/validators/types'
+import {
+  GroupVotes,
+  StakeActionType,
+  StakeTokenParams,
+  ValidatorGroup,
+} from 'src/features/validators/types'
 import { findValidatorGroupName, getStakingMaxAmount } from 'src/features/validators/utils'
 import { Balances } from 'src/features/wallet/types'
 import { ChartDataColors, ChartDataColorsLighter, Color } from 'src/styles/Color'
 import { shortenAddress } from 'src/utils/addresses'
-import { BigNumberMin, fromWeiRounded } from 'src/utils/amount'
+import { BigNumberMax, BigNumberMin, fromWeiRounded } from 'src/utils/amount'
 
 // Just for convinience / shortness cause this file has lots of conversions
 function fromWei(value: BigNumberish) {
@@ -36,56 +41,58 @@ function getChartData(
   votes: GroupVotes,
   values?: StakeTokenParams
 ) {
-  const chartData = []
-  const votedGroups = Object.keys(votes)
-  let totalVoted = BigNumber.from(0)
-  let targetGroupDataPointPending = null // keep track of target group's data if it exists (for result chart)
-  let targetGroupDataPointActive = null // keep track of target group's data if it exists (for result chart)
-  let i = 0
-  for (i = 0; i < votedGroups.length; i++) {
-    const groupAddr = votedGroups[i]
-    const vote = votes[groupAddr]
-    if (BigNumber.from(vote.pending).gt(0)) {
-      const dataPoint = createGroupDataPoint(groups, groupAddr, vote.pending, i, true)
-      chartData.push(dataPoint)
-      if (values?.groupAddress === groupAddr) targetGroupDataPointPending = dataPoint
+  // First, adjust votes based on form values (if provided)
+  const adjustedVotes: GroupVotes = JSON.parse(JSON.stringify(votes))
+  if (values?.groupAddress && values?.amountInWei) {
+    const { groupAddress: groupAddr, amountInWei: targetAmount, action } = values
+    const amount = BigNumberMin(
+      BigNumber.from(targetAmount),
+      getStakingMaxAmount(action, balances, votes, groupAddr)
+    )
+
+    // Create vote entry if it doesn't exist
+    if (!adjustedVotes[groupAddr]) {
+      adjustedVotes[groupAddr] = {
+        active: '0',
+        pending: '0',
+      }
     }
-    if (BigNumber.from(vote.active).gt(0)) {
-      const dataPoint = createGroupDataPoint(groups, groupAddr, vote.active, i, false)
-      chartData.push(dataPoint)
-      if (values?.groupAddress === groupAddr) targetGroupDataPointActive = dataPoint
+    const targetGroup = adjustedVotes[groupAddr]
+
+    if (action === StakeActionType.Vote) {
+      targetGroup.pending = BigNumber.from(targetGroup.pending).add(amount).toString()
+    } else if (action === StakeActionType.Revoke) {
+      const pendingAmount = BigNumber.from(targetGroup.pending)
+      const pendingRevokeAmount = BigNumberMin(pendingAmount, amount)
+      targetGroup.pending = pendingAmount.sub(pendingRevokeAmount).toString()
+      const activeRevokeAmount = BigNumberMax(amount.sub(pendingRevokeAmount), BigNumber.from(0))
+      targetGroup.active = BigNumber.from(targetGroup.active).sub(activeRevokeAmount).toString()
+    } else if (action === StakeActionType.Activate) {
+      targetGroup.pending = '0'
+      targetGroup.active = BigNumber.from(targetGroup.active).add(amount).toString()
     }
-    totalVoted = totalVoted.add(vote.pending).add(vote.active)
   }
 
-  // If values are provided (result chart) adjust the data as needed
-  if (values?.groupAddress) {
-    const { groupAddress: targetGroup, amountInWei: targetAmount, action } = values
-    const maxAmount = getStakingMaxAmount(action, balances, votes, targetGroup)
-    const adjustedAmount = BigNumberMin(BigNumber.from(targetAmount), maxAmount)
-    // if (action === StakeActionType.Vote) {
-    //   if (targetGroupDataPoint) {
-    //     targetGroupDataPoint.value += fromWei(adjustedAmount)
-    //   } else {
-    //     const dataPoint = createGroupDataPoint(groups, targetGroup, adjustedAmount, i)
-    //     chartData.push(dataPoint)
-    //   }
-    //   totalVoted = totalVoted.add(adjustedAmount)
-    // } else if (action === StakeActionType.Revoke) {
-    //   if (targetGroupDataPoint) {
-    //     targetGroupDataPoint.value -= fromWei(adjustedAmount)
-    //   }
-    //   totalVoted = totalVoted.sub(adjustedAmount)
-    // } else if (action === StakeActionType.Activate) {
-    //   if (targetGroupDataPointPending) {
-    //     targetGroupDataPoint.value -= fromWei(adjustedAmount)
-    //   }
-    // }
+  // Next, create chart data set
+  const chartData = []
+  const votedGroups = Object.keys(adjustedVotes)
+  let totalVoted = BigNumber.from(0)
+  for (let i = 0; i < votedGroups.length; i++) {
+    const groupAddr = votedGroups[i]
+    const vote = adjustedVotes[groupAddr]
+    if (BigNumber.from(vote.active).gt(0)) {
+      chartData.push(createGroupDataPoint(groups, groupAddr, vote.active, i))
+    }
+    if (BigNumber.from(vote.pending).gt(0)) {
+      chartData.push(createGroupDataPoint(groups, groupAddr, vote.pending, i, true))
+    }
+    totalVoted = totalVoted.add(vote.pending).add(vote.active)
   }
 
   const totalLocked = getTotalLockedCelo(balances)
   const nonvotingLocked = totalLocked.sub(totalVoted)
 
+  // Finally, add in data point for unused locked CELO
   chartData.push({
     label: 'Unused Locked',
     value: fromWei(nonvotingLocked),
@@ -107,10 +114,11 @@ function createGroupDataPoint(
   isPending?: boolean
 ) {
   let name = findValidatorGroupName(groups, groupAddr) || shortenAddress(groupAddr, true)
-  let color = ChartDataColors[index % ChartDataColors.length]
+  const colorIndex = index % ChartDataColors.length
+  let color = ChartDataColors[colorIndex]
   if (isPending) {
     name += ' (Pending)'
-    color = ChartDataColorsLighter[index % ChartDataColors.length]
+    color = ChartDataColorsLighter[colorIndex]
   }
   return {
     label: name,

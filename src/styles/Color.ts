@@ -25,8 +25,8 @@ export enum Color {
 
   chartBlueGreen = '#3E7688',
   chartPurple = '#BB6BD9',
-  chartGrey = '#969DA5',
+  chartGrey = '#8E949C',
 }
 
 export const ChartDataColors = ['#6A9EDC', '#CAA1DA', '#85B3AD', '#C38A7E', '#75AD5A']
-export const ChartDataColorsLighter = ['#A0BEE3', '#DCC2E5', '#ADCFCA', '#DAB9B1', '#B0CFA1']
+export const ChartDataColorsLighter = ['#94B0D1', '#CBB2D4', '#9FBFBA', '#CCABA3', '#A4C295']

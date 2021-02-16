@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { isSignerLedger } from 'src/blockchain/signer'
+import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
 import { txFlowSent } from 'src/features/txFlow/txFlowSlice'
@@ -19,7 +20,8 @@ export function useTxFlowStatusModals(
   successMsg: string,
   errorTitle: string,
   errorMsg: string,
-  reqSignatureMsg?: string[]
+  reqSignatureMsg?: string[],
+  customSuccessModal?: { title: string; content: any }
 ) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -53,7 +55,11 @@ export function useTxFlowStatusModals(
   }
 
   const onSuccess = () => {
-    showSuccessModal(successTitle, successMsg)
+    if (customSuccessModal) {
+      showModalWithContent(customSuccessModal.title, customSuccessModal.content, ModalOkAction)
+    } else {
+      showSuccessModal(successTitle, successMsg)
+    }
     dispatch(saga.actions.reset(null))
     dispatch(txFlowSent())
     navigate('/')

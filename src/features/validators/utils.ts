@@ -3,7 +3,7 @@ import { getTotalLockedCelo } from 'src/features/lock/utils'
 import { GroupVotes, StakeActionType, ValidatorGroup } from 'src/features/validators/types'
 import { Balances } from 'src/features/wallet/types'
 
-const MAX_GROUP_NAME_LENGTH = 25
+const MAX_GROUP_NAME_LENGTH = 20
 
 // Find and format group name
 export function findValidatorGroupName(groups: ValidatorGroup[], groupAddress: string) {

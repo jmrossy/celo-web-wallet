@@ -68,10 +68,12 @@ export function LockConfirmationScreen() {
     `Your ${lockActionLabel(action)} request was successful`,
     `${lockActionLabel(action)} Failed`,
     `Your ${lockActionLabel(action)} request could not be processed`,
-    [
-      `${lockActionLabel(action)} requests sometimes need several transactions`,
-      'Confirm all transactions on your Ledger',
-    ]
+    txPlan.length > 1
+      ? [
+          `${lockActionLabel(action)} requests sometimes need several transactions`,
+          'Confirm all transactions on your Ledger',
+        ]
+      : undefined
   )
 
   const resultData = useMemo(() => getResultChartData(balances, params), [balances, params])

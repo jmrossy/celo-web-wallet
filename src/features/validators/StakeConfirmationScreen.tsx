@@ -16,7 +16,7 @@ import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
 import { getResultChartData } from 'src/features/validators/barCharts'
 import { getStakeActionTxPlan, stakeTokenActions } from 'src/features/validators/stakeToken'
-import { stakeActionLabel } from 'src/features/validators/types'
+import { stakeActionLabel, StakeActionType } from 'src/features/validators/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -64,7 +64,7 @@ export function StakeConfirmationScreen() {
   const { isWorking } = useTxFlowStatusModals(
     'stakeToken',
     txPlan.length,
-    `${stakeActionLabel(action, true)} CELO...`,
+    `${stakeActionLabel(action, true)}...`,
     `${stakeActionLabel(action)} Complete!`,
     `Your ${stakeActionLabel(action)} request was successful`,
     `${stakeActionLabel(action)} Failed`,
@@ -74,6 +74,9 @@ export function StakeConfirmationScreen() {
           `${stakeActionLabel(action)} requests sometimes need several transactions`,
           'Confirm all transactions on your Ledger',
         ]
+      : undefined,
+    action === StakeActionType.Vote
+      ? { title: "You're Almost Done!", content: <SuccessModal /> }
       : undefined
   )
 
@@ -175,6 +178,17 @@ export function StakeConfirmationScreen() {
   )
 }
 
+function SuccessModal() {
+  return (
+    <div css={style.successModal}>
+      <div>
+        Validator votes <strong>must be activated</strong> around 24 hours after voting.
+      </div>
+      <div>Return tomorrow to activate your votes and start earning rewards!</div>
+    </div>
+  )
+}
+
 const style: Stylesheet = {
   content: {
     width: '100%',
@@ -207,5 +221,14 @@ const style: Stylesheet = {
   bottomBorder: {
     paddingBottom: '1.25em',
     borderBottom: `1px solid ${Color.borderMedium}`,
+  },
+  successModal: {
+    fontSize: '1.1em',
+    textAlign: 'center',
+    marginTop: '1em',
+    maxWidth: '20em',
+    div: {
+      marginTop: '1em',
+    },
   },
 }

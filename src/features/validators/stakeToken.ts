@@ -163,6 +163,11 @@ async function createVoteTx(
   const amountInWei = BigNumber.from(_amountInWei)
   const election = getContract(CeloContract.Election)
   const { lesser, greater } = await findLesserAndGreaterAfterVote(groupAddress, amountInWei)
+  //TODO remove
+  const lock = await getSigner().signer.estimateGas(
+    await election.populateTransaction.vote(groupAddress, amountInWei, lesser, greater)
+  )
+  console.info('===vote gas:' + lock.toString())
   const tx = await election.populateTransaction.vote(groupAddress, amountInWei, lesser, greater)
   tx.nonce = nonce
   logger.info('Signing validator vote tx')
@@ -176,6 +181,11 @@ async function createActivateTx(
   nonce: number
 ) {
   const election = getContract(CeloContract.Election)
+  //TODO remove
+  const lock = await getSigner().signer.estimateGas(
+    await election.populateTransaction.activate(txPlanItem.groupAddress)
+  )
+  console.info('===activate gas:' + lock.toString())
   const tx = await election.populateTransaction.activate(txPlanItem.groupAddress)
   tx.nonce = nonce
   logger.info('Signing validator activation tx')
@@ -199,6 +209,11 @@ async function createRevokeTx(
   const contractMethod = isForPending
     ? election.populateTransaction.revokePending
     : election.populateTransaction.revokeActive
+  //TODO remove
+  const lock = await getSigner().signer.estimateGas(
+    await contractMethod(groupAddress, amountInWei, lesser, greater, groupIndex)
+  )
+  console.info('===revoke gas:' + lock.toString())
   const tx = await contractMethod(groupAddress, amountInWei, lesser, greater, groupIndex)
   tx.nonce = nonce
   logger.info(`Signing validator revoke tx, is for pending: ${isForPending}`)
