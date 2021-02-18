@@ -2,6 +2,7 @@ import { BigNumber } from 'ethers'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
 import { GroupVotes, StakeActionType, ValidatorGroup } from 'src/features/validators/types'
 import { Balances } from 'src/features/wallet/types'
+import { trimToLength } from 'src/utils/string'
 
 const MAX_GROUP_NAME_LENGTH = 20
 
@@ -14,11 +15,9 @@ export function findValidatorGroupName(groups: ValidatorGroup[], groupAddress: s
 }
 
 export function getValidatorGroupName(group: ValidatorGroup, useDefault = false) {
-  let name = group.name.trim()
-  if (!name && useDefault) name = 'Unnamed Group'
-  return name.length > MAX_GROUP_NAME_LENGTH
-    ? name.substring(0, MAX_GROUP_NAME_LENGTH) + '...'
-    : name
+  const name = trimToLength(group.name, MAX_GROUP_NAME_LENGTH)
+  if (!name && useDefault) return 'Unnamed Group'
+  else return name
 }
 
 export function getTotalNonvotingLocked(balances: Balances, votes: GroupVotes) {

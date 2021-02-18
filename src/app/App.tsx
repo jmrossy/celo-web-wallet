@@ -7,6 +7,8 @@ import { ModalProvider } from 'src/components/modal/modalContext'
 import { ExchangeConfirmationScreen } from 'src/features/exchange/ExchangeConfirmationScreen'
 import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { TransactionReview } from 'src/features/feed/TransactionReview'
+import { GovernanceConfirmationScreen } from 'src/features/governance/GovernanceConfirmationScreen'
+import { GovernanceFormScreen } from 'src/features/governance/GovernanceFormScreen'
 import { HomeNavigator } from 'src/features/home/HomeNavigator'
 import { HomeScreen } from 'src/features/home/HomeScreen'
 import { LockConfirmationScreen } from 'src/features/lock/LockConfirmationScreen'
@@ -54,6 +56,8 @@ export const App = () => {
               <Route path="validators" element={<ExploreValidatorsScreen />} />
               <Route path="stake" element={<StakeFormScreen />} />
               <Route path="stake-review" element={<StakeConfirmationScreen />} />
+              <Route path="governance" element={<GovernanceFormScreen />} />
+              <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
               <Route path="settings" element={<SettingsScreen />} />
             </Route>

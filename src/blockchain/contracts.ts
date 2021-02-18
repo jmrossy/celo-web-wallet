@@ -1,4 +1,4 @@
-import { Contract, ethers } from 'ethers'
+import { Contract } from 'ethers'
 import { ABI as AccountsAbi } from 'src/blockchain/ABIs/accounts'
 import { ABI as ElectionAbi } from 'src/blockchain/ABIs/election'
 import { ABI as EscrowAbi } from 'src/blockchain/ABIs/escrow'
@@ -24,7 +24,7 @@ export function getContract(c: CeloContract) {
   const signer = getSigner().signer
   const address = config.contractAddresses[c]
   const abi = getContractAbi(c)
-  const contract = new ethers.Contract(address, abi, signer)
+  const contract = new Contract(address, abi, signer)
   contractCache[c] = contract
   return contract
 }

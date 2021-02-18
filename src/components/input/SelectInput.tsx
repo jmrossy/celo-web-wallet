@@ -10,6 +10,7 @@ type SelectOptions = Array<{ display: string; value: string }>
 
 export interface SelectInputProps {
   name: string
+  autoComplete: boolean
   width: string | number
   height?: number // defaults to 40
   margin?: string | number
@@ -20,21 +21,20 @@ export interface SelectInputProps {
   error?: boolean
   helpText?: string
   placeholder?: string
+  disabled?: boolean
 }
 
 export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
   const {
     name,
-    width,
-    height,
-    margin,
+    autoComplete,
     value,
     options,
     onBlur,
     onChange,
-    error,
     helpText,
     placeholder,
+    disabled,
   } = props
 
   const initialInput = getDisplayValue(options, value)
@@ -47,7 +47,7 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
   }
 
   const handleClick = () => {
-    setShowDropdown(true)
+    if (!disabled) setShowDropdown(true)
   }
 
   const handleBlur = (event: any) => {
@@ -60,28 +60,31 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
     onChange({ target: { name, value } } as any)
   }
 
-  const filteredOptions = sortAndFilter(options, inputValue ?? '')
+  const filteredOptions = autoComplete ? sortAndFilter(options, inputValue ?? '') : options
+
+  const inputStyle = getInputStyles(props, inputValue)
 
   return (
     <Box direction="column">
       <div css={style.container} onBlur={handleBlur}>
-        <input
-          type="text"
-          name={name}
-          css={{
-            ...getSharedInputStyles(error),
-            padding: '2px 10px',
-            width,
-            height: height ?? 40,
-            margin,
-          }}
-          value={inputValue}
-          onClick={handleClick}
-          onFocus={handleClick}
-          onChange={handleChange}
-          autoComplete="off"
-          placeholder={placeholder}
-        />
+        {autoComplete ? (
+          <input
+            type="text"
+            name={name}
+            css={inputStyle}
+            value={inputValue}
+            onClick={handleClick}
+            onFocus={handleClick}
+            onChange={handleChange}
+            autoComplete="off"
+            placeholder={placeholder}
+            disabled={disabled}
+          />
+        ) : (
+          <div css={inputStyle} onClick={handleClick} tabIndex={0}>
+            {inputValue || placeholder}
+          </div>
+        )}
         <div css={style.chevronContainer}>
           <ChevronIcon direction="s" height="8px" width="13px" />
         </div>
@@ -107,13 +110,53 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
 function sortAndFilter(options: SelectOptions, input: string) {
   return options
     .sort((a, b) => (a.display < b.display ? -1 : 1))
-    .filter((o) => o.display.includes(input))
+    .filter((o) => o.display.toLowerCase().includes(input.toLowerCase()))
 }
 
 function getDisplayValue(options: SelectOptions, optionValue?: string) {
   if (!optionValue) return ''
   const option = options.find((o) => o.value === optionValue)
   return option ? option.display : ''
+}
+
+function getInputStyles(props: SelectInputProps, inputValue: string) {
+  const { autoComplete, width, height, margin, error, disabled } = props
+
+  const styleBase = {
+    ...getSharedInputStyles(error),
+    padding: '2px 10px',
+    width,
+    height: height ?? 40,
+    margin,
+  }
+
+  // Just a simple input field
+  if (autoComplete) return styleBase
+
+  // Otherwise must style a div to look like an input
+  const fauxInputStyle = {
+    ...styleBase,
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+  }
+  if (disabled) {
+    return {
+      ...fauxInputStyle,
+      background: '#fafafa',
+      color: Color.textGrey,
+      cursor: 'default',
+      ':focus': undefined,
+    }
+  }
+  if (!inputValue) {
+    // ie showing a placeholder
+    return {
+      ...fauxInputStyle,
+      color: Color.textGrey,
+    }
+  }
+  return fauxInputStyle
 }
 
 const style: Stylesheet = {

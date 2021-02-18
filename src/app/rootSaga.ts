@@ -27,6 +27,18 @@ import {
   estimateFeeSagaName,
 } from 'src/features/fees/estimateFee'
 import {
+  fetchProposalsActions,
+  fetchProposalsReducer,
+  fetchProposalsSaga,
+  fetchProposalsSagaName,
+} from 'src/features/governance/fetchProposals'
+import {
+  governanceVoteActions,
+  governanceVoteReducer,
+  governanceVoteSaga,
+  governanceVoteSagaName,
+} from 'src/features/governance/governanceVote'
+import {
   importLedgerWalletActions,
   importLedgerWalletReducer,
   importLedgerWalletSaga,
@@ -162,20 +174,30 @@ export const monitoredSagas: {
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
   },
-  [fetchValidatorsSagaName]: {
-    saga: fetchValidatorsSaga,
-    reducer: fetchValidatorsReducer,
-    actions: fetchValidatorsActions,
-  },
   [lockTokenSagaName]: {
     saga: lockTokenSaga,
     reducer: lockTokenReducer,
     actions: lockTokenActions,
   },
+  [fetchValidatorsSagaName]: {
+    saga: fetchValidatorsSaga,
+    reducer: fetchValidatorsReducer,
+    actions: fetchValidatorsActions,
+  },
   [stakeTokenSagaName]: {
     saga: stakeTokenSaga,
     reducer: stakeTokenReducer,
     actions: stakeTokenActions,
+  },
+  [fetchProposalsSagaName]: {
+    saga: fetchProposalsSaga,
+    reducer: fetchProposalsReducer,
+    actions: fetchProposalsActions,
+  },
+  [governanceVoteSagaName]: {
+    saga: governanceVoteSaga,
+    reducer: governanceVoteReducer,
+    actions: governanceVoteActions,
   },
   [logoutSagaName]: {
     saga: logoutSaga,

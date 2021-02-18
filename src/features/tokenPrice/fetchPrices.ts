@@ -6,9 +6,13 @@ import { CeloContract, config } from 'src/config'
 import { Currency } from 'src/currency'
 import { updatePairPrice } from 'src/features/tokenPrice/tokenPriceSlice'
 import { QuoteCurrency, TokenPriceHistory } from 'src/features/tokenPrice/types'
-import { areAddressesEqual } from 'src/utils/addresses'
+import { areAddressesEqual, ensureLeading0x } from 'src/utils/addresses'
 import { fromFixidity } from 'src/utils/amount'
-import { queryBlockscout } from 'src/utils/blockscout'
+import {
+  BlockscoutTransactionLog,
+  queryBlockscout,
+  validateBlockscoutLog,
+} from 'src/utils/blockscout'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { areDatesSameDay } from 'src/utils/time'
@@ -58,22 +62,6 @@ function isPriceListComplete(prices: TokenPriceHistory | undefined, numDays: num
   return latest.price && areDatesSameDay(latestDate, today)
 }
 
-interface TransactionLog {
-  transactionIndex: string
-  transactionHash: string
-  topics: Array<string>
-  timeStamp: string
-  logIndex: string
-  gatewayFeeRecipient: string
-  gatewayFee: string
-  gasUsed: string
-  gasPrice: string
-  feeCurrency: string
-  data: string
-  blockNumber: string
-  address: string
-}
-
 // Fetches token prices by retrieving and parsing the oracle reporting tx logs
 async function fetchTokenPriceFromBlockscout(
   baseCurrency: Currency,
@@ -104,14 +92,17 @@ async function fetchTokenPriceFromBlockscout(
     const toBlock = latestBlock.number - numBlocksPerDay * i
     const fromBlock = toBlock - numBlocksPerInterval
     const url = `${baseUrl}/api?module=logs&action=getLogs&fromBlock=${fromBlock}&toBlock=${toBlock}&address=${oracleContractAddress}&topic0=${MEDIAN_UPDATED_TOPIC_0}`
-    const txLogs = await queryBlockscout<Array<TransactionLog>>(url)
+    const txLogs = await queryBlockscout<Array<BlockscoutTransactionLog>>(url)
     prices.unshift(parseBlockscoutOracleLogs(txLogs, oracleContract))
   }
 
   return prices
 }
 
-function parseBlockscoutOracleLogs(logs: Array<TransactionLog>, oracleContract: Contract) {
+function parseBlockscoutOracleLogs(
+  logs: Array<BlockscoutTransactionLog>,
+  oracleContract: Contract
+) {
   if (!logs || !logs.length) {
     throw new Error('No oracle logs found in time range')
   }
@@ -120,7 +111,7 @@ function parseBlockscoutOracleLogs(logs: Array<TransactionLog>, oracleContract: 
 
   for (const log of logs) {
     try {
-      validateBlockscoutOracleLog(log)
+      validateBlockscoutLog(log, MEDIAN_UPDATED_TOPIC_0)
 
       const filteredTopics = log.topics.filter((t) => !!t)
       const logDescription = oracleContract.interface.parseLog({
@@ -142,7 +133,7 @@ function parseBlockscoutOracleLogs(logs: Array<TransactionLog>, oracleContract: 
         throw new Error(`Invalid median value: ${value}`)
       }
 
-      const timestamp = BigNumber.from('0x' + log.timeStamp).mul(1000)
+      const timestamp = BigNumber.from(ensureLeading0x(log.timeStamp)).mul(1000)
       if (timestamp.lte(0) || timestamp.gt(Date.now() + 3000)) {
         throw new Error(`Invalid timestamp: ${log.timeStamp}`)
       }
@@ -154,15 +145,4 @@ function parseBlockscoutOracleLogs(logs: Array<TransactionLog>, oracleContract: 
   }
 
   throw new Error('All attempts at log parsing failed')
-}
-
-function validateBlockscoutOracleLog(log: TransactionLog) {
-  if (!log) throw new Error('Oracle log is nullish')
-  if (!log.transactionHash) throw new Error('Oracle log has no tx hash')
-  if (!log.topics || !log.topics.length) throw new Error('Oracle log has no topics')
-  if (!log.topics || !log.topics.length) throw new Error('Oracle log has no topics')
-  if (log.topics[0]?.toLowerCase() !== MEDIAN_UPDATED_TOPIC_0)
-    throw new Error('Oracle log topic is incorrect')
-  if (!log.data) throw new Error('Oracle log has no data to parse')
-  if (!log.timeStamp) throw new Error('Oracle log has no timestamp')
 }

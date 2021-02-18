@@ -132,13 +132,13 @@ export function StakeFormScreen() {
             <Box direction="column">
               <label css={style.inputLabel}>Validator Group</label>
               <SelectInput
-                width="19em"
                 name="groupAddress"
+                autoComplete={true}
+                width="19em"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.groupAddress}
                 options={selectOptions}
-                disabled={true}
                 {...errors['groupAddress']}
               />
             </Box>
@@ -147,7 +147,7 @@ export function StakeFormScreen() {
               <label css={style.inputLabel}>Action</label>
               <RadioBoxRow
                 value={values.action}
-                startTabIndex={0}
+                startTabIndex={1}
                 labels={radioBoxLabels}
                 name="action"
                 onChange={onSelectAction}

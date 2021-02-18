@@ -10,3 +10,9 @@ export function chunk<T extends Sliceable>(str: T, size: number) {
   }
   return R
 }
+
+export function trimToLength(value: string, maxLength: number) {
+  if (!value) return ''
+  const trimmed = value.trim()
+  return trimmed.length > maxLength ? trimmed.substring(0, maxLength) + '...' : trimmed
+}

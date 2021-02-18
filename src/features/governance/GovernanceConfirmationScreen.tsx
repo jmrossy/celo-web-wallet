@@ -2,16 +2,15 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
-import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { HelpIcon } from 'src/components/icons/HelpIcon'
-import SendPaymentIcon from 'src/components/icons/send_payment.svg'
+import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
-import { sendTokenActions } from 'src/features/send/sendToken'
+import { governanceVoteActions } from 'src/features/governance/governanceVote'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -21,7 +20,7 @@ import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
-export function SendConfirmationScreen() {
+export function GovernanceConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -29,75 +28,60 @@ export function SendConfirmationScreen() {
 
   useEffect(() => {
     // Make sure we belong on this screen
-    if (!tx || tx.type !== TxFlowType.Send) {
-      navigate('/send')
+    if (!tx || tx.type !== TxFlowType.Governance) {
+      navigate('/governance')
       return
     }
 
-    const type = tx.params.comment
-      ? TransactionType.StableTokenTransferWithComment
-      : TransactionType.StableTokenTransfer
-    dispatch(estimateFeeActions.trigger({ txs: [{ type }] }))
+    dispatch(estimateFeeActions.trigger({ txs: [{ type: TransactionType.GovernanceVote }] }))
   }, [tx])
 
-  if (!tx || tx.type !== TxFlowType.Send) return null
+  if (!tx || tx.type !== TxFlowType.Governance) return null
   const params = tx.params
 
-  const { amount, total, feeAmount, feeCurrency, feeEstimates } = useFee(params.amountInWei)
+  const { feeAmount, feeCurrency, feeEstimates } = useFee('0')
 
   const onGoBack = () => {
-    dispatch(sendTokenActions.reset())
+    dispatch(governanceVoteActions.reset())
     dispatch(txFlowCanceled())
     navigate(-1)
   }
 
   const onSend = () => {
     if (!tx || !feeEstimates) return
-    dispatch(sendTokenActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
+    dispatch(governanceVoteActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
   }
 
   const { isWorking } = useTxFlowStatusModals(
-    'sendToken',
+    'governanceVote',
     1,
-    'Sending Payment...',
-    'Payment Sent!',
-    'Your payment has been sent successfully',
-    'Payment Failed',
-    'Your payment could not be processed'
+    'Sending Vote...',
+    'Vote Registered!',
+    'Your governance vote has been sent successfully',
+    'Vote Failed',
+    'Your vote could not be processed'
   )
 
   return (
     <ScreenContentFrame>
       <div css={style.content}>
-        <h1 css={Font.h2Green}>Review Payment</h1>
+        <h1 css={style.h1}>Review Governance Vote</h1>
 
         <Box align="center" styles={style.inputRow} justify="between">
-          <label css={style.labelCol}>To</label>
+          <label css={style.labelCol}>Proposal</label>
           <Box direction="row" align="center" justify="end" styles={style.valueCol}>
-            <Address address={params.recipient} />
+            <div>{params.proposalId}</div>
           </Box>
         </Box>
-
-        {params.comment && (
-          <Box direction="row" styles={style.inputRow} justify="between">
-            <label css={style.labelCol}>Comment</label>
-            <label css={[style.valueLabel, style.valueCol]}>{params.comment}</label>
-          </Box>
-        )}
 
         <Box direction="row" styles={style.inputRow} justify="between">
-          <label css={style.labelCol}>Value</label>
+          <label css={style.labelCol}>Vote</label>
           <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue amountInWei={amount} currency={params.currency} baseFontSize={1.2} />
+            <div>{params.value}</div>
           </Box>
         </Box>
 
-        <Box
-          direction="row"
-          styles={{ ...style.inputRow, ...style.bottomBorder }}
-          align="end"
-          justify="between"
-        >
+        <Box direction="row" styles={style.inputRow} align="end" justify="between">
           <Box
             direction="row"
             justify="between"
@@ -116,7 +100,6 @@ export function SendConfirmationScreen() {
           </Box>
           {feeAmount && feeCurrency ? (
             <Box justify="end" align="end" styles={style.valueCol}>
-              <label>+</label>
               <MoneyValue
                 amountInWei={feeAmount}
                 currency={feeCurrency}
@@ -128,18 +111,6 @@ export function SendConfirmationScreen() {
             // TODO a proper loader (need to update mocks)
             <div css={style.valueCol}>...</div>
           )}
-        </Box>
-
-        <Box direction="row" styles={style.inputRow} justify="between">
-          <label css={[style.labelCol, style.totalLabel]}>Total</label>
-          <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue
-              amountInWei={total}
-              currency={params.currency}
-              baseFontSize={1.2}
-              fontWeight={700}
-            />
-          </Box>
         </Box>
 
         <Box direction="row" justify="between" margin="3em 0 0 0">
@@ -158,10 +129,10 @@ export function SendConfirmationScreen() {
             type="submit"
             size="m"
             onClick={onSend}
-            icon={SendPaymentIcon}
+            icon={VoteIcon}
             disabled={isWorking || !feeAmount}
           >
-            Send Payment
+            Send Vote
           </Button>
         </Box>
       </div>
@@ -174,10 +145,14 @@ const style: Stylesheet = {
     width: '100%',
     maxWidth: '23em',
   },
+  h1: {
+    ...Font.h2Green,
+    marginBottom: '2em',
+  },
   inputRow: {
-    marginBottom: '1.4em',
+    marginBottom: '1.8em',
     [mq[1200]]: {
-      marginBottom: '1.6em',
+      marginBottom: '2em',
     },
   },
   labelCol: {
@@ -192,18 +167,5 @@ const style: Stylesheet = {
   valueCol: {
     width: '12em',
     textAlign: 'end',
-  },
-  totalLabel: {
-    color: Color.primaryGrey,
-    fontWeight: 600,
-  },
-  valueLabel: {
-    color: Color.primaryBlack,
-    fontSize: '1.2em',
-    fontWeight: 400,
-  },
-  bottomBorder: {
-    paddingBottom: '1.25em',
-    borderBottom: `1px solid ${Color.borderMedium}`,
   },
 }

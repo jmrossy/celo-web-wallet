@@ -109,7 +109,7 @@ async function createSendTx(params: SendTokenParams, balances: Balances) {
 
   const { tx, type } = await getTokenTransferTx(currency, recipient, adjustedAmount, comment)
 
-  logger.info(`Sending ${amountInWei} ${currency} to ${recipient}`)
+  logger.info(`Signing tx to send ${amountInWei} ${currency} to ${recipient}`)
   const signedTx = await signTransaction(tx, feeEstimate)
   return { signedTx, type }
 }

@@ -28,11 +28,11 @@ interface ValidatorRaw {
   signer: string
 }
 
-interface fetchValidatorsParams {
+interface FetchValidatorsParams {
   force?: boolean
 }
 
-function* fetchValidators({ force }: fetchValidatorsParams) {
+function* fetchValidators({ force }: FetchValidatorsParams) {
   const { groups, lastUpdated } = yield* select(
     (state: RootState) => state.validators.validatorGroups
   )
@@ -209,4 +209,4 @@ export const {
   wrappedSaga: fetchValidatorsSaga,
   reducer: fetchValidatorsReducer,
   actions: fetchValidatorsActions,
-} = createMonitoredSaga<fetchValidatorsParams>(fetchValidators, 'fetchValidators')
+} = createMonitoredSaga<FetchValidatorsParams>(fetchValidators, 'fetchValidators')

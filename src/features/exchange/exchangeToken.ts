@@ -167,6 +167,7 @@ async function createApproveTx(
   }
 
   const txRequest = await tokenContract.populateTransaction.approve(exchange.address, amountInWei)
+  logger.info('Signing exchange approval tx')
   return signTransaction(txRequest, feeEstimate)
 }
 
@@ -190,6 +191,7 @@ async function createExchangeTx(
   const currentNonce = await getCurrentNonce()
   txRequest.nonce = currentNonce + 1
 
+  logger.info('Signing exchange tx')
   const signedTx = await signTransaction(txRequest, feeEstimate)
   return signedTx
 }
