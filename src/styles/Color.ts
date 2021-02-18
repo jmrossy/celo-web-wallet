@@ -20,7 +20,7 @@ export enum Color {
   borderError = '#e53935',
 
   fillLight = '#F4F5F6',
-  fillLighter = '#F8FAF9',
+  fillLighter = '#F9FAFB',
   fillError = '#ffcdd2',
 
   chartBlueGreen = '#3E7688',

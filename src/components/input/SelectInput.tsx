@@ -149,8 +149,8 @@ function getInputStyles(props: SelectInputProps, inputValue: string) {
       ':focus': undefined,
     }
   }
+  // if showing a placeholder
   if (!inputValue) {
-    // ie showing a placeholder
     return {
       ...fauxInputStyle,
       color: Color.textGrey,

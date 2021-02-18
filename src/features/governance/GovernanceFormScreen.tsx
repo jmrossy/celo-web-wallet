@@ -3,17 +3,24 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
+import { TextLink } from 'src/components/buttons/TextLink'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
+import { Spinner } from 'src/components/Spinner'
 import {
   fetchProposalsActions,
   fetchProposalsSagaName,
 } from 'src/features/governance/fetchProposals'
 import { validate } from 'src/features/governance/governanceVote'
-import { GovernanceVoteParams, Proposal, VoteValue } from 'src/features/governance/types'
+import {
+  GovernanceVoteParams,
+  Proposal,
+  ProposalStage,
+  VoteValue,
+} from 'src/features/governance/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { Color } from 'src/styles/Color'
@@ -35,6 +42,13 @@ const radioBoxLabels = [
   { value: VoteValue.Abstain, label: 'Abstain' },
 ]
 
+enum Status {
+  Loading,
+  Ready,
+  ReadyEmpty, // no proposals found
+  Error,
+}
+
 export function GovernanceFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -47,13 +61,15 @@ export function GovernanceFormScreen() {
     dispatch(fetchProposalsActions.trigger({}))
   }, [])
 
-  const status = useSagaStatus(
+  const sagaStatus = useSagaStatus(
     fetchProposalsSagaName,
     'Error Finding Proposals',
     'Something went wrong when finding proposals, sorry! Please try again later.',
     undefined,
     false
   )
+  const status = getFormStatus(sagaStatus, proposals)
+  const isReady = status === Status.Ready
 
   const onSubmit = (values: GovernanceVoteParams) => {
     dispatch(txFlowStarted({ type: TxFlowType.Governance, params: values }))
@@ -79,13 +95,6 @@ export function GovernanceFormScreen() {
 
   const selectOptions = useMemo(() => getSelectOptions(proposals), [proposals])
 
-  const isReady = status === SagaStatus.Success && selectOptions.length > 0
-
-  let inputPlaceholder = ''
-  if (status === SagaStatus.Started) inputPlaceholder = 'Loading...'
-  else if (isReady) inputPlaceholder = 'Select proposal'
-  else inputPlaceholder = 'No active proposals found'
-
   return (
     <ScreenContentFrame>
       <h1 css={Font.h2Green}>Vote for Governance Proposals</h1>
@@ -103,7 +112,7 @@ export function GovernanceFormScreen() {
                 value={values.proposalId}
                 options={selectOptions}
                 disabled={!isReady}
-                placeholder={inputPlaceholder}
+                placeholder={getSelectPlaceholder(status)}
                 {...errors['proposalId']}
               />
             </Box>
@@ -128,15 +137,77 @@ export function GovernanceFormScreen() {
         </div>
         <Box
           direction="column"
-          justify="end"
           align="start"
           margin="0 0 1.5em 0"
           styles={style.currentSummaryContainer}
         >
-          <label css={style.inputLabel}>Current Proposals</label>
+          {getSummaryPaneContent(status, proposals, values.proposalId)}
         </Box>
       </div>
     </ScreenContentFrame>
+  )
+}
+
+function getSummaryPaneContent(status: Status, proposals: Proposal[], selectedId: string) {
+  if (status === Status.Loading) {
+    return (
+      <div css={style.spinner}>
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (selectedId) {
+    const proposal = proposals.find((p) => p.id === selectedId)
+    if (proposal) return <ProposalDetails proposal={proposal} />
+  }
+
+  return <ProposalsSummary proposals={proposals} />
+}
+
+function ProposalsSummary({ proposals }: { proposals: Proposal[] }) {
+  const upcomingCount = proposals.filter(
+    (p) => p.stage === ProposalStage.Queued || p.stage === ProposalStage.Approval
+  ).length
+  const activeCount = proposals.filter((p) => p.stage === ProposalStage.Referendum).length
+  const helpText =
+    upcomingCount + activeCount > 0
+      ? 'Choose a proposal to see details'
+      : 'There are currently no pending proposals'
+
+  return (
+    <>
+      <label css={style.inputLabel}>Current Proposals</label>
+      <Box direction="row" margin="0.5em 0 0.7em 0">
+        <div css={{ marginRight: '3em' }}>
+          <div css={style.proposalCount}>{upcomingCount}</div>
+          <div css={style.proposalCountLabel}>upcoming</div>
+        </div>
+        <div>
+          <div css={style.proposalCount}>{activeCount}</div>
+          <div css={style.proposalCountLabel}>active</div>
+        </div>
+      </Box>
+      <div css={style.proposalTip}>{helpText}</div>
+      <div css={style.proposalTip}>
+        For past proposals, see <TextLink link="https://celo.stake.id">celo.stake.id</TextLink> or{' '}
+        <TextLink link="https://thecelo.com">thecelo.com</TextLink>
+      </div>
+    </>
+  )
+}
+
+function ProposalDetails({ proposal }: { proposal: Proposal }) {
+  return (
+    <>
+      <label css={style.inputLabel}>Proposal Details</label>
+      <Box direction="row" margin="0.5em 0 0.7em 0">
+        <div>{JSON.stringify(proposal.votes)}</div>
+      </Box>
+      <div css={style.proposalTip}>
+        <TextLink link={proposal.url}>See proposal details</TextLink>
+      </div>
+    </>
   )
 }
 
@@ -149,16 +220,6 @@ function getInitialValues(tx: TxFlowTransaction | null): GovernanceVoteParams {
 }
 
 function getSelectOptions(proposals: Proposal[]) {
-  return [
-    {
-      display: 'my p1 thing hi',
-      value: '1',
-    },
-    {
-      display: 'and the next one',
-      value: '2',
-    },
-  ]
   return proposals.map((p) => {
     const display = trimToLength(p.description, 30)
     return {
@@ -166,6 +227,28 @@ function getSelectOptions(proposals: Proposal[]) {
       value: p.id,
     }
   })
+}
+
+function getFormStatus(sagaStatus: SagaStatus | null, proposals: Proposal[]): Status {
+  if (!sagaStatus || sagaStatus === SagaStatus.Started) return Status.Loading
+  if (sagaStatus === SagaStatus.Failure) return Status.Error
+  if (!proposals.length) return Status.ReadyEmpty
+  else return Status.Ready
+}
+
+function getSelectPlaceholder(status: Status) {
+  switch (status) {
+    case Status.Loading:
+      return 'Loading...'
+    case Status.Error:
+      return ''
+    case Status.Ready:
+      return 'Select proposal'
+    case Status.ReadyEmpty:
+      return 'No active proposals found'
+    default:
+      return ''
+  }
 }
 
 const style: Stylesheet = {
@@ -191,7 +274,35 @@ const style: Stylesheet = {
     justifyContent: 'flex-start',
   },
   currentSummaryContainer: {
+    padding: '1.6em',
+    minWidth: '22em',
+    minHeight: '13em',
     background: Color.fillLighter,
-    padding: '1.2em',
+    [mq[1024]]: {
+      marginTop: '-0.75em',
+    },
+  },
+  spinner: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '2.5em 0',
+    opacity: 0.7,
+    transform: 'scale(0.75)',
+  },
+  proposalCount: {
+    fontSize: '2.6em',
+    display: 'inline-block',
+    marginRight: '0.15em',
+  },
+  proposalCountLabel: {
+    ...Font.bold,
+    display: 'inline-block',
+    position: 'relative',
+    top: -2,
+  },
+  proposalTip: {
+    marginTop: '1.4em',
   },
 }

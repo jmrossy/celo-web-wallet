@@ -3,7 +3,7 @@ import { RootState } from 'src/app/rootReducer'
 import { PROPOSAL_LIST_STALE_TIME } from 'src/consts'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { call, select } from 'typed-redux-saga'
+import { call, delay, select } from 'typed-redux-saga'
 
 // proposer, deposit, timestamp, txLength, url
 type ProposalRaw = [string, BigNumberish, BigNumberish, BigNumberish, string]
@@ -17,6 +17,9 @@ interface FetchProposalsParams {
 
 function* fetchProposals({ force }: FetchProposalsParams) {
   const { proposals, lastUpdated } = yield* select((state: RootState) => state.governance)
+
+  // TODO
+  yield delay(1000)
 
   if (
     force ||
