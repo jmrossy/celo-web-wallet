@@ -221,12 +221,17 @@ function getInitialValues(tx: TxFlowTransaction | null): GovernanceVoteParams {
 
 function getSelectOptions(proposals: Proposal[]) {
   return proposals.map((p) => {
-    const display = trimToLength(p.description, 30)
+    const display = getProposalDescription(p)
     return {
       display,
       value: p.id,
     }
   })
+}
+
+function getProposalDescription(proposal: Proposal) {
+  const description = proposal.description || 'Unknown proposal'
+  return trimToLength(description, 30)
 }
 
 function getFormStatus(sagaStatus: SagaStatus | null, proposals: Proposal[]): Status {

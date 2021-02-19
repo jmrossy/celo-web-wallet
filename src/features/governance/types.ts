@@ -18,7 +18,8 @@ export enum ProposalStage {
 
 export interface Proposal {
   id: string
-  description: string
+  timestamp: number
+  description: string | null
   url: string
   stage: ProposalStage
   votes: {

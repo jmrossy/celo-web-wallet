@@ -26,7 +26,7 @@ export async function batchCall(
   contract: Contract,
   functionName: string,
   callArgsList: Array<Array<any> | any>,
-  maxChunkSize: number
+  maxChunkSize = 100
 ) {
   const functionFragment = contract.interface.getFunction(functionName)
   const contractFunction = contract.populateTransaction[functionName]
