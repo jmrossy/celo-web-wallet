@@ -1,4 +1,4 @@
-import { ChangeEvent, PropsWithChildren, useState } from 'react'
+import { ChangeEvent, PropsWithChildren, useEffect, useState } from 'react'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
@@ -41,6 +41,10 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
   const [inputValue, setInputValue] = useState(initialInput)
   const [showDropdown, setShowDropdown] = useState(false)
 
+  useEffect(() => {
+    setInputValue(getDisplayValue(options, value))
+  }, [value])
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value)
     onChange({ target: { name, value: '' } } as any)
@@ -56,7 +60,6 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
   }
 
   const handleOptionClick = (value: string) => {
-    setInputValue(getDisplayValue(options, value))
     onChange({ target: { name, value } } as any)
   }
 

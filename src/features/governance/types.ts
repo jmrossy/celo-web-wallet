@@ -1,9 +1,9 @@
 import { FeeEstimate } from 'src/features/fees/types'
 
 export enum VoteValue {
-  Yes = 'yes',
-  No = 'no',
-  Abstain = 'abstain',
+  Yes = 'Yes',
+  No = 'No',
+  Abstain = 'Abstain',
 }
 
 // Using ints to align with solidity enum

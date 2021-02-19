@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers'
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
@@ -27,6 +28,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { fromWei } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 import { trimToLength } from 'src/utils/string'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -76,7 +78,7 @@ export function GovernanceFormScreen() {
     navigate('/governance-review')
   }
 
-  const validateForm = (values: GovernanceVoteParams) => validate(values, balances)
+  const validateForm = (values: GovernanceVoteParams) => validate(values, balances, proposals)
 
   const {
     values,
@@ -178,7 +180,7 @@ function ProposalsSummary({ proposals }: { proposals: Proposal[] }) {
   return (
     <>
       <label css={style.inputLabel}>Current Proposals</label>
-      <Box direction="row" margin="0.5em 0 0.7em 0">
+      <Box direction="row" margin="0.3em 0 0.5em 0">
         <div css={{ marginRight: '3em' }}>
           <div css={style.proposalCount}>{upcomingCount}</div>
           <div css={style.proposalCountLabel}>upcoming</div>
@@ -198,14 +200,36 @@ function ProposalsSummary({ proposals }: { proposals: Proposal[] }) {
 }
 
 function ProposalDetails({ proposal }: { proposal: Proposal }) {
+  const votes = proposal.votes
+  const totalVotes = fromWei(Object.values(votes).reduce((sum, v) => sum.add(v), BigNumber.from(0)))
+
+  const toPercent = (voteValue: VoteValue) =>
+    `${Math.round((fromWei(votes[voteValue]) / totalVotes) * 100)}%`
+  const yesPercent = toPercent(VoteValue.Yes)
+  const noPercent = toPercent(VoteValue.No)
+  const abstainPercent = toPercent(VoteValue.Abstain)
+
   return (
     <>
       <label css={style.inputLabel}>Proposal Details</label>
-      <Box direction="row" margin="0.5em 0 0.7em 0">
-        <div>{JSON.stringify(proposal.votes)}</div>
+      <div>{proposal.description}</div>
+      <div css={{ marginTop: '0.6em' }}>{new Date(proposal.timestamp).toLocaleString()}</div>
+      <Box direction="row" margin="1.5em 0 0 0">
+        <div css={{ marginRight: '3em' }}>
+          <div css={style.votePercentLabel}>Yes</div>
+          <div css={style.votePercent}>{yesPercent}</div>
+        </div>
+        <div css={{ marginRight: '3em' }}>
+          <div css={style.votePercentLabel}>No</div>
+          <div css={style.votePercent}>{noPercent}</div>
+        </div>
+        <div>
+          <div css={style.votePercentLabel}>Abstain</div>
+          <div css={style.votePercent}>{abstainPercent}</div>
+        </div>
       </Box>
       <div css={style.proposalTip}>
-        <TextLink link={proposal.url}>See proposal details</TextLink>
+        <TextLink link={proposal.url}>See full proposal details</TextLink>
       </div>
     </>
   )
@@ -220,13 +244,15 @@ function getInitialValues(tx: TxFlowTransaction | null): GovernanceVoteParams {
 }
 
 function getSelectOptions(proposals: Proposal[]) {
-  return proposals.map((p) => {
-    const display = getProposalDescription(p)
-    return {
-      display,
-      value: p.id,
-    }
-  })
+  return proposals
+    .filter((p) => p.stage === ProposalStage.Referendum)
+    .map((p) => {
+      const display = getProposalDescription(p)
+      return {
+        display,
+        value: p.id,
+      }
+    })
 }
 
 function getProposalDescription(proposal: Proposal) {
@@ -237,7 +263,9 @@ function getProposalDescription(proposal: Proposal) {
 function getFormStatus(sagaStatus: SagaStatus | null, proposals: Proposal[]): Status {
   if (!sagaStatus || sagaStatus === SagaStatus.Started) return Status.Loading
   if (sagaStatus === SagaStatus.Failure) return Status.Error
-  if (!proposals.length) return Status.ReadyEmpty
+
+  const activeProposals = proposals.filter((p) => p.stage === ProposalStage.Referendum)
+  if (!activeProposals.length) return Status.ReadyEmpty
   else return Status.Ready
 }
 
@@ -281,6 +309,7 @@ const style: Stylesheet = {
   currentSummaryContainer: {
     padding: '1.6em',
     minWidth: '22em',
+    maxWidth: '25em',
     minHeight: '13em',
     background: Color.fillLighter,
     [mq[1024]]: {
@@ -309,5 +338,12 @@ const style: Stylesheet = {
   },
   proposalTip: {
     marginTop: '1.4em',
+  },
+  votePercent: {
+    fontSize: '1.7em',
+  },
+  votePercentLabel: {
+    ...Font.bold,
+    marginBottom: '0.2em',
   },
 }

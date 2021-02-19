@@ -11,6 +11,7 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
 import { governanceVoteActions } from 'src/features/governance/governanceVote'
+import { Proposal } from 'src/features/governance/types'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -19,12 +20,14 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { trimToLength } from 'src/utils/string'
 
 export function GovernanceConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const proposals = useSelector((state: RootState) => state.governance.proposals)
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -62,23 +65,22 @@ export function GovernanceConfirmationScreen() {
     'Your vote could not be processed'
   )
 
+  const description = findProposalDescription(params.proposalId, proposals)
+
   return (
     <ScreenContentFrame>
       <div css={style.content}>
         <h1 css={style.h1}>Review Governance Vote</h1>
+        <h2 css={style.h2}>{description}</h2>
 
         <Box align="center" styles={style.inputRow} justify="between">
-          <label css={style.labelCol}>Proposal</label>
-          <Box direction="row" align="center" justify="end" styles={style.valueCol}>
-            <div>{params.proposalId}</div>
-          </Box>
+          <label css={style.labelCol}>Proposal Id</label>
+          <label css={[style.valueLabel, style.valueCol]}>{params.proposalId}</label>
         </Box>
 
         <Box direction="row" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>Vote</label>
-          <Box justify="end" align="end" styles={style.valueCol}>
-            <div>{params.value}</div>
-          </Box>
+          <label css={[style.valueLabel, style.valueCol]}>{params.value}</label>
         </Box>
 
         <Box direction="row" styles={style.inputRow} align="end" justify="between">
@@ -113,7 +115,7 @@ export function GovernanceConfirmationScreen() {
           )}
         </Box>
 
-        <Box direction="row" justify="between" margin="3em 0 0 0">
+        <Box direction="row" justify="between" margin="2.7em 0 0 0">
           <Button
             type="button"
             size="m"
@@ -140,6 +142,13 @@ export function GovernanceConfirmationScreen() {
   )
 }
 
+function findProposalDescription(id: string, proposals: Proposal[]) {
+  const proposal = proposals.find((p) => p.id === id)
+  if (!proposal) return ''
+  const description = proposal.description || 'Unknown proposal'
+  return trimToLength(description, 100)
+}
+
 const style: Stylesheet = {
   content: {
     width: '100%',
@@ -147,7 +156,12 @@ const style: Stylesheet = {
   },
   h1: {
     ...Font.h2Green,
-    marginBottom: '2em',
+    marginBottom: '1.2em',
+  },
+  h2: {
+    fontSize: '1.1em',
+    fontWeight: 400,
+    marginBottom: '1.5em',
   },
   inputRow: {
     marginBottom: '1.8em',
@@ -163,6 +177,11 @@ const style: Stylesheet = {
     [mq[1200]]: {
       width: '11em',
     },
+  },
+  valueLabel: {
+    color: Color.primaryBlack,
+    fontSize: '1.2em',
+    fontWeight: 400,
   },
   valueCol: {
     width: '12em',
