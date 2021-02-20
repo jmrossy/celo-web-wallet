@@ -45,7 +45,7 @@ const configMainnet: Config = {
   jsonRpcUrlSecondary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
-  discordUrl: 'https://discord.com/channels/600834479145353243/783806028629934110',
+  discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
   chainId: 42220,
   contractAddresses: {
     [CeloContract.Accounts]: '0x7d21685C17607338b313a7174bAb6620baD0aaB7',
@@ -73,7 +73,7 @@ const configAlfajores: Config = {
   version,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
-  discordUrl: 'https://discord.com/channels/600834479145353243/783806028629934110',
+  discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
   chainId: 44787,
   contractAddresses: {
     [CeloContract.Accounts]: '0xed7f51A34B4e71fbE69B3091FcF879cD14bD73A9',

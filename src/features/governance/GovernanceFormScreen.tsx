@@ -9,6 +9,8 @@ import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { ModalAction } from 'src/components/modal/modal'
+import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
 import {
@@ -95,6 +97,37 @@ export function GovernanceFormScreen() {
     resetValues(initialValues)
   }, [tx])
 
+  const { showModal, closeModal } = useModal()
+  useEffect(() => {
+    if (!errors.lockedCelo) return
+    const hasLocked = BigNumber.from(balances.lockedCelo.locked).gt(0)
+    const helpText = `You have ${
+      hasLocked ? 'almost ' : ''
+    } no locked CELO. You must lock some before voting. Your locked amount determines your vote weight.`
+    const lockAction = {
+      key: 'lock',
+      label: 'Lock CELO',
+      color: Color.primaryGreen,
+    }
+    const dismissAction = {
+      key: 'dismiss',
+      label: 'Dismiss',
+      color: Color.altGrey,
+    }
+    const onActionClick = (action: ModalAction) => {
+      if (action.key === 'lock') navigate('/lock')
+      closeModal()
+    }
+    showModal(
+      'Locked CELO Needed to Vote',
+      helpText,
+      [lockAction, dismissAction],
+      undefined,
+      's',
+      onActionClick
+    )
+  }, [errors.lockedCelo])
+
   const selectOptions = useMemo(() => getSelectOptions(proposals), [proposals])
 
   return (
@@ -119,7 +152,7 @@ export function GovernanceFormScreen() {
               />
             </Box>
 
-            <Box direction="column" margin="2.5em 0 0 0">
+            <Box direction="column" margin="2em 0 0 0">
               <label css={style.inputLabel}>Vote</label>
               <RadioBoxRow
                 value={values.value}
@@ -132,7 +165,7 @@ export function GovernanceFormScreen() {
               />
             </Box>
 
-            <Button type="submit" size="m" margin="3.5em 0 0 0" disabled={!isReady}>
+            <Button type="submit" size="m" margin="2.7em 0 0 0" disabled={!isReady}>
               Continue
             </Button>
           </form>

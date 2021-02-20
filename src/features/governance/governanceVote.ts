@@ -1,7 +1,9 @@
+import { BigNumber } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
+import { WEI_PER_UNIT } from 'src/consts'
 import { Currency } from 'src/currency'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import {
@@ -39,6 +41,11 @@ export function validate(
 
   if (!Object.values(VoteValue).includes(value)) {
     errors = { ...errors, ...invalidInput('value', 'Invalid vote value') }
+  }
+
+  // If locked is less than 1 CELO
+  if (BigNumber.from(balances.lockedCelo.locked).lte(WEI_PER_UNIT)) {
+    errors = { ...errors, ...invalidInput('lockedCelo', 'Insufficient locked CELO') }
   }
 
   if (validateFee) {

@@ -32,7 +32,6 @@ export function ModalTestScreen() {
     showWorkingModal,
     showSuccessModal,
     showErrorModal,
-    showActionsModal,
     showModalWithContent,
     closeModal,
   } = useModal()
@@ -75,10 +74,12 @@ export function ModalTestScreen() {
       { key: 'retry', label: 'Retry', color: Color.primaryGreen },
       { key: 'undo', label: 'Undo', color: Color.accentBlue },
     ]
-    await showActionsModal(
+    await showModal(
       'Modal with Actions',
       'This modal has multiple actions, and stays active unless you click close (check console for clicked actions)',
       actions,
+      'This is a subhead',
+      's',
       actionClick
     )
   }

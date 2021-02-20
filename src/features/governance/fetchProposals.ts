@@ -125,8 +125,7 @@ export const {
 //   {
 //     id: '21',
 //     timestamp: Date.now(),
-//     description:
-//       'Update randomnessBlockRetentionWindow to Extend Attestation Expiration Duration',
+//     description: 'Update randomnessBlockRetentionWindow to Extend Attestation Expiration Duration',
 //     url: 'https://github.com/celo-org/celo-proposals/blob/master/CGPs/0021.md',
 //     stage: ProposalStage.Approval,
 //     votes: {

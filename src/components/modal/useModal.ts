@@ -78,28 +78,6 @@ export function useModal() {
     context.showModal(modalProps, content)
   }
 
-  const showActionsModal = (
-    head: string,
-    body: string,
-    actions: ModalAction | ModalAction[] | undefined = undefined,
-    onActionClick: ModalActionCallback | undefined | null = undefined,
-    subHead: string | undefined | null = undefined,
-    size: ModalSize | null = undefined,
-    dismissable = true
-  ) => {
-    const modalProps: ModalProps = {
-      head,
-      body,
-      actions: actions ?? ModalOkAction, //default to an ok button
-      subHead: subHead ?? undefined,
-      size: size ?? undefined,
-      onActionClick: actions ? onActionClick : context.closeModal, //default to close for the Ok button
-      onClose: dismissable ? context.closeModal : undefined,
-    }
-
-    return context.showModalAsync(modalProps)
-  }
-
   const showModalAsync = (
     head: string,
     body: string,
@@ -150,7 +128,6 @@ export function useModal() {
     showWorkingModal,
     showSuccessModal,
     showErrorModal,
-    showActionsModal,
     showModalWithContent,
     closeModal: context.closeModal,
   }
