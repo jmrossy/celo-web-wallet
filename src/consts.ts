@@ -1,4 +1,4 @@
-export const WEI_PER_UNIT = '1000000000000000000' // 1 'Celo' or 'Ether'
+export const WEI_PER_UNIT = '1000000000000000000' // 1 Celo or Ether
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const TEST_ADDRESS = '0x35b74Ed5038bf0488Ff33bD9819b9D12D10A7560'
 export const MNEMONIC_LENGTH_MIN = 12
@@ -20,6 +20,8 @@ export const MAX_GAS_PRICE = '5000000000' // 5 Gwei
 export const MAX_GAS_LIMIT = '10000000' // 10 million
 
 export const MIN_EXCHANGE_RATE = 0.01 // 100 cUSD per Celo
+
+export const MIN_LOCKED_GOLD = '500000000000000000' // 0.5 Celo
 
 export const ACCOUNT_UNLOCK_TIMEOUT = 600000 // 10 minutes
 export const BALANCE_STALE_TIME = 15000 // 15 seconds

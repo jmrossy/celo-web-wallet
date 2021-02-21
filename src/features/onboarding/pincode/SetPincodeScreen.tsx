@@ -20,7 +20,7 @@ export function SetPincodeScreen() {
 
   return (
     <OnboardingScreenFrame current={pageNumber} total={pageNumber}>
-      <h1 css={Font.h1Green}>Set Pincode or Password</h1>
+      <h1 css={Font.h1Green}>Set Account Password</h1>
       <SetPincodeForm />
     </OnboardingScreenFrame>
   )

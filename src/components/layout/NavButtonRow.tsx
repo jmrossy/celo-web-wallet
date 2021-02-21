@@ -103,8 +103,9 @@ export function NavButtonRow({ mobile, disabled }: Props) {
           More{' '}
           <ChevronIcon
             direction={showDropdown ? 'n' : 's'}
-            width={11}
-            height={7}
+            width="13px"
+            height="7.5px"
+            color="#FFFFFF"
             styles={style.moreButtonIcon}
           />
         </Button>
@@ -201,8 +202,6 @@ const style: Stylesheet = {
     },
   },
   moreButtonIcon: {
-    filter: 'brightness(8)',
-    paddingBottom: 1,
     marginLeft: 6,
   },
   receiveButtonIcon: {

@@ -5,7 +5,7 @@ import { getSigner } from 'src/blockchain/signer'
 import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
-import { NULL_ADDRESS } from 'src/consts'
+import { MIN_LOCKED_GOLD, NULL_ADDRESS } from 'src/consts'
 import { Currency } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -52,6 +52,14 @@ export function validate(
     const maxAmount = getStakingMaxAmount(params.action, balances, votes, params.groupAddress)
     adjustedBalances.celo = maxAmount.toString()
     errors = { ...errors, ...validateAmount(amountInWei, Currency.CELO, adjustedBalances) }
+  }
+
+  // If locked amount is very small or 0
+  if (
+    action === StakeActionType.Vote &&
+    BigNumber.from(balances.lockedCelo.locked).lte(MIN_LOCKED_GOLD)
+  ) {
+    errors = { ...errors, ...invalidInput('lockedCelo', 'Insufficient locked CELO') }
   }
 
   if (validateFee) {

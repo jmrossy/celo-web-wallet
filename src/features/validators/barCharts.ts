@@ -1,6 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
 import { Currency } from 'src/currency'
-import { getTotalLockedCelo } from 'src/features/lock/utils'
 import {
   GroupVotes,
   StakeActionType,
@@ -89,7 +88,7 @@ function getChartData(
     totalVoted = totalVoted.add(vote.pending).add(vote.active)
   }
 
-  const totalLocked = getTotalLockedCelo(balances)
+  const totalLocked = BigNumber.from(balances.lockedCelo.locked)
   const nonvotingLocked = totalLocked.sub(totalVoted)
 
   // Finally, add in data point for unused locked CELO

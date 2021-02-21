@@ -56,9 +56,9 @@ export function SettingsScreen() {
               <Box direction="row" align="center">
                 <img src={LockIcon} alt="change pin" css={style.pageLinkIcon} />
                 <div>
-                  <h3 css={style.h3}>Change Pin or Password</h3>
+                  <h3 css={style.h3}>Change Password</h3>
                   <div css={style.description}>
-                    Set the pin/password used to unlock your account.
+                    Set the password used to unlock your account on this device.
                   </div>
                 </div>
               </Box>
@@ -78,7 +78,7 @@ export function SettingsScreen() {
           <div>
             <h3 css={style.h3}>Transaction Size Limits</h3>
             <div css={style.description}>
-              {`By default, this wallet prevents large payments / exchanges. The limits are ${tokenLimitLocal} tokens for local accounts or ${tokenLimitLedger} for Ledger.`}
+              {`This wallet can prevent large payments / exchanges. The limits are ${tokenLimitLocal} tokens for local accounts or ${tokenLimitLedger} for Ledger.`}
             </div>
           </div>
           <div css={style.switchContainer}>

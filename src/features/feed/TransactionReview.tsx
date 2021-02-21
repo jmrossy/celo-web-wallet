@@ -120,8 +120,8 @@ function TransactionAdvancedDetails({ tx }: { tx: CeloTransaction }) {
       <h2 css={sectionHeaderAdvanced} onClick={onClickHeader}>
         Advanced Details
         <ChevronIcon
-          width="18em"
-          height="10.28em"
+          width="15px"
+          height="12px"
           direction={showContent ? 'n' : 's'}
           styles={style.chevron}
         />

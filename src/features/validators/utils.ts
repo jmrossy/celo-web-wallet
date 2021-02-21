@@ -1,5 +1,4 @@
 import { BigNumber } from 'ethers'
-import { getTotalLockedCelo } from 'src/features/lock/utils'
 import { GroupVotes, StakeActionType, ValidatorGroup } from 'src/features/validators/types'
 import { Balances } from 'src/features/wallet/types'
 import { trimToLength } from 'src/utils/string'
@@ -21,7 +20,7 @@ export function getValidatorGroupName(group: ValidatorGroup, useDefault = false)
 }
 
 export function getTotalNonvotingLocked(balances: Balances, votes: GroupVotes) {
-  const totalLocked = getTotalLockedCelo(balances)
+  const totalLocked = BigNumber.from(balances.lockedCelo.locked)
   const totalVoted = Object.values(votes).reduce(
     (sum, v) => sum.add(v.active).add(v.pending),
     BigNumber.from(0)

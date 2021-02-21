@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
+import { ModalAction } from 'src/components/modal/modal'
+import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import {
@@ -12,9 +14,9 @@ import {
   validate,
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
-import { PincodeTypeToggle } from 'src/features/pincode/PincodeTypeToggle'
 import { PincodeAction, SecretType } from 'src/features/pincode/types'
 import { secretTypeToLabel } from 'src/features/pincode/utils'
+import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -24,29 +26,54 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 const initialValues = { action: PincodeAction.Set, value: '', valueConfirm: '' }
 
 export function SetPincodeForm() {
-  const [secretType, setSecretType] = useState<SecretType>('pincode')
+  const [secretType] = useState<SecretType>('password')
   const [label, labelC] = secretTypeToLabel(secretType)
   const inputType =
     secretType === 'pincode' ? PincodeInputType.NewPincode : PincodeInputType.NewPassword
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const { showModal, closeModal } = useModal()
 
   const onSubmit = (values: PincodeParams) => {
-    dispatch(pincodeActions.trigger({ ...values, type: secretType }))
+    const backAction = {
+      key: 'back',
+      label: 'Back',
+      color: Color.altGrey,
+    }
+    const confirmAction = {
+      key: 'confirm',
+      label: 'I Understand',
+      color: Color.primaryGreen,
+    }
+    const onActionClick = (action: ModalAction) => {
+      if (action.key === 'confirm') {
+        dispatch(pincodeActions.trigger({ ...values, type: secretType }))
+      }
+      closeModal()
+    }
+    showModal(
+      'Keep Password Safe',
+      "This password is the only way to unlock your account. It cannot be recovered if it's lost. Please keep it safe!",
+      [backAction, confirmAction],
+      undefined,
+      's',
+      onActionClick
+    )
   }
+
   const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
 
-  const { values, errors, handleChange, handleSubmit, resetValues } = useCustomForm<PincodeParams>(
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
     initialValues,
     onSubmit,
     validateForm
   )
 
-  const onToggleSecretType = (index: number) => {
-    resetValues(initialValues)
-    setSecretType(index === 0 ? 'pincode' : 'password')
-  }
+  // const onToggleSecretType = (index: number) => {
+  //   resetValues(initialValues)
+  //   setSecretType(index === 0 ? 'pincode' : 'password')
+  // }
 
   const onSuccess = () => {
     navigate('/', { replace: true })
@@ -61,7 +88,7 @@ export function SetPincodeForm() {
   return (
     <Box direction="column" align="center">
       <div css={style.description}>{`Don't lose this ${label}, it unlocks your account!`}</div>
-      <PincodeTypeToggle onToggle={onToggleSecretType} />
+      {/* <PincodeTypeToggle onToggle={onToggleSecretType} /> */}
       <form onSubmit={handleSubmit}>
         <Box direction="column" align="center" margin="0.5em 0 0 0">
           <div css={style.inputContainer}>
@@ -103,10 +130,10 @@ const style: Stylesheet = {
     ...onboardingStyles.description,
     ...Font.extraBold,
     maxWidth: '22em',
-    margin: '0 0.5em 1.5em 0.5em',
+    margin: '0 0.5em 0.5em 0.5em',
   },
   inputContainer: {
-    marginLeft: '-1.5em',
+    marginLeft: '-2em',
     [mq[480]]: {
       marginLeft: '-9em',
     },

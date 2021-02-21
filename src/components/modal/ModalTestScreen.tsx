@@ -325,7 +325,7 @@ export function ModalTestScreen() {
             position="topRight"
             content={
               <Box direction="column" margin="1em" align="center">
-                <h3 css={{ ...Font.h2Green }}>Fancy Tooltip!</h3>
+                <h3 css={Font.h2Green}>Fancy Tooltip!</h3>
                 <img src={Lightbulb} height={32} width={32} />
                 <p>This tooltip has complex content</p>
                 <Button onClick={working}>Click Me</Button>

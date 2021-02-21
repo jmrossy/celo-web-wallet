@@ -5,8 +5,8 @@ const path = require('path')
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 1300,
+    height: 850,
     title: 'Celo Wallet',
     webPreferences: {
       preload: false,

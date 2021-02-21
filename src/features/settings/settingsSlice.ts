@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
+import { config } from 'src/config'
 
 interface settings {
   homeHeaderDismissed: boolean
@@ -14,7 +15,7 @@ export const settingsInitialState: settings = {
   homeHeaderDismissed: false,
   highValueWarningDismissed: false,
   backupReminderDismissed: false,
-  txSizeLimitEnabled: true,
+  txSizeLimitEnabled: config.isElectron ? false : true,
 }
 
 const settingsSlice = createSlice({

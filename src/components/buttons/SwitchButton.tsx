@@ -51,7 +51,7 @@ const label: Styles = {
   outline: 0,
   display: 'block',
   boxSizing: 'border-box',
-  width: '4em',
+  width: '3.8em',
   height: '2em',
   position: 'relative',
   cursor: 'pointer',
@@ -79,7 +79,7 @@ const labelChecked: Styles = {
 }
 
 const text: Styles = {
-  marginTop: '0.5em',
+  marginTop: '0.6em',
   fontSize: '0.9em',
   fontWeight: 400,
   color: Color.textGrey,

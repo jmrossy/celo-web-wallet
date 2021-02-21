@@ -17,7 +17,7 @@ export enum CeloContract {
 // @ts-ignore Defined by webpack define plugin
 const debugMode = __DEBUG__ ?? false
 // @ts-ignore Defined by webpack define plugin
-const isElectron = (__IS_ELECTRON__ ?? false) || true
+const isElectron = __IS_ELECTRON__ ?? false
 // @ts-ignore Defined by webpack define plugin
 const version = __VERSION__ || null
 
@@ -32,7 +32,7 @@ interface Config {
   discordUrl: string
   chainId: number
   contractAddresses: Record<CeloContract, string>
-  defaultAccount?: string // strictly for dev use, provide a backup phrase
+  defaultAccount?: string // strictly for dev use
 }
 
 // TODO find a nice way to switch btwn configs at build/run time
@@ -90,8 +90,8 @@ const configAlfajores: Config = {
     [CeloContract.StableToken]: '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1',
     [CeloContract.Validators]: '0x9acF2A99914E083aD0d610672E93d14b0736BBCc',
   },
-  defaultAccount:
-    'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
+  // defaultAccount:
+  //   'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
 export const config = Object.freeze(configAlfajores)

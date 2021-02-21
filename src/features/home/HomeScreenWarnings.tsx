@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
-import warningIcon from 'src/components/icons/warning.svg'
+import WarningIcon from 'src/components/icons/warning.svg'
 import { Notification } from 'src/components/Notification'
 import { HIGH_VALUE_THRESHOLD } from 'src/consts'
 import {
@@ -30,7 +30,7 @@ export function HomeScreenWarnings() {
       onDismiss={onDismissWarning(warning.key)}
       color={Color.primaryGold}
       textColor={Color.primaryBlack}
-      icon={warningIcon}
+      icon={WarningIcon}
       message={warning.message}
     />
   )

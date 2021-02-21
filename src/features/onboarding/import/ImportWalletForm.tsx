@@ -8,15 +8,15 @@ import { TextArea } from 'src/components/input/TextArea'
 import { TextInput } from 'src/components/input/TextInput'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
+import { config } from 'src/config'
 import { CELO_DERIVATION_PATH, ETHEREUM_DERIVATION_PATH } from 'src/consts'
-import { ImportWalletWarning } from 'src/features/onboarding/import/ImportWalletWarning'
+import { WebWalletWarning } from 'src/features/download/WebWalletWarning'
 import {
   importWalletActions,
   ImportWalletParams,
   importWalletSagaName,
   validate,
 } from 'src/features/wallet/importWallet'
-import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -50,7 +50,7 @@ const radioBoxLabels = [
 ]
 
 export function ImportWalletForm() {
-  const [hasShownWarning, setHasShownWarning] = useState(false)
+  const [hasShownWarning, setHasShownWarning] = useState(config.isElectron)
   const [mode, setMode] = useState<'simple' | 'advanced'>('simple')
 
   const dispatch = useDispatch()
@@ -95,12 +95,7 @@ export function ImportWalletForm() {
   return (
     <Box direction="column" align="center">
       {!hasShownWarning && (
-        <Box direction="column" align="center" styles={style.warningBox}>
-          <ImportWalletWarning />
-          <Button onClick={() => setHasShownWarning(true)} margin="2em 0 0 0">
-            I Understand
-          </Button>
-        </Box>
+        <WebWalletWarning type="import" onClose={() => setHasShownWarning(true)} />
       )}
       {hasShownWarning && (
         <Box direction="column" align="center">
@@ -224,11 +219,6 @@ function toImportWalletParams(values: ImportWalletForm): ImportWalletParams {
 }
 
 const style: Stylesheet = {
-  warningBox: {
-    borderRadius: 4,
-    padding: '0 1em 1em 1em',
-    background: `${Color.accentBlue}11`,
-  },
   description: {
     ...Font.body,
     textAlign: 'center',

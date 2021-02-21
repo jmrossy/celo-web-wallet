@@ -1,4 +1,4 @@
-import { utils } from 'ethers'
+import { BigNumber, utils } from 'ethers'
 import { Location } from 'history'
 import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,6 +11,7 @@ import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { StackedBarChart } from 'src/components/StackedBarChart'
 import { Currency } from 'src/currency'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
@@ -84,6 +85,13 @@ export function StakeFormScreen() {
       navigate('/validators')
     }
   }, [tx])
+
+  // Show modal to recommend nav to locked gold on low locked balance
+  const hasLocked = BigNumber.from(balances.lockedCelo.locked).gt(0)
+  const helpText = `You have ${
+    hasLocked ? 'almost ' : ''
+  } no locked CELO. Only locked funds can be used to stake with Validators. Would you like to lock some now?`
+  useNavHintModal(errors.lockedCelo, 'Locked CELO Needed to Vote', helpText, 'Lock CELO', '/lock')
 
   const onSelectAction = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target

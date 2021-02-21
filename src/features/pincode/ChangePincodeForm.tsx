@@ -14,7 +14,6 @@ import {
   validate,
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
-import { PincodeTypeToggle } from 'src/features/pincode/PincodeTypeToggle'
 import { PincodeAction, SecretType } from 'src/features/pincode/types'
 import { secretTypeToLabel } from 'src/features/pincode/utils'
 import { Color } from 'src/styles/Color'
@@ -33,8 +32,8 @@ export function ChangePincodeForm() {
       ? PincodeInputType.CurrentPincode
       : PincodeInputType.CurrentPassword
 
-  const [secretType, setSecretType] = useState<SecretType>('pincode')
-  const [newLabel, newLabelC] = secretTypeToLabel(secretType)
+  const [secretType] = useState<SecretType>('password')
+  const [, newLabelC] = secretTypeToLabel(secretType)
   const newInputType =
     secretType === 'pincode' ? PincodeInputType.NewPincode : PincodeInputType.NewPassword
 
@@ -47,17 +46,17 @@ export function ChangePincodeForm() {
 
   const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
 
-  const { values, errors, handleChange, handleSubmit, resetValues } = useCustomForm<PincodeParams>(
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
     initialValues,
     onSubmit,
     validateForm
   )
 
-  const onToggleSecretType = (index: number) => {
-    // Reset but exclude current pincode field
-    resetValues({ ...initialValues, value: values.value })
-    setSecretType(index === 0 ? 'pincode' : 'password')
-  }
+  // const onToggleSecretType = (index: number) => {
+  //   // Reset but exclude current pincode field
+  //   resetValues({ ...initialValues, value: values.value })
+  //   setSecretType(index === 0 ? 'pincode' : 'password')
+  // }
 
   const onClickCancel = () => {
     navigate(-1)
@@ -67,7 +66,7 @@ export function ChangePincodeForm() {
   const onSuccess = async () => {
     await showModalAsync(
       `${currentLabelC} Changed`,
-      `Your ${currentLabel} has been successfully changed! Use your new ${newLabel} when unlocking your account.`,
+      `Your ${currentLabel} has been successfully changed! Keep this password safe, it's the only way to unlock your account.`,
       ModalOkAction,
       undefined,
       's'
@@ -95,7 +94,7 @@ export function ChangePincodeForm() {
             autoFocus={true}
             {...errors['value']}
           />
-          <PincodeTypeToggle onToggle={onToggleSecretType} margin="1.5em 0 0 8em" />
+          {/* <PincodeTypeToggle onToggle={onToggleSecretType} margin="1.5em 0 0 8em" /> */}
           <PincodeInputRow
             type={newInputType}
             label={`New ${newLabelC}`}

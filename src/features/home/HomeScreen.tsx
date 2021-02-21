@@ -1,9 +1,12 @@
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { HrDivider } from 'src/components/HrDivider'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useModal } from 'src/components/modal/useModal'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
 import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
@@ -13,6 +16,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { logger } from 'src/utils/logger'
 
 export function HomeScreen() {
   const isMobile = useIsMobile()
@@ -25,6 +29,31 @@ export function HomeScreen() {
     dispatch(toggleHomeHeaderDismissed())
   }
   const onClose = isMobile && !isWalletEmpty ? onClickDismiss : undefined
+
+  // TODO remove in a few months when all accounts have been migrated to passwords
+  const { showModalAsync, closeModal } = useModal()
+  const navigate = useNavigate()
+  const secretType = useSelector((s: RootState) => s.wallet.secretType)
+  useEffect(() => {
+    if (secretType === 'password') return
+    showModalAsync(
+      'Please Change Your Pin',
+      'For better security, pincodes are being replaced with passwords. Please change your pin to a new password now. Sorry for the inconvenience!',
+      { key: 'change', label: 'Change Pin' },
+      null,
+      's',
+      null,
+      false
+    )
+      .then(() => {
+        navigate('/change-pin')
+        closeModal()
+      })
+      .catch((reason) => {
+        logger.error('Failed to show modal', reason)
+        closeModal()
+      })
+  }, [])
 
   if (isDismissed) return null
 

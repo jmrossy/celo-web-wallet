@@ -15,7 +15,7 @@ export function AboutWalletLink({ styles }: { styles: Styles }) {
 
   return (
     <TextButton styles={styles} onClick={onClick}>
-      {'About This Wallet'}
+      About This Wallet
     </TextButton>
   )
 }

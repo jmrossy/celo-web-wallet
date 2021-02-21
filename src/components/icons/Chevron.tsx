@@ -1,15 +1,15 @@
 import { memo } from 'react'
-import Chevron from 'src/components/icons/chevron.svg'
 import { Styles } from 'src/styles/types'
 
 interface Props {
-  width: string | number
-  height: string | number
+  width?: string | number
+  height?: string | number
   direction: 'n' | 'e' | 's' | 'w'
+  color?: string
   styles?: Styles
 }
 
-function _ChevronIcon({ width, height, direction, styles }: Props) {
+function _ChevronIcon({ width, height, direction, color, styles }: Props) {
   let degree: string
   switch (direction) {
     case 'n':
@@ -29,13 +29,23 @@ function _ChevronIcon({ width, height, direction, styles }: Props) {
   }
 
   return (
-    <img
-      src={Chevron}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
       width={width}
       height={height}
+      viewBox="0 0 14 8"
       css={{ transform: `rotate(${degree})`, ...styles }}
-      alt="chevron"
-    />
+    >
+      <path
+        d="M1 1l6 6 6-6"
+        strokeWidth="2"
+        stroke={color || '#2E3338'}
+        fill="none"
+        fillRule="evenodd"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   )
 }
 
