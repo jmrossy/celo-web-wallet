@@ -157,14 +157,13 @@ export function ModalTestScreen() {
   return (
     <div>
       <Notification
-        message={
-          isBrowserValid
-            ? 'Your browser is valid'
-            : 'Your browser does not support required features'
-        }
         color={isBrowserValid ? Color.fillLight : Color.fillError}
         textColor={isBrowserValid ? Color.primaryGreen : Color.textError}
-      />
+      >
+        {isBrowserValid
+          ? 'Your browser is valid'
+          : 'Your browser does not support required features'}
+      </Notification>
 
       <Box direction="column" align="center">
         <h1 css={{ width: '100%', textAlign: 'center' }}>Browser Feature Testing</h1>

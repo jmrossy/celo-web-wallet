@@ -1,11 +1,10 @@
 import { keyframes } from '@emotion/react'
-import { useEffect, useState } from 'react'
+import { PropsWithChildren, useEffect, useState } from 'react'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 
 interface NotificationProps {
-  message: string
   color?: Color
   textColor?: Color
   margin?: string | number
@@ -14,8 +13,9 @@ interface NotificationProps {
   icon?: string
 }
 
-export function Notification(props: NotificationProps) {
-  if (!props.message) return null
+export function Notification(props: PropsWithChildren<NotificationProps>) {
+  if (!props.children) return null
+
   const [isDismissed, setDismissed] = useState(false)
 
   useEffect(() => {
@@ -34,12 +34,14 @@ export function Notification(props: NotificationProps) {
       styles={{
         backgroundColor: props.color ?? Color.accentBlue,
         width: '100%',
-        margin: props.margin ?? '1em 0',
+        margin: props.margin,
         padding: '0.4em 1.5em 0.4em 0.5em',
         animation: isDismissed ? `${fadeOut} 0.5s forwards` : undefined,
       }}
     >
-      {props.icon && <img src={props.icon} css={{ marginLeft: '0.5em' }} />}
+      {props.icon && (
+        <img src={props.icon} width="23px" height="20px" css={{ marginLeft: '1em' }} />
+      )}
       <Box
         align="center"
         styles={{
@@ -47,7 +49,7 @@ export function Notification(props: NotificationProps) {
           padding: '0.5em 1em',
         }}
       >
-        <span
+        <div
           css={{
             fontSize: '1.1em',
             lineHeight: '1.25em',
@@ -55,8 +57,8 @@ export function Notification(props: NotificationProps) {
             color: props.textColor ?? Color.primaryWhite,
           }}
         >
-          {props.message}
-        </span>
+          {props.children}
+        </div>
       </Box>
       {props.onDismiss && <CloseButton onClick={() => setDismissed(true)} />}
     </Box>
