@@ -4,12 +4,19 @@ import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import { GroupVotes, ValidatorGroup } from 'src/features/validators/types'
 
+interface ActivatableStatus {
+  status: boolean
+  lastUpdated: number | null
+  reminderDismissed: boolean
+}
+
 interface ValidatorsState {
   validatorGroups: {
     groups: ValidatorGroup[]
     lastUpdated: number | null
   }
   groupVotes: GroupVotes
+  hasActivatable: ActivatableStatus
 }
 
 export const validatorsInitialState: ValidatorsState = {
@@ -18,6 +25,11 @@ export const validatorsInitialState: ValidatorsState = {
     lastUpdated: null,
   },
   groupVotes: {},
+  hasActivatable: {
+    status: false,
+    lastUpdated: null,
+    reminderDismissed: false,
+  },
 }
 
 const validatorsSlice = createSlice({
@@ -37,17 +49,28 @@ const validatorsSlice = createSlice({
     updateGroupVotes: (state, action: PayloadAction<GroupVotes>) => {
       state.groupVotes = action.payload
     },
+    updateHasActivatable: (state, action: PayloadAction<ActivatableStatus>) => {
+      state.hasActivatable = action.payload
+    },
+    dismissActivatableReminder: (state) => {
+      state.hasActivatable.reminderDismissed = true
+    },
   },
 })
 
-export const { updateValidatorGroups, updateGroupVotes } = validatorsSlice.actions
+export const {
+  updateValidatorGroups,
+  updateGroupVotes,
+  updateHasActivatable,
+  dismissActivatableReminder,
+} = validatorsSlice.actions
 const validatorsReducer = validatorsSlice.reducer
 
 const validatorsPersistConfig = {
   key: 'validators',
   storage: storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['validatorGroups', 'groupVotes'],
+  whitelist: ['validatorGroups', 'groupVotes', 'hasActivatable'],
 }
 export const persistedValidatorsReducer = persistReducer<ReturnType<typeof validatorsReducer>>(
   validatorsPersistConfig,

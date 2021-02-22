@@ -8,6 +8,7 @@ import { NumberInput } from 'src/components/input/NumberInput'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { StackedBarChart } from 'src/components/StackedBarChart'
 import { Currency } from 'src/currency'
 import { getResultChartData, getSummaryChartData } from 'src/features/lock/barCharts'
@@ -42,6 +43,7 @@ export function LockFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
+  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
 
   const onSubmit = (values: LockTokenForm) => {
@@ -49,7 +51,8 @@ export function LockFormScreen() {
     navigate('/lock-review')
   }
 
-  const validateForm = (values: LockTokenForm) => validate(amountFieldToWei(values), balances)
+  const validateForm = (values: LockTokenForm) =>
+    validate(amountFieldToWei(values), balances, groupVotes)
 
   const {
     values,
@@ -65,6 +68,10 @@ export function LockFormScreen() {
   useEffect(() => {
     resetValues(getInitialValues(tx))
   }, [tx])
+
+  // Show modal to recommend nav to stake form when unlocking staked CELO
+  const helpText = `You can't unlock CELO that's currently staked with validators. You must revoke votes first. Would you like to change your votes now?`
+  useNavHintModal(errors.stakedCelo, 'Funds Are Still Voting', helpText, 'Change Votes', '/stake')
 
   const onSelectAction = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target

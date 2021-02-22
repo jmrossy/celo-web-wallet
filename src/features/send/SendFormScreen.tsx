@@ -113,10 +113,10 @@ export function SendFormScreen() {
           <Box direction="row" styles={style.inputRow} justify="between">
             <Box direction="column" justify="end" align="start">
               <label css={style.inputLabel}>Amount</label>
-              <Box direction="row" align="center">
+              <div css={style.amountContainer}>
                 <NumberInput
                   step="0.01"
-                  width="3.5em"
+                  width="6.5em"
                   margin="0 0.75em 0 0"
                   name="amount"
                   onChange={handleChange}
@@ -128,11 +128,11 @@ export function SendFormScreen() {
                 <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
                   Max Amount
                 </TextButton>
-              </Box>
+              </div>
             </Box>
             <Box direction="column" align="start" margin="0 0 0 1.5em">
               <label css={style.inputLabel}>Currency</label>
-              <Box direction="row" justify="between" align="end" styles={style.radioBox}>
+              <Box direction="row" justify="between" align="start" styles={style.radioBox}>
                 <CurrencyRadioBox
                   tabIndex={0}
                   label="cUSD"
@@ -222,15 +222,27 @@ const style: Stylesheet = {
       marginLeft: '0.75em',
     },
   },
-  radioBox: {
-    height: '100%',
-    width: '100%',
+  amountContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    [mq[480]]: {
+      flexDirection: 'row',
+    },
   },
   maxAmountButton: {
+    margin: '0.6em 0 0 0.2em',
+    textAlign: 'left',
     fontWeight: 300,
     fontSize: '0.9em',
+    [mq[480]]: {
+      margin: 0,
+    },
     [mq[768]]: {
       fontSize: '1em',
     },
+  },
+  radioBox: {
+    height: '100%',
+    width: '100%',
   },
 }

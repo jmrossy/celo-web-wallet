@@ -11,6 +11,8 @@ import { validateFeeEstimates } from 'src/features/fees/utils'
 import { LockActionType, LockTokenParams, PendingWithdrawal } from 'src/features/lock/types'
 import { getTotalUnlockedCelo } from 'src/features/lock/utils'
 import { TransactionType } from 'src/features/types'
+import { GroupVotes } from 'src/features/validators/types'
+import { getTotalNonvotingLocked } from 'src/features/validators/utils'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { BigNumberMin, validateAmount, validateAmountWithFees } from 'src/utils/amount'
@@ -22,6 +24,7 @@ import { call, put, select } from 'typed-redux-saga'
 export function validate(
   params: LockTokenParams,
   balances: Balances,
+  groupVotes: GroupVotes,
   validateFee = false
 ): ErrorState {
   const { amountInWei, action, feeEstimates } = params
@@ -56,6 +59,17 @@ export function validate(
     }
   }
 
+  // Ensure user isn't trying to unlock CELO used for staking
+  if (action === LockActionType.Unlock) {
+    const nonVotingLocked = getTotalNonvotingLocked(balances, groupVotes)
+    if (nonVotingLocked.lt(amountInWei)) {
+      errors = {
+        ...errors,
+        ...invalidInput('stakedCelo', 'Locked funds in use for staking'),
+      }
+    }
+  }
+
   if (validateFee) {
     errors = {
       ...errors,
@@ -74,8 +88,13 @@ function* lockToken(params: LockTokenParams) {
   const { pendingWithdrawals, isAccountRegistered } = yield* select(
     (state: RootState) => state.lock
   )
+  const groupVotes = yield* select((state: RootState) => state.validators.groupVotes)
 
-  validateOrThrow(() => validate(params, balances, true), 'Invalid transaction')
+  validateOrThrow(() => validate(params, balances, groupVotes, true), 'Invalid transaction')
+
+  if (action === LockActionType.Unlock) {
+    yield* call(ensureAccountNotGovernanceVoting)
+  }
 
   const txPlan = getLockActionTxPlan(params, pendingWithdrawals, isAccountRegistered)
   if (!feeEstimates || feeEstimates.length !== txPlan.length) {
@@ -246,6 +265,16 @@ async function createWithdrawCeloTx(
   tx.nonce = nonce
   logger.info('Signing withdraw celo tx')
   return signTransaction(tx, feeEstimate)
+}
+
+async function ensureAccountNotGovernanceVoting() {
+  const governance = getContract(CeloContract.Governance)
+  const address = getSigner().signer.address
+  const isVoting: boolean = await governance.isVoting(address)
+  if (isVoting)
+    throw new Error(
+      'Cannot unlock CELO when account has voted for an active governance proposal. You must wait until the proposal is done.'
+    )
 }
 
 export const {

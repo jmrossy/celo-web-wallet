@@ -7,8 +7,7 @@ import { BALANCE_STALE_TIME } from 'src/consts'
 import { fetchLockedCeloStatus } from 'src/features/lock/fetchLockedStatus'
 import { setLockedCeloStatus } from 'src/features/lock/lockSlice'
 import { LockedCeloBalances } from 'src/features/lock/types'
-import { fetchGroupVotes } from 'src/features/validators/fetchGroupVotes'
-import { updateGroupVotes } from 'src/features/validators/validatorsSlice'
+import { fetchStakingBalances } from 'src/features/validators/fetchGroupVotes'
 import { updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -18,9 +17,7 @@ import { call, put, select } from 'typed-redux-saga'
 // Essentially, fetch all the data that forms need to validate inputs
 function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
-  if (!address) {
-    throw new Error('Cannot fetch balances before address is set')
-  }
+  if (!address) throw new Error('Cannot fetch balances before address is set')
 
   const { celo, cUsd } = yield* call(fetchTokenBalances, address)
 
@@ -41,10 +38,7 @@ function* fetchBalances() {
   yield* put(updateBalances(balances))
 
   if (config.isElectron) {
-    // TODO need to support signer indirection
-    // TODO pop warning on pending votes here?
-    const validatorGroupVotes = yield* call(fetchGroupVotes, address)
-    yield* put(updateGroupVotes(validatorGroupVotes))
+    yield* call(fetchStakingBalances)
   }
 
   return balances

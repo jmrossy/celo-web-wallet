@@ -66,7 +66,7 @@ export function useTxFlowStatusModals(
   }
 
   const onFailure = (error: string | undefined) => {
-    showErrorModal(errorTitle, error, errorMsg || 'Something went wrong, sorry! Please try again.')
+    showErrorModal(errorTitle, errorMsg || 'Something went wrong, sorry! Please try again.', error)
   }
 
   useEffect(() => {

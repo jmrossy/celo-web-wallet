@@ -35,8 +35,8 @@ export function useSagaStatus(
     } else if (status === SagaStatus.Failure) {
       showErrorModal(
         errorTitle,
-        error,
-        errorMsg || 'Something went wrong, sorry! Please try again.'
+        errorMsg || 'Something went wrong, sorry! Please try again.',
+        error
       )
     }
   }, [status, error])

@@ -11,7 +11,8 @@ export function useNavHintModal(
   head: string,
   body: string,
   navLabel: string,
-  navTarget: string
+  navTarget: string,
+  onClose?: () => void
 ) {
   const navigate = useNavigate()
   const { showModal, closeModal } = useModal()
@@ -29,6 +30,7 @@ export function useNavHintModal(
     }
     const onActionClick = (action: ModalAction) => {
       if (action.key === 'nav') navigate(navTarget)
+      if (onClose) onClose()
       closeModal()
     }
     showModal(head, body, [navAction, dismissAction], undefined, 's', onActionClick)

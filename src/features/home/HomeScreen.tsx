@@ -7,10 +7,12 @@ import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useModal } from 'src/components/modal/useModal'
+import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
 import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
+import { dismissActivatableReminder } from 'src/features/validators/validatorsSlice'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -30,6 +32,7 @@ export function HomeScreen() {
   }
   const onClose = isMobile && !isWalletEmpty ? onClickDismiss : undefined
 
+  // START PIN MIGRATION
   // TODO remove in a few months when all accounts have been migrated to passwords
   const { showModalAsync, closeModal } = useModal()
   const navigate = useNavigate()
@@ -54,6 +57,23 @@ export function HomeScreen() {
         closeModal()
       })
   }, [])
+  // END PIN MIGRATION
+
+  // Detect if user has unactivated staking votes
+  const { status: hasActivatableVotes, reminderDismissed: votesReminderDismissed } = useSelector(
+    (state: RootState) => state.validators.hasActivatable
+  )
+  const showActivateModal = hasActivatableVotes && !votesReminderDismissed
+  useNavHintModal(
+    showActivateModal,
+    'Activate Your Votes!',
+    'You have pending validator votes that are ready to be activated. They must be activated to start earning staking rewards.',
+    'Activate',
+    '/stake',
+    () => {
+      dispatch(dismissActivatableReminder())
+    }
+  )
 
   if (isDismissed) return null
 

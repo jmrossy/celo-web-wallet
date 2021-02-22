@@ -7,6 +7,7 @@ import {
   ModalSize,
 } from 'src/components/modal/modal'
 import { ModalContext } from 'src/components/modal/modalContext'
+import { trimToLength } from 'src/utils/string'
 
 export function useModal() {
   const context = useContext(ModalContext)
@@ -32,11 +33,7 @@ export function useModal() {
     context.showModal(modalProps)
   }
 
-  const showErrorModal = (
-    head: string,
-    error: string | number | unknown | undefined | null,
-    body: string | null | undefined = undefined
-  ) => {
+  const showErrorModal = (head: string, subHead?: string | undefined, error?: unknown) => {
     let errorMsg: string
     if (!error) {
       errorMsg = 'Unknown Error'
@@ -47,11 +44,12 @@ export function useModal() {
     } else {
       errorMsg = JSON.stringify(error)
     }
+    errorMsg = trimToLength(errorMsg, 80)
 
     const modalProps: ModalProps = {
       head,
-      subHead: errorMsg,
-      body: body ?? undefined,
+      subHead: subHead,
+      body: errorMsg,
       severity: 'error',
       actions: ModalOkAction,
       onClose: context.closeModal,
