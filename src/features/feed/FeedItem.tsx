@@ -22,7 +22,7 @@ interface FeedItemContent {
   subDescription: string
   value: string
   currency: Currency
-  isPositive: boolean
+  isPositive?: boolean
 }
 
 export function FeedItem(props: FeedItemProps) {
@@ -34,6 +34,7 @@ export function FeedItem(props: FeedItemProps) {
 
   const { icon, description, subDescription, value, currency, isPositive } = getContentByTxType(tx)
   const { symbol, color } = getCurrencyProps(currency)
+  const sign = isPositive === true ? '+' : isPositive === false ? '-' : undefined
 
   return (
     <li key={tx.hash} css={[style.li, isOpen && style.liOpen]} onClick={handleClick}>
@@ -47,12 +48,7 @@ export function FeedItem(props: FeedItemProps) {
             </div>
           </Box>
           <div css={style.moneyContainer}>
-            <MoneyValue
-              amountInWei={value}
-              currency={currency}
-              hideSymbol={true}
-              sign={isPositive ? '+' : '-'}
-            />
+            <MoneyValue amountInWei={value} currency={currency} hideSymbol={true} sign={sign} />
             <div css={[style.currency, { color }]}>{symbol}</div>
           </div>
         </Box>
@@ -66,7 +62,13 @@ export function FeedItem(props: FeedItemProps) {
 }
 
 function getContentByTxType(tx: CeloTransaction): FeedItemContent {
-  const subDescription = getFormattedTimestamp(tx.timestamp)
+  const defaultContent = {
+    icon: <Identicon address={tx.to} />,
+    description: `Transaction ${tx.hash.substr(0, 8)}`,
+    subDescription: getFormattedTimestamp(tx.timestamp),
+    currency: Currency.CELO,
+    value: tx.value,
+  }
 
   if (
     tx.type === TransactionType.StableTokenTransfer ||
@@ -74,15 +76,11 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     tx.type === TransactionType.CeloTokenTransfer
   ) {
     // TODO support comment encryption
-    const description = tx.comment || (tx.isOutgoing ? 'Payment Sent' : 'Payment Received')
-    const icon = <Identicon address={tx.isOutgoing ? tx.to : tx.from} />
-
     return {
-      icon,
-      description,
-      subDescription,
+      ...defaultContent,
+      icon: <Identicon address={tx.isOutgoing ? tx.to : tx.from} />,
+      description: tx.comment || (tx.isOutgoing ? 'Payment Sent' : 'Payment Received'),
       currency: tx.currency,
-      value: tx.value,
       isPositive: !tx.isOutgoing,
     }
   }
@@ -91,25 +89,17 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     tx.type === TransactionType.StableTokenApprove ||
     tx.type === TransactionType.CeloTokenApprove
   ) {
-    const description = 'Transfer Approval'
-    // TODO create an approve tx icon
-    const icon = <Identicon address={tx.to} />
-
     return {
-      icon,
-      description,
-      subDescription,
+      ...defaultContent,
+      description: 'Transfer Approval',
       currency: tx.currency,
       value: '0',
-      isPositive: true,
     }
   }
 
   if (tx.type === TransactionType.TokenExchange) {
-    const icon = <ExchangeIcon toToken={tx.toToken} />
     let description: string
     let currency: Currency
-
     if (tx.fromToken === Currency.CELO) {
       description = 'CELO to cUSD Exchange'
       currency = Currency.cUSD
@@ -117,11 +107,10 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
       description = 'cUSD to CELO Exchange'
       currency = Currency.CELO
     }
-
     return {
-      icon,
+      ...defaultContent,
+      icon: <ExchangeIcon toToken={tx.toToken} />,
       description,
-      subDescription,
       currency,
       value: tx.toValue,
       isPositive: true,
@@ -129,32 +118,65 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
   }
 
   if (tx.type === TransactionType.EscrowTransfer || tx.type === TransactionType.EscrowWithdraw) {
-    const description = tx.isOutgoing ? 'Escrow Payment' : 'Escrow Withdrawal'
-    // TODO create an escrow icon
-    const icon = <Identicon address={tx.to} />
-
     return {
-      icon,
-      description,
-      subDescription,
+      ...defaultContent,
+      description: tx.isOutgoing ? 'Escrow Payment' : 'Escrow Withdrawal',
       currency: tx.currency,
-      value: tx.value,
       isPositive: !tx.isOutgoing,
     }
   }
 
-  // TODO create an 'other' tx icon
-  const icon = <Identicon address={tx.to} />
-  const description = `Transaction ${tx.hash.substr(0, 8)}`
-
-  return {
-    icon,
-    description,
-    subDescription,
-    currency: Currency.CELO,
-    value: tx.value,
-    isPositive: false,
+  if (tx.type === TransactionType.LockCelo || tx.type === TransactionType.RelockCelo) {
+    return {
+      ...defaultContent,
+      description: 'Lock CELO',
+      isPositive: false,
+    }
   }
+  if (tx.type === TransactionType.UnlockCelo) {
+    return {
+      ...defaultContent,
+      description: 'Unlock CELO',
+    }
+  }
+  if (tx.type === TransactionType.WithdrawLockedCelo) {
+    return {
+      ...defaultContent,
+      description: 'Withdraw CELO',
+      isPositive: true,
+    }
+  }
+
+  if (tx.type === TransactionType.ValidatorVoteCelo) {
+    return {
+      ...defaultContent,
+      description: 'Vote for Validator',
+    }
+  }
+  if (tx.type === TransactionType.ValidatorActivateCelo) {
+    return {
+      ...defaultContent,
+      description: 'Activate Validator Vote',
+    }
+  }
+  if (
+    tx.type === TransactionType.ValidatorRevokeActiveCelo ||
+    tx.type === TransactionType.ValidatorRevokePendingCelo
+  ) {
+    return {
+      ...defaultContent,
+      description: 'Revoke Validator Vote',
+    }
+  }
+
+  if (tx.type === TransactionType.GovernanceVote) {
+    return {
+      ...defaultContent,
+      description: 'Governance Vote',
+    }
+  }
+
+  return defaultContent
 }
 
 function getFormattedTimestamp(timestamp: number) {

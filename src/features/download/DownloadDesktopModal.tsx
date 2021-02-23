@@ -18,7 +18,7 @@ export function DownloadDesktopButton({ children, styles }: PropsWithChildren<Bu
   const { showModalWithContent } = useModal()
 
   const onClick = () => {
-    showModalWithContent('Download for Desktop', <DownloadDesktopModal />)
+    showModalWithContent('Celo Wallet for Desktop', <DownloadDesktopModal />)
   }
   return (
     <TextButton onClick={onClick} styles={styles}>
@@ -29,7 +29,7 @@ export function DownloadDesktopButton({ children, styles }: PropsWithChildren<Bu
 
 export function DownloadDesktopModal({ limitFeatureVersion }: { limitFeatureVersion?: boolean }) {
   const text = limitFeatureVersion
-    ? 'For security reasons, this feature is only available in the desktop version.'
+    ? 'For security reasons, this feature is only available in the desktop version. Sorry for the inconvenience but your account safety is important!'
     : "The desktop version is more secure and includes extra features. It's strongly recommended for large accounts."
 
   return (

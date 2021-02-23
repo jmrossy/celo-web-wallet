@@ -22,6 +22,7 @@ import {
   Proposal,
   ProposalStage,
   VoteValue,
+  voteValueToLabel,
 } from 'src/features/governance/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
@@ -40,9 +41,9 @@ const initialValues: GovernanceVoteParams = {
 }
 
 const radioBoxLabels = [
-  { value: VoteValue.Yes, label: 'Yes' },
-  { value: VoteValue.No, label: 'No' },
-  { value: VoteValue.Abstain, label: 'Abstain' },
+  { value: VoteValue.Yes, label: voteValueToLabel(VoteValue.Yes) },
+  { value: VoteValue.No, label: voteValueToLabel(VoteValue.No) },
+  { value: VoteValue.Abstain, label: voteValueToLabel(VoteValue.Abstain) },
 ]
 
 enum Status {
@@ -130,7 +131,7 @@ export function GovernanceFormScreen() {
             <Box direction="column" margin="2em 0 0 0">
               <label css={style.inputLabel}>Vote</label>
               <RadioBoxRow
-                value={values.value}
+                value={values.value.toString()}
                 startTabIndex={1}
                 labels={radioBoxLabels}
                 name="value"
@@ -211,8 +212,9 @@ function ProposalDetails({ proposal }: { proposal: Proposal }) {
   const votes = proposal.votes
   const totalVotes = fromWei(Object.values(votes).reduce((sum, v) => sum.add(v), BigNumber.from(0)))
 
-  const toPercent = (voteValue: VoteValue) =>
+  const toPercent = (voteValue: VoteValue.Yes | VoteValue.No | VoteValue.Abstain) =>
     `${Math.round((fromWei(votes[voteValue]) / totalVotes) * 100)}%`
+
   const yesPercent = toPercent(VoteValue.Yes)
   const noPercent = toPercent(VoteValue.No)
   const abstainPercent = toPercent(VoteValue.Abstain)

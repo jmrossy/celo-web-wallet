@@ -11,7 +11,7 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
 import { governanceVoteActions } from 'src/features/governance/governanceVote'
-import { Proposal } from 'src/features/governance/types'
+import { Proposal, voteValueToLabel } from 'src/features/governance/types'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -80,7 +80,7 @@ export function GovernanceConfirmationScreen() {
 
         <Box direction="row" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>Vote</label>
-          <label css={[style.valueLabel, style.valueCol]}>{params.value}</label>
+          <label css={[style.valueLabel, style.valueCol]}>{voteValueToLabel(params.value)}</label>
         </Box>
 
         <Box direction="row" styles={style.inputRow} align="end" justify="between">

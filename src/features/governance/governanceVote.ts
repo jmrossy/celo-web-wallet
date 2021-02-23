@@ -8,6 +8,7 @@ import { Currency } from 'src/currency'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import {
   GovernanceVoteParams,
+  OrderedVoteValue,
   Proposal,
   ProposalStage,
   VoteValue,
@@ -93,7 +94,10 @@ async function createVoteTx(params: GovernanceVoteParams) {
   const propsalIndex = dequeued.findIndex((d) => d === proposalId)
   if (propsalIndex < 0) throw new Error('Proposal not found in dequeued list')
 
-  const tx = await governance.populateTransaction.vote(proposalId, propsalIndex, value)
+  // Go from string enum to number
+  const voteValue = OrderedVoteValue.indexOf(value)
+
+  const tx = await governance.populateTransaction.vote(proposalId, propsalIndex, voteValue)
   logger.info('Signing governance vote tx')
   const signedTx = await signTransaction(tx, feeEstimate)
   return signedTx

@@ -6,6 +6,7 @@ import { CeloContract, config } from 'src/config'
 import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
 import { Currency } from 'src/currency'
 import { addTransactions } from 'src/features/feed/feedSlice'
+import { OrderedVoteValue } from 'src/features/governance/types'
 import {
   CeloNativeTransferTx,
   CeloTokenApproveTx,
@@ -14,9 +15,12 @@ import {
   EscrowTransaction,
   EscrowTransferTx,
   EscrowWithdrawTx,
+  GovernanceVoteTx,
+  LockTokenTx,
   OtherTx,
   StableTokenApproveTx,
   StableTokenTransferTx,
+  StakeTokenTx,
   TokenExchangeTx,
   TokenTransaction,
   TransactionMap,
@@ -180,12 +184,18 @@ function getAbiInterfacesForParsing(): AbiInterfaceMap {
   const stableTokenContract = getContract(CeloContract.StableToken)
   const exchangeContract = getContract(CeloContract.Exchange)
   const escrowContract = getContract(CeloContract.Escrow)
+  const lockedGoldContract = getContract(CeloContract.LockedGold)
+  const electionContract = getContract(CeloContract.Election)
+  const governanceContract = getContract(CeloContract.Governance)
 
   return {
     [CeloContract.GoldToken]: goldTokenContract.interface,
     [CeloContract.StableToken]: stableTokenContract.interface,
     [CeloContract.Exchange]: exchangeContract.interface,
     [CeloContract.Escrow]: escrowContract.interface,
+    [CeloContract.LockedGold]: lockedGoldContract.interface,
+    [CeloContract.Election]: electionContract.interface,
+    [CeloContract.Governance]: governanceContract.interface,
   }
 }
 
@@ -264,6 +274,18 @@ function parseTransaction(
 
   if (areAddressesEqual(tx.from, config.contractAddresses[CeloContract.Escrow])) {
     // TODO parse escrow incoming
+  }
+
+  if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.LockedGold])) {
+    return parseLockedGoldTx(tx, abiInterfaces)
+  }
+
+  if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.Election])) {
+    return parseElectionTx(tx, abiInterfaces)
+  }
+
+  if (areAddressesEqual(tx.to, config.contractAddresses[CeloContract.Governance])) {
+    return parseGovernanceTx(tx, abiInterfaces)
   }
 
   if (tx.tokenTransfers && tx.tokenTransfers.length && !isTxInputEmpty(tx)) {
@@ -541,6 +563,120 @@ function parseEscrowWithdraw(
   }
 
   return { ...parsedTx, type: TransactionType.EscrowWithdraw, isOutgoing: false }
+}
+
+function parseLockedGoldTx(
+  tx: BlockscoutTx,
+  abiInterfaces: AbiInterfaceMap
+): LockTokenTx | OtherTx {
+  try {
+    const abiInterface = abiInterfaces[CeloContract.LockedGold]!
+    const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
+    const name = txDescription.name
+
+    if (name === 'lock') {
+      return {
+        ...parseOtherTx(tx),
+        type: TransactionType.LockCelo,
+      }
+    }
+    if (name === 'relock') {
+      return {
+        ...parseOtherTx(tx),
+        type: TransactionType.RelockCelo,
+        value: BigNumber.from(txDescription.args.value).toString(),
+      }
+    }
+    if (name === 'unlock') {
+      return {
+        ...parseOtherTx(tx),
+        type: TransactionType.UnlockCelo,
+        value: BigNumber.from(txDescription.args.value).toString(),
+      }
+    }
+    if (name === 'withdraw') {
+      let value = '0'
+      if (tx.tokenTransfers?.length) {
+        value = tx.tokenTransfers[0].value
+      }
+      return {
+        ...parseOtherTx(tx),
+        type: TransactionType.WithdrawLockedCelo,
+        value,
+      }
+    }
+
+    logger.warn(`Unsupported locked gold method: ${name}`)
+    return parseOtherTx(tx)
+  } catch (error) {
+    logger.error('Failed to parse locked gold tx', error, tx)
+    return parseOtherTx(tx)
+  }
+}
+
+function parseElectionTx(tx: BlockscoutTx, abiInterfaces: AbiInterfaceMap): StakeTokenTx | OtherTx {
+  try {
+    const abiInterface = abiInterfaces[CeloContract.Election]!
+    const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
+    const name = txDescription.name
+    const groupAddress = txDescription.args?.group
+
+    if (name === 'vote' || name === 'revokeActive' || name === 'revokePending') {
+      const type =
+        name === 'vote'
+          ? TransactionType.ValidatorVoteCelo
+          : name === 'revokeActive'
+          ? TransactionType.ValidatorRevokeActiveCelo
+          : TransactionType.ValidatorRevokePendingCelo
+      return {
+        ...parseOtherTx(tx),
+        type,
+        groupAddress,
+        value: BigNumber.from(txDescription.args.value).toString(),
+      }
+    }
+    if (name === 'activate') {
+      return {
+        ...parseOtherTx(tx),
+        type: TransactionType.ValidatorActivateCelo,
+        groupAddress,
+      }
+    }
+
+    logger.warn(`Unsupported election method: ${name}`)
+    return parseOtherTx(tx)
+  } catch (error) {
+    logger.error('Failed to parse eletion tx', error, tx)
+    return parseOtherTx(tx)
+  }
+}
+
+function parseGovernanceTx(
+  tx: BlockscoutTx,
+  abiInterfaces: AbiInterfaceMap
+): GovernanceVoteTx | OtherTx {
+  try {
+    const abiInterface = abiInterfaces[CeloContract.Governance]!
+    const txDescription = abiInterface.parseTransaction({ data: tx.input, value: tx.value })
+    const name = txDescription.name
+
+    if (name === 'vote') {
+      const voteValueIndex = BigNumber.from(txDescription.args.value).toNumber()
+      const voteValue = OrderedVoteValue[voteValueIndex]
+      return {
+        ...parseOtherTx(tx),
+        type: TransactionType.GovernanceVote,
+        proposalId: txDescription.args.proposalId,
+        vote: voteValue,
+      }
+    }
+
+    logger.warn(`Unsupported governance method: ${name}`)
+    return parseOtherTx(tx)
+  } catch (error) {
+    logger.error('Failed to parse governance tx', error, tx)
+    return parseOtherTx(tx)
+  }
 }
 
 function tryParseTransferComment(
