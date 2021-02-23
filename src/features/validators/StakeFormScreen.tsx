@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
+import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
 import { SelectInput } from 'src/components/input/SelectInput'
@@ -133,7 +134,9 @@ export function StakeFormScreen() {
 
   return (
     <ScreenContentFrame>
-      <h1 css={Font.h2Green}>Vote for Validators</h1>
+      <h1 css={Font.h2Green}>
+        Vote for Validators <HelpButton />
+      </h1>
       <div css={style.container}>
         <div css={style.content}>
           <form onSubmit={handleSubmit}>
@@ -231,6 +234,22 @@ export function StakeFormScreen() {
         </Box>
       </div>
     </ScreenContentFrame>
+  )
+}
+
+function HelpButton() {
+  return <HelpIcon modal={{ head: 'About Staking', content: <HelpModal /> }} margin="0 0 0 0.4em" />
+}
+
+function HelpModal() {
+  return (
+    <BasicHelpIconModal>
+      <p>
+        You can use locked CELO to vote in daily elections that decide the validators of the
+        network.
+      </p>
+      <p>If your chosen validators are elected, you will earn CELO rewards over time.</p>
+    </BasicHelpIconModal>
   )
 }
 

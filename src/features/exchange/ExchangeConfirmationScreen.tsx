@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
-import { HelpIcon } from 'src/components/icons/HelpIcon'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -13,6 +12,7 @@ import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
 import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
+import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
@@ -115,13 +115,7 @@ export function ExchangeConfirmationScreen() {
           >
             <Box direction="row" justify="between" align="end" styles={style.labelWidth}>
               <label css={style.label}>
-                Fee{' '}
-                <HelpIcon
-                  tooltip={{
-                    content: "Fees, or 'gas', keep the network secure.",
-                    position: 'topRight',
-                  }}
-                />
+                Fee <FeeHelpIcon />
               </label>
             </Box>
             {feeAmount && feeCurrency ? (

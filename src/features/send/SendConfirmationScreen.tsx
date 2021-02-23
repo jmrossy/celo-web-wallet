@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
-import { HelpIcon } from 'src/components/icons/HelpIcon'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
+import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
 import { sendTokenActions } from 'src/features/send/sendToken'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
@@ -105,13 +105,7 @@ export function SendConfirmationScreen() {
             styles={{ ...style.labelCol, width: '10em' }}
           >
             <label>
-              Fee{' '}
-              <HelpIcon
-                tooltip={{
-                  content: "Fees, or 'gas', keep the network secure.",
-                  position: 'topRight',
-                }}
-              />
+              Fee <FeeHelpIcon />
             </label>
           </Box>
           {feeAmount && feeCurrency ? (

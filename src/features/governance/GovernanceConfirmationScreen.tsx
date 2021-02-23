@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
-import { HelpIcon } from 'src/components/icons/HelpIcon'
 import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
+import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
 import { governanceVoteActions } from 'src/features/governance/governanceVote'
 import { Proposal, voteValueToLabel } from 'src/features/governance/types'
@@ -91,13 +91,7 @@ export function GovernanceConfirmationScreen() {
             styles={{ ...style.labelCol, width: '10em' }}
           >
             <label>
-              Fee{' '}
-              <HelpIcon
-                tooltip={{
-                  content: "Fees, or 'gas', keep the network secure.",
-                  position: 'topRight',
-                }}
-              />
+              Fee <FeeHelpIcon />
             </label>
           </Box>
           {feeAmount && feeCurrency ? (

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
+import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
 import { Box } from 'src/components/layout/Box'
@@ -105,7 +106,9 @@ export function LockFormScreen() {
 
   return (
     <ScreenContentFrame>
-      <h1 css={Font.h2Green}>Lock or Unlock CELO</h1>
+      <h1 css={Font.h2Green}>
+        Lock or Unlock CELO <HelpButton />
+      </h1>
       <div css={style.container}>
         <div css={style.content}>
           <form onSubmit={handleSubmit}>
@@ -177,6 +180,25 @@ export function LockFormScreen() {
         </Box>
       </div>
     </ScreenContentFrame>
+  )
+}
+
+function HelpButton() {
+  return <HelpIcon modal={{ head: 'About Locking', content: <HelpModal /> }} margin="0 0 0 0.4em" />
+}
+
+function HelpModal() {
+  return (
+    <BasicHelpIconModal>
+      <p>
+        In order to vote on validator elections or governance proposals, you first need to lock some
+        CELO.
+      </p>
+      <p>
+        Locked funds can always be unlocked again but require a 3 day waiting period before you can
+        withdraw.
+      </p>
+    </BasicHelpIconModal>
   )
 }
 
