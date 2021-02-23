@@ -3,7 +3,7 @@ import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
-import { MIN_LOCKED_GOLD } from 'src/consts'
+import { MIN_LOCKED_GOLD_TO_VOTE } from 'src/consts'
 import { Currency } from 'src/currency'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import {
@@ -45,7 +45,7 @@ export function validate(
   }
 
   // If locked amount is very small or 0
-  if (BigNumber.from(balances.lockedCelo.locked).lte(MIN_LOCKED_GOLD)) {
+  if (BigNumber.from(balances.lockedCelo.locked).lte(MIN_LOCKED_GOLD_TO_VOTE)) {
     errors = { ...errors, ...invalidInput('lockedCelo', 'Insufficient locked CELO') }
   }
 

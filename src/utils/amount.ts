@@ -19,11 +19,12 @@ export function validateAmount(
   _amountInWei: BigNumberish,
   currency: Currency,
   balances: Balances,
-  max?: BigNumberish
+  max?: BigNumberish,
+  min?: BigNumberish
 ): ErrorState | null {
   const amountInWei = BigNumber.from(_amountInWei)
 
-  if (amountInWei.lte(0)) {
+  if ((min && amountInWei.lt(min)) || amountInWei.lte(0)) {
     logger.warn(`Invalid amount, too small: ${amountInWei.toString()}`)
     return invalidInput('amount', 'Amount too small')
   }
@@ -86,7 +87,7 @@ export function validateAmountWithFees(
 }
 
 // Get amount that is adjusted when user input is nearly the same as their balance
-export function getAdjustedAmount(
+export function getAdjustedAmountFromBalances(
   _amountInWei: string,
   txCurrency: Currency,
   balances: Balances,
@@ -105,6 +106,22 @@ export function getAdjustedAmount(
     } else {
       return balance
     }
+  } else {
+    // Just the amount entered, no adjustment needed
+    return amountInWei
+  }
+}
+
+// Get amount that is adjusted when user input is nearly the same as max value
+export function getAdjustedAmount(
+  _amountInWei: BigNumberish,
+  _maxAmount: BigNumberish,
+  txCurrency: Currency
+): BigNumber {
+  const amountInWei = BigNumber.from(_amountInWei)
+  const maxAmount = BigNumber.from(_maxAmount)
+  if (areAmountsNearlyEqual(amountInWei, maxAmount, txCurrency)) {
+    return maxAmount
   } else {
     // Just the amount entered, no adjustment needed
     return amountInWei

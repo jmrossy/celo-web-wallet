@@ -37,7 +37,7 @@ export function LockConfirmationScreen() {
       return
     }
 
-    const txs = getLockActionTxPlan(tx.params, pendingWithdrawals, isAccountRegistered)
+    const txs = getLockActionTxPlan(tx.params, pendingWithdrawals, balances, isAccountRegistered)
     dispatch(estimateFeeActions.trigger({ txs }))
   }, [tx])
 
@@ -45,7 +45,7 @@ export function LockConfirmationScreen() {
 
   const params = tx.params
   const { action, amountInWei } = params
-  const txPlan = getLockActionTxPlan(params, pendingWithdrawals, isAccountRegistered)
+  const txPlan = getLockActionTxPlan(params, pendingWithdrawals, balances, isAccountRegistered)
 
   const { amount, feeAmount, feeCurrency, feeEstimates } = useFee(amountInWei, txPlan.length)
 

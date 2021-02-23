@@ -5,6 +5,7 @@ import { getSigner } from 'src/blockchain/signer'
 import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
+import { MIN_LOCK_AMOUNT } from 'src/consts'
 import { Currency } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -15,7 +16,12 @@ import { GroupVotes } from 'src/features/validators/types'
 import { getTotalNonvotingLocked } from 'src/features/validators/utils'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import { BigNumberMin, validateAmount, validateAmountWithFees } from 'src/utils/amount'
+import {
+  BigNumberMin,
+  getAdjustedAmount,
+  validateAmount,
+  validateAmountWithFees,
+} from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -45,7 +51,10 @@ export function validate(
     } else if (action === LockActionType.Withdraw) {
       adjustedBalances.celo = balances.lockedCelo.pendingFree
     }
-    errors = { ...errors, ...validateAmount(amountInWei, Currency.CELO, adjustedBalances) }
+    errors = {
+      ...errors,
+      ...validateAmount(amountInWei, Currency.CELO, adjustedBalances, undefined, MIN_LOCK_AMOUNT),
+    }
 
     // Special case handling for withdraw which is confusing
     if (
@@ -96,7 +105,7 @@ function* lockToken(params: LockTokenParams) {
     yield* call(ensureAccountNotGovernanceVoting)
   }
 
-  const txPlan = getLockActionTxPlan(params, pendingWithdrawals, isAccountRegistered)
+  const txPlan = getLockActionTxPlan(params, pendingWithdrawals, balances, isAccountRegistered)
   if (!feeEstimates || feeEstimates.length !== txPlan.length) {
     throw new Error('Fee estimates missing or do not match txPlan')
   }
@@ -142,13 +151,15 @@ type LockTokenTxPlan = Array<LockTokenTxPlanItem>
 export function getLockActionTxPlan(
   params: LockTokenParams,
   pendingWithdrawals: PendingWithdrawal[],
+  balances: Balances,
   isAccountRegistered: boolean
 ): LockTokenTxPlan {
   const { action, amountInWei } = params
 
   if (action === LockActionType.Unlock) {
     // If only all three cases where this simple :)
-    return [{ type: TransactionType.UnlockCelo, amountInWei }]
+    const adjutedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, Currency.CELO)
+    return [{ type: TransactionType.UnlockCelo, amountInWei: adjutedAmount.toString() }]
   } else if (action === LockActionType.Lock) {
     const txs: LockTokenTxPlan = []
 
@@ -161,17 +172,18 @@ export function getLockActionTxPlan(
     let amountRemaining = BigNumber.from(amountInWei)
     const pwSorted = pendingWithdrawals.sort((a, b) => b.index - a.index)
     for (const p of pwSorted) {
-      if (amountRemaining.lte(0)) break
+      if (amountRemaining.lte(MIN_LOCK_AMOUNT)) break
       const txAmount = BigNumberMin(amountRemaining, BigNumber.from(p.value))
+      const adjustedAmount = getAdjustedAmount(txAmount, p.value, Currency.CELO)
       txs.push({
         type: TransactionType.RelockCelo,
         pendingWithdrawal: p,
-        amountInWei: txAmount.toString(),
+        amountInWei: adjustedAmount.toString(),
       })
-      amountRemaining = amountRemaining.sub(txAmount)
+      amountRemaining = amountRemaining.sub(adjustedAmount)
     }
     // If pending relocks didn't cover it
-    if (amountRemaining.gt(0)) {
+    if (amountRemaining.gt(MIN_LOCK_AMOUNT)) {
       txs.push({ type: TransactionType.LockCelo, amountInWei: amountRemaining.toString() })
     }
     return txs

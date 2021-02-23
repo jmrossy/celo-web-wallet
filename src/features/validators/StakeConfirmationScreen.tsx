@@ -38,7 +38,7 @@ export function StakeConfirmationScreen() {
       return
     }
 
-    const txs = getStakeActionTxPlan(tx.params, groupVotes)
+    const txs = getStakeActionTxPlan(tx.params, balances, groupVotes)
     dispatch(estimateFeeActions.trigger({ txs }))
   }, [tx])
 
@@ -46,7 +46,7 @@ export function StakeConfirmationScreen() {
 
   const params = tx.params
   const { action, amountInWei } = params
-  const txPlan = getStakeActionTxPlan(tx.params, groupVotes)
+  const txPlan = getStakeActionTxPlan(tx.params, balances, groupVotes)
 
   const { amount, feeAmount, feeCurrency, feeEstimates } = useFee(amountInWei, txPlan.length)
 

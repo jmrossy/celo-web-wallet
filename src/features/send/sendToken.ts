@@ -18,7 +18,11 @@ import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import { getAdjustedAmount, validateAmount, validateAmountWithFees } from 'src/utils/amount'
+import {
+  getAdjustedAmountFromBalances,
+  validateAmount,
+  validateAmountWithFees,
+} from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -105,7 +109,9 @@ async function createSendTx(params: SendTokenParams, balances: Balances) {
   if (!feeEstimate) throw new Error('Fee estimate is missing')
 
   // Need to account for case where user intends to send entire balance
-  const adjustedAmount = getAdjustedAmount(amountInWei, currency, balances, [feeEstimate])
+  const adjustedAmount = getAdjustedAmountFromBalances(amountInWei, currency, balances, [
+    feeEstimate,
+  ])
 
   const { tx, type } = await getTokenTransferTx(currency, recipient, adjustedAmount, comment)
 

@@ -22,7 +22,7 @@ import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/
 import { Balances } from 'src/features/wallet/types'
 import {
   fromWei,
-  getAdjustedAmount,
+  getAdjustedAmountFromBalances,
   toWei,
   validateAmount,
   validateAmountWithFees,
@@ -115,7 +115,12 @@ function* exchangeToken(params: ExchangeTokenParams) {
   }
 
   // Need to account for case where user intends to send entire balance
-  const adjustedAmount = getAdjustedAmount(amountInWei, fromCurrency, balances, feeEstimates)
+  const adjustedAmount = getAdjustedAmountFromBalances(
+    amountInWei,
+    fromCurrency,
+    balances,
+    feeEstimates
+  )
   const minBuyAmount = getMinBuyAmount(adjustedAmount, exchangeRate)
 
   const signedApproveTx = yield* call(

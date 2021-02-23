@@ -5,7 +5,7 @@ import { getSigner } from 'src/blockchain/signer'
 import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
-import { MIN_LOCKED_GOLD, NULL_ADDRESS } from 'src/consts'
+import { MIN_LOCKED_GOLD_TO_VOTE, MIN_VOTE_AMOUNT, NULL_ADDRESS } from 'src/consts'
 import { Currency } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -21,7 +21,12 @@ import { getStakingMaxAmount } from 'src/features/validators/utils'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { areAddressesEqual } from 'src/utils/addresses'
-import { BigNumberMin, validateAmount, validateAmountWithFees } from 'src/utils/amount'
+import {
+  BigNumberMin,
+  getAdjustedAmount,
+  validateAmount,
+  validateAmountWithFees,
+} from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -51,13 +56,16 @@ export function validate(
     const adjustedBalances = { ...balances }
     const maxAmount = getStakingMaxAmount(params.action, balances, votes, params.groupAddress)
     adjustedBalances.celo = maxAmount.toString()
-    errors = { ...errors, ...validateAmount(amountInWei, Currency.CELO, adjustedBalances) }
+    errors = {
+      ...errors,
+      ...validateAmount(amountInWei, Currency.CELO, adjustedBalances, undefined, MIN_VOTE_AMOUNT),
+    }
   }
 
   // If locked amount is very small or 0
   if (
     action === StakeActionType.Vote &&
-    BigNumber.from(balances.lockedCelo.locked).lte(MIN_LOCKED_GOLD)
+    BigNumber.from(balances.lockedCelo.locked).lte(MIN_LOCKED_GOLD_TO_VOTE)
   ) {
     errors = { ...errors, ...invalidInput('lockedCelo', 'Insufficient locked CELO') }
   }
@@ -84,7 +92,7 @@ function* stakeToken(params: StakeTokenParams) {
     'Invalid transaction'
   )
 
-  const txPlan = getStakeActionTxPlan(params, groupVotes)
+  const txPlan = getStakeActionTxPlan(params, balances, groupVotes)
   if (!feeEstimates || feeEstimates.length !== txPlan.length) {
     throw new Error('Fee estimates missing or do not match txPlan')
   }
@@ -112,12 +120,21 @@ type StakeTokenTxPlan = Array<StakeTokenTxPlanItem>
 // This determines the ideal tx types and order
 export function getStakeActionTxPlan(
   params: StakeTokenParams,
+  balances: Balances,
   currentVotes: GroupVotes
 ): StakeTokenTxPlan {
   const { action, amountInWei, groupAddress } = params
 
   if (action === StakeActionType.Vote) {
-    return [{ type: TransactionType.ValidatorVoteCelo, amountInWei, groupAddress }]
+    const maxAmount = getStakingMaxAmount(action, balances, currentVotes, groupAddress)
+    const adjutedAmount = getAdjustedAmount(amountInWei, maxAmount, Currency.CELO)
+    return [
+      {
+        type: TransactionType.ValidatorVoteCelo,
+        amountInWei: adjutedAmount.toString(),
+        groupAddress,
+      },
+    ]
   } else if (action === StakeActionType.Activate) {
     return [{ type: TransactionType.ValidatorActivateCelo, amountInWei, groupAddress }]
   } else if (action === StakeActionType.Revoke) {
@@ -127,18 +144,20 @@ export function getStakeActionTxPlan(
     const amountPending = BigNumber.from(groupVotes.pending)
     const amountActive = BigNumber.from(groupVotes.active)
     const pendingValue = BigNumberMin(amountPending, amountRemaining)
+    const pendingAdjusted = getAdjustedAmount(amountRemaining, pendingValue, Currency.CELO)
     if (pendingValue.gt(0)) {
       txs.push({
         type: TransactionType.ValidatorRevokePendingCelo,
-        amountInWei: pendingValue.toString(),
+        amountInWei: pendingAdjusted.toString(),
         groupAddress,
       })
-      amountRemaining = amountRemaining.sub(pendingValue)
+      amountRemaining = amountRemaining.sub(pendingAdjusted)
     }
     if (amountRemaining.gt(0) && amountActive.gte(amountRemaining)) {
+      const activeAdjusted = getAdjustedAmount(amountRemaining, amountActive, Currency.CELO)
       txs.push({
         type: TransactionType.ValidatorRevokeActiveCelo,
-        amountInWei: amountRemaining.toString(),
+        amountInWei: activeAdjusted.toString(),
         groupAddress,
       })
     }
