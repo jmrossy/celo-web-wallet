@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ExchangesModal } from 'src/components/ExchangesModal'
+import { useFundWalletModal } from 'src/components/FundWalletModal'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import CoinSwapIcon from 'src/components/icons/coin_swap.svg'
@@ -41,22 +41,13 @@ export const AccountMenu = () => {
   const isMobile = useIsMobile()
   const identiconSize = isMobile ? 30 : 40
 
-  const onLogout = useLogoutModal()
   const { showModalWithContent } = useModal()
+  const onLogout = useLogoutModal()
 
   const address = useWalletAddress()
   const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
   const showQrModal = useAddressQrCodeModal()
-
-  const showFundModal = () => {
-    showModalWithContent(
-      'Where to buy Celo',
-      <ExchangesModal address={address} />,
-      null,
-      null,
-      'Celo currencies can be earned or purchased from these exchanges.'
-    )
-  }
+  const showFundModal = useFundWalletModal()
 
   const navigate = useNavigate()
   const onItemClick = (key: string) => async () => {
@@ -71,7 +62,7 @@ export const AccountMenu = () => {
         navigate('/settings')
         break
       case 'fund':
-        showFundModal()
+        showFundModal(address)
         break
       case 'logout':
         await onLogout()

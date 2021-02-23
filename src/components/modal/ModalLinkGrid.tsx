@@ -9,22 +9,24 @@ interface ModalLinkGridProps {
 
 export function ModalLinkGrid({ links }: ModalLinkGridProps) {
   return (
-    <Box direction="row" align="center" justify="center" margin="1.2em 0" wrap>
+    <Box
+      direction="row"
+      align="center"
+      justify="center"
+      margin="1.2em 0 1em 0"
+      styles={style.container}
+      wrap
+    >
       {links.map((link, index) => (
         <Box
           key={`ModalLinkGrid-link-${index}`}
-          styles={style.exchangeContainer}
+          styles={style.linkContainer}
           align="center"
           justify="center"
         >
-          <a css={style.exchangeLink} href={link.url} target="_blank" rel="noopener noreferrer">
-            <Box
-              direction="column"
-              align="center"
-              justify="center"
-              styles={style.exchangeLinkContent}
-            >
-              <img src={link.imgSrc} css={style.exchangeIcon} alt={link.altText || link.text} />
+          <a css={style.link} href={link.url} target="_blank" rel="noopener noreferrer">
+            <Box direction="column" align="center" justify="center" styles={style.linkContent}>
+              <img src={link.imgSrc} css={style.icon} alt={link.altText || link.text} />
               <div>{link.text}</div>
             </Box>
           </a>
@@ -35,10 +37,13 @@ export function ModalLinkGrid({ links }: ModalLinkGridProps) {
 }
 
 const style: Stylesheet = {
-  exchangeContainer: {
+  container: {
+    maxWidth: '25em',
+  },
+  linkContainer: {
     width: '50%',
   },
-  exchangeLink: {
+  link: {
     marginTop: '0.5em',
     fontSize: '1.1em',
     color: Color.primaryBlack,
@@ -48,7 +53,7 @@ const style: Stylesheet = {
       textDecoration: 'underline',
     },
   },
-  exchangeLinkContent: {
+  linkContent: {
     textDecoration: 'none',
     borderRadius: 3,
     width: '5.6em',
@@ -63,7 +68,7 @@ const style: Stylesheet = {
       height: '7.2em',
     },
   },
-  exchangeIcon: {
+  icon: {
     height: '2.5em',
     width: '2.5em',
     marginBottom: '0.7em',

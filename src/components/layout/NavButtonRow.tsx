@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
-import ChartIcon from 'src/components/icons/chart_small.svg'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import CubeIcon from 'src/components/icons/cube.svg'
 import LockIcon from 'src/components/icons/lock_small.svg'
+import WalletConnectIcon from 'src/components/icons/logos/wallet_connect.svg'
 import SendIcon from 'src/components/icons/send_payment.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import VoteIcon from 'src/components/icons/vote_small.svg'
@@ -14,6 +14,7 @@ import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { useWalletAddress } from 'src/features/wallet/utils'
+import { useWalletConnectModal } from 'src/features/walletConnect/WalletConnectModal'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -30,6 +31,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const dispatch = useDispatch()
   const address = useWalletAddress()
   const showQrModal = useAddressQrCodeModal()
+  const showWalletConnectModal = useWalletConnectModal()
 
   const onSendClick = () => {
     dispatch(txFlowReset())
@@ -57,9 +59,9 @@ export function NavButtonRow({ mobile, disabled }: Props) {
     navigate('/lock')
   }
 
-  const onTrackClick = () => {
+  const onConnectClick = () => {
     setShowDropdown(false)
-    navigate('/stake-rewards')
+    showWalletConnectModal()
   }
 
   const onStakeClick = () => {
@@ -132,12 +134,6 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               onClick={onLockClick}
             />
             <MenuItem
-              icon={ChartIcon}
-              title="Track"
-              description="See your rewards"
-              onClick={onTrackClick}
-            />
-            <MenuItem
               icon={CubeIcon}
               title="Stake"
               description="Vote for validators"
@@ -148,6 +144,13 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               title="Govern"
               description="Vote for proposals"
               onClick={onGovernClick}
+            />
+            <MenuItem
+              icon={WalletConnectIcon}
+              title="Connect"
+              description="Use WalletConnect"
+              onClick={onConnectClick}
+              iconStyles={style.walletConnectIcon}
             />
           </div>
         )}
@@ -207,6 +210,11 @@ const style: Stylesheet = {
   receiveButtonIcon: {
     height: '1em',
     transform: 'rotate(180deg)',
+  },
+  walletConnectIcon: {
+    width: 17,
+    height: 14,
+    filter: 'brightness(5)',
   },
   menu: {
     display: 'flex',
