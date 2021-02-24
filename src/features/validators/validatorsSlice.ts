@@ -55,6 +55,7 @@ const validatorsSlice = createSlice({
     dismissActivatableReminder: (state) => {
       state.hasActivatable.reminderDismissed = true
     },
+    resetValidators: () => validatorsInitialState,
   },
 })
 
@@ -63,6 +64,7 @@ export const {
   updateGroupVotes,
   updateHasActivatable,
   dismissActivatableReminder,
+  resetValidators,
 } = validatorsSlice.actions
 const validatorsReducer = validatorsSlice.reducer
 

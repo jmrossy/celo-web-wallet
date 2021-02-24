@@ -12,11 +12,6 @@ export interface LockedCeloBalances {
   pendingFree: string
 }
 
-export interface LockedCeloStatus extends LockedCeloBalances {
-  pendingWithdrawals: Array<PendingWithdrawal>
-  isAccountRegistered: boolean
-}
-
 export enum LockActionType {
   Lock = 'lock',
   Unlock = 'unlock',

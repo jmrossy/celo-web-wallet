@@ -5,9 +5,9 @@ import { getProvider } from 'src/blockchain/provider'
 import { CeloContract, config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
 import { fetchLockedCeloStatus } from 'src/features/lock/fetchLockedStatus'
-import { setLockedCeloStatus } from 'src/features/lock/lockSlice'
 import { LockedCeloBalances } from 'src/features/lock/types'
 import { fetchStakingBalances } from 'src/features/validators/fetchGroupVotes'
+import { fetchAccountRegistrationStatus } from 'src/features/wallet/accountsContract'
 import { updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -23,9 +23,8 @@ function* fetchBalances() {
 
   let lockedCelo: LockedCeloBalances
   if (config.isElectron) {
-    const lockedCeloStatus = yield* call(fetchLockedCeloStatus, address)
-    yield* put(setLockedCeloStatus(lockedCeloStatus))
-    lockedCelo = lockedCeloStatus
+    yield* call(fetchAccountRegistrationStatus)
+    lockedCelo = yield* call(fetchLockedCeloStatus)
   } else {
     lockedCelo = {
       locked: '0',

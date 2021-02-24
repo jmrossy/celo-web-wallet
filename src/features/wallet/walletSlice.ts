@@ -13,14 +13,22 @@ interface Wallet {
   type: SignerType | null
   derivationPath: string | null
   balances: Balances
-  secretType: SecretType
+  secretType: SecretType | null
   isUnlocked: boolean
+  account: AccountStatus
 }
 
 interface SetWalletAction {
   address: string
   type: SignerType
   derivationPath: string
+}
+
+// Data about status in the Account contract
+interface AccountStatus {
+  isRegistered: boolean
+  voteSignerFor: string | null
+  lastUpdated: number | null
 }
 
 export const walletInitialState: Wallet = {
@@ -37,8 +45,13 @@ export const walletInitialState: Wallet = {
     },
     lastUpdated: null,
   },
-  secretType: 'pincode',
+  secretType: null,
   isUnlocked: false,
+  account: {
+    isRegistered: false,
+    voteSignerFor: null,
+    lastUpdated: null,
+  },
 }
 
 const walletSlice = createSlice({
@@ -70,11 +83,10 @@ const walletSlice = createSlice({
       )
       state.secretType = secretType
     },
-    clearWallet: (state) => {
-      state.address = walletInitialState.address
-      state.balances = walletInitialState.balances
-      state.isUnlocked = false
+    setAccountStatus: (state, action: PayloadAction<AccountStatus>) => {
+      state.account = action.payload
     },
+    resetWallet: () => walletInitialState,
   },
 })
 
@@ -83,7 +95,8 @@ export const {
   updateBalances,
   setWalletUnlocked,
   setSecretType,
-  clearWallet,
+  setAccountStatus,
+  resetWallet,
 } = walletSlice.actions
 const walletReducer = walletSlice.reducer
 
@@ -91,7 +104,7 @@ const walletPersistConfig = {
   key: 'wallet',
   storage: storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['address', 'balances', 'type', 'derivationPath', 'secretType'], //we don't want to persist everything in the wallet store
+  whitelist: ['address', 'balances', 'type', 'derivationPath', 'secretType', 'account'], //we don't want to persist everything in the wallet store
 }
 export const persistedWalletReducer = persistReducer<ReturnType<typeof walletReducer>>(
   walletPersistConfig,

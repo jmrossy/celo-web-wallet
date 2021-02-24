@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
+import CubeIcon from 'src/components/icons/cube.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
@@ -160,9 +161,11 @@ export function StakeConfirmationScreen() {
           <Button
             type="submit"
             size="m"
-            onClick={onSend}
-            disabled={isWorking || !feeAmount}
             width="10em"
+            onClick={onSend}
+            icon={CubeIcon}
+            iconStyles={{ height: '1em' }}
+            disabled={isWorking || !feeAmount}
           >
             {stakeActionLabel(action)}
           </Button>

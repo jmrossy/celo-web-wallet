@@ -1,5 +1,6 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
+import { logoutActions, logoutReducer, logoutSaga, logoutSagaName } from 'src/app/logout/logout'
 import { connectToProvider } from 'src/blockchain/provider'
 import {
   fetchExchangeRateActions,
@@ -99,12 +100,6 @@ import {
   importWalletSaga,
   importWalletSagaName,
 } from 'src/features/wallet/importWallet'
-import {
-  logoutActions,
-  logoutReducer,
-  logoutSaga,
-  logoutSagaName,
-} from 'src/features/wallet/logout'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {

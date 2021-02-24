@@ -3,7 +3,7 @@ import { config } from 'src/config'
 import { logger } from 'src/utils/logger'
 import { sleep } from 'src/utils/sleep'
 
-let provider: CeloProvider
+let provider: CeloProvider | undefined
 
 export function isProviderSet() {
   return !!provider
@@ -48,4 +48,8 @@ export function getProvider() {
     throw new Error('Attempting to use provider before initialized')
   }
   return provider
+}
+
+export function clearProvider() {
+  provider = undefined
 }

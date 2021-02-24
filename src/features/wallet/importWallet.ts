@@ -5,7 +5,7 @@ import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { CELO_DERIVATION_PATH } from 'src/consts'
-import { clearTransactions } from 'src/features/feed/feedSlice'
+import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
@@ -59,7 +59,7 @@ export function* onWalletImport(newAddress: string, type: SignerType, derivation
   // Only want to clear the feed if its not from the persisted/current wallet
   if (!currentAddress || currentAddress !== newAddress) {
     logger.warn('New address does not match current one in store')
-    yield* put(clearTransactions())
+    yield* put(resetFeed())
   }
   yield* put(fetchFeedActions.trigger())
 }

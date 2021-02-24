@@ -34,12 +34,7 @@ const settingsSlice = createSlice({
     setTxSizeLimitEnabled: (state, action: PayloadAction<boolean>) => {
       state.txSizeLimitEnabled = action.payload
     },
-    resetSettingFlags: (state) => {
-      state.homeHeaderDismissed = false
-      state.backupReminderDismissed = false
-      state.highValueWarningDismissed = false
-      state.txSizeLimitEnabled = true
-    },
+    resetSettings: () => settingsInitialState,
   },
 })
 
@@ -48,7 +43,7 @@ export const {
   setHighValueWarningDismissed,
   setBackupReminderDismissed,
   setTxSizeLimitEnabled,
-  resetSettingFlags,
+  resetSettings,
 } = settingsSlice.actions
 
 const settingsReducer = settingsSlice.reducer

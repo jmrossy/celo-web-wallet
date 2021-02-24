@@ -53,8 +53,8 @@ export function SetPincodeForm() {
       closeModal()
     }
     showModal(
-      'Keep Password Safe',
-      "This password is the only way to unlock your account. It cannot be recovered if it's lost. Please keep it safe!",
+      'Keep This Password Safe',
+      "This password is the only way to unlock your account. It cannot be recovered if it's lost. Please keep it in a safe place!",
       [backAction, confirmAction],
       undefined,
       's',

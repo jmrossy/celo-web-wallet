@@ -10,7 +10,7 @@ import { WebWalletWarning } from 'src/features/download/WebWalletWarning'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { createWalletActions, createWalletSagaName } from 'src/features/wallet/createWallet'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
-import { clearWallet } from 'src/features/wallet/walletSlice'
+import { resetWallet } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -31,7 +31,7 @@ export function NewWalletScreen() {
     if (address) {
       // TODO show warning modal here
       logger.warn('Attempting to create new address when one is already assigned')
-      dispatch(clearWallet())
+      dispatch(resetWallet())
     }
 
     // For smoother loading render

@@ -160,9 +160,9 @@ const style: Stylesheet = {
     maxWidth: '25em',
   },
   bodyText: {
-    margin: '2em 0 0 0',
+    margin: '1.8em 0 0 0',
     textAlign: 'center',
-    lineHeight: '1.4em',
+    lineHeight: '1.6em',
   },
   closeIcon: {
     position: 'absolute',

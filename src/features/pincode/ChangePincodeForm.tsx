@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { ModalOkAction } from 'src/components/modal/modal'
@@ -15,7 +14,7 @@ import {
 } from 'src/features/pincode/pincode'
 import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
 import { PincodeAction, SecretType } from 'src/features/pincode/types'
-import { secretTypeToLabel } from 'src/features/pincode/utils'
+import { secretTypeToLabel, useSecretType } from 'src/features/pincode/utils'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -25,7 +24,7 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 const initialValues = { action: PincodeAction.Change, value: '', newValue: '', valueConfirm: '' }
 
 export function ChangePincodeForm() {
-  const currentSecretType = useSelector((s: RootState) => s.wallet.secretType)
+  const currentSecretType = useSecretType()
   const [currentLabel, currentLabelC] = secretTypeToLabel(currentSecretType)
   const currentInputType =
     currentSecretType === 'pincode'

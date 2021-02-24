@@ -1,10 +1,9 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import { useDispatch } from 'react-redux'
+import { useLogoutModal } from 'src/app/logout/useLogoutModal'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
-import { NULL_ADDRESS } from 'src/consts'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import {
@@ -15,8 +14,8 @@ import {
 } from 'src/features/pincode/pincode'
 import { PincodeInput, PincodeInputType } from 'src/features/pincode/PincodeInput'
 import { PincodeAction } from 'src/features/pincode/types'
-import { secretTypeToLabel } from 'src/features/pincode/utils'
-import { useLogoutModal } from 'src/features/wallet/logout'
+import { secretTypeToLabel, useSecretType } from 'src/features/pincode/utils'
+import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -26,9 +25,9 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 const initialValues = { action: PincodeAction.Unlock, value: '' }
 
 export function EnterPincodeScreen() {
-  const wallet = useSelector((s: RootState) => s.wallet)
-  const address = wallet.address || NULL_ADDRESS
-  const secretType = wallet.secretType
+  const address = useWalletAddress()
+  const secretType = useSecretType()
+
   const [label] = secretTypeToLabel(secretType)
   const inputType =
     secretType === 'pincode' ? PincodeInputType.CurrentPincode : PincodeInputType.CurrentPassword

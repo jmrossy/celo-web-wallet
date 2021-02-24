@@ -126,6 +126,7 @@ export function GovernanceConfirmationScreen() {
             size="m"
             onClick={onSend}
             icon={VoteIcon}
+            iconStyles={style.buttonIcon}
             disabled={isWorking || !feeAmount}
           >
             Send Vote
@@ -180,5 +181,10 @@ const style: Stylesheet = {
   valueCol: {
     width: '12em',
     textAlign: 'end',
+  },
+  buttonIcon: {
+    height: '1em',
+    position: 'relative',
+    top: -2,
   },
 }

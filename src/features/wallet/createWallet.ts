@@ -6,15 +6,15 @@ import { clearContractCache } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH } from 'src/consts'
-import { clearTransactions } from 'src/features/feed/feedSlice'
+import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { put } from 'typed-redux-saga'
-import { clearWallet, setAddress } from './walletSlice'
+import { resetWallet, setAddress } from './walletSlice'
 
 function* createWallet() {
-  yield* put(clearWallet())
-  yield* put(clearTransactions())
+  yield* put(resetWallet())
+  yield* put(resetFeed())
   clearContractCache()
 
   const provider = getProvider()

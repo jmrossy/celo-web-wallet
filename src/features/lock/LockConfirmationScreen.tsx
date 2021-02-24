@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
+import LockIcon from 'src/components/icons/lock_small.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
@@ -28,7 +29,8 @@ export function LockConfirmationScreen() {
 
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const balances = useSelector((state: RootState) => state.wallet.balances)
-  const { pendingWithdrawals, isAccountRegistered } = useSelector((state: RootState) => state.lock)
+  const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
+  const isAccountRegistered = useSelector((state: RootState) => state.wallet.account.isRegistered)
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -140,20 +142,22 @@ export function LockConfirmationScreen() {
           <Button
             type="button"
             size="m"
+            width="5em"
+            margin="0 2em 0 0"
             color={Color.altGrey}
             onClick={onGoBack}
             disabled={isWorking || !feeAmount}
-            margin="0 2em 0 0"
-            width="5em"
           >
             Back
           </Button>
           <Button
             type="submit"
             size="m"
-            onClick={onSend}
-            disabled={isWorking || !feeAmount}
             width="10em"
+            onClick={onSend}
+            icon={LockIcon}
+            iconStyles={style.buttonIcon}
+            disabled={isWorking || !feeAmount}
           >
             {lockActionLabel(action)}
           </Button>
@@ -195,5 +199,10 @@ const style: Stylesheet = {
   bottomBorder: {
     paddingBottom: '1.25em',
     borderBottom: `1px solid ${Color.borderMedium}`,
+  },
+  buttonIcon: {
+    height: '1em',
+    position: 'relative',
+    top: -1,
   },
 }

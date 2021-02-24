@@ -20,7 +20,9 @@ interface CeloLedgerSigner {
 
 export type CeloSigner = CeloWalletSigner | CeloLedgerSigner
 
-let signer: CeloSigner
+// Note this is the wallet's local signer, not to be confused with
+// vote signers in the Accounts contract
+let signer: CeloSigner | undefined
 
 export function isSignerSet() {
   return !!signer
@@ -54,4 +56,8 @@ export function setSigner(_signer: CeloSigner) {
 
   signer = _signer
   logger.info('Signer is set')
+}
+
+export function clearSigner() {
+  signer = undefined
 }

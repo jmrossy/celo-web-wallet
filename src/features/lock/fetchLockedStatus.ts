@@ -1,22 +1,36 @@
 import { BigNumber } from 'ethers'
+import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
-import { LockedCeloStatus, PendingWithdrawal } from 'src/features/lock/types'
+import { setPendingWithdrawals } from 'src/features/lock/lockSlice'
+import { PendingWithdrawal } from 'src/features/lock/types'
 import { logger } from 'src/utils/logger'
+import { call, put, select } from 'typed-redux-saga'
 
 type PendingWithdrawalsRaw = [string[], string[]] // values and times
 
-export async function fetchLockedCeloStatus(address: string): Promise<LockedCeloStatus> {
-  const accounts = getContract(CeloContract.Accounts)
-  const isRegisteredAccount = await accounts.isAccount(address)
-  if (!isRegisteredAccount) {
+export function* fetchLockedCeloStatus() {
+  const { address, account } = yield* select((state: RootState) => state.wallet)
+  if (!address) throw new Error('Cannot fetch locked celo status before address is set')
+  const { balances, pendingWithdrawals } = yield* call(
+    _fetchLockedCeloStatus,
+    address,
+    account.isRegistered
+  )
+  yield* put(setPendingWithdrawals(pendingWithdrawals))
+  return balances
+}
+
+async function _fetchLockedCeloStatus(address: string, isAccountRegistered: boolean) {
+  if (!isAccountRegistered) {
     logger.debug('Account not yet registered, skipping locked balance check')
     return {
-      locked: '0',
-      pendingBlocked: '0',
-      pendingFree: '0',
+      balances: {
+        locked: '0',
+        pendingBlocked: '0',
+        pendingFree: '0',
+      },
       pendingWithdrawals: [],
-      isAccountRegistered: false,
     }
   }
 
@@ -57,10 +71,11 @@ export async function fetchLockedCeloStatus(address: string): Promise<LockedCelo
   }
 
   return {
-    locked: lockedAmount.toString(),
-    pendingBlocked: pendingBlocked.toString(),
-    pendingFree: pendingFree.toString(),
+    balances: {
+      locked: lockedAmount.toString(),
+      pendingBlocked: pendingBlocked.toString(),
+      pendingFree: pendingFree.toString(),
+    },
     pendingWithdrawals,
-    isAccountRegistered: true,
   }
 }

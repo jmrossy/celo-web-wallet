@@ -145,7 +145,7 @@ function* changePin(existingPin: string, newPin: string, type: SecretType) {
     throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
   }
 
-  yield* call(saveWallet, newPin)
+  yield* call(saveWallet, newPin, true)
   yield* put(setSecretType(type))
   yield* put(setWalletUnlocked(true))
 

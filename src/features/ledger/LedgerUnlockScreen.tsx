@@ -1,4 +1,5 @@
 import { useDispatch } from 'react-redux'
+import { useLogoutModal } from 'src/app/logout/useLogoutModal'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
@@ -9,7 +10,6 @@ import {
 } from 'src/features/ledger/importWallet'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
-import { useLogoutModal } from 'src/features/wallet/logout'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'

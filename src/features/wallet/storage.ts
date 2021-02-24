@@ -16,11 +16,13 @@ export function isWalletInStorage() {
   return storageProvider.hasItem(getWalletPath())
 }
 
-export async function saveWallet(pincode: string) {
+export async function saveWallet(pincode: string, override = false) {
   try {
     const signer = getSigner()
     if (!signer) throw new Error('No signer found')
     if (signer.type !== SignerType.Local) throw new Error('Attempting to save non-local wallet')
+
+    if (isWalletInStorage() && !override) throw new Error('Attempting to overwrite existing wallet')
 
     const mnemonic = signer.signer.mnemonic?.phrase
     if (!mnemonic) throw new Error('No signer mnemonic found')

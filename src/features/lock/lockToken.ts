@@ -14,6 +14,7 @@ import { getTotalUnlockedCelo } from 'src/features/lock/utils'
 import { TransactionType } from 'src/features/types'
 import { GroupVotes } from 'src/features/validators/types'
 import { getTotalNonvotingLocked } from 'src/features/validators/utils'
+import { createAccountRegisterTx } from 'src/features/wallet/accountsContract'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import {
@@ -94,9 +95,8 @@ function* lockToken(params: LockTokenParams) {
   const { amountInWei, action, feeEstimates } = params
 
   const balances = yield* call(fetchBalancesIfStale)
-  const { pendingWithdrawals, isAccountRegistered } = yield* select(
-    (state: RootState) => state.lock
-  )
+  const pendingWithdrawals = yield* select((state: RootState) => state.lock.pendingWithdrawals)
+  const isAccountRegistered = yield* select((state: RootState) => state.wallet.account.isRegistered)
   const groupVotes = yield* select((state: RootState) => state.validators.groupVotes)
 
   validateOrThrow(() => validate(params, balances, groupVotes, true), 'Invalid transaction')
@@ -203,26 +203,6 @@ export function getLockActionTxPlan(
   } else {
     throw new Error(`Invalid lockToken tx type: ${action}`)
   }
-}
-
-async function createAccountRegisterTx(feeEstimate: FeeEstimate, nonce: number) {
-  const address = getSigner().signer.address
-  const accounts = getContract(CeloContract.Accounts)
-  const isRegisteredAccount = await accounts.isAccount(address)
-  if (isRegisteredAccount) {
-    throw new Error('Attempting to register account that already exists')
-  }
-
-  /**
-   * Just using createAccount for now but if/when DEKs are
-   * supported than using setAccount here would make sense.
-   * Can't use DEKs until comment encryption is added
-   * because Valora assumes any recipient with a DEK is also Valora.
-   */
-  const tx = await accounts.populateTransaction.createAccount()
-  tx.nonce = nonce
-  logger.info('Signing account register tx')
-  return signTransaction(tx, feeEstimate)
 }
 
 async function createLockCeloTx(
