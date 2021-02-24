@@ -18,6 +18,7 @@ import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals
 import { getResultChartData } from 'src/features/validators/barCharts'
 import { getStakeActionTxPlan, stakeTokenActions } from 'src/features/validators/stakeToken'
 import { stakeActionLabel, StakeActionType } from 'src/features/validators/types'
+import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -91,9 +92,10 @@ export function StakeConfirmationScreen() {
   return (
     <ScreenContentFrame>
       <div css={style.content}>
-        <h1 css={Font.h2Green}>{`Review ${stakeActionLabel(action)} Request`}</h1>
+        <h1 css={style.h1}>{`Review ${stakeActionLabel(action)} Request`}</h1>
+        <VotingForBanner />
 
-        <Box direction="row" styles={style.inputRow} justify="between">
+        <Box direction="row" styles={style.inputRow} justify="between" margin="1.5em 0 0 0">
           <label css={style.labelCol}>Action</label>
           <label css={[style.valueLabel, style.valueCol]}>{stakeActionLabel(action)}</label>
         </Box>
@@ -190,6 +192,10 @@ const style: Stylesheet = {
   content: {
     width: '100%',
     maxWidth: '23em',
+  },
+  h1: {
+    ...Font.h2Green,
+    margin: 0,
   },
   inputRow: {
     marginBottom: '1.4em',

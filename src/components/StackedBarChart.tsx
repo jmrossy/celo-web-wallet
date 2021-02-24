@@ -81,6 +81,6 @@ const style: Stylesheet = {
   totalLabel: {
     color: Color.primaryBlack,
     fontSize: '1em',
-    fontWeight: 600,
+    fontWeight: 500,
   },
 }

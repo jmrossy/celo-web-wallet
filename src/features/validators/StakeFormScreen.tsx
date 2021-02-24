@@ -26,6 +26,7 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { getStakingMaxAmount, getValidatorGroupName } from 'src/features/validators/utils'
+import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -134,9 +135,10 @@ export function StakeFormScreen() {
 
   return (
     <ScreenContentFrame>
-      <h1 css={Font.h2Green}>
+      <h1 css={style.h1}>
         Vote for Validators <HelpButton />
       </h1>
+      <VotingForBanner />
       <div css={style.container}>
         <div css={style.content}>
           <form onSubmit={handleSubmit}>
@@ -238,7 +240,13 @@ export function StakeFormScreen() {
 }
 
 function HelpButton() {
-  return <HelpIcon modal={{ head: 'About Staking', content: <HelpModal /> }} margin="0 0 0 0.4em" />
+  return (
+    <HelpIcon
+      width="1em"
+      modal={{ head: 'About Staking', content: <HelpModal /> }}
+      margin="0 0 0 0.4em"
+    />
+  )
 }
 
 function HelpModal() {
@@ -277,12 +285,17 @@ function getSelectOptions(groups: ValidatorGroup[]) {
 }
 
 const style: Stylesheet = {
+  h1: {
+    ...Font.h2Green,
+    margin: 0,
+  },
   container: {
     display: 'flex',
     flexDirection: 'column-reverse',
     alignItems: 'flex-start',
+    marginTop: '1em',
     [mq[1024]]: {
-      marginTop: '0.5em',
+      marginTop: '1.5em',
       flexDirection: 'row',
     },
   },

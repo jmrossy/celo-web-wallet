@@ -4,6 +4,7 @@ import { RootState } from 'src/app/rootReducer'
 import { MNEMONIC_LENGTH_MAX, MNEMONIC_LENGTH_MIN, NULL_ADDRESS } from 'src/consts'
 import { Currency } from 'src/currency'
 import { Balances } from 'src/features/wallet/types'
+import { select } from 'typed-redux-saga'
 
 export function useAreBalancesEmpty() {
   const { cUsd, celo } = useSelector((s: RootState) => s.wallet.balances)
@@ -13,6 +14,13 @@ export function useAreBalancesEmpty() {
 export function useWalletAddress() {
   const address = useSelector((s: RootState) => s.wallet.address)
   return address || NULL_ADDRESS
+}
+
+export function* getVoterAccountAddress() {
+  const { address, account } = yield* select((state: RootState) => state.wallet)
+  if (!address || !account.lastUpdated)
+    throw new Error('Attempting to select vote signer before wallet is initialized')
+  return account.voteSignerFor ?? address
 }
 
 export function getCurrencyBalance(balances: Balances, currency: Currency) {

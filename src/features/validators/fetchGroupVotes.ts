@@ -6,22 +6,25 @@ import { CeloContract } from 'src/config'
 import { VALIDATOR_ACTIVATABLE_STALE_TIME } from 'src/consts'
 import { GroupVotes } from 'src/features/validators/types'
 import { updateGroupVotes, updateHasActivatable } from 'src/features/validators/validatorsSlice'
+import { getVoterAccountAddress } from 'src/features/wallet/utils'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
 
 export function* fetchStakingBalances() {
-  // TODO need to support signer indirection
-  const address = yield* select((state: RootState) => state.wallet.address)
-  if (!address) throw new Error('Cannot fetch staking balances before address is set')
+  const voterAccountAddress = yield* call(getVoterAccountAddress)
 
-  const validatorGroupVotes = yield* call(fetchGroupVotes, address)
+  const validatorGroupVotes = yield* call(fetchGroupVotes, voterAccountAddress)
   yield* put(updateGroupVotes(validatorGroupVotes))
 
   const activatableLastUpdated = yield* select(
     (state: RootState) => state.validators.hasActivatable.lastUpdated
   )
   if (isStale(activatableLastUpdated, VALIDATOR_ACTIVATABLE_STALE_TIME)) {
-    const hasActivatable = yield* call(checkHasActivatable, validatorGroupVotes, address)
+    const hasActivatable = yield* call(
+      checkHasActivatable,
+      validatorGroupVotes,
+      voterAccountAddress
+    )
     yield* put(updateHasActivatable(hasActivatable))
   }
 }

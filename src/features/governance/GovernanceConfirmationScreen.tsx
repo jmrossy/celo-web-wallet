@@ -16,6 +16,7 @@ import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
 import { TransactionType } from 'src/features/types'
+import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -71,6 +72,7 @@ export function GovernanceConfirmationScreen() {
     <ScreenContentFrame>
       <div css={style.content}>
         <h1 css={style.h1}>Review Governance Vote</h1>
+        <VotingForBanner />
         <h2 css={style.h2}>{description}</h2>
 
         <Box align="center" styles={style.inputRow} justify="between">
@@ -151,12 +153,12 @@ const style: Stylesheet = {
   },
   h1: {
     ...Font.h2Green,
-    marginBottom: '1.2em',
+    margin: 0,
   },
   h2: {
     fontSize: '1.1em',
     fontWeight: 400,
-    marginBottom: '1.5em',
+    margin: '1.5em 0',
   },
   inputRow: {
     marginBottom: '1.8em',

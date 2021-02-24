@@ -184,7 +184,13 @@ export function LockFormScreen() {
 }
 
 function HelpButton() {
-  return <HelpIcon modal={{ head: 'About Locking', content: <HelpModal /> }} margin="0 0 0 0.4em" />
+  return (
+    <HelpIcon
+      width="1em"
+      modal={{ head: 'About Locking', content: <HelpModal /> }}
+      margin="0 0 0 0.4em"
+    />
+  )
 }
 
 function HelpModal() {

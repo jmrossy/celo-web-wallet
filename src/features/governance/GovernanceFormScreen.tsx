@@ -26,6 +26,7 @@ import {
 } from 'src/features/governance/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
+import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -108,7 +109,8 @@ export function GovernanceFormScreen() {
 
   return (
     <ScreenContentFrame>
-      <h1 css={Font.h2Green}>Vote for Governance Proposals</h1>
+      <h1 css={style.h1}>Vote for Governance Proposals</h1>
+      <VotingForBanner />
       <div css={style.container}>
         <div css={style.content}>
           <form onSubmit={handleSubmit}>
@@ -295,12 +297,17 @@ function getSelectPlaceholder(status: Status) {
 }
 
 const style: Stylesheet = {
+  h1: {
+    ...Font.h2Green,
+    margin: 0,
+  },
   container: {
     display: 'flex',
     flexDirection: 'column-reverse',
     alignItems: 'flex-start',
+    marginTop: '1em',
     [mq[1024]]: {
-      marginTop: '0.5em',
+      marginTop: '1.5em',
       flexDirection: 'row',
     },
   },
@@ -323,7 +330,7 @@ const style: Stylesheet = {
     minHeight: '13em',
     background: Color.fillLighter,
     [mq[1024]]: {
-      marginTop: '-0.75em',
+      marginTop: '-0.5em',
     },
   },
   spinner: {
