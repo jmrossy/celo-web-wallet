@@ -17,7 +17,7 @@ export enum CeloContract {
 // @ts-ignore Defined by webpack define plugin
 const debugMode = __DEBUG__ ?? false
 // @ts-ignore Defined by webpack define plugin
-const isElectron = (__IS_ELECTRON__ ?? false) || true
+const isElectron = __IS_ELECTRON__ ?? false
 // @ts-ignore Defined by webpack define plugin
 const version = __VERSION__ || null
 
@@ -62,8 +62,8 @@ const configMainnet: Config = {
     [CeloContract.StableToken]: '0x765DE816845861e75A25fCA122bb6898B8B1282a',
     [CeloContract.Validators]: '0xaEb865bCa93DdC8F47b8e29F40C5399cE34d0C58',
   },
-  defaultAccount:
-    'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
+  // defaultAccount:
+  //   'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -90,8 +90,8 @@ const configAlfajores: Config = {
     [CeloContract.StableToken]: '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1',
     [CeloContract.Validators]: '0x9acF2A99914E083aD0d610672E93d14b0736BBCc',
   },
-  defaultAccount:
-    'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
+  // defaultAccount:
+  //   'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
-export const config = Object.freeze(configAlfajores)
+export const config = Object.freeze(configMainnet)

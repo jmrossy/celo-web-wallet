@@ -42,8 +42,13 @@ echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
 echo "Updating index.html"
 sed -i "" "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
 
-echo "Updating Readme"
-sed -i "" "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
-sed -i "" "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
+if [ "$ELECTRON" = false ]; then
+  echo "Removing CSP header in index.html" # It gets set via netlify header instead which is preferable
+  sed -i "" "s|<meta http-equiv.*>||g" dist/index.html 
+
+  echo "Updating Readme"
+  sed -i "" "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
+  sed -i "" "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
+fi
 
 echo "Done building app for ${NETWORK}"

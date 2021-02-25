@@ -55,7 +55,7 @@ export async function loadWallet(pincode: string) {
 
 export async function removeWallet() {
   try {
-    storageProvider.removeItem(getWalletPath())
+    await storageProvider.removeItem(getWalletPath())
   } catch (error) {
     logger.error('Failed to remove wallet from storage', error)
   }

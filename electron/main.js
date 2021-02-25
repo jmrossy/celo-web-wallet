@@ -6,7 +6,7 @@ function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1300,
-    height: 850,
+    height: 800,
     title: 'Celo Wallet',
     webPreferences: {
       preload: false,
@@ -25,9 +25,8 @@ function createWindow() {
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
-  // TODO disable
   // Open the DevTools. Note this seems to be broken by CSP header below, disable header as needed during dev
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 }
 
 function setCspHeader() {
@@ -38,7 +37,7 @@ function setCspHeader() {
         ...details.responseHeaders,
         // Should match header in /netlify/_headers
         'Content-Security-Policy': [
-          "default-src 'self'; script-src 'self' 'sha256-urr87uaD48g6MXBVNeR78sfcWLvwaTmaTVi34sSPRWA='; connect-src 'self' https://*.celowallet.app https://*.celo.org https://*.celo-testnet.org; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'",
+          "default-src 'self'; script-src 'self' 'sha256-a0xx6QQjQFEl3BVHxY4soTXMFurPf9rWKnRLQLOkzg4='; connect-src 'self' https://*.celowallet.app https://*.celo.org https://*.celo-testnet.org; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'",
         ],
       },
     })
@@ -49,10 +48,8 @@ function setCspHeader() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // setCspHeader()
-
+  setCspHeader()
   createWindow()
-
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.

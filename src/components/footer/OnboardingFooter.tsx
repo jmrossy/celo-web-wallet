@@ -1,6 +1,7 @@
 import { TextLink } from 'src/components/buttons/TextLink'
 import { AboutWalletLink } from 'src/components/footer/AboutWallet'
 import { Box } from 'src/components/layout/Box'
+import { config } from 'src/config'
 import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
@@ -12,8 +13,12 @@ export function OnboardingFooter() {
       <Box align="center" justify="center">
         <AboutWalletLink styles={style.anchor} />
         <span>-</span>
-        <DownloadDesktopButton styles={style.anchor} />
-        <span>-</span>
+        {!config.isElectron && (
+          <>
+            <DownloadDesktopButton styles={style.anchor} />
+            <span>-</span>
+          </>
+        )}
         <TextLink link="https://valoraapp.com" styles={style.anchor}>
           Valora Mobile App
         </TextLink>

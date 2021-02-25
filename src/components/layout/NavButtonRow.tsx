@@ -11,6 +11,8 @@ import ExchangeIcon from 'src/components/icons/swap.svg'
 import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
 import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
+import { config } from 'src/config'
+import { useDownloadDesktopModal } from 'src/features/download/DownloadDesktopModal'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { useWalletAddress } from 'src/features/wallet/utils'
@@ -32,6 +34,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const address = useWalletAddress()
   const showQrModal = useAddressQrCodeModal()
   const showWalletConnectModal = useWalletConnectModal()
+  const showDownloadDesktopModal = useDownloadDesktopModal()
 
   const onSendClick = () => {
     dispatch(txFlowReset())
@@ -55,25 +58,37 @@ export function NavButtonRow({ mobile, disabled }: Props) {
 
   const onLockClick = () => {
     setShowDropdown(false)
-    dispatch(txFlowReset())
-    navigate('/lock')
+    if (config.isElectron) {
+      dispatch(txFlowReset())
+      navigate('/lock')
+    } else {
+      showDownloadDesktopModal()
+    }
+  }
+
+  const onStakeClick = () => {
+    setShowDropdown(false)
+    if (config.isElectron) {
+      dispatch(txFlowReset())
+      navigate('/validators')
+    } else {
+      showDownloadDesktopModal()
+    }
+  }
+
+  const onGovernClick = () => {
+    setShowDropdown(false)
+    if (config.isElectron) {
+      dispatch(txFlowReset())
+      navigate('/governance')
+    } else {
+      showDownloadDesktopModal()
+    }
   }
 
   const onConnectClick = () => {
     setShowDropdown(false)
     showWalletConnectModal()
-  }
-
-  const onStakeClick = () => {
-    setShowDropdown(false)
-    dispatch(txFlowReset())
-    navigate('/validators')
-  }
-
-  const onGovernClick = () => {
-    setShowDropdown(false)
-    dispatch(txFlowReset())
-    navigate('/governance')
   }
 
   const buttonWidth = mobile ? '44%' : '9.75em'

@@ -2,6 +2,8 @@ import { ipcRenderer } from 'electron'
 import * as fs from 'fs'
 import * as path from 'path'
 import { StorageProvider } from 'src/features/storage/types'
+import { logger } from 'src/utils/logger'
+import { sleep } from 'src/utils/sleep'
 
 let defaultCwd: string
 
@@ -30,15 +32,27 @@ function getItem(path: string) {
   return fs.readFileSync(fullPath, 'utf8')
 }
 
-function setItem(path: string, data: string) {
+function setItem(path: string, data: string, allowOverwrite = false) {
   if (!data) throw new Error('No data provided to store')
+  if (hasItem(path) && !allowOverwrite) throw new Error('Attempting to overwrite existing item')
   const fullPath = getAppCwdPath(path)
   fs.writeFileSync(fullPath, data, { encoding: 'utf8' })
+  if (!hasItem(path)) throw new Error('Setting item seems to have failed')
 }
 
-function removeItem(path: string) {
+async function removeItem(path: string) {
+  if (!hasItem(path)) throw new Error('Item does not exist')
   const fullPath = getAppCwdPath(path)
-  fs.rmSync(fullPath)
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.unlinkSync(fullPath)
+      break
+    } catch (error) {
+      logger.error(`Error removing item ${path}. Retries remaining: ${4 - i}`)
+      await sleep(1000)
+    }
+  }
+  if (hasItem(path)) throw new Error('Item removal seems to have failed')
 }
 
 export const storageProvider: StorageProvider = {

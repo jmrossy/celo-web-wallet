@@ -14,6 +14,16 @@ interface ButtonProps {
   styles?: Styles
 }
 
+export function useDownloadDesktopModal(limitFeatureVersion = true) {
+  const { showModalWithContent } = useModal()
+  return () => {
+    showModalWithContent(
+      'Celo Wallet for Desktop',
+      <DownloadDesktopModal limitFeatureVersion={limitFeatureVersion} />
+    )
+  }
+}
+
 export function DownloadDesktopButton({ children, styles }: PropsWithChildren<ButtonProps>) {
   const { showModalWithContent } = useModal()
 
@@ -29,7 +39,7 @@ export function DownloadDesktopButton({ children, styles }: PropsWithChildren<Bu
 
 export function DownloadDesktopModal({ limitFeatureVersion }: { limitFeatureVersion?: boolean }) {
   const text = limitFeatureVersion
-    ? 'For security reasons, this feature is only available in the desktop version. Sorry for the inconvenience but your account safety is important!'
+    ? 'For security reasons, this feature is only available in the desktop version. Sorry for the inconvenience but your account safety is essential!'
     : "The desktop version is more secure and includes extra features. It's strongly recommended for large accounts."
 
   return (

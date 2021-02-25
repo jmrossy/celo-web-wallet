@@ -16,8 +16,9 @@ function getItem(path: string) {
   return localStorage.getItem(path)
 }
 
-function setItem(path: string, data: string) {
+function setItem(path: string, data: string, allowOverwrite = false) {
   validate(path, data, true)
+  if (hasItem(path) && !allowOverwrite) throw new Error('Attempting to overwrite existing item')
   // TODO warn safari users of apple's bullshit
   // https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/
   localStorage.setItem(path, data)

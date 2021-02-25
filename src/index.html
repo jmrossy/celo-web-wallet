@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-a0xx6QQjQFEl3BVHxY4soTXMFurPf9rWKnRLQLOkzg4='; connect-src 'self' https://*.celowallet.app https://*.celo.org https://*.celo-testnet.org; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'">
     <title>Celo Wallet | Use Celo on the web or on your desktop</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
@@ -151,9 +151,8 @@
       </div>
     </div>
 
-    <!-- Hash for CSP, must be updated in headers whenever this is changed: sha256-urr87uaD48g6MXBVNeR78sfcWLvwaTmaTVi34sSPRWA= -->
-    <script>document.getElementById('loader').setAttribute('data-start', Date.now())</script>
-    <script>window.global = globalThis</script>
+    <!-- Hash for CSP, must be updated in headers whenever this is changed: sha256-a0xx6QQjQFEl3BVHxY4soTXMFurPf9rWKnRLQLOkzg4= -->
+    <script>window.global = globalThis; document.getElementById('loader').setAttribute('data-start', Date.now())</script>
 
   </body>
 </html>

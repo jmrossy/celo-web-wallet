@@ -2,6 +2,7 @@ import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { AboutWalletLink } from 'src/components/footer/AboutWallet'
 import { ConnectionStatusLink } from 'src/components/footer/ConnectionStatus'
 import { Box } from 'src/components/layout/Box'
+import { config } from 'src/config'
 import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
@@ -21,8 +22,12 @@ function FooterDesktop() {
       <Box align="center" justify="center">
         <AboutWalletLink styles={style.text} />
         <span>-</span>
-        <DownloadDesktopButton styles={style.text} />
-        <span>-</span>
+        {!config.isElectron && (
+          <>
+            <DownloadDesktopButton styles={style.text} />
+            <span>-</span>
+          </>
+        )}
         <ValoraLink />
         <span>-</span>
         <ViewSourceLink />
