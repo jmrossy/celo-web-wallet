@@ -96,6 +96,7 @@ const config = {
       targetElectron
         ? {
             patterns: [
+              { from: './package-electron.json', to: 'package.json' },
               { from: './src/index.html', to: 'index.html' },
               { from: './electron/main.js', to: 'main.js' },
               { from: './static/*', to: 'static/[name].[ext]' },

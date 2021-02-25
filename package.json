@@ -1,28 +1,44 @@
 {
   "name": "celo-web-wallet",
   "version": "1.0.0",
-  "description": "A light, browser-based wallet for the Celo network",
-  "main": "src/main.ts",
+  "description": "A lightweight web and desktop wallet for the Celo network",
   "keywords": [
     "Celo",
     "wallet"
   ],
   "author": "J M Rossy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/celo-tools/celo-web-wallet"
+  },
+  "homepage": "https://celowallet.app",
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development webpack serve --devtool inline-cheap-source-map --mode development",
     "dev-win": "SET NODE_ENV=development && webpack serve --devtool inline-cheap-source-map --mode development",
     "build:dev": "NODE_ENV=development webpack --devtool source-map --mode development",
-    "build:staging": "./scripts/build.sh -n Alfajores",
-    "build:prod": "./scripts/build.sh -n Mainnet",
-    "clean": "rm -rf dist",
+    "build:staging": "yarn clean && ./scripts/build.sh -n Alfajores",
+    "build:prod": "yarn clean && ./scripts/build.sh -n Mainnet",
+    "clean": "rm -rf dist dist-electron",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
     "test": "NODE_ENV=test jasmine --random=false",
     "test:all": "yarn test && yarn lint",
     "electron:postinstall": "electron-builder install-app-deps",
-    "electron:build": "./scripts/build.sh -n Mainnet -e",
+    "electron:build": "yarn clean && ./scripts/build.sh -n Mainnet -e",
     "electron:dev": "yarn electron:build && electron ./dist/main.js --enable-logging",
-    "electron:start": "electron ./dist/main.js --enable-logging"
+    "electron:start": "electron ./dist/main.js --enable-logging",
+    "electron:dist": "NODE_ENV=production DEBUG=electron-builder electron-builder"
+  },
+  "build": {
+    "appId": "CeloWallet",
+    "productName": "Celo Wallet",
+    "directories": {
+      "app": "dist",
+      "output": "dist-electron"
+    },
+    "mac": {
+      "category": "public.app-category.utilities"
+    }
   },
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "^0.0.5",
