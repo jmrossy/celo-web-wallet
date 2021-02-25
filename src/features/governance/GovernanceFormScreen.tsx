@@ -26,6 +26,7 @@ import {
 } from 'src/features/governance/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
+import { useIsSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
 import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -59,7 +60,8 @@ export function GovernanceFormScreen() {
   const navigate = useNavigate()
 
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
-  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const { balances, voterBalances } = useVoterBalances()
+  const isSignerAccount = useIsSignerAccount()
   const proposals = useSelector((state: RootState) => state.governance.proposals)
 
   useEffect(() => {
@@ -81,7 +83,8 @@ export function GovernanceFormScreen() {
     navigate('/governance-review')
   }
 
-  const validateForm = (values: GovernanceVoteParams) => validate(values, balances, proposals)
+  const validateForm = (values: GovernanceVoteParams) =>
+    validate(values, balances, voterBalances, proposals)
 
   const {
     values,
@@ -99,11 +102,13 @@ export function GovernanceFormScreen() {
   }, [tx])
 
   // Show modal to recommend nav to locked gold on low locked balance
-  const hasLocked = BigNumber.from(balances.lockedCelo.locked).gt(0)
+  const hasLocked = BigNumber.from(voterBalances.lockedCelo.locked).gt(0)
   const helpText = `You have ${
     hasLocked ? 'almost ' : ''
   } no locked CELO. You must lock some before voting. Your locked amount determines your vote weight.`
-  useNavHintModal(errors.lockedCelo, 'Locked CELO Needed to Vote', helpText, 'Lock CELO', '/lock')
+  // TODO show a diff modal for signer accounts
+  const shouldShow = isSignerAccount ? false : errors.lockedCelo
+  useNavHintModal(shouldShow, 'Locked CELO Needed to Vote', helpText, 'Lock CELO', '/lock')
 
   const selectOptions = useMemo(() => getSelectOptions(proposals), [proposals])
 

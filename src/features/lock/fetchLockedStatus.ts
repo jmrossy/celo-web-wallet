@@ -79,3 +79,9 @@ async function _fetchLockedCeloStatus(address: string, isAccountRegistered: bool
     pendingWithdrawals,
   }
 }
+
+export async function fetchTotalLocked(address: string) {
+  const lockedGold = getContract(CeloContract.LockedGold)
+  const lockedAmount = await lockedGold.getAccountTotalLockedGold(address)
+  return BigNumber.from(lockedAmount).toString()
+}

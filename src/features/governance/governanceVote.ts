@@ -16,6 +16,7 @@ import {
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
+import { getVoterBalances } from 'src/features/wallet/utils'
 import { validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
@@ -25,6 +26,7 @@ import { call, put, select } from 'typed-redux-saga'
 export function validate(
   params: GovernanceVoteParams,
   balances: Balances,
+  voterBalances: Balances,
   proposals: Proposal[],
   validateFee = false
 ): ErrorState {
@@ -45,7 +47,7 @@ export function validate(
   }
 
   // If locked amount is very small or 0
-  if (BigNumber.from(balances.lockedCelo.locked).lte(MIN_LOCKED_GOLD_TO_VOTE)) {
+  if (BigNumber.from(voterBalances.lockedCelo.locked).lte(MIN_LOCKED_GOLD_TO_VOTE)) {
     errors = { ...errors, ...invalidInput('lockedCelo', 'Insufficient locked CELO') }
   }
 
@@ -66,10 +68,14 @@ export function validate(
 }
 
 function* governanceVote(params: GovernanceVoteParams) {
-  const balances = yield* call(fetchBalancesIfStale)
+  yield* call(fetchBalancesIfStale)
+  const { balances, voterBalances } = yield* call(getVoterBalances)
   const proposals = yield* select((state: RootState) => state.governance.proposals)
 
-  validateOrThrow(() => validate(params, balances, proposals, true), 'Invalid transaction')
+  validateOrThrow(
+    () => validate(params, balances, voterBalances, proposals, true),
+    'Invalid transaction'
+  )
 
   const signedTx = yield* call(createVoteTx, params)
   yield* put(setNumSignatures(1))

@@ -265,7 +265,7 @@ async function ensureAccountNotGovernanceVoting() {
   const isVoting: boolean = await governance.isVoting(address)
   if (isVoting)
     throw new Error(
-      'Cannot unlock CELO when account has voted for an active governance proposal. You must wait until the proposal is done.'
+      'Account has voted for an active governance proposal. You must wait until the proposal is done.'
     )
 }
 

@@ -20,6 +20,7 @@ import {
 import { getStakingMaxAmount } from 'src/features/validators/utils'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
+import { getVoterBalances } from 'src/features/wallet/utils'
 import { areAddressesEqual } from 'src/utils/addresses'
 import {
   BigNumberMin,
@@ -35,6 +36,7 @@ import { call, put, select } from 'typed-redux-saga'
 export function validate(
   params: StakeTokenParams,
   balances: Balances,
+  voterBalances: Balances,
   groups: ValidatorGroup[],
   votes: GroupVotes,
   validateFee = false
@@ -53,8 +55,8 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    const adjustedBalances = { ...balances }
-    const maxAmount = getStakingMaxAmount(params.action, balances, votes, params.groupAddress)
+    const adjustedBalances = { ...voterBalances }
+    const maxAmount = getStakingMaxAmount(params.action, voterBalances, votes, params.groupAddress)
     adjustedBalances.celo = maxAmount.toString()
     errors = {
       ...errors,
@@ -65,7 +67,7 @@ export function validate(
   // If locked amount is very small or 0
   if (
     action === StakeActionType.Vote &&
-    BigNumber.from(balances.lockedCelo.locked).lte(MIN_LOCKED_GOLD_TO_VOTE)
+    BigNumber.from(voterBalances.lockedCelo.locked).lte(MIN_LOCKED_GOLD_TO_VOTE)
   ) {
     errors = { ...errors, ...invalidInput('lockedCelo', 'Insufficient locked CELO') }
   }
@@ -84,11 +86,12 @@ export function validate(
 function* stakeToken(params: StakeTokenParams) {
   const { action, amountInWei, feeEstimates } = params
 
-  const balances = yield* call(fetchBalancesIfStale)
+  yield* call(fetchBalancesIfStale)
+  const { balances, voterBalances } = yield* call(getVoterBalances)
   const { validatorGroups, groupVotes } = yield* select((state: RootState) => state.validators)
 
   validateOrThrow(
-    () => validate(params, balances, validatorGroups.groups, groupVotes, true),
+    () => validate(params, balances, voterBalances, validatorGroups.groups, groupVotes, true),
     'Invalid transaction'
   )
 
@@ -120,13 +123,13 @@ type StakeTokenTxPlan = Array<StakeTokenTxPlanItem>
 // This determines the ideal tx types and order
 export function getStakeActionTxPlan(
   params: StakeTokenParams,
-  balances: Balances,
+  voterBalances: Balances,
   currentVotes: GroupVotes
 ): StakeTokenTxPlan {
   const { action, amountInWei, groupAddress } = params
 
   if (action === StakeActionType.Vote) {
-    const maxAmount = getStakingMaxAmount(action, balances, currentVotes, groupAddress)
+    const maxAmount = getStakingMaxAmount(action, voterBalances, currentVotes, groupAddress)
     const adjutedAmount = getAdjustedAmount(amountInWei, maxAmount, Currency.CELO)
     return [
       {

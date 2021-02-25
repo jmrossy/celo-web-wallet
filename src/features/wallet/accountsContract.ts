@@ -11,12 +11,12 @@ import { areAddressesEqual } from 'src/utils/addresses'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
 
-export function* fetchAccountRegistrationStatus() {
+export function* fetchAccountStatus() {
   const { address, account } = yield* select((state: RootState) => state.wallet)
   if (!address) throw new Error('Cannot fetch account status before address is set')
 
   if (isStale(account.lastUpdated, ACCOUNT_STATUS_STALE_TIME)) {
-    const accountUpdated = yield* call(_fetchAccountRegistrationStatus, address)
+    const accountUpdated = yield* call(fetchAccountRegistrationStatus, address)
     yield* put(setAccountStatus(accountUpdated))
     return accountUpdated
   } else {
@@ -24,7 +24,7 @@ export function* fetchAccountRegistrationStatus() {
   }
 }
 
-async function _fetchAccountRegistrationStatus(address: string) {
+async function fetchAccountRegistrationStatus(address: string) {
   const accounts = getContract(CeloContract.Accounts)
   const isRegistered: boolean = await accounts.isAccount(address)
   let voteSignerFor: string | null = null

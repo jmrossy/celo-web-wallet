@@ -4,11 +4,11 @@ import { getContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { CeloContract, config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
-import { fetchLockedCeloStatus } from 'src/features/lock/fetchLockedStatus'
+import { fetchLockedCeloStatus, fetchTotalLocked } from 'src/features/lock/fetchLockedStatus'
 import { LockedCeloBalances } from 'src/features/lock/types'
 import { fetchStakingBalances } from 'src/features/validators/fetchGroupVotes'
-import { fetchAccountRegistrationStatus } from 'src/features/wallet/accountsContract'
-import { updateBalances } from 'src/features/wallet/walletSlice'
+import { fetchAccountStatus } from 'src/features/wallet/accountsContract'
+import { setVoterBalances, updateBalances } from 'src/features/wallet/walletSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
@@ -23,7 +23,7 @@ function* fetchBalances() {
 
   let lockedCelo: LockedCeloBalances
   if (config.isElectron) {
-    yield* call(fetchAccountRegistrationStatus)
+    yield* call(fetchAccountStatus)
     lockedCelo = yield* call(fetchLockedCeloStatus)
   } else {
     lockedCelo = {
@@ -38,6 +38,7 @@ function* fetchBalances() {
 
   if (config.isElectron) {
     yield* call(fetchStakingBalances)
+    yield* call(fetchVoterBalances)
   }
 
   return balances
@@ -73,6 +74,25 @@ async function fetchDollarBalance(address: string) {
   const stableToken = getContract(CeloContract.StableToken)
   const balance: BigNumber = await stableToken.balanceOf(address)
   return balance.toString()
+}
+
+function* fetchVoterBalances() {
+  const { isRegistered, voteSignerFor } = yield* select((state: RootState) => state.wallet.account)
+  if (!isRegistered || !voteSignerFor) return
+
+  // Only the total locked is used for now so just fetching that bit
+  const locked = yield* call(fetchTotalLocked, voteSignerFor)
+  const voterBalances = {
+    cUsd: '0',
+    celo: '0',
+    lockedCelo: {
+      locked,
+      pendingBlocked: '0',
+      pendingFree: '0',
+    },
+    lastUpdated: Date.now(),
+  }
+  yield* put(setVoterBalances(voterBalances))
 }
 
 export const {

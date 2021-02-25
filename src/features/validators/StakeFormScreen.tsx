@@ -26,6 +26,7 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { getStakingMaxAmount, getValidatorGroupName } from 'src/features/validators/utils'
+import { useIsSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
 import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -56,7 +57,8 @@ export function StakeFormScreen() {
   const navigate = useNavigate()
   const location = useLocation()
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
-  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const { balances, voterBalances } = useVoterBalances()
+  const isSignerAccount = useIsSignerAccount()
   const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
   const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
 
@@ -66,7 +68,7 @@ export function StakeFormScreen() {
   }
 
   const validateForm = (values: StakeTokenForm) =>
-    validate(amountFieldToWei(values), balances, groups, groupVotes)
+    validate(amountFieldToWei(values), balances, voterBalances, groups, groupVotes)
 
   const {
     values,
@@ -89,11 +91,13 @@ export function StakeFormScreen() {
   }, [tx])
 
   // Show modal to recommend nav to locked gold on low locked balance
-  const hasLocked = BigNumber.from(balances.lockedCelo.locked).gt(0)
+  const hasLocked = BigNumber.from(voterBalances.lockedCelo.locked).gt(0)
   const helpText = `You have ${
     hasLocked ? 'almost ' : ''
   } no locked CELO. Only locked funds can be used to stake with Validators. Would you like to lock some now?`
-  useNavHintModal(errors.lockedCelo, 'Locked CELO Needed to Vote', helpText, 'Lock CELO', '/lock')
+  // TODO show a diff modal for signer accounts
+  const shouldShow = isSignerAccount ? false : errors.lockedCelo
+  useNavHintModal(shouldShow, 'Locked CELO Needed to Vote', helpText, 'Lock CELO', '/lock')
 
   const onSelectAction = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
@@ -123,14 +127,14 @@ export function StakeFormScreen() {
 
   const selectOptions = useMemo(() => getSelectOptions(groups), [groups])
 
-  const summaryData = useMemo(() => getSummaryChartData(balances, groups, groupVotes), [
-    balances,
+  const summaryData = useMemo(() => getSummaryChartData(voterBalances, groups, groupVotes), [
+    voterBalances,
     groups,
     groupVotes,
   ])
   const resultData = useMemo(
-    () => getResultChartData(balances, groups, groupVotes, amountFieldToWei(values)),
-    [balances, groups, groupVotes, values]
+    () => getResultChartData(voterBalances, groups, groupVotes, amountFieldToWei(values)),
+    [voterBalances, groups, groupVotes, values]
   )
 
   return (

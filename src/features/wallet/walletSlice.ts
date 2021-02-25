@@ -13,9 +13,10 @@ interface Wallet {
   type: SignerType | null
   derivationPath: string | null
   balances: Balances
+  account: AccountStatus
+  voterBalances: Balances | null // if account is vote signer for another, balance of voter
   secretType: SecretType | null
   isUnlocked: boolean
-  account: AccountStatus
 }
 
 interface SetWalletAction {
@@ -45,13 +46,14 @@ export const walletInitialState: Wallet = {
     },
     lastUpdated: null,
   },
-  secretType: null,
-  isUnlocked: false,
   account: {
     isRegistered: false,
     voteSignerFor: null,
     lastUpdated: null,
   },
+  voterBalances: null,
+  secretType: null,
+  isUnlocked: false,
 }
 
 const walletSlice = createSlice({
@@ -72,6 +74,12 @@ const walletSlice = createSlice({
       assert(cUsd && celo && lockedCelo && lastUpdated, 'Invalid balance')
       state.balances = action.payload
     },
+    setAccountStatus: (state, action: PayloadAction<AccountStatus>) => {
+      state.account = action.payload
+    },
+    setVoterBalances: (state, action: PayloadAction<Balances | null>) => {
+      state.voterBalances = action.payload
+    },
     setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
       state.isUnlocked = action.payload
     },
@@ -83,9 +91,6 @@ const walletSlice = createSlice({
       )
       state.secretType = secretType
     },
-    setAccountStatus: (state, action: PayloadAction<AccountStatus>) => {
-      state.account = action.payload
-    },
     resetWallet: () => walletInitialState,
   },
 })
@@ -93,9 +98,10 @@ const walletSlice = createSlice({
 export const {
   setAddress,
   updateBalances,
+  setAccountStatus,
+  setVoterBalances,
   setWalletUnlocked,
   setSecretType,
-  setAccountStatus,
   resetWallet,
 } = walletSlice.actions
 const walletReducer = walletSlice.reducer

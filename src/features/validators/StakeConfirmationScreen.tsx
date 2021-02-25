@@ -18,6 +18,7 @@ import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals
 import { getResultChartData } from 'src/features/validators/barCharts'
 import { getStakeActionTxPlan, stakeTokenActions } from 'src/features/validators/stakeToken'
 import { stakeActionLabel, StakeActionType } from 'src/features/validators/types'
+import { useVoterBalances } from 'src/features/wallet/utils'
 import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -29,7 +30,7 @@ export function StakeConfirmationScreen() {
   const navigate = useNavigate()
 
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
-  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const { voterBalances } = useVoterBalances()
   const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
   const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
 
@@ -40,7 +41,7 @@ export function StakeConfirmationScreen() {
       return
     }
 
-    const txs = getStakeActionTxPlan(tx.params, balances, groupVotes)
+    const txs = getStakeActionTxPlan(tx.params, voterBalances, groupVotes)
     dispatch(estimateFeeActions.trigger({ txs }))
   }, [tx])
 
@@ -48,7 +49,7 @@ export function StakeConfirmationScreen() {
 
   const params = tx.params
   const { action, amountInWei } = params
-  const txPlan = getStakeActionTxPlan(tx.params, balances, groupVotes)
+  const txPlan = getStakeActionTxPlan(tx.params, voterBalances, groupVotes)
 
   const { amount, feeAmount, feeCurrency, feeEstimates } = useFee(amountInWei, txPlan.length)
 
@@ -82,8 +83,8 @@ export function StakeConfirmationScreen() {
       : undefined
   )
 
-  const resultData = useMemo(() => getResultChartData(balances, groups, groupVotes, params), [
-    balances,
+  const resultData = useMemo(() => getResultChartData(voterBalances, groups, groupVotes, params), [
+    voterBalances,
     groups,
     groupVotes,
     params,

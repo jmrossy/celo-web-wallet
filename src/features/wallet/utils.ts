@@ -11,6 +11,23 @@ export function useAreBalancesEmpty() {
   return BigNumber.from(cUsd).lte(0) && BigNumber.from(celo).lte(0)
 }
 
+export function useIsSignerAccount() {
+  const voteSignerFor = useSelector((s: RootState) => s.wallet.account.voteSignerFor)
+  return !!voteSignerFor
+}
+
+export function useVoterBalances() {
+  const { balances, account, voterBalances } = useSelector((s: RootState) => s.wallet)
+  if (account.voteSignerFor && voterBalances) return { balances, voterBalances }
+  else return { balances, voterBalances: balances }
+}
+
+export function* getVoterBalances() {
+  const { balances, voterBalances } = yield* select((state: RootState) => state.wallet)
+  if (voterBalances) return { balances, voterBalances }
+  else return { balances, voterBalances: balances }
+}
+
 export function useWalletAddress() {
   const address = useSelector((s: RootState) => s.wallet.address)
   return address || NULL_ADDRESS

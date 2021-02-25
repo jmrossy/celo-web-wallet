@@ -89,7 +89,7 @@ function getChartData(
   }
 
   const totalLocked = BigNumber.from(balances.lockedCelo.locked)
-  const nonvotingLocked = totalLocked.sub(totalVoted)
+  const nonvotingLocked = BigNumberMax(totalLocked.sub(totalVoted), BigNumber.from(0))
 
   // Finally, add in data point for unused locked CELO
   chartData.push({
