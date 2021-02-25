@@ -1,6 +1,5 @@
 import { CeloProvider } from '@celo-tools/celo-ethers-wrapper'
 import { Contract, PopulatedTransaction, utils } from 'ethers'
-import { FunctionFragment } from 'ethers/lib/utils'
 import { getProvider } from 'src/blockchain/provider'
 import { logger } from 'src/utils/logger'
 import { chunk } from 'src/utils/string'
@@ -98,7 +97,11 @@ function getPayloadResult(payload: JsonRpcResult[]) {
   })
 }
 
-function decodeResults(encodedResults: string[], contract: Contract, fragment: FunctionFragment) {
+function decodeResults(
+  encodedResults: string[],
+  contract: Contract,
+  fragment: utils.FunctionFragment
+) {
   const decodedResults = []
   for (const enc of encodedResults) {
     const decoded = contract.interface.decodeFunctionResult(fragment, enc)

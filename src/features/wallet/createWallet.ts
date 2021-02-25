@@ -1,7 +1,5 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
-import { entropyToMnemonic } from '@ethersproject/hdnode'
-import { randomBytes } from '@ethersproject/random'
-import { Wallet } from 'ethers'
+import { utils, Wallet } from 'ethers'
 import { clearContractCache } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
@@ -18,8 +16,8 @@ function* createWallet() {
   clearContractCache()
 
   const provider = getProvider()
-  const entropy = randomBytes(32)
-  const mnemonic = entropyToMnemonic(entropy)
+  const entropy = utils.randomBytes(32)
+  const mnemonic = utils.entropyToMnemonic(entropy)
   const derivationPath = CELO_DERIVATION_PATH + '/0'
   const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
   const celoWallet = new CeloWallet(wallet, provider)

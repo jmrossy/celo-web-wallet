@@ -1,13 +1,11 @@
-import 'src/features/ledger/buffer' // Must be the first import
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
 import { TransportError, TransportStatusError } from '@ledgerhq/errors'
-import TransportNodeHid from '@ledgerhq/hw-transport-node-hid-noevents'
-import TransportU2F from '@ledgerhq/hw-transport-u2f'
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
 import { BigNumber, providers, Signer, utils } from 'ethers'
 import { config } from 'src/config'
 import { CELO_LEDGER_APP_MIN_VERSION } from 'src/consts'
+import 'src/features/ledger/buffer' // Must be the first import
 import { CeloLedgerApp } from 'src/features/ledger/CeloLedgerApp'
+import { getLedgerTransport } from 'src/features/ledger/ledgerTransport'
 import { getTokenData } from 'src/features/ledger/tokenData'
 import { areAddressesEqual, ensureLeading0x, trimLeading0x } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
@@ -26,22 +24,7 @@ export class LedgerSigner extends Signer {
   async init() {
     if (this.celoApp) throw new Error('Ledger Signer already initialized')
 
-    let transport
-    if (!config.isElectron && (await TransportWebUSB.isSupported())) {
-      logger.debug('WebUSB appears to be supported')
-      transport = await TransportWebUSB.create()
-    } else if (!config.isElectron && (await TransportU2F.isSupported())) {
-      logger.debug('U2F appears to be supported')
-      // Note: Won't work when running from localhost
-      transport = await TransportU2F.create()
-      // TODO throws errors on web, need to seperate this into two files
-    } else if (config.isElectron && (await TransportNodeHid.isSupported())) {
-      logger.debug('NodeHid appears to be supported')
-      transport = await TransportNodeHid.open()
-    } else {
-      throw new Error('No transport protocols are supported')
-    }
-
+    const transport = await getLedgerTransport()
     this.celoApp = new CeloLedgerApp(transport)
     await this.validateCeloAppVersion()
 

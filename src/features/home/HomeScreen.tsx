@@ -8,6 +8,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useModal } from 'src/components/modal/useModal'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
+import { config } from 'src/config'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
 import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
@@ -38,7 +39,7 @@ export function HomeScreen() {
   const navigate = useNavigate()
   const secretType = useSelector((s: RootState) => s.wallet.secretType)
   useEffect(() => {
-    if (secretType === 'password') return
+    if (secretType === 'password' || config.defaultAccount) return
     showModalAsync(
       'Please Change Your Pin',
       'For better security, pincodes are being replaced with passwords. Please change your pin to a new password now. Sorry for the inconvenience!',

@@ -29,7 +29,6 @@ export function NewWalletScreen() {
     dispatch(createWalletActions.reset())
 
     if (address) {
-      // TODO show warning modal here
       logger.warn('Attempting to create new address when one is already assigned')
       dispatch(resetWallet())
     }

@@ -3,6 +3,7 @@ import { TextLink } from 'src/components/buttons/TextLink'
 import { Box } from 'src/components/layout/Box'
 import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
+import { config } from 'src/config'
 import { Font } from 'src/styles/fonts'
 import { Styles, Stylesheet } from 'src/styles/types'
 
@@ -21,7 +22,6 @@ export function AboutWalletLink({ styles }: { styles: Styles }) {
 }
 
 function AboutWalletModal() {
-  // TODO include version number here
   return (
     <Box direction="column" align="center" styles={style.container}>
       <p style={style.text}>
@@ -39,6 +39,7 @@ function AboutWalletModal() {
         </TextLink>
         .
       </p>
+      <p style={style.version}>{`Version: ${config.version}`}</p>
     </Box>
   )
 }
@@ -50,7 +51,13 @@ const style: Stylesheet = {
   },
   text: {
     ...Font.body,
+    margin: '0.3em 0',
     textAlign: 'center',
     lineHeight: '1.5em',
+  },
+  version: {
+    ...Font.body,
+    textAlign: 'center',
+    margin: '0.6em 0 0.1em 0',
   },
 }

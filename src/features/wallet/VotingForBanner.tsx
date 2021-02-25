@@ -5,8 +5,7 @@ import { Styles } from 'src/styles/types'
 
 // Show an 'on behalf of account' banner when performing action as a signer for another account
 export function VotingForBanner() {
-  let voteSignerFor = useSelector((state: RootState) => state.wallet.account.voteSignerFor)
-  voteSignerFor = voteSignerFor ?? '0xa2972a33550c33ecfa4a02a0ea212ac98e77fa55'
+  const voteSignerFor = useSelector((state: RootState) => state.wallet.account.voteSignerFor)
   if (!voteSignerFor) return null
   return <h2 css={style}>{`(Signer voting on behalf of ${voteSignerFor.toUpperCase()})`}</h2>
 }

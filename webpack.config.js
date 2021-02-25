@@ -83,6 +83,9 @@ const config = {
       'src/features/storage/storageProvider$': targetElectron
         ? 'src/features/storage/storageProvider-electron.ts'
         : 'src/features/storage/storageProvider.ts',
+      'src/features/ledger/ledgerTransport$': targetElectron
+        ? 'src/features/ledger/ledgerTransport-electron.ts'
+        : 'src/features/ledger/ledgerTransport.ts',
     },
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
     modules: [path.resolve('./node_modules'), path.resolve('./')],
