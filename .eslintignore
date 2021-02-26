@@ -4,3 +4,4 @@ webpack.config.js
 jest.config.js
 spec
 electron
+scripts

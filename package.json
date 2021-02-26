@@ -29,18 +29,6 @@
     "electron:start": "electron ./dist/main.js --enable-logging",
     "electron:dist": "NODE_ENV=production DEBUG=electron-builder electron-builder"
   },
-  "build": {
-    "appId": "CeloWallet",
-    "productName": "Celo Wallet",
-    "directories": {
-      "app": "dist",
-      "output": "dist-electron",
-      "buildResources": "electron/build"
-    },
-    "mac": {
-      "category": "public.app-category.utilities"
-    }
-  },
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "^0.0.5",
     "@emotion/react": "^11.1.5",
