@@ -15,6 +15,6 @@
   "homepage": "https://celowallet.app",
   "license": "MIT",
   "dependencies": {
-    "@ledgerhq/hw-transport-node-hid-noevents": "^5.41.0"
+    "@ledgerhq/hw-transport-node-hid-noevents": "^5.43.0"
   }
 }
