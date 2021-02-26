@@ -34,7 +34,8 @@
     "productName": "Celo Wallet",
     "directories": {
       "app": "dist",
-      "output": "dist-electron"
+      "output": "dist-electron",
+      "buildResources": "electron/build"
     },
     "mac": {
       "category": "public.app-category.utilities"

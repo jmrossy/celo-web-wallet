@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, session } = require('electron')
+const { app, BrowserWindow, ipcMain, session, shell } = require('electron')
 const path = require('path')
 
 function createWindow() {
@@ -20,6 +20,12 @@ function createWindow() {
       // webpack target to web
       contextIsolation: false,
     },
+  })
+
+  // Open links in separate browser window
+  mainWindow.webContents.on('new-window', function (e, url) {
+    e.preventDefault()
+    shell.openExternal(url)
   })
 
   // and load the index.html of the app.
