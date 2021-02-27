@@ -4,7 +4,7 @@ on:
     branches:
       - master
       - desktop
-      - desktop/ci
+      - desktop-ci
   workflow_dispatch:
 
 jobs:
