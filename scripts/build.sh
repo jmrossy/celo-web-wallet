@@ -18,14 +18,18 @@ done
 
 [ -z "$NETWORK" ] && echo "Need to set the NETWORK via the -n flag" && exit 1;
 
-echo "Building app for ${NETWORK}"
+xplat_sed () {
+  sed -i'.bak' -e "$1" -- "$2"
+  rm -- "${2}.bak"
+}
 
-# TODO run tests here
-
+echo "Cleaning first"
 yarn run clean
 
+echo "Building app for ${NETWORK}"
+
 # Ensure right network config 
-sed -i "" "s/freeze(config.*)/freeze(config${NETWORK})/g" src/config.ts
+xplat_sed "s/freeze(config.*)/freeze(config${NETWORK})/g" src/config.ts
 
 export NODE_ENV=production 
 if [ "$ELECTRON" = true ]; then
@@ -40,15 +44,15 @@ export LEDGER_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-ledger.js | awk '{ print
 echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
 
 echo "Updating index.html"
-sed -i "" "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
+xplat_sed "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
 
 if [ "$ELECTRON" = false ]; then
   echo "Removing CSP header in index.html" # It gets set via netlify header instead which is preferable
-  sed -i "" "s|<meta http-equiv.*>||g" dist/index.html 
+  xplat_sed "s|<meta http-equiv.*>||g" dist/index.html 
 
   echo "Updating Readme"
-  sed -i "" "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
-  sed -i "" "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
+  xplat_sed "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
+  xplat_sed "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
 fi
 
 echo "Done building app for ${NETWORK}"
