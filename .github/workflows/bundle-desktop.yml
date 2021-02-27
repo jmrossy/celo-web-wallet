@@ -20,11 +20,14 @@ jobs:
         with:
           node-version: 12.x
       - run: yarn
-      - run: yarn lint
-      - run: yarn test
+
+      - name: Run Test and lint
         shell: bash
-      - run: yarn electron:build
+        run: yarn test:all
+
+      - name: Build with webpack for electron
         shell: bash
+        run: yarn electron:build
 
       - run: yarn electron-builder --mac --publish never
         env:
