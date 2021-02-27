@@ -17,8 +17,8 @@ mac:
   artifactName: ${productName}-${version}-${os}.${ext}
   category: public.app-category.wallet
   hardenedRuntime: true
-  # entitlements: build/mac/entitlements.plist
-  # entitlementsInherit: build/mac/entitlements.plist
+  entitlements: electron/build/mac/entitlements.plist
+  entitlementsInherit: electron/build/mac/entitlements.plist
   target:
     - dmg
     - zip

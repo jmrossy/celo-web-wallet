@@ -26,8 +26,7 @@
     "electron:postinstall": "electron-builder install-app-deps",
     "electron:build": "yarn clean && ./scripts/build.sh -n Mainnet -e",
     "electron:dev": "yarn electron:build && electron ./dist/main.js --enable-logging",
-    "electron:start": "electron ./dist/main.js --enable-logging",
-    "electron:dist": "NODE_ENV=production DEBUG=electron-builder electron-builder"
+    "electron:dist": "NODE_ENV=production DEBUG=electron-builder electron-builder --publish never"
   },
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "^0.0.5",
@@ -75,6 +74,7 @@
     "css-loader": "^5.1.0",
     "electron": "^11.3.0",
     "electron-builder": "^22.9.1",
+    "electron-notarize": "^1.0.0",
     "eslint": "^7.20.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.22.1",

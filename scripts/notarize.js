@@ -1,45 +1,30 @@
-// const platform = require('os').platform()
-// const { notarize } = require('electron-notarize')
-// const chalk = require('chalk')
+require('dotenv').config()
+const platform = require('os').platform()
+const { notarize } = require('electron-notarize')
 
-// require('dotenv').config()
-// require('debug').enable('electron-notarize')
+async function notarizeApp(context) {
+  console.log('Beginning app notarization')
 
-// const info = (str) => {
-//   console.log(chalk.blue(str))
-// }
+  if (platform !== 'darwin') {
+    console.log('OS is not mac, skipping notarization.')
+    return
+  }
 
-// async function notarizeApp(context) {
-//   if (platform !== 'darwin') {
-//     info('OS is not mac, skipping notarization.')
-//     return
-//   }
+  const { APPLE_ID, APPLE_ID_PASSWORD } = process.env
+  if (!APPLE_ID || !APPLE_ID_PASSWORD) {
+    throw new Error('APPLE_ID and APPLE_ID_PASSWORD env vars are required for notarization.')
+  }
 
-//   info(
-//     "Don't mind electron-builder error 'Cannot find module 'scripts/notarize.js', it definitively found me"
-//   )
+  const appOutDir = context.appOutDir
+  const appName = context.packager.appInfo.productFilename
+  const path = `${appOutDir}/${appName}.app`
 
-//   const { APPLEID, APPLEID_PASSWORD } = process.env
-
-//   if (!APPLEID || !APPLEID_PASSWORD) {
-//     throw new Error('APPLEID and APPLEID_PASSWORD env variable are required for notarization.')
-//   }
-
-//   const { appOutDir } = context
-//   const appName = context.packager.appInfo.productFilename
-//   const path = `${appOutDir}/${appName}.app`
-
-//   await notarize({
-//     appBundleId: 'app.celo.wallet',
-//     appPath: path,
-//     ascProvider: 'EpicDreamSAS',
-//     appleId: APPLEID,
-//     appleIdPassword: APPLEID_PASSWORD,
-//   })
-// }
-
-function notarizeApp(context) {
-  console.log('Notarize TODO')
+  await notarize({
+    appBundleId: 'app.celo.wallet',
+    appPath: path,
+    appleId: APPLE_ID,
+    appleIdPassword: APPLE_ID_PASSWORD,
+  })
 }
 
 exports.default = notarizeApp
