@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 12.x
       - run: yarn
       - run: yarn lint
       - run: yarn test
@@ -35,6 +35,9 @@ jobs:
       - run: yarn electron-builder --win --publish never
         if: runner.os == 'Windows'
 
+      - run: sudo apt-get update && sudo apt-get install libudev-dev libusb-1.0-0-dev
+        if: runner.os == 'Linux'
+      
       - run: yarn electron-builder --linux --publish never
         if: runner.os == 'Linux'
 
