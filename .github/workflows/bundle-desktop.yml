@@ -1,0 +1,65 @@
+name: bundle-desktop
+on:
+  push:
+    branches:
+      - master
+      - staging
+      - production
+      - desktop
+  workflow_dispatch:
+
+jobs:
+  test-and-build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Run linter
+        run:  yarn lint
+
+      # TODO re-enable
+      # - name: Run test
+      #   shell: bash
+      #   run:  yarn test
+
+      - name: Build with webpack for electron
+        shell: bash
+        run: ./scripts/build.sh -n Mainnet -e
+
+      - name: Build on Mac 
+        run: yarn electron-builder --mac --publish never
+        env:
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+        if: runner.os == 'macOS'
+
+      - name: Build on Windows
+        run: yarn electron-builder --win --publish never
+        if: runner.os == 'Windows'
+
+      - name: Install deps for Linux
+        run: sudo apt-get update && sudo apt-get install libudev-dev libusb-1.0-0-dev
+        if: runner.os == 'Linux'
+      
+      - name: Build on Linux
+        run: yarn electron-builder --linux --publish never
+        if: runner.os == 'Linux'
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: celowallet-artifacts
+          path: |
+            dist-electron/*-mac*.dmg
+            dist-electron/*-mac*.zip
+            dist-electron/*-linux*.AppImage
+            dist-electron/*-win*.exe

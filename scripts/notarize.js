@@ -27,4 +27,9 @@ async function notarizeApp(context) {
   })
 }
 
-exports.default = notarizeApp
+// TODO remove
+function notarizeAppMock() {
+  console.log('mock notarize')
+}
+
+exports.default = notarizeAppMock
