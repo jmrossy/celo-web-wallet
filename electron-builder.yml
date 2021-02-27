@@ -49,3 +49,8 @@ nsis:
   allowToChangeInstallationDirectory: true
   installerIcon: installer.ico
   uninstallerIcon: installer.ico
+
+publish:
+  provider: github
+  owner: celo-tools
+  repo: celo-web-wallet

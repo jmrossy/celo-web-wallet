@@ -1,15 +1,8 @@
-name: bundle-desktop
-on:
-  push:
-    branches:
-      - master
-      - staging
-      - production
-      - desktop
-  workflow_dispatch:
+name: publish-desktop
+on: workflow_dispatch
 
 jobs:
-  test-and-build:
+  build-and-publish:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -37,14 +30,19 @@ jobs:
         run: ./scripts/build.sh -n Mainnet -e
 
       - name: Build on Mac 
-        run: yarn electron-builder --mac --publish never
+        run: yarn electron-builder --mac --publish always
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
         if: runner.os == 'macOS'
 
       - name: Build on Windows
-        run: yarn electron-builder --win --publish never
+        run: yarn electron-builder --win --publish always
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: runner.os == 'Windows'
 
       - name: Install deps for Linux
@@ -52,14 +50,7 @@ jobs:
         if: runner.os == 'Linux'
       
       - name: Build on Linux
-        run: yarn electron-builder --linux --publish never
+        run: yarn electron-builder --linux --publish always
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: runner.os == 'Linux'
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: celowallet-artifacts
-          path: |
-            dist-electron/*-mac*.dmg
-            dist-electron/*-mac*.zip
-            dist-electron/*-linux*.AppImage
-            dist-electron/*-win*.exe

@@ -27,6 +27,7 @@ async function notarizeApp(context) {
   })
 }
 
+// TODO remove
 function notarizeAppMock() {
   console.log('mock notarize')
 }
