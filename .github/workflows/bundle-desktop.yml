@@ -22,7 +22,9 @@ jobs:
       - run: yarn
       - run: yarn lint
       - run: yarn test
+        shell: bash
       - run: yarn electron:build
+        shell: bash
 
       - run: yarn electron-builder --mac --publish never
         env:
