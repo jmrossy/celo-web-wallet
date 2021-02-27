@@ -1,0 +1,46 @@
+name: bundle-app
+on:
+  push:
+    branches:
+      - master
+      - desktop
+      - desktop/ci
+  workflow_dispatch:
+
+jobs:
+  testAndBuild:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: yarn
+      - run: yarn lint
+      - run: yarn test
+      - run: yarn electron:build
+
+      - run: yarn electron-builder --mac --publish never
+        env:
+          CSC_LINK: ${{ secrets.OSX_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.OSX_CSC_KEY_PASSWORD }}
+        if: runner.os == 'macOS'
+
+      - run: yarn electron-builder --win --publish never
+        if: runner.os == 'Windows'
+
+      - run: yarn electron-builder --linux --publish never
+        if: runner.os == 'Linux'
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: celowallet-artifacts
+          path: |
+            dist-electron/*-mac*.dmg
+            dist-electron/*-mac*.zip
+            dist-electron/*-linux*.AppImage
+            dist-electron/*-win*.exe

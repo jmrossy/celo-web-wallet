@@ -27,4 +27,8 @@ async function notarizeApp(context) {
   })
 }
 
-exports.default = notarizeApp
+function notarizeAppMock() {
+  console.log('mock notarize')
+}
+
+exports.default = notarizeAppMock
