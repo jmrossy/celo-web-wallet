@@ -1,5 +1,7 @@
+import Binance from 'src/components/icons/logos/binance.svg'
 import Bittrex from 'src/components/icons/logos/bittrex.svg'
 import Coinbase from 'src/components/icons/logos/coinbase.svg'
+import Coinlist from 'src/components/icons/logos/coinlist.svg'
 import Okcoin from 'src/components/icons/logos/okcoin.svg'
 import Simplex from 'src/components/icons/logos/simplex.svg'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
@@ -13,7 +15,7 @@ export function useFundWalletModal() {
       <FundWalletModal address={address} />,
       null,
       null,
-      'Celo currencies can be earned or purchased from these exchanges.'
+      'Celo currencies can be earned or purchased from these online exchanges.'
     )
   }
 }
@@ -36,9 +38,19 @@ export function FundWalletModal({ address }: { address: string }) {
       text: 'Okcoin',
     },
     {
+      url: 'https://www.binance.com/en/trade/CELO_BTC',
+      imgSrc: Binance,
+      text: 'Binance',
+    },
+    {
       url: `https://valoraapp.com/simplex?address=${address}`,
       imgSrc: Simplex,
       text: 'Simplex',
+    },
+    {
+      url: 'https://coinlist.co/asset/celo',
+      imgSrc: Coinlist,
+      text: 'Coinlist',
     },
   ]
   return <ModalLinkGrid links={links} />

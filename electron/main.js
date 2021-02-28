@@ -1,6 +1,6 @@
-// Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, session, shell } = require('electron')
 const path = require('path')
+const { app, BrowserWindow, ipcMain, session, shell } = require('electron')
+const { autoUpdater } = require('electron-updater')
 
 function createWindow() {
   // Create the browser window.
@@ -28,15 +28,22 @@ function createWindow() {
     shell.openExternal(url)
   })
 
-  // and load the index.html of the app.
+  // Load the root page of the app
   mainWindow.loadFile('index.html')
 
   // Open the DevTools. Note this seems to be broken by CSP header below, disable header as needed during dev
   // mainWindow.webContents.openDevTools()
+
+  mainWindow.once('ready-to-show', () => {
+    autoUpdater.checkForUpdatesAndNotify()
+  })
+
+  autoUpdater.on('update-downloaded', () => {
+    mainWindow.webContents.send('update_downloaded')
+  })
 }
 
 function setCspHeader() {
-  // TODO set this in index.html for packaged app version?
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -75,4 +82,8 @@ const appMetadata = {
 }
 ipcMain.on('get-app-metadata', (event) => {
   event.returnValue = appMetadata
+})
+
+ipcMain.on('restart_app', () => {
+  autoUpdater.quitAndInstall()
 })

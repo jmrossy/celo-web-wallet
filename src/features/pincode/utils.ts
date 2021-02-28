@@ -22,8 +22,8 @@ export function isSecretTooSimple(value: string, type: SecretType | undefined) {
     return PIN_BLACKLIST.includes(value)
   }
   if (type === 'password') {
-    // 6-30 characters with a number, lower case, and upper case
-    return !value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,30}$/)
+    // 8-32 characters with a number, lower case, and upper case
+    return !value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,32}$/)
   }
   throw new Error(`Invalid secret type: ${type}`)
 }

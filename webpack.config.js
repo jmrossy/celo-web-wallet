@@ -86,6 +86,7 @@ const config = {
       'src/features/ledger/ledgerTransport$': targetElectron
         ? 'src/features/ledger/ledgerTransport-electron.ts'
         : 'src/features/ledger/ledgerTransport.ts',
+      'src/app/update$': targetElectron ? 'src/app/update-electron.ts' : 'src/app/update.ts',
     },
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
     modules: [path.resolve('./node_modules'), path.resolve('./')],

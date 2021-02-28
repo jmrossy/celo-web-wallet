@@ -3,6 +3,7 @@ import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
 import { useSplashScreen } from 'src/app/splash'
+import { UpdateBanner } from 'src/app/UpdateBanner'
 import { ModalProvider } from 'src/components/modal/modalContext'
 import { ExchangeConfirmationScreen } from 'src/features/exchange/ExchangeConfirmationScreen'
 import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
@@ -43,6 +44,7 @@ export const App = () => {
     <ErrorBoundary>
       <BrowserRouter>
         <ModalProvider>
+          <UpdateBanner />
           <Routes>
             <Route path="/" element={<HomeNavigator />}>
               <Route path="/" element={<HomeScreen />} />

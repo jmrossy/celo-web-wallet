@@ -1,13 +1,12 @@
 import { PropsWithChildren } from 'react'
-import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import AppleLogo from 'src/components/icons/logos/apple.svg'
+import LinuxLogo from 'src/components/icons/logos/linux.svg'
 import WindowsLogo from 'src/components/icons/logos/windows.svg'
 import { Box } from 'src/components/layout/Box'
+import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
-import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
 
 interface ButtonProps {
@@ -42,19 +41,28 @@ export function DownloadDesktopModal({ limitFeatureVersion }: { limitFeatureVers
     ? 'For security reasons, this feature is only available in the desktop version. Sorry for the inconvenience but your account safety is essential!'
     : "The desktop version is more secure and includes extra features. It's strongly recommended for large accounts."
 
+  const links = [
+    {
+      url: 'https://github.com/celo-tools/celo-web-wallet/suites/2140030106/artifacts/43774751',
+      imgSrc: WindowsLogo,
+      text: 'Windows',
+    },
+    {
+      url: 'https://github.com/celo-tools/celo-web-wallet/suites/2140030106/artifacts/43774751',
+      imgSrc: AppleLogo,
+      text: 'MacOS',
+    },
+    {
+      url: 'https://github.com/celo-tools/celo-web-wallet/suites/2140030106/artifacts/43774751',
+      imgSrc: LinuxLogo,
+      text: 'Linux',
+    },
+  ]
+
   return (
     <Box direction="column" align="center" justify="center">
       <h3 css={style.h3}>{text}</h3>
-      <Box direction="row" align="center">
-        <button css={style.linkContent}>
-          <img src={WindowsLogo} css={{ ...style.icon, paddingTop: '0.55em' }} alt="Windows Logo" />
-          <div>Windows</div>
-        </button>
-        <button css={style.linkContent}>
-          <img src={AppleLogo} css={style.icon} alt="Apple Logo" />
-          <div>MacOS</div>
-        </button>
-      </Box>
+      <ModalLinkGrid links={links} />
     </Box>
   )
 }
@@ -65,31 +73,5 @@ const style: Stylesheet = {
     textAlign: 'center',
     maxWidth: '24em',
     lineHeight: '1.6em',
-  },
-  linkContent: {
-    ...transparentButtonStyles,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 3,
-    width: '5.6em',
-    height: '5.8em',
-    margin: '0 1.5em',
-    border: `1px solid ${Color.primaryWhite}`,
-    ':hover': {
-      borderColor: Color.altGrey,
-    },
-    [mq[768]]: {
-      width: '7em',
-      height: '7.2em',
-    },
-  },
-  icon: {
-    width: '2.5em',
-    marginBottom: '1em',
-    [mq[768]]: {
-      width: '3em',
-    },
   },
 }
