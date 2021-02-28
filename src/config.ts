@@ -30,6 +30,11 @@ interface Config {
   gatewayFeeRecipient?: string
   blockscoutUrl: string
   discordUrl: string
+  desktopUrls: {
+    windows: string
+    mac: string
+    linux: string
+  }
   chainId: number
   contractAddresses: Record<CeloContract, string>
   defaultAccount?: string // strictly for dev use
@@ -46,6 +51,11 @@ const configMainnet: Config = {
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
+  desktopUrls: {
+    windows: 'TODO',
+    mac: 'TODO',
+    linux: 'TODO',
+  },
   chainId: 42220,
   contractAddresses: {
     [CeloContract.Accounts]: '0x7d21685C17607338b313a7174bAb6620baD0aaB7',
@@ -74,6 +84,11 @@ const configAlfajores: Config = {
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
+  desktopUrls: {
+    windows: 'TODO',
+    mac: 'TODO',
+    linux: 'TODO',
+  },
   chainId: 44787,
   contractAddresses: {
     [CeloContract.Accounts]: '0xed7f51A34B4e71fbE69B3091FcF879cD14bD73A9',

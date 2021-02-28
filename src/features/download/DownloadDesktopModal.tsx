@@ -6,6 +6,7 @@ import WindowsLogo from 'src/components/icons/logos/windows.svg'
 import { Box } from 'src/components/layout/Box'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
+import { config } from 'src/config'
 import { Font } from 'src/styles/fonts'
 import { Styles, Stylesheet } from 'src/styles/types'
 
@@ -43,17 +44,17 @@ export function DownloadDesktopModal({ limitFeatureVersion }: { limitFeatureVers
 
   const links = [
     {
-      url: 'https://github.com/celo-tools/celo-web-wallet/suites/2140030106/artifacts/43774751',
+      url: config.desktopUrls.windows,
       imgSrc: WindowsLogo,
       text: 'Windows',
     },
     {
-      url: 'https://github.com/celo-tools/celo-web-wallet/suites/2140030106/artifacts/43774751',
+      url: config.desktopUrls.mac,
       imgSrc: AppleLogo,
       text: 'MacOS',
     },
     {
-      url: 'https://github.com/celo-tools/celo-web-wallet/suites/2140030106/artifacts/43774751',
+      url: config.desktopUrls.linux,
       imgSrc: LinuxLogo,
       text: 'Linux',
     },

@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-[What can I do with the web wallet?](#what-can-i-do-with-the-web-wallet)
+[Where can the app be used?](#where-can-the-app-be-used)
 
 [Does it work on phones?](#does-it-work-on-phones)
 
@@ -8,43 +8,42 @@
 
 [How is it different than Valora?](#how-is-it-different-than-valora)
 
-[Is the web wallet safe?](#is-the-web-wallet-safe)
+[Is the web version safe?](#is-the-web-version-safe)
 
 [Where are my keys stored?](#where-are-my-keys-stored)
 
-[Can I download the wallet and run it offline?](#can-i-download-the-wallet-and-run-it-offline)
-
 [Can feature X be added?](#can-feature-x-be-added)
 
-## What can I do with the web wallet? 
+## Where can the app be used?
 
-The web wallet is great at conveniently creating small wallets for day-to-day transactions. You can send payments, make currency exchanges, and see your transaction history.
+The Celo Wallet can run in a modern browser (Chrome is recommended) or on your desktop (Mac, Windows, and Linux).
+The desktop version has stricter security guarantees and is strongly recommended for large accounts.
 
 ## Does it work on phones?
 
-Yes, the wallet was designed from the ground-up to be lightweight and mobile-friendly.
+Yes, the web version was designed from the ground-up to be lightweight and mobile-friendly.
 
 ## Will it work with Valora wallets?
 
-Yes, you can use your Account Key (mnemonic phrase) to import your account into the web wallet, back into Valora, or use both at the same time!
+Yes, you can use your Account Key (mnemonic phrase) to import your account into the web wallet, back into Valora, or use both at the same time.
 
 ## How is it different than Valora?
 
-The most obvious difference is platform: Valora runs on iOS and Android, the web wallet runs in any modern browser. More abstractly though, Valora is a social payments application whereas the web wallet is just a tool. That's why Valora includes extra features around importing contacts, verifying phone numbers, finding friends, etc. In contrast, one of this wallet's design principles is to be minimal, meaning no analytics, no plugins, and no device permissions (except for Ledger access).
+The most obvious difference is platform: Valora runs on iOS and Android, the web wallet runs in any modern browser and on desktop. More abstractly though, Valora is a social payments application whereas the web wallet is just a tool. That's why Valora includes extra features around importing contacts, verifying phone numbers, finding friends, etc. In contrast, one of this wallet's design principles is to be minimal, meaning no analytics, no plugins, and no device permissions (except for Ledger access).
 
-## Is the web wallet safe?
+## Is the web version safe?
 
-Short answer: Yes, but use is only recommended for small 'hot' wallets or Ledger-backed wallets.
+Short answer: It's safe enough for small 'hot' wallets or Ledger-backed wallets. For anything larger or more important, the desktop version is strongly recommended.
 
-Long answer: The core developers try their best to keep the all wallets safe. This includes encrypting your wallet at rest, minimal use of 3rd party code, pinning dependencies, using single-origin code sourcing, publishing bundle hashes, and other modern web development best practices. That said, the web is, by design, an open and extensible platform. That unfortunately means even the best web apps are vulnerable to certain risks, like malicious browser extensions. For this reason, the recommendation is to use the web wallet for small amounts only. For larger amounts, use Valora or a Ledger hardware wallet.
+Long answer: The web version does what it can to protect your funds but web apps have certain inherent limitations. Protections includes: encrypting your wallet at rest, minimal use of 3rd party code, pinning dependencies, using single-origin code sourcing, publishing bundle hashes, and other modern web development best practices. That said, the web is, by design, an open and extensible platform. That unfortunately means all web apps are vulnerable to certain risks, like malicious browser extensions. For this reason, the recommendation is to use the web version for small amounts only. For larger amounts, use the desktop version, Valora or a Ledger hardware wallet.
 
 ## Where are my keys stored?
 
-Your mnemonic, from which you keys are derived, is encrypted using your pin and stored in browser local storage. Your keys never leave your device. In other words, the web wallet is a self-sovereign (non-custodial) wallet.
+Your mnemonic, from which you keys are derived, is encrypted using your password and stored either in browser local storage for web or on disk for desktop. Your keys never leave your device. In other words, this wallet is a self-sovereign (non-custodial) wallet.
 
-## Can I download the wallet and run it offline?
-
-Soon! The wallet has some limited Progress Web App (PWA) support for app pinning.
+- Mac: `~/Library/Application Support/celo-web-wallet`
+- Linux: `$XDG_CONFIG_HOME/celo-web-wallet or ~/.config/celo-web-wallet`
+- Windows: `C:\Users\{USERNAME}\AppData\celo-web-wallet`
 
 ## Can feature X be added?
 
