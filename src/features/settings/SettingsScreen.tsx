@@ -67,7 +67,7 @@ export function SettingsScreen() {
         </Box>
         <HrDivider styles={style.divider} />
         <h2 css={style.sectionHeader}>Advanced Settings</h2>
-        <h3 css={style.warningLabel}>Changes here are not recommended, use at your own risk.</h3>
+        {/* <h3 css={style.warningLabel}>Changes here are not recommended, use at your own risk.</h3> */}
         <Box
           direction="row"
           align="center"

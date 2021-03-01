@@ -2,6 +2,8 @@ const path = require('path')
 const { app, BrowserWindow, ipcMain, session, shell } = require('electron')
 const { autoUpdater } = require('electron-updater')
 
+const ALLOWED_PERMISSIONS = ['clipboard-read', 'notifications', 'fullscreen', 'openExternal']
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -57,11 +59,24 @@ function setCspHeader() {
   })
 }
 
+function setPermissionsHandler() {
+  session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+    if (ALLOWED_PERMISSIONS.includes(permission)) {
+      // Approves the permissions request
+      callback(true)
+    } else {
+      // Denies the permissions request
+      return callback(false)
+    }
+  })
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   setCspHeader()
+  setPermissionsHandler()
   createWindow()
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

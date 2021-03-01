@@ -53,6 +53,8 @@ if [ "$ELECTRON" = false ]; then
   echo "Updating Readme"
   xplat_sed "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
   xplat_sed "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
+else
+  xplat_sed "s/ | Use Celo on the web or on your desktop//g" dist/index.html 
 fi
 
 echo "Done building app for ${NETWORK}"

@@ -37,9 +37,9 @@ export function HomeScreen() {
   // TODO remove in a few months when all accounts have been migrated to passwords
   const { showModalAsync, closeModal } = useModal()
   const navigate = useNavigate()
-  const secretType = useSelector((s: RootState) => s.wallet.secretType)
+  const { secretType, type } = useSelector((s: RootState) => s.wallet)
   useEffect(() => {
-    if (secretType === 'password' || config.defaultAccount) return
+    if (secretType === 'password' || config.defaultAccount || type === 'ledger') return
     showModalAsync(
       'Please Change Your Pin',
       'For better security, pincodes are being replaced with passwords. Please change your pin to a new password now. Sorry for the inconvenience!',
