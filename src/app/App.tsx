@@ -1,10 +1,12 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { PropsWithChildren } from 'react'
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
 import { useSplashScreen } from 'src/app/splash'
 import { UpdateBanner } from 'src/app/UpdateBanner'
 import { ModalProvider } from 'src/components/modal/modalContext'
+import { config } from 'src/config'
 import { ExchangeConfirmationScreen } from 'src/features/exchange/ExchangeConfirmationScreen'
 import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { TransactionReview } from 'src/features/feed/TransactionReview'
@@ -31,6 +33,15 @@ import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
+function Router(props: PropsWithChildren<any>) {
+  // The BrowserRouter works everywhere except windows so using hash for electron
+  return config.isElectron ? (
+    <HashRouter>{props.children}</HashRouter>
+  ) : (
+    <BrowserRouter>{props.children}</BrowserRouter>
+  )
+}
+
 export const App = () => {
   const showSplash = useSplashScreen()
   const isBrowserSupported = useBrowserFeatureChecks()
@@ -42,7 +53,7 @@ export const App = () => {
 
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <Router>
         <ModalProvider>
           <UpdateBanner />
           <Routes>
@@ -83,7 +94,7 @@ export const App = () => {
             <Route path="*" element={<NotFoundScreen />} />
           </Routes>
         </ModalProvider>
-      </BrowserRouter>
+      </Router>
     </ErrorBoundary>
   )
 }

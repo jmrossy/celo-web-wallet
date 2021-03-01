@@ -24,6 +24,8 @@ function createWindow() {
     },
   })
 
+  mainWindow.removeMenu()
+
   // Open links in separate browser window
   mainWindow.webContents.on('new-window', function (e, url) {
     e.preventDefault()
@@ -76,7 +78,8 @@ function setPermissionsHandler() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   setCspHeader()
-  setPermissionsHandler()
+  // TODO re-enable after linux test
+  // setPermissionsHandler()
   createWindow()
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

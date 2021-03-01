@@ -1,8 +1,6 @@
 # Celo Wallet For Web and Desktop
 
-A lightweight, self-sovereign wallet for the Celo network.
-
-Manage small accounts [on the web](https://celowallet.app) or large ones [on your desktop](https://github.com/celo-tools/celo-web-wallet/releases)
+A lightweight, self-sovereign wallet for the Celo network. Manage small accounts [on the web](https://celowallet.app) or large ones [on your desktop.](https://github.com/celo-tools/celo-web-wallet/releases) Fully compatible with Ledger hardware.
 
 ## Desktop Downloads
 

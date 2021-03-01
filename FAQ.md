@@ -42,8 +42,8 @@ Long answer: The web version does what it can to protect your funds but web apps
 Your mnemonic, from which you keys are derived, is encrypted using your password and stored either in browser local storage for web or on disk for desktop. Your keys never leave your device. In other words, this wallet is a self-sovereign (non-custodial) wallet.
 
 - Mac: `~/Library/Application Support/celo-web-wallet`
-- Linux: `$XDG_CONFIG_HOME/celo-web-wallet or ~/.config/celo-web-wallet`
-- Windows: `C:\Users\{USERNAME}\AppData\celo-web-wallet`
+- Linux: `~/.config/celo-web-wallet or $XDG_CONFIG_HOME/celo-web-wallet`
+- Windows: `C:\Users\{USERNAME}\AppData\Roaming\celo-web-wallet`
 
 ## Can feature X be added?
 
