@@ -30,7 +30,7 @@ export async function saveWallet(pincode: string, override = false) {
 
     const encryptedMnemonic = await encryptMnemonic(mnemonic, pincode)
 
-    storageProvider.setItem(getWalletPath(), encryptedMnemonic)
+    storageProvider.setItem(getWalletPath(), encryptedMnemonic, override)
   } catch (error) {
     logger.error('Failed to save wallet to storage', error)
     throw new Error('Failure saving wallet')

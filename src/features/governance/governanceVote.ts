@@ -1,10 +1,12 @@
-import { BigNumber } from 'ethers'
+import { BigNumber, providers } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import { MIN_LOCKED_GOLD_TO_VOTE } from 'src/consts'
 import { Currency } from 'src/currency'
+import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
+import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import {
   GovernanceVoteParams,
@@ -14,6 +16,7 @@ import {
   VoteValue,
 } from 'src/features/governance/types'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
+import { GovernanceVoteTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { getVoterBalances } from 'src/features/wallet/utils'
@@ -83,9 +86,8 @@ function* governanceVote(params: GovernanceVoteParams) {
   const txReceipt = yield* call(sendSignedTransaction, signedTx)
   logger.info(`Govervance vote hash received: ${txReceipt.transactionHash}`)
 
-  // TODO placeholder tx
-  // const placeholderTx = getPlaceholderTx(params, txReceipt, type)
-  // yield* put(addPlaceholderTransaction(placeholderTx))
+  const placeholderTx = getPlaceholderTx(params, txReceipt)
+  yield* put(addPlaceholderTransaction(placeholderTx))
 
   yield* put(fetchBalancesActions.trigger())
 }
@@ -107,6 +109,21 @@ async function createVoteTx(params: GovernanceVoteParams) {
   logger.info('Signing governance vote tx')
   const signedTx = await signTransaction(tx, feeEstimate)
   return signedTx
+}
+
+function getPlaceholderTx(
+  params: GovernanceVoteParams,
+  txReceipt: providers.TransactionReceipt
+): GovernanceVoteTx {
+  if (!params.feeEstimate) {
+    throw new Error('Params must have fee estimate to create placeholder tx')
+  }
+  return {
+    ...createPlaceholderForTx(txReceipt, '0', params.feeEstimate),
+    type: TransactionType.GovernanceVote,
+    proposalId: params.proposalId,
+    vote: params.value,
+  }
 }
 
 export const {

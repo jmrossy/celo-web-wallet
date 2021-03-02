@@ -41,6 +41,7 @@ const style: Stylesheet = {
     color: Color.primaryBlack,
     textAlign: 'center',
     textDecoration: 'none',
+    outline: 'none',
   },
   linkContent: {
     textDecoration: 'none',

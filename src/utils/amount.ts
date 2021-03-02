@@ -228,6 +228,6 @@ export function BigNumberMax(bn1: BigNumber, bn2: BigNumber) {
   return bn1.lte(bn2) ? bn2 : bn1
 }
 
-export function formatNumberWithCommas(x: number) {
-  return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+export function formatNumberWithCommas(amount: number) {
+  return new Intl.NumberFormat('en-US', { style: 'decimal' }).format(amount)
 }

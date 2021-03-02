@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers'
+import { BigNumber, providers } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { getSigner } from 'src/blockchain/signer'
@@ -7,11 +7,12 @@ import { executeTxPlan, TxPlanExecutor } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCK_AMOUNT } from 'src/consts'
 import { Currency } from 'src/currency'
+import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
 import { LockActionType, LockTokenParams, PendingWithdrawal } from 'src/features/lock/types'
 import { getTotalUnlockedCelo } from 'src/features/lock/utils'
-import { TransactionType } from 'src/features/types'
+import { LockTokenTx, LockTokenType, TransactionType } from 'src/features/types'
 import { GroupVotes } from 'src/features/validators/types'
 import { getTotalNonvotingLocked } from 'src/features/validators/utils'
 import { createAccountRegisterTx } from 'src/features/wallet/accountsContract'
@@ -68,6 +69,14 @@ export function validate(
         ...invalidInput('amount', 'No pending available to withdraw'),
       }
     }
+
+    if (validateFee) {
+      errors = {
+        ...errors,
+        ...validateFeeEstimates(feeEstimates),
+        ...validateAmountWithFees(amountInWei, Currency.CELO, adjustedBalances, feeEstimates),
+      }
+    }
   }
 
   // Ensure user isn't trying to unlock CELO used for staking
@@ -78,14 +87,6 @@ export function validate(
         ...errors,
         ...invalidInput('stakedCelo', 'Locked funds in use for staking'),
       }
-    }
-  }
-
-  if (validateFee) {
-    errors = {
-      ...errors,
-      ...validateFeeEstimates(feeEstimates),
-      ...validateAmountWithFees(amountInWei, Currency.CELO, balances, feeEstimates),
     }
   }
 
@@ -117,6 +118,7 @@ function* lockToken(params: LockTokenParams) {
     txPlan,
     feeEstimates,
     createActionTx,
+    createPlaceholderTx,
     'lockToken'
   )
 
@@ -143,8 +145,19 @@ function createActionTx(txPlanItem: LockTokenTxPlanItem, feeEstimate: FeeEstimat
   }
 }
 
+function createPlaceholderTx(
+  txPlanItem: LockTokenTxPlanItem,
+  feeEstimate: FeeEstimate,
+  txReceipt: providers.TransactionReceipt
+): LockTokenTx {
+  return {
+    ...createPlaceholderForTx(txReceipt, txPlanItem.amountInWei, feeEstimate),
+    type: txPlanItem.type,
+  }
+}
+
 interface LockTokenTxPlanItem {
-  type: TransactionType
+  type: LockTokenType
   amountInWei: string
   pendingWithdrawal?: PendingWithdrawal
 }

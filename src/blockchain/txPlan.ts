@@ -1,7 +1,9 @@
+import { providers } from 'ethers'
 import { getCurrentNonce, sendSignedTransaction } from 'src/blockchain/transaction'
+import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { FeeEstimate } from 'src/features/fees/types'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
-import { TransactionType } from 'src/features/types'
+import { CeloTransaction, TransactionType } from 'src/features/types'
 import { logger } from 'src/utils/logger'
 import { call, put } from 'typed-redux-saga'
 
@@ -13,6 +15,11 @@ export type TxPlanExecutor<T extends TxPlanItem> = (
   txPlan: Array<T>,
   feeEstimates: FeeEstimate[],
   txCreator: (tx: T, feeEstimate: FeeEstimate, nonce: number) => Promise<string>,
+  placeholderTxCreator: (
+    tx: T,
+    feeEstimate: FeeEstimate,
+    txReceipt: providers.TransactionReceipt
+  ) => CeloTransaction,
   planName: string
 ) => void
 
@@ -21,6 +28,11 @@ export function* executeTxPlan<T extends TxPlanItem>(
   txPlan: Array<T>,
   feeEstimates: FeeEstimate[],
   txCreator: (tx: T, feeEstimate: FeeEstimate, nonce: number) => Promise<string>,
+  placeholderTxCreator: (
+    tx: T,
+    feeEstimate: FeeEstimate,
+    txReceipt: providers.TransactionReceipt
+  ) => CeloTransaction,
   planName: string
 ) {
   if (!txPlan.length || !feeEstimates.length || txPlan.length !== feeEstimates.length) {
@@ -39,11 +51,12 @@ export function* executeTxPlan<T extends TxPlanItem>(
   }
 
   for (let i = 0; i < signedTxs.length; i++) {
+    const txPlanItem = txPlan[i]
+    const feeEstimate = feeEstimates[i]
     logger.info(`Sending ${planName} tx ${i + 1} of ${signedTxs.length}`)
     const txReceipt = yield* call(sendSignedTransaction, signedTxs[i])
     logger.info(`${planName} tx hash received: ${txReceipt.transactionHash}`)
-    // TODO add placeholder txs
-    // const placeholderTx = getPlaceholderTx(params, txReceipt, type)
-    // yield* put(addPlaceholderTransaction(placeholderTx))
+    const placeholderTx = placeholderTxCreator(txPlanItem, feeEstimate, txReceipt)
+    if (placeholderTx) yield* put(addPlaceholderTransaction(placeholderTx))
   }
 }

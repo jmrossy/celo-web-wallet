@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers'
+import { BigNumber, providers } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { signTransaction } from 'src/blockchain/transaction'
@@ -6,9 +6,10 @@ import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan
 import { CeloContract } from 'src/config'
 import { MIN_LOCKED_GOLD_TO_VOTE, MIN_VOTE_AMOUNT, NULL_ADDRESS } from 'src/consts'
 import { Currency } from 'src/currency'
+import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
-import { TransactionType } from 'src/features/types'
+import { StakeTokenTx, StakeTokenType, TransactionType } from 'src/features/types'
 import {
   EligibleGroupsVotesRaw,
   GroupVotes,
@@ -106,6 +107,7 @@ function* stakeToken(params: StakeTokenParams) {
     txPlan,
     feeEstimates,
     createActionTx,
+    createPlaceholderTx,
     'stakeToken'
   )
 
@@ -113,6 +115,7 @@ function* stakeToken(params: StakeTokenParams) {
 }
 
 interface StakeTokenTxPlanItem extends TxPlanItem {
+  type: StakeTokenType
   amountInWei: string
   groupAddress: string
   voterAddress: string
@@ -188,6 +191,18 @@ function createActionTx(txPlanItem: StakeTokenTxPlanItem, feeEstimate: FeeEstima
     return createRevokeTx(txPlanItem, feeEstimate, nonce, true)
   } else {
     throw new Error(`Invalid tx type for stake request: ${txPlanItem.type}`)
+  }
+}
+
+function createPlaceholderTx(
+  txPlanItem: StakeTokenTxPlanItem,
+  feeEstimate: FeeEstimate,
+  txReceipt: providers.TransactionReceipt
+): StakeTokenTx {
+  return {
+    ...createPlaceholderForTx(txReceipt, txPlanItem.amountInWei, feeEstimate),
+    type: txPlanItem.type,
+    groupAddress: txPlanItem.groupAddress,
   }
 }
 

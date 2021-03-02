@@ -98,20 +98,25 @@ export interface TokenExchangeTx extends Transaction {
   toValue: string
 }
 
+export type LockTokenType =
+  | TransactionType.LockCelo
+  | TransactionType.RelockCelo
+  | TransactionType.UnlockCelo
+  | TransactionType.WithdrawLockedCelo
+  | TransactionType.AccountRegistration
+
 export interface LockTokenTx extends Transaction {
-  type:
-    | TransactionType.LockCelo
-    | TransactionType.RelockCelo
-    | TransactionType.UnlockCelo
-    | TransactionType.WithdrawLockedCelo
+  type: LockTokenType
 }
 
+export type StakeTokenType =
+  | TransactionType.ValidatorVoteCelo
+  | TransactionType.ValidatorRevokeActiveCelo
+  | TransactionType.ValidatorRevokePendingCelo
+  | TransactionType.ValidatorActivateCelo
+
 export interface StakeTokenTx extends Transaction {
-  type:
-    | TransactionType.ValidatorVoteCelo
-    | TransactionType.ValidatorRevokeActiveCelo
-    | TransactionType.ValidatorRevokePendingCelo
-    | TransactionType.ValidatorActivateCelo
+  type: StakeTokenType
   groupAddress: string
 }
 

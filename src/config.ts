@@ -53,7 +53,7 @@ const configMainnet: Config = {
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
   desktopUrls: {
     windows: 'TODO',
-    mac: 'TODO',
+    mac: 'https://www.dropbox.com/s/wl563lcl24mop3u/Celo%20Wallet-0.9.0-mac.dmg?dl=1',
     linux: 'TODO',
   },
   chainId: 42220,
