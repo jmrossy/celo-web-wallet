@@ -18,7 +18,7 @@ import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals
 import { getResultChartData } from 'src/features/validators/barCharts'
 import { getStakeActionTxPlan, stakeTokenActions } from 'src/features/validators/stakeToken'
 import { stakeActionLabel, StakeActionType } from 'src/features/validators/types'
-import { useVoterBalances } from 'src/features/wallet/utils'
+import { useVoterAccountAddress, useVoterBalances } from 'src/features/wallet/utils'
 import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -31,6 +31,7 @@ export function StakeConfirmationScreen() {
 
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const { voterBalances } = useVoterBalances()
+  const voterAddress = useVoterAccountAddress()
   const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
   const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
 
@@ -41,7 +42,7 @@ export function StakeConfirmationScreen() {
       return
     }
 
-    const txs = getStakeActionTxPlan(tx.params, voterBalances, groupVotes)
+    const txs = getStakeActionTxPlan(tx.params, voterAddress, voterBalances, groupVotes)
     dispatch(estimateFeeActions.trigger({ txs }))
   }, [tx])
 
@@ -49,7 +50,7 @@ export function StakeConfirmationScreen() {
 
   const params = tx.params
   const { action, amountInWei } = params
-  const txPlan = getStakeActionTxPlan(tx.params, voterBalances, groupVotes)
+  const txPlan = getStakeActionTxPlan(tx.params, voterAddress, voterBalances, groupVotes)
 
   const { amount, feeAmount, feeCurrency, feeEstimates } = useFee(amountInWei, txPlan.length)
 

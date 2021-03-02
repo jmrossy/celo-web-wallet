@@ -77,8 +77,8 @@ async function fetchDollarBalance(address: string) {
 }
 
 function* fetchVoterBalances() {
-  const { isRegistered, voteSignerFor } = yield* select((state: RootState) => state.wallet.account)
-  if (!isRegistered || !voteSignerFor) return
+  const voteSignerFor = yield* select((state: RootState) => state.wallet.account.voteSignerFor)
+  if (!voteSignerFor) return
 
   // Only the total locked is used for now so just fetching that bit
   const locked = yield* call(fetchTotalLocked, voteSignerFor)

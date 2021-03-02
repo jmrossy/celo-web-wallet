@@ -1,7 +1,6 @@
 import { BigNumber } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
-import { getSigner } from 'src/blockchain/signer'
 import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
@@ -20,7 +19,7 @@ import {
 import { getStakingMaxAmount } from 'src/features/validators/utils'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import { getVoterBalances } from 'src/features/wallet/utils'
+import { getVoterAccountAddress, getVoterBalances } from 'src/features/wallet/utils'
 import { areAddressesEqual } from 'src/utils/addresses'
 import {
   BigNumberMin,
@@ -76,7 +75,7 @@ export function validate(
     errors = {
       ...errors,
       ...validateFeeEstimates(feeEstimates),
-      ...validateAmountWithFees(amountInWei, Currency.CELO, balances, feeEstimates),
+      ...validateAmountWithFees('0', Currency.CELO, balances, feeEstimates),
     }
   }
 
@@ -88,6 +87,7 @@ function* stakeToken(params: StakeTokenParams) {
 
   yield* call(fetchBalancesIfStale)
   const { balances, voterBalances } = yield* call(getVoterBalances)
+  const voterAddress = yield* call(getVoterAccountAddress)
   const { validatorGroups, groupVotes } = yield* select((state: RootState) => state.validators)
 
   validateOrThrow(
@@ -95,7 +95,7 @@ function* stakeToken(params: StakeTokenParams) {
     'Invalid transaction'
   )
 
-  const txPlan = getStakeActionTxPlan(params, balances, groupVotes)
+  const txPlan = getStakeActionTxPlan(params, voterAddress, voterBalances, groupVotes)
   if (!feeEstimates || feeEstimates.length !== txPlan.length) {
     throw new Error('Fee estimates missing or do not match txPlan')
   }
@@ -115,6 +115,7 @@ function* stakeToken(params: StakeTokenParams) {
 interface StakeTokenTxPlanItem extends TxPlanItem {
   amountInWei: string
   groupAddress: string
+  voterAddress: string
 }
 
 type StakeTokenTxPlan = Array<StakeTokenTxPlanItem>
@@ -123,6 +124,7 @@ type StakeTokenTxPlan = Array<StakeTokenTxPlanItem>
 // This determines the ideal tx types and order
 export function getStakeActionTxPlan(
   params: StakeTokenParams,
+  voterAddress: string,
   voterBalances: Balances,
   currentVotes: GroupVotes
 ): StakeTokenTxPlan {
@@ -136,10 +138,13 @@ export function getStakeActionTxPlan(
         type: TransactionType.ValidatorVoteCelo,
         amountInWei: adjutedAmount.toString(),
         groupAddress,
+        voterAddress,
       },
     ]
   } else if (action === StakeActionType.Activate) {
-    return [{ type: TransactionType.ValidatorActivateCelo, amountInWei, groupAddress }]
+    return [
+      { type: TransactionType.ValidatorActivateCelo, amountInWei, groupAddress, voterAddress },
+    ]
   } else if (action === StakeActionType.Revoke) {
     const txs: StakeTokenTxPlan = []
     const groupVotes = currentVotes[groupAddress]
@@ -153,15 +158,17 @@ export function getStakeActionTxPlan(
         type: TransactionType.ValidatorRevokePendingCelo,
         amountInWei: pendingAdjusted.toString(),
         groupAddress,
+        voterAddress,
       })
       amountRemaining = amountRemaining.sub(pendingAdjusted)
     }
-    if (amountRemaining.gt(0) && amountActive.gte(amountRemaining)) {
+    if (amountRemaining.gt(0)) {
       const activeAdjusted = getAdjustedAmount(amountRemaining, amountActive, Currency.CELO)
       txs.push({
         type: TransactionType.ValidatorRevokeActiveCelo,
         amountInWei: activeAdjusted.toString(),
         groupAddress,
+        voterAddress,
       })
     }
     return txs
@@ -219,11 +226,10 @@ async function createRevokeTx(
   nonce: number,
   isForPending: boolean
 ) {
-  const { amountInWei: _amountInWei, groupAddress } = txPlanItem
+  const { amountInWei: _amountInWei, groupAddress, voterAddress } = txPlanItem
   const amountInWei = BigNumber.from(_amountInWei)
   const election = getContract(CeloContract.Election)
-  const address = getSigner().signer.address
-  const groupsVotedFor: string[] = await election.getGroupsVotedForByAccount(address)
+  const groupsVotedFor: string[] = await election.getGroupsVotedForByAccount(voterAddress)
   const groupIndex = groupsVotedFor.findIndex((g) => areAddressesEqual(g, groupAddress))
   const { lesser, greater } = await findLesserAndGreaterAfterVote(groupAddress, amountInWei.mul(-1))
   const contractMethod = isForPending

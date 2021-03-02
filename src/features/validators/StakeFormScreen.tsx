@@ -26,7 +26,7 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { getStakingMaxAmount, getValidatorGroupName } from 'src/features/validators/utils'
-import { useIsSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
+import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
 import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -58,7 +58,7 @@ export function StakeFormScreen() {
   const location = useLocation()
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const { balances, voterBalances } = useVoterBalances()
-  const isSignerAccount = useIsSignerAccount()
+  const isVoteSignerAccount = useIsVoteSignerAccount()
   const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
   const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
 
@@ -96,7 +96,7 @@ export function StakeFormScreen() {
     hasLocked ? 'almost ' : ''
   } no locked CELO. Only locked funds can be used to stake with Validators. Would you like to lock some now?`
   // TODO show a diff modal for signer accounts
-  const shouldShow = isSignerAccount ? false : errors.lockedCelo
+  const shouldShow = isVoteSignerAccount ? false : errors.lockedCelo
   useNavHintModal(shouldShow, 'Locked CELO Needed to Vote', helpText, 'Lock CELO', '/lock')
 
   const onSelectAction = (event: ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +105,7 @@ export function StakeFormScreen() {
     if (value === StakeActionType.Activate) {
       const maxAmount = getStakingMaxAmount(
         StakeActionType.Activate,
-        balances,
+        voterBalances,
         groupVotes,
         values.groupAddress
       )
@@ -117,7 +117,12 @@ export function StakeFormScreen() {
   }
 
   const onUseMax = () => {
-    const maxAmount = getStakingMaxAmount(values.action, balances, groupVotes, values.groupAddress)
+    const maxAmount = getStakingMaxAmount(
+      values.action,
+      voterBalances,
+      groupVotes,
+      values.groupAddress
+    )
     setValues({ ...values, amount: fromWeiRounded(maxAmount, Currency.CELO, true) })
   }
 

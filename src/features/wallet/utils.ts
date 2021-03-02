@@ -11,7 +11,7 @@ export function useAreBalancesEmpty() {
   return BigNumber.from(cUsd).lte(0) && BigNumber.from(celo).lte(0)
 }
 
-export function useIsSignerAccount() {
+export function useIsVoteSignerAccount() {
   const voteSignerFor = useSelector((s: RootState) => s.wallet.account.voteSignerFor)
   return !!voteSignerFor
 }
@@ -31,6 +31,11 @@ export function* getVoterBalances() {
 export function useWalletAddress() {
   const address = useSelector((s: RootState) => s.wallet.address)
   return address || NULL_ADDRESS
+}
+
+export function useVoterAccountAddress() {
+  const { address, account } = useSelector((s: RootState) => s.wallet)
+  return account.voteSignerFor ?? address ?? NULL_ADDRESS
 }
 
 export function* getVoterAccountAddress() {

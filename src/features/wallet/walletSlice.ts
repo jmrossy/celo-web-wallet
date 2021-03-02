@@ -77,6 +77,9 @@ const walletSlice = createSlice({
     setAccountStatus: (state, action: PayloadAction<AccountStatus>) => {
       state.account = action.payload
     },
+    setAccountIsRegistered: (state, action: PayloadAction<boolean>) => {
+      state.account.isRegistered = action.payload
+    },
     setVoterBalances: (state, action: PayloadAction<Balances | null>) => {
       state.voterBalances = action.payload
     },
@@ -99,6 +102,7 @@ export const {
   setAddress,
   updateBalances,
   setAccountStatus,
+  setAccountIsRegistered,
   setVoterBalances,
   setWalletUnlocked,
   setSecretType,

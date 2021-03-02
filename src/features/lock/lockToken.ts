@@ -17,6 +17,7 @@ import { getTotalNonvotingLocked } from 'src/features/validators/utils'
 import { createAccountRegisterTx } from 'src/features/wallet/accountsContract'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
+import { setAccountIsRegistered } from 'src/features/wallet/walletSlice'
 import {
   BigNumberMin,
   getAdjustedAmount,
@@ -118,6 +119,10 @@ function* lockToken(params: LockTokenParams) {
     createActionTx,
     'lockToken'
   )
+
+  // If a lock succeeds, account is definitely registered.
+  // Set it in case the registration was done during this txPlan
+  yield* put(setAccountIsRegistered(true))
 
   yield* put(fetchBalancesActions.trigger())
 }

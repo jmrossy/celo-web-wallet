@@ -26,7 +26,7 @@ import {
 } from 'src/features/governance/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
-import { useIsSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
+import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
 import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -61,7 +61,7 @@ export function GovernanceFormScreen() {
 
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const { balances, voterBalances } = useVoterBalances()
-  const isSignerAccount = useIsSignerAccount()
+  const isVoteSignerAccount = useIsVoteSignerAccount()
   const proposals = useSelector((state: RootState) => state.governance.proposals)
 
   useEffect(() => {
@@ -107,7 +107,7 @@ export function GovernanceFormScreen() {
     hasLocked ? 'almost ' : ''
   } no locked CELO. You must lock some before voting. Your locked amount determines your vote weight.`
   // TODO show a diff modal for signer accounts
-  const shouldShow = isSignerAccount ? false : errors.lockedCelo
+  const shouldShow = isVoteSignerAccount ? false : errors.lockedCelo
   useNavHintModal(shouldShow, 'Locked CELO Needed to Vote', helpText, 'Lock CELO', '/lock')
 
   const selectOptions = useMemo(() => getSelectOptions(proposals), [proposals])

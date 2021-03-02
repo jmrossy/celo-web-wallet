@@ -1,4 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
+import { BARCHART_MIN_SHOW_AMOUNT } from 'src/consts'
 import { Currency } from 'src/currency'
 import {
   GroupVotes,
@@ -79,10 +80,10 @@ function getChartData(
   for (let i = 0; i < votedGroups.length; i++) {
     const groupAddr = votedGroups[i]
     const vote = adjustedVotes[groupAddr]
-    if (BigNumber.from(vote.active).gt(0)) {
+    if (BigNumber.from(vote.active).gt(BARCHART_MIN_SHOW_AMOUNT)) {
       chartData.push(createGroupDataPoint(groups, groupAddr, vote.active, i))
     }
-    if (BigNumber.from(vote.pending).gt(0)) {
+    if (BigNumber.from(vote.pending).gt(BARCHART_MIN_SHOW_AMOUNT)) {
       chartData.push(createGroupDataPoint(groups, groupAddr, vote.pending, i, true))
     }
     totalVoted = totalVoted.add(vote.pending).add(vote.active)

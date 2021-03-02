@@ -52,7 +52,7 @@ function setCspHeader() {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        // Should match header in /netlify/_headers
+        // Should match header in /netlify/_headers and build.sh
         'Content-Security-Policy': [
           "default-src 'self'; script-src 'self' 'sha256-a0xx6QQjQFEl3BVHxY4soTXMFurPf9rWKnRLQLOkzg4='; connect-src 'self' https://*.celowallet.app https://*.celo.org https://*.celo-testnet.org; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'",
         ],
@@ -78,8 +78,7 @@ function setPermissionsHandler() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   setCspHeader()
-  // TODO re-enable after linux test
-  // setPermissionsHandler()
+  setPermissionsHandler()
   createWindow()
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
