@@ -14,7 +14,8 @@ async function notarizeApp(context) {
 
   const { APPLE_ID, APPLE_ID_PASSWORD } = process.env
   if (!APPLE_ID || !APPLE_ID_PASSWORD) {
-    throw new Error('APPLE_ID and APPLE_ID_PASSWORD env vars are required for notarization.')
+    console.error('APPLE_ID and APPLE_ID_PASSWORD env vars required to notarize. Skipping.')
+    return
   }
 
   const appOutDir = context.appOutDir
