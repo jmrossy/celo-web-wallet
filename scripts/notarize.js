@@ -3,7 +3,9 @@ const platform = require('os').platform()
 const { notarize } = require('electron-notarize')
 
 async function notarizeApp(context) {
-  console.log('Beginning app notarization')
+  console.log(
+    'Beginning app notarization, ignore electron builder error that it could not find this'
+  )
 
   if (platform !== 'darwin') {
     console.log('OS is not mac, skipping notarization.')
@@ -27,9 +29,4 @@ async function notarizeApp(context) {
   })
 }
 
-// TODO remove
-function notarizeAppMock() {
-  console.log('mock notarize')
-}
-
-exports.default = notarizeAppMock
+exports.default = notarizeApp
