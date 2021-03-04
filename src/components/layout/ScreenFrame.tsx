@@ -1,16 +1,12 @@
 import { PropsWithChildren } from 'react'
-import { useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
 import PlusIcon from 'src/components/icons/plus.svg'
-import SendIcon from 'src/components/icons/send_payment.svg'
-import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
 import { HeaderFooterFrame } from 'src/components/layout/HeaderFooterFrame'
-import { exchangeReset } from 'src/features/exchange/exchangeSlice'
+import { NavButtonRow } from 'src/components/layout/NavButtonRow'
 import { TransactionFeed } from 'src/features/feed/TransactionFeed'
 import { HomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
-import { sendReset } from 'src/features/send/sendSlice'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import {
@@ -38,7 +34,7 @@ export function ScreenFrame(props: PropsWithChildren<any>) {
         <DesktopHome isWalletEmpty={true}>{props.children}</DesktopHome>
       )}
       {frameState === FrameState.DesktopNotHome && (
-        <DesktopHome isWalletEmpty={false}>{props.children}</DesktopHome>
+        <DesktopNotHome>{props.children}</DesktopNotHome>
       )}
       {frameState === FrameState.DesktopNotHomeNoFeed && (
         <DesktopNotHomeNoFeed>{props.children}</DesktopNotHomeNoFeed>
@@ -92,22 +88,33 @@ function useFrameState() {
 
 interface DesktopHomeProps {
   isWalletEmpty: boolean
+  hideWarnings?: boolean
 }
 
 function DesktopHome(props: PropsWithChildren<DesktopHomeProps>) {
   return (
     <Box direction="row" styles={style.contentContainer}>
       <Box direction="column" styles={style.feedContainer}>
-        <ButtonRow disabled={props.isWalletEmpty} />
+        <NavButtonRow disabled={props.isWalletEmpty} />
         <TransactionFeed />
       </Box>
-      <div css={style.childContent}>{props.children}</div>
+      <div css={style.childContent}>
+        {!props.hideWarnings && <HomeScreenWarnings />}
+        <div>{props.children}</div>
+      </div>
     </Box>
   )
 }
 
+function DesktopNotHome(props: PropsWithChildren<any>) {
+  return (
+    <DesktopHome isWalletEmpty={false} hideWarnings={true}>
+      {props.children}
+    </DesktopHome>
+  )
+}
+
 function DesktopNotHomeNoFeed(props: PropsWithChildren<any>) {
-  // TODO max size and center
   return (
     <Box direction="column" align="center" styles={style.contentContainerNoFeed}>
       <div css={style.childContentNoFeed}>{props.children}</div>
@@ -120,7 +127,7 @@ function MobileHome(props: PropsWithChildren<any>) {
     <Box direction="column" styles={style.contentContainer}>
       <HomeScreenWarnings />
       <div>{props.children}</div>
-      <ButtonRow disabled={false} mobile={true} />
+      <NavButtonRow disabled={false} mobile={true} />
       <TransactionFeed />
     </Box>
   )
@@ -164,53 +171,6 @@ function MobileNotHomeNoFeed(props: PropsWithChildren<any>) {
   )
 }
 
-function ButtonRow(props: { disabled: boolean; mobile?: boolean }) {
-  const { mobile, disabled } = props
-
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-
-  const onNewSendClick = () => {
-    dispatch(sendReset())
-    navigate('/send')
-  }
-
-  const onNewExchangeClick = () => {
-    dispatch(exchangeReset())
-    navigate('/exchange')
-  }
-
-  const buttonWidth = mobile ? '44%' : '9.75em'
-  const buttonHeight = mobile ? '2.75em' : '2.5em'
-
-  return (
-    <Box direction="row" align="center" justify="evenly" styles={style.buttonContainer}>
-      <Button
-        onClick={onNewSendClick}
-        margin={'0.75em 0'}
-        size="m"
-        disabled={disabled}
-        icon={SendIcon}
-        width={buttonWidth}
-        height={buttonHeight}
-      >
-        Send
-      </Button>
-      <Button
-        onClick={onNewExchangeClick}
-        margin={'0.75em 0'}
-        size="m"
-        disabled={disabled}
-        icon={ExchangeIcon}
-        width={buttonWidth}
-        height={buttonHeight}
-      >
-        Exchange
-      </Button>
-    </Box>
-  )
-}
-
 const style: Stylesheet = {
   contentContainer: {
     height: '100%',
@@ -223,13 +183,6 @@ const style: Stylesheet = {
     borderRight: `1px solid ${Color.borderLight}`,
     [mq[768]]: {
       width: '22em',
-    },
-  },
-  buttonContainer: {
-    borderTop: `1px solid ${Color.borderLight}`,
-    borderBottom: `1px solid ${Color.borderLight}`,
-    [mq[768]]: {
-      borderTop: 'none',
     },
   },
   childContent: {

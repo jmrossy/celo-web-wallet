@@ -51,15 +51,10 @@ const feedSlice = createSlice({
         state.openTransaction = null
       }
     },
-    clearTransactions: (state) => {
-      state.transactions = {}
-      state.lastUpdatedTime = null
-      state.lastBlockNumber = null
-      state.openTransaction = null
-    },
     toggleAdvancedDetails: (state) => {
       state.showAdvancedDetails = !state.showAdvancedDetails
     },
+    resetFeed: () => feedInitialState,
   },
 })
 
@@ -67,11 +62,11 @@ export const {
   addTransactions,
   addPlaceholderTransaction,
   openTransaction,
-  clearTransactions,
   toggleAdvancedDetails,
+  resetFeed,
 } = feedSlice.actions
 
-export const feedReducer = feedSlice.reducer
+const feedReducer = feedSlice.reducer
 
 const feedPersistConfig = {
   key: 'feed',

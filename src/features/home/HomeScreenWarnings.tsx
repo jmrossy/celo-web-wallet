@@ -1,11 +1,15 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { BigNumber } from 'ethers'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
-import warningIcon from 'src/components/icons/warning.svg'
+import { TextButton } from 'src/components/buttons/TextButton'
+import WarningIcon from 'src/components/icons/warning.svg'
 import { Notification } from 'src/components/Notification'
+import { config } from 'src/config'
 import { HIGH_VALUE_THRESHOLD } from 'src/consts'
+import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
 import {
   setBackupReminderDismissed,
   setHighValueWarningDismissed,
@@ -25,14 +29,14 @@ export function HomeScreenWarnings() {
 
   return (
     <Notification
-      margin="0"
       justify="between"
       onDismiss={onDismissWarning(warning.key)}
       color={Color.primaryGold}
       textColor={Color.primaryBlack}
-      icon={warningIcon}
-      message={warning.message}
-    />
+      icon={WarningIcon}
+    >
+      {warning.message}
+    </Notification>
   )
 }
 
@@ -45,26 +49,42 @@ export const selectHomeScreenWarnings = createSelector(
     const celo = BigNumber.from(balances.celo)
 
     if (!settings.backupReminderDismissed && (cUsd.gt(0) || celo.gt(0)))
-      // TODO have Account Key link to wallet screen
       return {
         key: 'backup',
-        message:
-          'Reminder: Be sure to copy your Account Key to a safe place. If you lose it, you may not be able to access your account.',
+        message: <AccountKeyReminder />,
       }
 
     if (
       settings.backupReminderDismissed &&
       (cUsd.gte(HIGH_VALUE_THRESHOLD) || celo.gte(HIGH_VALUE_THRESHOLD)) &&
       !settings.highValueWarningDismissed &&
+      !config.isElectron &&
       type == SignerType.Local
     )
-      // TODO link to Valora and Ledger docs
       return {
         key: 'highValue',
-        message:
-          'Warning: This wallet is not yet recommended for high-value accounts. Please use the Valora mobile app or a Ledger wallet instead.',
+        message: <DownloadDesktopReminder />,
       }
 
     return null
   }
 )
+
+function AccountKeyReminder() {
+  const navigate = useNavigate()
+  return (
+    <div>
+      Reminder: Copy your <TextButton onClick={() => navigate('/wallet')}>Account Key</TextButton>{' '}
+      (mnemonic) to a safe place. Your key is the only way to recover your account.
+    </div>
+  )
+}
+
+function DownloadDesktopReminder() {
+  return (
+    <div>
+      Warning: Using this wallet in a browser is not recommended for large accounts. Please download
+      the <DownloadDesktopButton>Desktop App</DownloadDesktopButton> or use Ledger hardware.
+    </div>
+  )
+}

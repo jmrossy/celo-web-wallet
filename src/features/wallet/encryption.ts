@@ -7,7 +7,6 @@ export async function encryptMnemonic(mnemonic: string, pincode: string) {
   if (!crypto || !crypto.subtle) throw new Error('Crypto libs not available')
 
   const keyMaterial = await getKeyMaterialFromPincode(pincode)
-  // TODO consider caching this key, it's probably expensive to compute
   const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
   return encrypt(encryptionKey, mnemonic)
 }
@@ -18,7 +17,6 @@ export async function decryptMnemonic(ciphertext: string, pincode: string) {
   }
 
   const keyMaterial = await getKeyMaterialFromPincode(pincode)
-  // TODO consider caching this key, it's probably expensive to compute
   const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
   return decrypt(encryptionKey, ciphertext)
 }

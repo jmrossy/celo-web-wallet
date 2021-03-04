@@ -2,135 +2,93 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
-import { isSignerLedger } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
-import { HelpIcon } from 'src/components/icons/HelpIcon'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { useModal } from 'src/components/modal/useModal'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Notification } from 'src/components/Notification'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
+import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
-import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
-import { sendCanceled, sendSucceeded } from 'src/features/send/sendSlice'
 import { sendTokenActions } from 'src/features/send/sendToken'
+import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
+import { TxFlowType } from 'src/features/txFlow/types'
+import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
 import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { SagaStatus } from 'src/utils/saga'
 
 export function SendConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { transaction: tx, transactionError: txError, transactionSigned: txSigned } = useSelector(
-    (state: RootState) => state.send
-  )
+  const tx = useSelector((state: RootState) => state.txFlow.transaction)
 
   useEffect(() => {
     // Make sure we belong on this screen
-    if (!tx) {
+    if (!tx || tx.type !== TxFlowType.Send) {
       navigate('/send')
       return
     }
 
-    const type = tx.comment
+    const type = tx.params.comment
       ? TransactionType.StableTokenTransferWithComment
       : TransactionType.StableTokenTransfer
     dispatch(estimateFeeActions.trigger({ txs: [{ type }] }))
   }, [tx])
 
-  const { amount, total, feeAmount, feeCurrency, feeEstimates } = useFee(tx?.amountInWei)
+  if (!tx || tx.type !== TxFlowType.Send) return null
+  const params = tx.params
+
+  const { amount, total, feeAmount, feeCurrency, feeEstimates } = useFee(params.amountInWei)
 
   const onGoBack = () => {
     dispatch(sendTokenActions.reset())
-    dispatch(sendCanceled())
+    dispatch(txFlowCanceled())
     navigate(-1)
   }
 
   const onSend = () => {
     if (!tx || !feeEstimates) return
-    dispatch(sendTokenActions.trigger({ ...tx, feeEstimate: feeEstimates[0] }))
+    dispatch(sendTokenActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
   }
 
-  // TODO: DRY up code below with Exchange conf screen into singer-loader-fail/success modal hook
-  const { status: sagaStatus, error: sagaError } = useSelector(
-    (state: RootState) => state.saga.sendToken
+  const { isWorking } = useTxFlowStatusModals(
+    'sendToken',
+    1,
+    'Sending Payment...',
+    'Payment Sent!',
+    'Your payment has been sent successfully',
+    'Payment Failed',
+    'Your payment could not be processed'
   )
 
-  const isSagaWorking = sagaStatus === SagaStatus.Started
-
-  const { showSuccessModal, showErrorModal, showWorkingModal, showModalWithContent } = useModal()
-
-  const onNeedSignature = () => {
-    const modalText = ['Confirm the transaction on your Ledger']
-    showModalWithContent(
-      'Signature Required',
-      <SignatureRequiredModal text={modalText} />,
-      null,
-      null,
-      null,
-      false
-    )
-  }
-
-  const onConfirm = () => {
-    showSuccessModal('Payment Sent!', 'Your payment has been sent successfully')
-    dispatch(sendTokenActions.reset())
-    dispatch(sendSucceeded())
-    navigate('/')
-  }
-
-  const onFailure = (error: string | undefined) => {
-    showErrorModal('Payment Failed', 'Your payment could not be processed', error)
-  }
-
-  const onClose = () => {
-    navigate('/')
-  }
-
-  useEffect(() => {
-    if (sagaStatus === SagaStatus.Started) {
-      if (isSignerLedger() && !txSigned) onNeedSignature()
-      else showWorkingModal('Sending Payment...')
-    } else if (sagaStatus === SagaStatus.Success) {
-      onConfirm()
-    } else if (sagaStatus === SagaStatus.Failure) {
-      onFailure(sagaError?.toString())
-    }
-  }, [sagaStatus, sagaError, txSigned])
-
-  if (!tx) return null
-
   return (
-    <ScreenContentFrame onClose={onClose}>
-      {txError && <Notification message={txError.toString()} color={Color.borderError} />}
+    <ScreenContentFrame>
       <div css={style.content}>
         <h1 css={Font.h2Green}>Review Payment</h1>
 
         <Box align="center" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>To</label>
           <Box direction="row" align="center" justify="end" styles={style.valueCol}>
-            <Address address={tx.recipient} />
+            <Address address={params.recipient} />
           </Box>
         </Box>
 
-        {tx.comment && (
+        {params.comment && (
           <Box direction="row" styles={style.inputRow} justify="between">
             <label css={style.labelCol}>Comment</label>
-            <label css={[style.valueLabel, style.valueCol]}>{tx.comment}</label>
+            <label css={[style.valueLabel, style.valueCol]}>{params.comment}</label>
           </Box>
         )}
 
         <Box direction="row" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>Value</label>
           <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue amountInWei={amount} currency={tx.currency} baseFontSize={1.2} />
+            <MoneyValue amountInWei={amount} currency={params.currency} baseFontSize={1.2} />
           </Box>
         </Box>
 
@@ -147,13 +105,7 @@ export function SendConfirmationScreen() {
             styles={{ ...style.labelCol, width: '10em' }}
           >
             <label>
-              Fee{' '}
-              <HelpIcon
-                tooltip={{
-                  content: "Fees, or 'gas', keep the network secure.",
-                  position: 'topRight',
-                }}
-              />
+              Fee <FeeHelpIcon />
             </label>
           </Box>
           {feeAmount && feeCurrency ? (
@@ -177,20 +129,20 @@ export function SendConfirmationScreen() {
           <Box justify="end" align="end" styles={style.valueCol}>
             <MoneyValue
               amountInWei={total}
-              currency={tx.currency}
+              currency={params.currency}
               baseFontSize={1.2}
               fontWeight={700}
             />
           </Box>
         </Box>
 
-        <Box direction="row" justify="between" margin={'3em 0 0 0'}>
+        <Box direction="row" justify="between" margin="3em 0 0 0">
           <Button
             type="button"
             size="m"
             color={Color.altGrey}
             onClick={onGoBack}
-            disabled={isSagaWorking || !feeAmount}
+            disabled={isWorking || !feeAmount}
             margin="0 2em 0 0"
             width="5em"
           >
@@ -201,7 +153,7 @@ export function SendConfirmationScreen() {
             size="m"
             onClick={onSend}
             icon={SendPaymentIcon}
-            disabled={isSagaWorking || !feeAmount}
+            disabled={isWorking || !feeAmount}
           >
             Send Payment
           </Button>
@@ -247,11 +199,5 @@ const style: Stylesheet = {
   bottomBorder: {
     paddingBottom: '1.25em',
     borderBottom: `1px solid ${Color.borderMedium}`,
-  },
-  iconRight: {
-    marginLeft: '0.5em',
-  },
-  icon: {
-    marginBottom: '-0.3em',
   },
 }

@@ -9,12 +9,13 @@ interface ButtonProps {
   color?: Color // defaults to primaryGreen
   margin?: string | number
   onClick?: () => void
-  icon?: string
-  iconPosition?: 'start' | 'end' //defaults to start
   disabled?: boolean
   styles?: Styles
   width?: number | string
   height?: number | string
+  icon?: string
+  iconPosition?: 'start' | 'end' //defaults to start
+  iconStyles?: Styles
 }
 
 export function Button(props: PropsWithChildren<ButtonProps>) {
@@ -64,12 +65,10 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
       {icon ? (
         <Box align="center" justify="center">
           {(!iconPosition || iconPosition === 'start') && (
-            <img src={icon} css={props.children ? { marginRight: 8 } : undefined} />
+            <img src={icon} css={getIconStyle(props)} />
           )}
           {props.children}
-          {iconPosition === 'end' && (
-            <img src={icon} css={props.children ? { marginLeft: 8 } : undefined} />
-          )}
+          {iconPosition === 'end' && <img src={icon} css={getIconStyle(props)} />}
         </Box>
       ) : (
         <>{props.children}</>
@@ -113,6 +112,14 @@ function getStateColors(baseColor: string) {
   }
 }
 
+function getIconStyle(props: PropsWithChildren<ButtonProps>) {
+  let styles = {}
+  if (props.children) {
+    styles = props.iconPosition === 'end' ? { marginLeft: 8 } : { marginRight: 8 }
+  }
+  return { ...styles, ...props.iconStyles }
+}
+
 export const transparentButtonStyles: Styles = {
   padding: 0,
   border: 'none',
@@ -137,7 +144,7 @@ export const defaultButtonStyles: Styles = {
     cursor: 'default',
     color: Color.primaryGrey,
     backgroundColor: Color.borderInactive,
-    img: {
+    'img, svg': {
       filter: 'brightness(0.7)',
     },
   },

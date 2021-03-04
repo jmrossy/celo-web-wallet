@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { ErrorState, omitFieldError } from 'src/utils/validation'
 
 export function useCustomForm<V>(
@@ -21,13 +21,13 @@ export function useCustomForm<V>(
   }, [])
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.target
     setValues({ ...values, [name]: value })
   }
 
-  const handleBlur = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleBlur = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name } = event.target
     setTouched({ ...touched, [name]: true })
     setErrors(omitFieldError(name, errors))

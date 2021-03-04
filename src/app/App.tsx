@@ -1,14 +1,21 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { PropsWithChildren } from 'react'
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
 import { useSplashScreen } from 'src/app/splash'
+import { UpdateBanner } from 'src/app/UpdateBanner'
 import { ModalProvider } from 'src/components/modal/modalContext'
+import { config } from 'src/config'
 import { ExchangeConfirmationScreen } from 'src/features/exchange/ExchangeConfirmationScreen'
 import { ExchangeFormScreen } from 'src/features/exchange/ExchangeFormScreen'
 import { TransactionReview } from 'src/features/feed/TransactionReview'
+import { GovernanceConfirmationScreen } from 'src/features/governance/GovernanceConfirmationScreen'
+import { GovernanceFormScreen } from 'src/features/governance/GovernanceFormScreen'
 import { HomeNavigator } from 'src/features/home/HomeNavigator'
 import { HomeScreen } from 'src/features/home/HomeScreen'
+import { LockConfirmationScreen } from 'src/features/lock/LockConfirmationScreen'
+import { LockFormScreen } from 'src/features/lock/LockFormScreen'
 import { ImportChoiceScreen } from 'src/features/onboarding/import/ImportChoiceScreen'
 import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletScreen'
 import { LedgerImportScreen } from 'src/features/onboarding/import/LedgerImportScreen'
@@ -20,8 +27,20 @@ import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { SettingsScreen } from 'src/features/settings/SettingsScreen'
+import { ExploreValidatorsScreen } from 'src/features/validators/ExploreValidatorsScreen'
+import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmationScreen'
+import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
+
+function Router(props: PropsWithChildren<any>) {
+  // The BrowserRouter works everywhere except windows so using hash for electron
+  return config.isElectron ? (
+    <HashRouter>{props.children}</HashRouter>
+  ) : (
+    <BrowserRouter>{props.children}</BrowserRouter>
+  )
+}
 
 export const App = () => {
   const showSplash = useSplashScreen()
@@ -34,8 +53,9 @@ export const App = () => {
 
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <Router>
         <ModalProvider>
+          <UpdateBanner />
           <Routes>
             <Route path="/" element={<HomeNavigator />}>
               <Route path="/" element={<HomeScreen />} />
@@ -44,6 +64,13 @@ export const App = () => {
               <Route path="send-review" element={<SendConfirmationScreen />} />
               <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
               <Route path="exchange" element={<ExchangeFormScreen />} />
+              <Route path="lock" element={<LockFormScreen />} />
+              <Route path="lock-review" element={<LockConfirmationScreen />} />
+              <Route path="validators" element={<ExploreValidatorsScreen />} />
+              <Route path="stake" element={<StakeFormScreen />} />
+              <Route path="stake-review" element={<StakeConfirmationScreen />} />
+              <Route path="governance" element={<GovernanceFormScreen />} />
+              <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
               <Route path="settings" element={<SettingsScreen />} />
             </Route>
@@ -67,7 +94,7 @@ export const App = () => {
             <Route path="*" element={<NotFoundScreen />} />
           </Routes>
         </ModalProvider>
-      </BrowserRouter>
+      </Router>
     </ErrorBoundary>
   )
 }

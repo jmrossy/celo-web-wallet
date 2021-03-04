@@ -43,6 +43,19 @@ export function validateFeeEstimate(estimate: FeeEstimate | undefined | null): E
   return null
 }
 
+export function validateFeeEstimates(estimates: Array<FeeEstimate | undefined | null> | undefined) {
+  if (!estimates || !estimates.length) {
+    return invalidInput('fee', 'No fee set')
+  }
+
+  for (const estimate of estimates) {
+    const result = validateFeeEstimate(estimate)
+    if (result) return result
+  }
+
+  return null
+}
+
 // Looks at the tx properties to infer what its fee was
 export function getFeeFromConfirmedTx(tx: CeloTransaction) {
   const feeValue = BigNumber.from(tx.gasPrice)
@@ -55,7 +68,7 @@ export function getFeeFromConfirmedTx(tx: CeloTransaction) {
 export function useFee(amountInWei: string | null | undefined, txCount = 1) {
   const feeEstimates = useSelector((state: RootState) => state.fees.estimates)
 
-  if (!feeEstimates || !amountInWei) {
+  if (!feeEstimates || !feeEstimates.length || !amountInWei) {
     return {
       amount: amountInWei ?? '',
       total: amountInWei ?? '',

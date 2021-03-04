@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>[BETA] Celo Wallet [BETA]</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-a0xx6QQjQFEl3BVHxY4soTXMFurPf9rWKnRLQLOkzg4='; connect-src 'self' https://*.celowallet.app https://*.celo.org https://*.celo-testnet.org; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'">
+    <title>Celo Wallet | Use Celo on the web or on your desktop</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png" />
@@ -18,7 +18,7 @@
 
     <meta name="application-name" content="Celo Wallet" />
     <meta name="keywords" content="Celo Wallet Web Browser Online" />
-    <meta name="description" content="A lightweight, browser-based wallet for the Celo network." />
+    <meta name="description" content="A simple, lightweight wallet for the Celo network. Manage your funds in a browser or on your desktop." />
 
     <meta name="HandheldFriendly" content="true" />
     <meta name="apple-mobile-web-app-title" content="Celo Wallet" />
@@ -30,12 +30,12 @@
     <meta property="og:image" content="static/celo-hero.jpg" />
     <meta
       property="og:description"
-      content="A lightweight, browser-based wallet for the Celo network."
+      content="A simple, lightweight wallet for the Celo network. Manage your funds in a browser or on your desktop."
     />
     <meta name="twitter:title" content="Celo Wallet" />
     <meta
       name="twitter:description"
-      content="A lightweight, browser-based wallet for the Celo network."
+      content="A simple wallet, lightweight for the Celo network. Manage your funds in a browser or on your desktop."
     />
     <meta name="twitter:image" content="static/celo-hero.jpg" />
     <meta name="twitter:card" content="summary" />
@@ -151,8 +151,8 @@
       </div>
     </div>
 
-    <!-- Hash for CSP, must be updated in headers whenever this is changed: sha256-urr87uaD48g6MXBVNeR78sfcWLvwaTmaTVi34sSPRWA= -->
-    <script>document.getElementById('loader').setAttribute('data-start', Date.now())</script>
+    <!-- Hash for CSP, must be updated in headers whenever this is changed: sha256-a0xx6QQjQFEl3BVHxY4soTXMFurPf9rWKnRLQLOkzg4= -->
+    <script>window.global = globalThis; document.getElementById('loader').setAttribute('data-start', Date.now())</script>
 
   </body>
 </html>

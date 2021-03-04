@@ -1,4 +1,5 @@
 # Configure Netlify custom headers
+# CSP header should match electron copy in /electron/main.js
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-urr87uaD48g6MXBVNeR78sfcWLvwaTmaTVi34sSPRWA='; connect-src 'self' https://*.celowallet.app https://*.celo.org https://*.celo-testnet.org; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-a0xx6QQjQFEl3BVHxY4soTXMFurPf9rWKnRLQLOkzg4='; connect-src 'self' https://*.celowallet.app https://*.celo.org https://*.celo-testnet.org; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'
   X-Frame-Options: DENY

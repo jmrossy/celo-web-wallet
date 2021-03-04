@@ -8,7 +8,7 @@ import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
-import { sendReset } from 'src/features/send/sendSlice'
+import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 import { tryClipboardSet } from 'src/utils/clipboard'
@@ -33,7 +33,7 @@ export function Address(props: Props) {
   }
 
   const onSendButtonClick = () => {
-    dispatch(sendReset())
+    dispatch(txFlowReset())
     navigate('/send', { state: { recipient: address } })
   }
 
@@ -80,18 +80,18 @@ export function Address(props: Props) {
       )}
       {(buttonType === 'copy' || buttonType === 'qrAndCopy') && (
         <Box direction="column" align="center" justify="between">
-          <button css={style.button} onClick={onCopyButtonClick} title="Copy Address">
-            <img width="17px" height="17px" src={PasteIcon} alt="Copy" />
-          </button>
           {buttonType === 'qrAndCopy' && (
             <button
-              css={[style.button, { marginTop: 6 }]}
+              css={[style.button, { marginBottom: 6 }]}
               onClick={onQrButtonClick}
               title="Qr Code"
             >
               <img width="16px" height="16px" src={QrCodeIcon} alt="Qr Code" />
             </button>
           )}
+          <button css={style.button} onClick={onCopyButtonClick} title="Copy Address">
+            <img width="17px" height="17px" src={PasteIcon} alt="Copy" />
+          </button>
         </Box>
       )}
     </Box>

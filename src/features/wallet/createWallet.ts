@@ -1,25 +1,23 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
-import { entropyToMnemonic } from '@ethersproject/hdnode'
-import { randomBytes } from '@ethersproject/random'
-import { Wallet } from 'ethers'
+import { utils, Wallet } from 'ethers'
 import { clearContractCache } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH } from 'src/consts'
-import { clearTransactions } from 'src/features/feed/feedSlice'
+import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { put } from 'typed-redux-saga'
-import { clearWallet, setAddress } from './walletSlice'
+import { resetWallet, setAddress } from './walletSlice'
 
 function* createWallet() {
-  yield* put(clearWallet())
-  yield* put(clearTransactions())
+  yield* put(resetWallet())
+  yield* put(resetFeed())
   clearContractCache()
 
   const provider = getProvider()
-  const entropy = randomBytes(32)
-  const mnemonic = entropyToMnemonic(entropy)
+  const entropy = utils.randomBytes(32)
+  const mnemonic = utils.entropyToMnemonic(entropy)
   const derivationPath = CELO_DERIVATION_PATH + '/0'
   const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
   const celoWallet = new CeloWallet(wallet, provider)

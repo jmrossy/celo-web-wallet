@@ -1,19 +1,25 @@
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { HrDivider } from 'src/components/HrDivider'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useModal } from 'src/components/modal/useModal'
+import { useNavHintModal } from 'src/components/modal/useNavHintModal'
+import { config } from 'src/config'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
-import { HomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
 import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
+import { dismissActivatableReminder } from 'src/features/validators/validatorsSlice'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { logger } from 'src/utils/logger'
 
 export function HomeScreen() {
   const isMobile = useIsMobile()
@@ -27,15 +33,53 @@ export function HomeScreen() {
   }
   const onClose = isMobile && !isWalletEmpty ? onClickDismiss : undefined
 
+  // START PIN MIGRATION
+  // TODO remove in a few months when all accounts have been migrated to passwords
+  const { showModalAsync, closeModal } = useModal()
+  const navigate = useNavigate()
+  const { secretType, type } = useSelector((s: RootState) => s.wallet)
+  useEffect(() => {
+    if (secretType === 'password' || config.defaultAccount || type === 'ledger') return
+    showModalAsync(
+      'Please Change Your Pin',
+      'For better security, pincodes are being replaced with passwords. Please change your pin to a new password now. Sorry for the inconvenience!',
+      { key: 'change', label: 'Change Pin' },
+      null,
+      's',
+      null,
+      false
+    )
+      .then(() => {
+        navigate('/change-pin')
+        closeModal()
+      })
+      .catch((reason) => {
+        logger.error('Failed to show modal', reason)
+        closeModal()
+      })
+  }, [])
+  // END PIN MIGRATION
+
+  // Detect if user has unactivated staking votes
+  const { status: hasActivatableVotes, reminderDismissed: votesReminderDismissed } = useSelector(
+    (state: RootState) => state.validators.hasActivatable
+  )
+  const showActivateModal = hasActivatableVotes && !votesReminderDismissed
+  useNavHintModal(
+    showActivateModal,
+    'Activate Your Votes!',
+    'You have pending validator votes that are ready to be activated. They must be activated to start earning staking rewards.',
+    'Activate',
+    '/stake',
+    () => {
+      dispatch(dismissActivatableReminder())
+    }
+  )
+
   if (isDismissed) return null
 
   return (
-    <ScreenContentFrame onClose={onClose}>
-      {!isMobile && (
-        <div css={style.warningContainer}>
-          <HomeScreenWarnings />
-        </div>
-      )}
+    <ScreenContentFrame onClose={onClose} hideCloseButton={!onClose}>
       <div css={style.container}>
         {!isWalletEmpty && <HeaderSection />}
         {isWalletEmpty && <HeaderSectionEmpty />}
@@ -69,10 +113,6 @@ const style: Stylesheet = {
     margin: '2.2em 0',
     backgroundColor: Color.altGrey,
     color: Color.altGrey, //for IE
-  },
-  warningContainer: {
-    margin: '-1.5em 0 2em -2em',
-    width: 'calc(100% + 4em)',
   },
   celoPriceLabel: {
     ...Font.body,

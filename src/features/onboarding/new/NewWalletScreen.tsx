@@ -1,14 +1,16 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
+import { config } from 'src/config'
+import { WebWalletWarning } from 'src/features/download/WebWalletWarning'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { createWalletActions, createWalletSagaName } from 'src/features/wallet/createWallet'
 import { WalletDetails } from 'src/features/wallet/WalletDetails'
-import { clearWallet } from 'src/features/wallet/walletSlice'
+import { resetWallet } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -16,6 +18,8 @@ import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 
 export function NewWalletScreen() {
+  const [hasShownWarning, setHasShownWarning] = useState(config.isElectron)
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -25,9 +29,8 @@ export function NewWalletScreen() {
     dispatch(createWalletActions.reset())
 
     if (address) {
-      // TODO show warning modal here
       logger.warn('Attempting to create new address when one is already assigned')
-      dispatch(clearWallet())
+      dispatch(resetWallet())
     }
 
     // For smoother loading render
@@ -53,24 +56,31 @@ export function NewWalletScreen() {
   return (
     <OnboardingScreenFrame current={2} total={3}>
       <h1 css={style.header}>Your New Celo Account</h1>
-      <div css={style.container}>
-        <div css={isLoading ? style.contentLoading : null}>
-          <WalletDetails />
-        </div>
-        {isLoading && (
-          <div css={style.spinner}>
-            <Spinner />
+      {!hasShownWarning && (
+        <WebWalletWarning type="create" onClose={() => setHasShownWarning(true)} />
+      )}
+      {hasShownWarning && (
+        <>
+          <div css={style.container}>
+            <div css={isLoading ? style.contentLoading : null}>
+              <WalletDetails />
+            </div>
+            {isLoading && (
+              <div css={style.spinner}>
+                <Spinner />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      <Button
-        size="l"
-        onClick={onClickContinue}
-        margin={'3em 0 0 0'}
-        disabled={status !== SagaStatus.Success || !address}
-      >
-        Continue
-      </Button>
+          <Button
+            size="l"
+            onClick={onClickContinue}
+            margin={'3em 0 0 0'}
+            disabled={status !== SagaStatus.Success || !address}
+          >
+            Continue
+          </Button>
+        </>
+      )}
     </OnboardingScreenFrame>
   )
 }

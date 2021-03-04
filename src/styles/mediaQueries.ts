@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react'
 export const mq = {
   480: '@media (min-width: 480px)',
   768: '@media (min-width: 768px)',
+  1024: '@media (min-width: 1024px)',
   1200: '@media (min-width: 1200px)',
 }
 

@@ -1,3 +1,5 @@
+import { useSelector } from 'react-redux'
+import { RootState } from 'src/app/rootReducer'
 import { SecretType } from 'src/features/pincode/types'
 
 const PIN_BLACKLIST = [
@@ -20,8 +22,8 @@ export function isSecretTooSimple(value: string, type: SecretType | undefined) {
     return PIN_BLACKLIST.includes(value)
   }
   if (type === 'password') {
-    // 6-30 characters with a number, lower case, and upper case
-    return !value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,30}$/)
+    // 8-32 characters with a number, lower case, and upper case
+    return !value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,32}$/)
   }
   throw new Error(`Invalid secret type: ${type}`)
 }
@@ -34,4 +36,10 @@ export function secretTypeToLabel(type: SecretType | undefined) {
     return ['password', 'Password']
   }
   throw new Error(`Invalid secret type: ${type}`)
+}
+
+export function useSecretType() {
+  const currentSecretType = useSelector((s: RootState) => s.wallet.secretType)
+  // TODO change this default to 'password' when migration bit is removed from home screen
+  return currentSecretType ?? 'pincode'
 }

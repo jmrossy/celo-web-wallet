@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
+import { TextLink } from 'src/components/buttons/TextLink'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import KeyIcon from 'src/components/icons/key.svg'
 import LedgerIcon from 'src/components/icons/logos/ledger.svg'
@@ -36,10 +37,10 @@ export function ImportChoiceScreen() {
         />
       </Box>
       <div css={style.buttonContainer}>
-        <Button onClick={onClickAccountKey} size="l" margin={'1em 1.5em'} icon={KeyIcon}>
+        <Button onClick={onClickAccountKey} size="l" margin="1em 1.5em" icon={KeyIcon}>
           Use Account Key
         </Button>
-        <Button onClick={onClickLedger} size="l" margin={'1em 1.5em'} icon={LedgerIcon}>
+        <Button onClick={onClickLedger} size="l" margin="1em 1.5em" icon={LedgerIcon}>
           Use Ledger
         </Button>
       </div>
@@ -56,15 +57,10 @@ function HelpModal() {
       </p>
       <p>
         If you have a Ledger hardware wallet{' '}
-        <a
-          href="https://docs.celo.org/celo-owner-guide/ledger"
-          target="_blank"
-          rel="noopener noreferrer"
-          css={Font.linkLight}
-        >
+        <TextLink link="https://docs.celo.org/celo-owner-guide/ledger" styles={Font.linkLight}>
           with the Celo application
-        </a>
-        , you can use the Web Wallet to safely interact with it.
+        </TextLink>
+        , you can use the this wallet to safely interact with it.
       </p>
     </BasicHelpIconModal>
   )

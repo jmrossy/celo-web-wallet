@@ -40,6 +40,8 @@ function* estimateFee(params: EstimateFeeParams) {
 
   const { txs, forceGasEstimation: force, preferredCurrency } = params
 
+  if (!txs || !txs.length) throw new Error('No txs provided for fee estimation')
+
   if (celoBalance.lte(0) && cUsdBalance.lte(0)) {
     // Just use CELO for empty accounts
     const { estimates } = yield* call(calculateFee, Currency.CELO, txs, force)

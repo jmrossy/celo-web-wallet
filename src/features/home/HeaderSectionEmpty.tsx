@@ -1,9 +1,8 @@
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
-import { ExchangesModal } from 'src/components/ExchangesModal'
+import { useFundWalletModal } from 'src/components/FundWalletModal'
 import Mail from 'src/components/icons/mail.svg'
 import { Box } from 'src/components/layout/Box'
-import { useModal } from 'src/components/modal/useModal'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
@@ -11,23 +10,16 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
 export function HeaderSectionEmpty() {
-  const { showModalWithContent } = useModal()
-
-  const showQrModal = useAddressQrCodeModal()
   const address = useWalletAddress()
+  const showQrModal = useAddressQrCodeModal()
+  const showFundModal = useFundWalletModal()
 
   const onQrButtonClick = () => {
     showQrModal(address)
   }
 
   const onClickBuyCelo = () => {
-    showModalWithContent(
-      'Where to buy Celo',
-      <ExchangesModal address={address} />,
-      null,
-      null,
-      'Celo currencies can be earned or purchased from these exchanges.'
-    )
+    showFundModal(address)
   }
 
   return (

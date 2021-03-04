@@ -15,6 +15,7 @@ export interface TextInputProps {
   helpText?: string
   autoComplete?: string //default to "off"
   placeholder?: string
+  disabled?: boolean
   fillWidth?: boolean
   type?: 'text' | 'number' // For use by NumberInput, don't use this directly
   step?: string // For use by NumberInput, don't use this directly
@@ -33,6 +34,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
     helpText,
     autoComplete,
     placeholder,
+    disabled,
     fillWidth,
     type,
     step,
@@ -59,6 +61,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
         onChange={onChange}
         autoComplete={autoComplete || 'off'}
         placeholder={placeholder}
+        disabled={disabled}
       />
       {helpText && <HelpText>{helpText}</HelpText>}
     </Box>

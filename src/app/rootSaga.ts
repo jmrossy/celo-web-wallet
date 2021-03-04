@@ -1,5 +1,6 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
+import { logoutActions, logoutReducer, logoutSaga, logoutSagaName } from 'src/app/logout/logout'
 import { connectToProvider } from 'src/blockchain/provider'
 import {
   fetchExchangeRateActions,
@@ -19,7 +20,7 @@ import {
   fetchFeedReducer,
   fetchFeedSaga,
   fetchFeedSagaName,
-} from 'src/features/feed/fetch'
+} from 'src/features/feed/fetchFeed'
 import {
   estimateFeeActions,
   estimateFeeReducer,
@@ -27,11 +28,29 @@ import {
   estimateFeeSagaName,
 } from 'src/features/fees/estimateFee'
 import {
+  fetchProposalsActions,
+  fetchProposalsReducer,
+  fetchProposalsSaga,
+  fetchProposalsSagaName,
+} from 'src/features/governance/fetchProposals'
+import {
+  governanceVoteActions,
+  governanceVoteReducer,
+  governanceVoteSaga,
+  governanceVoteSagaName,
+} from 'src/features/governance/governanceVote'
+import {
   importLedgerWalletActions,
   importLedgerWalletReducer,
   importLedgerWalletSaga,
   importLedgerWalletSagaName,
 } from 'src/features/ledger/importWallet'
+import {
+  lockTokenActions,
+  lockTokenReducer,
+  lockTokenSaga,
+  lockTokenSagaName,
+} from 'src/features/lock/lockToken'
 import {
   pincodeActions,
   pincodeReducer,
@@ -51,6 +70,18 @@ import {
   fetchTokenPriceSagaName,
 } from 'src/features/tokenPrice/fetchPrices'
 import {
+  fetchValidatorsActions,
+  fetchValidatorsReducer,
+  fetchValidatorsSaga,
+  fetchValidatorsSagaName,
+} from 'src/features/validators/fetchValidators'
+import {
+  stakeTokenActions,
+  stakeTokenReducer,
+  stakeTokenSaga,
+  stakeTokenSagaName,
+} from 'src/features/validators/stakeToken'
+import {
   createWalletActions,
   createWalletReducer,
   createWalletSaga,
@@ -69,12 +100,6 @@ import {
   importWalletSaga,
   importWalletSagaName,
 } from 'src/features/wallet/importWallet'
-import {
-  logoutActions,
-  logoutReducer,
-  logoutSaga,
-  logoutSagaName,
-} from 'src/features/wallet/logout'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
@@ -143,6 +168,31 @@ export const monitoredSagas: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
+  },
+  [lockTokenSagaName]: {
+    saga: lockTokenSaga,
+    reducer: lockTokenReducer,
+    actions: lockTokenActions,
+  },
+  [fetchValidatorsSagaName]: {
+    saga: fetchValidatorsSaga,
+    reducer: fetchValidatorsReducer,
+    actions: fetchValidatorsActions,
+  },
+  [stakeTokenSagaName]: {
+    saga: stakeTokenSaga,
+    reducer: stakeTokenReducer,
+    actions: stakeTokenActions,
+  },
+  [fetchProposalsSagaName]: {
+    saga: fetchProposalsSaga,
+    reducer: fetchProposalsReducer,
+    actions: fetchProposalsActions,
+  },
+  [governanceVoteSagaName]: {
+    saga: governanceVoteSaga,
+    reducer: governanceVoteReducer,
+    actions: governanceVoteActions,
   },
   [logoutSagaName]: {
     saga: logoutSaga,

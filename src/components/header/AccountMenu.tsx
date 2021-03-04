@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ExchangesModal } from 'src/components/ExchangesModal'
+import { useLogoutModal } from 'src/app/logout/useLogoutModal'
+import { useFundWalletModal } from 'src/components/FundWalletModal'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
-import ChevronIcon from 'src/components/icons/chevron.svg'
+import { ChevronIcon } from 'src/components/icons/Chevron'
 import CoinSwapIcon from 'src/components/icons/coin_swap.svg'
 import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
@@ -18,7 +19,6 @@ import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
-import { useLogoutModal } from 'src/features/wallet/logout'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
@@ -41,22 +41,13 @@ export const AccountMenu = () => {
   const isMobile = useIsMobile()
   const identiconSize = isMobile ? 30 : 40
 
-  const onLogout = useLogoutModal()
   const { showModalWithContent } = useModal()
+  const onLogout = useLogoutModal()
 
   const address = useWalletAddress()
   const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
   const showQrModal = useAddressQrCodeModal()
-
-  const showFundModal = () => {
-    showModalWithContent(
-      'Where to buy Celo',
-      <ExchangesModal address={address} />,
-      null,
-      null,
-      'Celo currencies can be earned or purchased from these exchanges.'
-    )
-  }
+  const showFundModal = useFundWalletModal()
 
   const navigate = useNavigate()
   const onItemClick = (key: string) => async () => {
@@ -71,7 +62,7 @@ export const AccountMenu = () => {
         navigate('/settings')
         break
       case 'fund':
-        showFundModal()
+        showFundModal(address)
         break
       case 'logout':
         await onLogout()
@@ -97,7 +88,7 @@ export const AccountMenu = () => {
     <>
       <div css={style.container} onClick={() => setOpen(true)}>
         <Box styles={style.caretContainer} align="center">
-          <img src={ChevronIcon} width="14px" height="8px" css={rotated(isOpen)} />
+          <ChevronIcon width="14px" height="8px" direction={isOpen ? 'n' : 's'} />
         </Box>
         <Box styles={style.addressContainer} align="center">
           <span css={style.address}>{addressStub}</span>
@@ -188,5 +179,3 @@ const style: Stylesheet = {
     boxShadow: '2px 4px 2px -2px #ccc',
   },
 }
-
-const rotated = (isOpen: boolean) => (isOpen ? { transform: 'rotate(180deg)' } : null)

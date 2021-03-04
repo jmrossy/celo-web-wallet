@@ -43,8 +43,8 @@ export function ButtonToggle(props: Props) {
 
 const sharedButtonStyles: Styles = {
   borderRadius: 0,
-  width: '7em',
-  padding: '0.5em 1em',
+  width: '6.5em',
+  padding: '0.35em 1em',
   border: `2px solid ${Color.primaryGreen}`,
 }
 

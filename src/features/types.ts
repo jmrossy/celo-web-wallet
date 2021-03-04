@@ -1,4 +1,5 @@
 import { Currency } from 'src/currency'
+import { VoteValue } from 'src/features/governance/types'
 
 interface Transaction {
   type: TransactionType
@@ -27,6 +28,16 @@ export enum TransactionType {
   EscrowTransfer,
   EscrowWithdraw,
   TokenExchange,
+  AccountRegistration,
+  LockCelo,
+  RelockCelo,
+  UnlockCelo,
+  WithdrawLockedCelo,
+  ValidatorVoteCelo,
+  ValidatorRevokeActiveCelo,
+  ValidatorRevokePendingCelo,
+  ValidatorActivateCelo,
+  GovernanceVote,
   Other,
 }
 
@@ -87,6 +98,34 @@ export interface TokenExchangeTx extends Transaction {
   toValue: string
 }
 
+export type LockTokenType =
+  | TransactionType.LockCelo
+  | TransactionType.RelockCelo
+  | TransactionType.UnlockCelo
+  | TransactionType.WithdrawLockedCelo
+  | TransactionType.AccountRegistration
+
+export interface LockTokenTx extends Transaction {
+  type: LockTokenType
+}
+
+export type StakeTokenType =
+  | TransactionType.ValidatorVoteCelo
+  | TransactionType.ValidatorRevokeActiveCelo
+  | TransactionType.ValidatorRevokePendingCelo
+  | TransactionType.ValidatorActivateCelo
+
+export interface StakeTokenTx extends Transaction {
+  type: StakeTokenType
+  groupAddress: string
+}
+
+export interface GovernanceVoteTx extends Transaction {
+  type: TransactionType.GovernanceVote
+  proposalId: string
+  vote: VoteValue
+}
+
 export interface OtherTx extends Transaction {
   type: TransactionType.Other
 }
@@ -104,6 +143,9 @@ export type CeloTransaction =
   | CeloNativeTransferTx
   | TokenExchangeTx
   | EscrowTransaction
+  | LockTokenTx
+  | StakeTokenTx
+  | GovernanceVoteTx
   | OtherTx
 
 export type TokenTransfer = StableTokenTransferTx | CeloTokenTransferTx | CeloNativeTransferTx

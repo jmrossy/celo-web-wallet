@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { CloseButton } from 'src/components/buttons/CloseButton'
-import Chevron from 'src/components/icons/chevron.svg'
+import { ChevronIcon } from 'src/components/icons/Chevron'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
 import { GenericTransactionReview } from 'src/features/feed/components/GenericTransactionReview'
@@ -115,13 +115,16 @@ function TransactionAdvancedDetails({ tx }: { tx: CeloTransaction }) {
     dispatch(toggleAdvancedDetails())
   }
 
-  const chevronStyle = showContent ? chevronRotated : style.chevron
-
   return (
     <div css={style.contentContainer}>
       <h2 css={sectionHeaderAdvanced} onClick={onClickHeader}>
         Advanced Details
-        <img width="18em" height="10.28em" src={Chevron} alt="chevron" css={chevronStyle} />
+        <ChevronIcon
+          width="15px"
+          height="12px"
+          direction={showContent ? 'n' : 's'}
+          styles={style.chevron}
+        />
       </h2>
       <div css={showContent ? null : style.contentHidden}>
         <TransactionPropertyGroup>
@@ -191,11 +194,6 @@ const style: Stylesheet = {
     opacity: 0.5,
     padding: '0 0.6em',
   },
-}
-
-const chevronRotated: Styles = {
-  ...style.chevron,
-  transform: 'rotate(180deg)',
 }
 
 const sectionHeaderAdvanced: Styles = {

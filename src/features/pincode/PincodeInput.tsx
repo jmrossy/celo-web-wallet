@@ -2,6 +2,7 @@ import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export enum PincodeInputType {
@@ -104,8 +105,11 @@ const style: Stylesheet = {
     textAlign: 'right',
   },
   inputLabel: {
-    width: '8em',
+    width: '6em',
     paddingRight: '1em',
+    [mq[480]]: {
+      width: '8em',
+    },
   },
   input: {
     width: '8.6em',

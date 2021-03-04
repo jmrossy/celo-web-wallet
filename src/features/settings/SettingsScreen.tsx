@@ -34,7 +34,7 @@ export function SettingsScreen() {
   const tokenLimitLedger = fromWei(MAX_SEND_TOKEN_SIZE_LEDGER)
 
   return (
-    <ScreenContentFrame>
+    <ScreenContentFrame onClose={onClickBack}>
       <Box direction="column" align="center">
         <h2 css={style.sectionHeader}>Account Settings</h2>
         <Box direction="row" align="center" justify="center" wrap={true} margin="0.5em 0 0 0">
@@ -56,9 +56,9 @@ export function SettingsScreen() {
               <Box direction="row" align="center">
                 <img src={LockIcon} alt="change pin" css={style.pageLinkIcon} />
                 <div>
-                  <h3 css={style.h3}>Change Pin or Password</h3>
+                  <h3 css={style.h3}>Change Password</h3>
                   <div css={style.description}>
-                    Set the pin/password used to unlock your account.
+                    Set the password used to unlock your account on this device.
                   </div>
                 </div>
               </Box>
@@ -67,7 +67,7 @@ export function SettingsScreen() {
         </Box>
         <HrDivider styles={style.divider} />
         <h2 css={style.sectionHeader}>Advanced Settings</h2>
-        <h3 css={style.warningLabel}>Changes here are not recommended, use at your own risk.</h3>
+        {/* <h3 css={style.warningLabel}>Changes here are not recommended, use at your own risk.</h3> */}
         <Box
           direction="row"
           align="center"
@@ -78,7 +78,7 @@ export function SettingsScreen() {
           <div>
             <h3 css={style.h3}>Transaction Size Limits</h3>
             <div css={style.description}>
-              {`By default, this wallet prevents large payments / exchanges. The limits are ${tokenLimitLocal} tokens for local accounts or ${tokenLimitLedger} for Ledger.`}
+              {`This wallet can prevent large payments / exchanges. The limits are ${tokenLimitLocal} tokens for local accounts or ${tokenLimitLedger} for Ledger.`}
             </div>
           </div>
           <div css={style.switchContainer}>
@@ -94,6 +94,7 @@ export function SettingsScreen() {
           icon={ArrowBackIcon}
           onClick={onClickBack}
           margin="3.5em 0 1em 0"
+          width="9em"
         >
           Back
         </Button>

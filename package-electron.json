@@ -1,0 +1,21 @@
+{
+  "name": "celo-web-wallet",
+  "version": "0.9.0",
+  "description": "A lightweight web and desktop wallet for the Celo network",
+  "main": "main.js",
+  "keywords": [
+    "Celo",
+    "wallet"
+  ],
+  "author": "J M Rossy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/celo-tools/celo-web-wallet"
+  },
+  "homepage": "https://celowallet.app",
+  "license": "MIT",
+  "dependencies": {
+    "electron-updater": "^4.3.5",
+    "@ledgerhq/hw-transport-node-hid-noevents": "^5.43.0"
+  }
+}

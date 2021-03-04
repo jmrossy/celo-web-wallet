@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { TextLink } from 'src/components/buttons/TextLink'
 import SadFace from 'src/components/icons/sad_face.svg'
 import { config } from 'src/config'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
@@ -40,10 +41,7 @@ export function FailScreen() {
       <img width="200em" src={SadFace} alt="Sad Face" css={style.img} />
       <h3 css={style.h3}>
         Please refresh the page. If the problem persists, you can{' '}
-        <a css={Font.linkLight} href={config.discordUrl} target="_blank" rel="noopener noreferrer">
-          ask for help here
-        </a>
-        .
+        <TextLink link={config.discordUrl}>ask for help here</TextLink>.
       </h3>
     </OnboardingScreenFrame>
   )

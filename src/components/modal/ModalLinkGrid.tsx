@@ -9,22 +9,19 @@ interface ModalLinkGridProps {
 
 export function ModalLinkGrid({ links }: ModalLinkGridProps) {
   return (
-    <Box direction="row" align="center" justify="center" margin="1.2em 0" wrap>
+    <Box
+      direction="row"
+      align="center"
+      justify="center"
+      margin="1.2em 0 1em 0"
+      styles={style.container}
+      wrap
+    >
       {links.map((link, index) => (
-        <Box
-          key={`ModalLinkGrid-link-${index}`}
-          styles={style.exchangeContainer}
-          align="center"
-          justify="center"
-        >
-          <a css={style.exchangeLink} href={link.url} target="_blank" rel="noopener noreferrer">
-            <Box
-              direction="column"
-              align="center"
-              justify="center"
-              styles={style.exchangeLinkContent}
-            >
-              <img src={link.imgSrc} css={style.exchangeIcon} alt={link.altText || link.text} />
+        <Box key={`ModalLinkGrid-link-${index}`} align="center" justify="center">
+          <a css={style.link} href={link.url} target="_blank" rel="noopener noreferrer">
+            <Box direction="column" align="center" justify="center" styles={style.linkContent}>
+              <img src={link.imgSrc} css={style.icon} alt={link.altText || link.text} />
               <div>{link.text}</div>
             </Box>
           </a>
@@ -35,41 +32,40 @@ export function ModalLinkGrid({ links }: ModalLinkGridProps) {
 }
 
 const style: Stylesheet = {
-  exchangeContainer: {
-    width: '50%',
+  container: {
+    maxWidth: '30em',
   },
-  exchangeLink: {
+  link: {
     marginTop: '0.5em',
     fontSize: '1.1em',
     color: Color.primaryBlack,
     textAlign: 'center',
     textDecoration: 'none',
-    ':hover': {
-      textDecoration: 'underline',
-    },
+    outline: 'none',
   },
-  exchangeLinkContent: {
+  linkContent: {
     textDecoration: 'none',
     borderRadius: 3,
-    width: '5.6em',
+    width: '4.6em',
     height: '5.8em',
     margin: '0 0.5em',
     border: `1px solid ${Color.primaryWhite}`,
     ':hover': {
       borderColor: Color.altGrey,
     },
+    [mq[480]]: {
+      width: '5.6em',
+    },
     [mq[768]]: {
       width: '7em',
       height: '7.2em',
     },
   },
-  exchangeIcon: {
-    height: '2.5em',
+  icon: {
     width: '2.5em',
-    marginBottom: '0.7em',
+    marginBottom: '1em',
     [mq[768]]: {
       width: '3em',
-      height: '3em',
     },
   },
 }

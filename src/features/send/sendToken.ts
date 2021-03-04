@@ -12,25 +12,21 @@ import {
 import { Currency } from 'src/currency'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
-import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimate } from 'src/features/fees/utils'
-import { setTransactionSigned } from 'src/features/send/sendSlice'
+import { SendTokenParams } from 'src/features/send/types'
+import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import { getAdjustedAmount, validateAmount, validateAmountWithFees } from 'src/utils/amount'
+import {
+  getAdjustedAmountFromBalances,
+  validateAmount,
+  validateAmountWithFees,
+} from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
-
-export interface SendTokenParams {
-  recipient: string
-  amountInWei: string
-  currency: Currency
-  comment?: string
-  feeEstimate?: FeeEstimate
-}
 
 export function validate(
   params: SendTokenParams,
@@ -97,7 +93,7 @@ function* sendToken(params: SendTokenParams) {
   validateOrThrow(() => validate(params, balances, txSizeLimitEnabled, true), 'Invalid transaction')
 
   const { signedTx, type } = yield* call(createSendTx, params, balances)
-  yield* put(setTransactionSigned(true))
+  yield* put(setNumSignatures(1))
 
   const txReceipt = yield* call(sendSignedTransaction, signedTx)
   logger.info(`Token transfer hash received: ${txReceipt.transactionHash}`)
@@ -113,11 +109,13 @@ async function createSendTx(params: SendTokenParams, balances: Balances) {
   if (!feeEstimate) throw new Error('Fee estimate is missing')
 
   // Need to account for case where user intends to send entire balance
-  const adjustedAmount = getAdjustedAmount(amountInWei, currency, balances, [feeEstimate])
+  const adjustedAmount = getAdjustedAmountFromBalances(amountInWei, currency, balances, [
+    feeEstimate,
+  ])
 
   const { tx, type } = await getTokenTransferTx(currency, recipient, adjustedAmount, comment)
 
-  logger.info(`Sending ${amountInWei} ${currency} to ${recipient}`)
+  logger.info(`Signing tx to send ${amountInWei} ${currency} to ${recipient}`)
   const signedTx = await signTransaction(tx, feeEstimate)
   return { signedTx, type }
 }
@@ -130,7 +128,7 @@ async function getTokenTransferTx(
 ) {
   if (currency === Currency.CELO) {
     if (comment) {
-      const goldToken = await getContract(CeloContract.GoldToken)
+      const goldToken = getContract(CeloContract.GoldToken)
       const tx = await goldToken.populateTransaction.transferWithComment(
         recipient,
         amountInWei,
@@ -147,7 +145,7 @@ async function getTokenTransferTx(
       }
     }
   } else if (currency === Currency.cUSD) {
-    const stableToken = await getContract(CeloContract.StableToken)
+    const stableToken = getContract(CeloContract.StableToken)
     if (comment) {
       const tx = await stableToken.populateTransaction.transferWithComment(
         recipient,

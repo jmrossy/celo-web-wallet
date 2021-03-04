@@ -2,6 +2,7 @@
 .cache/
 coverage/
 dist/
+dist-electron/
 node_modules/
 *.log
 

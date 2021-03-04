@@ -1,13 +1,7 @@
 import { useDispatch } from 'react-redux'
-import { clearContractCache } from 'src/blockchain/contracts'
+import { logoutActions } from 'src/app/logout/logout'
 import { useModal } from 'src/components/modal/useModal'
-import { clearTransactions } from 'src/features/feed/feedSlice'
-import { resetSettingFlags } from 'src/features/settings/settingsSlice'
-import { removeWallet } from 'src/features/wallet/storage'
-import { clearWallet } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
-import { createMonitoredSaga } from 'src/utils/saga'
-import { call, put } from 'typed-redux-saga'
 
 export function useLogoutModal() {
   const dispatch = useDispatch()
@@ -30,18 +24,3 @@ export function useLogoutModal() {
   }
   return onLogout
 }
-
-export function* logout() {
-  yield* call(removeWallet)
-  yield* put(clearWallet())
-  yield* put(clearTransactions())
-  yield* put(resetSettingFlags())
-  clearContractCache()
-}
-
-export const {
-  name: logoutSagaName,
-  wrappedSaga: logoutSaga,
-  reducer: logoutReducer,
-  actions: logoutActions,
-} = createMonitoredSaga(logout, 'logout')

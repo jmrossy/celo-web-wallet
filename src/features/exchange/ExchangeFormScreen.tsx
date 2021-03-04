@@ -10,20 +10,21 @@ import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/currency'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
-import { exchangeStarted } from 'src/features/exchange/exchangeSlice'
 import { validate } from 'src/features/exchange/exchangeToken'
 import { ExchangeTokenParams } from 'src/features/exchange/types'
 import { useExchangeValues } from 'src/features/exchange/utils'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
+import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
+import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { fromWei, toWei } from 'src/utils/amount'
+import { amountFieldFromWei, amountFieldToWei } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
 interface ExchangeTokenForm extends Omit<ExchangeTokenParams, 'amountInWei'> {
-  amount: number | string
+  amount: string
 }
 
 const initialValues: ExchangeTokenForm = {
@@ -35,7 +36,8 @@ export function ExchangeFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
-  const { transaction: tx, cUsdToCelo } = useSelector((state: RootState) => state.exchange)
+  const { cUsdToCelo } = useSelector((state: RootState) => state.exchange)
+  const { transaction: tx } = useSelector((state: RootState) => state.txFlow)
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
 
   useEffect(() => {
@@ -43,12 +45,12 @@ export function ExchangeFormScreen() {
   }, [])
 
   const onSubmit = (values: ExchangeTokenForm) => {
-    dispatch(exchangeStarted(toExchangeTokenParams(values)))
+    dispatch(txFlowStarted({ type: TxFlowType.Exchange, params: amountFieldToWei(values) }))
     navigate('/exchange-review')
   }
 
   const validateForm = (values: ExchangeTokenForm) =>
-    validate(toExchangeTokenParams(values), balances, txSizeLimitEnabled)
+    validate(amountFieldToWei(values), balances, txSizeLimitEnabled)
 
   const {
     values,
@@ -57,11 +59,11 @@ export function ExchangeFormScreen() {
     handleBlur,
     handleSubmit,
     resetValues,
-  } = useCustomForm<ExchangeTokenForm>(getFormInitialValues(tx), onSubmit, validateForm)
+  } = useCustomForm<ExchangeTokenForm>(getInitialValues(tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {
-    resetValues(getFormInitialValues(tx))
+    resetValues(getInitialValues(tx))
   }, [tx])
 
   const { to, from, rate } = useExchangeValues(
@@ -71,12 +73,8 @@ export function ExchangeFormScreen() {
     false
   )
 
-  const onClose = () => {
-    navigate('/')
-  }
-
   return (
-    <ScreenContentFrame onClose={onClose}>
+    <ScreenContentFrame>
       <h2 css={Font.h2Green}>Make an Exchange</h2>
       <Box styles={style.containerBox}>
         <Box direction="column">
@@ -88,7 +86,7 @@ export function ExchangeFormScreen() {
                 name="amount"
                 width="7.4em"
                 onChange={handleChange}
-                value={values.amount.toString()}
+                value={values.amount}
                 onBlur={handleBlur}
                 placeholder="1.00"
                 {...errors['amount']}
@@ -154,32 +152,11 @@ export function ExchangeFormScreen() {
   )
 }
 
-function getFormInitialValues(tx: ExchangeTokenParams | null) {
-  if (!tx) {
+function getInitialValues(tx: TxFlowTransaction | null) {
+  if (!tx || !tx.params || tx.type !== TxFlowType.Exchange) {
     return initialValues
   } else {
-    return toExchangeTokenForm(tx)
-  }
-}
-
-function toExchangeTokenParams(values: ExchangeTokenForm): ExchangeTokenParams {
-  try {
-    return {
-      ...values,
-      amountInWei: toWei(values.amount).toString(),
-    }
-  } catch (error) {
-    return {
-      ...values,
-      amountInWei: '0',
-    }
-  }
-}
-
-function toExchangeTokenForm(values: ExchangeTokenParams): ExchangeTokenForm {
-  return {
-    ...values,
-    amount: fromWei(values.amountInWei),
+    return amountFieldFromWei(tx.params)
   }
 }
 

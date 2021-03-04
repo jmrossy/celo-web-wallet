@@ -11,18 +11,18 @@ import {
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
 import { Currency, getOtherCurrency } from 'src/currency'
-import { setNumSignatures } from 'src/features/exchange/exchangeSlice'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
-import { validateFeeEstimate } from 'src/features/fees/utils'
+import { validateFeeEstimates } from 'src/features/fees/utils'
+import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import {
   fromWei,
-  getAdjustedAmount,
+  getAdjustedAmountFromBalances,
   toWei,
   validateAmount,
   validateAmountWithFees,
@@ -67,8 +67,7 @@ export function validate(
   if (validateFee) {
     errors = {
       ...errors,
-      ...validateFeeEstimate(feeEstimates && feeEstimates[0]),
-      ...validateFeeEstimate(feeEstimates && feeEstimates[1]),
+      ...validateFeeEstimates(feeEstimates),
       ...validateAmountWithFees(amountInWei, fromCurrency, balances, feeEstimates),
     }
   }
@@ -116,7 +115,12 @@ function* exchangeToken(params: ExchangeTokenParams) {
   }
 
   // Need to account for case where user intends to send entire balance
-  const adjustedAmount = getAdjustedAmount(amountInWei, fromCurrency, balances, feeEstimates)
+  const adjustedAmount = getAdjustedAmountFromBalances(
+    amountInWei,
+    fromCurrency,
+    balances,
+    feeEstimates
+  )
   const minBuyAmount = getMinBuyAmount(adjustedAmount, exchangeRate)
 
   const signedApproveTx = yield* call(
@@ -156,18 +160,19 @@ async function createApproveTx(
   fromCurrency: Currency,
   feeEstimate: FeeEstimate
 ) {
-  const exchange = await getContract(CeloContract.Exchange)
+  const exchange = getContract(CeloContract.Exchange)
 
   let tokenContract: Contract
   if (fromCurrency === Currency.cUSD) {
-    tokenContract = await getContract(CeloContract.StableToken)
+    tokenContract = getContract(CeloContract.StableToken)
   } else if (fromCurrency === Currency.CELO) {
-    tokenContract = await getContract(CeloContract.GoldToken)
+    tokenContract = getContract(CeloContract.GoldToken)
   } else {
     throw new Error(`Unsupported currency: ${fromCurrency}`)
   }
 
   const txRequest = await tokenContract.populateTransaction.approve(exchange.address, amountInWei)
+  logger.info('Signing exchange approval tx')
   return signTransaction(txRequest, feeEstimate)
 }
 
@@ -177,7 +182,7 @@ async function createExchangeTx(
   minBuyAmount: BigNumber,
   feeEstimate: FeeEstimate
 ) {
-  const exchange = await getContract(CeloContract.Exchange)
+  const exchange = getContract(CeloContract.Exchange)
   // TODO swap method for .sell once updated contract is live
   const txRequest = await exchange.populateTransaction.exchange(
     amountInWei,
@@ -191,6 +196,7 @@ async function createExchangeTx(
   const currentNonce = await getCurrentNonce()
   txRequest.nonce = currentNonce + 1
 
+  logger.info('Signing exchange tx')
   const signedTx = await signTransaction(txRequest, feeEstimate)
   return signedTx
 }

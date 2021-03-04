@@ -1,7 +1,7 @@
 // Temporary stuff while screens are still in development
 import { useDispatch } from 'react-redux'
 import { getLatestBlockDetails } from 'src/blockchain/blocks'
-import { fetchFeedActions } from 'src/features/feed/fetch'
+import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { ImportWalletForm } from 'src/features/onboarding/import/ImportWalletForm'
 import { pincodeActions } from 'src/features/pincode/pincode'
 import { PincodeAction } from 'src/features/pincode/types'

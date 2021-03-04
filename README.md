@@ -1,8 +1,10 @@
-# Celo Web Wallet
+# Celo Wallet For Web and Desktop
 
-A browser-based, mobile-friendly, self-sovereign wallet for the Celo network.
+A lightweight, self-sovereign wallet for the Celo network. Manage small accounts [on the web](https://celowallet.app) or large ones [on your desktop.](https://github.com/celo-tools/celo-web-wallet/releases) Fully compatible with Ledger hardware.
 
-Ideal for managing small 'hot' wallets or Celo wallets on Ledger hardware.
+## Desktop Downloads
+
+The desktop downloads for Mac, Windows, and Linux are hosted here in the [releases page](https://github.com/celo-tools/celo-web-wallet/releases).
 
 ## Frequently Asked Questions
 
@@ -12,8 +14,8 @@ See the [FAQ](FAQ.md) for more details about common questions.
 
 This wallet uses [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity). Current bundle hashes:
 
-* Main bundle: `bundle.js -> sha256-FR2Caux0Qij79Jj47G0xbU8WYknbNmxxtWbKEim2cUw=`
-* Optional Ledger bundle: `bundle-ledger.js -> sha256-m5wcEVEXFVmOal5a4P2F9Sum8c8jgGxVUg0d4k3G5MQ=`
+* Main bundle: `bundle.js -> sha256-I4698ivrNQ6zcsW4WgC3fqUvNmAGEGIo9sUWSVzw4pw=`
+* Optional Ledger bundle: `bundle-ledger.js -> sha256-Ue4vU1iTjNOEPSX51d7ofexxwCEBiiJmQUEX6Ewd4AQ=`
 
 Advanced users can verify the source integrity by comparing the hashes in their page source to these values.
 
@@ -22,26 +24,29 @@ Advanced users can verify the source integrity by comparing the hashes in their 
 First install dependencies:
 
 ```sh
-# The --ignore-scripts flag here is optional but improves security
-yarn install --ignore-scripts
+yarn install 
 ```
 
-To create and run a development build:
+### Running in a browser
+
+To create and run a development build in a browser (recommended for development):
 
 ```sh
 yarn dev
 ```
 
-To create a production build:
+### Running in Electron
+
+To build for electron and run in a desktop app:
 
 ```sh
-yarn build:prod
+yarn electron:dev
 ```
 
 ## Contributing
 
 For small contributions such as bug fixes or style tweaks, please open a Pull Request.
-For new features, please create an issue to start a discussion on [Discord](https://discord.com/channels/600834479145353243/783806028629934110).
+For new features, please create an issue to start a discussion on [Discord](https://discord.com/channels/600834479145353243/812471799585439794).
 
 ## License
 

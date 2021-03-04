@@ -1,7 +1,9 @@
 import { TextButton } from 'src/components/buttons/TextButton'
+import { TextLink } from 'src/components/buttons/TextLink'
 import { Box } from 'src/components/layout/Box'
 import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
+import { config } from 'src/config'
 import { Font } from 'src/styles/fonts'
 import { Styles, Stylesheet } from 'src/styles/types'
 
@@ -14,61 +16,30 @@ export function AboutWalletLink({ styles }: { styles: Styles }) {
 
   return (
     <TextButton styles={styles} onClick={onClick}>
-      {'About This Wallet'}
+      About This Wallet
     </TextButton>
   )
 }
 
 function AboutWalletModal() {
-  // TODO include version number here
   return (
     <Box direction="column" align="center" styles={style.container}>
       <p style={style.text}>
         The Celo Wallet is a free, open source wallet for the{' '}
-        <a css={Font.linkLight} href="https://celo.org" target="_blank" rel="noopener noreferrer">
-          Celo network
-        </a>
-        . It was created by{' '}
-        <a
-          css={Font.linkLight}
-          href="https://twitter.com/RossyWrote"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          J M Rossy
-        </a>{' '}
-        and{' '}
-        <a
-          css={Font.linkLight}
-          href="https://www.linkedin.com/in/brianschwalm/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Brian Schwalm
-        </a>
-        .
+        <TextLink link="https://celo.org">Celo network</TextLink>. It was created by{' '}
+        <TextLink link="https://twitter.com/RossyWrote">J M Rossy</TextLink> and{' '}
+        <TextLink link="https://www.linkedin.com/in/brianschwalm/">Brian Schwalm</TextLink>.
       </p>
       <p style={style.text}>
         The source code for the wallet can be found{' '}
-        <a
-          css={Font.linkLight}
-          href="https://github.com/celo-tools/celo-web-wallet"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          on Github
-        </a>{' '}
-        and includes answers to{' '}
-        <a
-          css={Font.linkLight}
-          href="https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <TextLink link="https://github.com/celo-tools/celo-web-wallet">on Github</TextLink> and
+        includes answers to{' '}
+        <TextLink link="https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md">
           Frequently Asked Questions
-        </a>
+        </TextLink>
         .
       </p>
+      <p style={style.version}>{`Version: ${config.version}`}</p>
     </Box>
   )
 }
@@ -80,7 +51,13 @@ const style: Stylesheet = {
   },
   text: {
     ...Font.body,
+    margin: '0.3em 0',
     textAlign: 'center',
     lineHeight: '1.5em',
+  },
+  version: {
+    ...Font.body,
+    textAlign: 'center',
+    margin: '0.6em 0 0.1em 0',
   },
 }

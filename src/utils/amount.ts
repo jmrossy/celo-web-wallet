@@ -19,16 +19,17 @@ export function validateAmount(
   _amountInWei: BigNumberish,
   currency: Currency,
   balances: Balances,
-  max?: string
+  max?: BigNumberish,
+  min?: BigNumberish
 ): ErrorState | null {
   const amountInWei = BigNumber.from(_amountInWei)
 
-  if (amountInWei.lte(0)) {
+  if ((min && amountInWei.lt(min)) || amountInWei.lte(0)) {
     logger.warn(`Invalid amount, too small: ${amountInWei.toString()}`)
     return invalidInput('amount', 'Amount too small')
   }
 
-  if (max && amountInWei.gte(max)) {
+  if (max && amountInWei.gte(max) && !areAmountsNearlyEqual(amountInWei, max, currency)) {
     logger.warn(`Invalid amount, too big: ${amountInWei.toString()}`)
     return invalidInput('amount', 'Amount too big')
   }
@@ -86,7 +87,7 @@ export function validateAmountWithFees(
 }
 
 // Get amount that is adjusted when user input is nearly the same as their balance
-export function getAdjustedAmount(
+export function getAdjustedAmountFromBalances(
   _amountInWei: string,
   txCurrency: Currency,
   balances: Balances,
@@ -105,6 +106,22 @@ export function getAdjustedAmount(
     } else {
       return balance
     }
+  } else {
+    // Just the amount entered, no adjustment needed
+    return amountInWei
+  }
+}
+
+// Get amount that is adjusted when user input is nearly the same as max value
+export function getAdjustedAmount(
+  _amountInWei: BigNumberish,
+  _maxAmount: BigNumberish,
+  txCurrency: Currency
+): BigNumber {
+  const amountInWei = BigNumber.from(_amountInWei)
+  const maxAmount = BigNumber.from(_maxAmount)
+  if (areAmountsNearlyEqual(amountInWei, maxAmount, txCurrency)) {
+    return maxAmount
   } else {
     // Just the amount entered, no adjustment needed
     return amountInWei
@@ -162,9 +179,55 @@ export function toWei(value: BigNumberish | null | undefined): BigNumber {
   return utils.parseEther('' + value)
 }
 
+// Take an object with an amount field and convert it to amountInWei
+// Useful in converting for form <-> saga communication
+export function amountFieldToWei<T extends { amount: string }>(fields: T) {
+  try {
+    return {
+      ...fields,
+      amountInWei: toWei(fields.amount).toString(),
+    }
+  } catch (error) {
+    logger.warn('Error converting amount to wei', error)
+    return {
+      ...fields,
+      amountInWei: '0',
+    }
+  }
+}
+
+// Take an object with an amountInWei field and convert it amount (in 'ether')
+// Useful in converting for saga <-> form communication
+export function amountFieldFromWei<T extends { amountInWei: string }>(fields: T) {
+  try {
+    return {
+      ...fields,
+      amount: fromWei(fields.amountInWei).toString(),
+    }
+  } catch (error) {
+    logger.warn('Error converting amount from wei', error)
+    return {
+      ...fields,
+      amount: '0',
+    }
+  }
+}
+
 export function fromFixidity(value: BigNumberish | null | undefined): number {
   if (!value) return 0
   return FixedNumber.from(value)
     .divUnsafe(FixedNumber.from('1000000000000000000000000'))
     .toUnsafeFloat()
+}
+
+// Strangely the Ethers BN doesn't have a min function
+export function BigNumberMin(bn1: BigNumber, bn2: BigNumber) {
+  return bn1.gte(bn2) ? bn2 : bn1
+}
+export function BigNumberMax(bn1: BigNumber, bn2: BigNumber) {
+  return bn1.lte(bn2) ? bn2 : bn1
+}
+
+export function formatNumberWithCommas(amount: number) {
+  return new Intl.NumberFormat('en-US', { style: 'decimal' }).format(amount)
 }

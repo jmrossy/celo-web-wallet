@@ -32,7 +32,6 @@ export function ModalTestScreen() {
     showWorkingModal,
     showSuccessModal,
     showErrorModal,
-    showActionsModal,
     showModalWithContent,
     closeModal,
   } = useModal()
@@ -75,10 +74,12 @@ export function ModalTestScreen() {
       { key: 'retry', label: 'Retry', color: Color.primaryGreen },
       { key: 'undo', label: 'Undo', color: Color.accentBlue },
     ]
-    await showActionsModal(
+    await showModal(
       'Modal with Actions',
       'This modal has multiple actions, and stays active unless you click close (check console for clicked actions)',
       actions,
+      'This is a subhead',
+      's',
       actionClick
     )
   }
@@ -156,14 +157,13 @@ export function ModalTestScreen() {
   return (
     <div>
       <Notification
-        message={
-          isBrowserValid
-            ? 'Your browser is valid'
-            : 'Your browser does not support required features'
-        }
         color={isBrowserValid ? Color.fillLight : Color.fillError}
         textColor={isBrowserValid ? Color.primaryGreen : Color.textError}
-      />
+      >
+        {isBrowserValid
+          ? 'Your browser is valid'
+          : 'Your browser does not support required features'}
+      </Notification>
 
       <Box direction="column" align="center">
         <h1 css={{ width: '100%', textAlign: 'center' }}>Browser Feature Testing</h1>
@@ -324,7 +324,7 @@ export function ModalTestScreen() {
             position="topRight"
             content={
               <Box direction="column" margin="1em" align="center">
-                <h3 css={{ ...Font.h2Green }}>Fancy Tooltip!</h3>
+                <h3 css={Font.h2Green}>Fancy Tooltip!</h3>
                 <img src={Lightbulb} height={32} width={32} />
                 <p>This tooltip has complex content</p>
                 <Button onClick={working}>Click Me</Button>

@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react'
+import { useNavigate } from 'react-router'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import { mq } from 'src/styles/mediaQueries'
@@ -6,14 +7,25 @@ import { Stylesheet } from 'src/styles/types'
 
 interface FrameProps {
   onClose?: () => void
+  hideCloseButton?: boolean
 }
 
 export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
-  const { onClose } = props
+  const navigate = useNavigate()
+
+  const { onClose, hideCloseButton } = props
+
+  const onClickClose = () => {
+    if (onClose) {
+      onClose()
+    } else {
+      navigate('/')
+    }
+  }
 
   return (
     <Box direction="column" styles={style.contentContainer}>
-      {onClose && <CloseButton onClick={onClose} styles={style.closeButton} />}
+      {!hideCloseButton && <CloseButton onClick={onClickClose} styles={style.closeButton} />}
       {props.children}
     </Box>
   )

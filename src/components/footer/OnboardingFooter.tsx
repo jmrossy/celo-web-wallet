@@ -1,6 +1,10 @@
+import { TextLink } from 'src/components/buttons/TextLink'
 import { AboutWalletLink } from 'src/components/footer/AboutWallet'
 import { Box } from 'src/components/layout/Box'
+import { config } from 'src/config'
+import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
 import { Color } from 'src/styles/Color'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function OnboardingFooter() {
@@ -9,23 +13,22 @@ export function OnboardingFooter() {
       <Box align="center" justify="center">
         <AboutWalletLink styles={style.anchor} />
         <span>-</span>
-        <a
-          css={style.anchor}
-          href="https://valoraapp.com"
-          target="_blank"
-          rel="noopener noreferrer"
+        {!config.isElectron && (
+          <>
+            <DownloadDesktopButton styles={style.anchor} />
+            <span>-</span>
+          </>
+        )}
+        <TextLink link="https://valoraapp.com" styles={style.anchor}>
+          Valora Mobile App
+        </TextLink>
+        <span css={style.desktopOnly}>-</span>
+        <TextLink
+          link="https://github.com/celo-tools/celo-web-wallet"
+          styles={[style.anchor, style.desktopOnly]}
         >
-          Try Valora Mobile Wallet
-        </a>
-        <span>-</span>
-        <a
-          css={style.anchor}
-          href="https://github.com/celo-tools/celo-web-wallet"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View Source on Github
-        </a>
+          View Source
+        </TextLink>
       </Box>
     </Box>
   )
@@ -33,12 +36,15 @@ export function OnboardingFooter() {
 
 const style: Stylesheet = {
   container: {
-    padding: '2em',
+    padding: '2em 0.5em',
     width: '100%',
     opacity: 0.9,
+    [mq[768]]: {
+      padding: '2em',
+    },
   },
   anchor: {
-    padding: '0 1em',
+    padding: '0 0.5em',
     fontSize: '1em',
     fontWeight: 400,
     textAlign: 'center',
@@ -46,6 +52,15 @@ const style: Stylesheet = {
     opacity: 0.8,
     ':hover': {
       opacity: 1,
+    },
+    [mq[768]]: {
+      padding: '0 1em',
+    },
+  },
+  desktopOnly: {
+    display: 'none',
+    [mq[768]]: {
+      display: 'block',
     },
   },
 }

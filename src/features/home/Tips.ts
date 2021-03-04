@@ -19,6 +19,14 @@ export const Tips = [
     'Your wallet can be imported in many places at once.',
     'For example, use your Account Key to load it into the Valora mobile app.',
   ],
+  [
+    'Using this wallet in a browser is only safe for small accounts or Ledger users.',
+    'For large accounts, downloading the Desktop App is strongly recommended.',
+  ],
+  [
+    'You can lock CELO to participate in Celo network elections and governance.',
+    'Voting for validators that are elected will earn you free CELO rewards.',
+  ],
 ]
 
 export function useDailyTip() {
