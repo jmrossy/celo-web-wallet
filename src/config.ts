@@ -40,6 +40,15 @@ interface Config {
   defaultAccount?: string // strictly for dev use
 }
 
+const desktopUrls = {
+  windows:
+    'https://github.com/celo-tools/celo-web-wallet/releases/download/v0.9.0/Celo-Wallet-0.9.0-win.exe',
+  mac:
+    'https://github.com/celo-tools/celo-web-wallet/releases/download/v0.9.0/Celo-Wallet-0.9.0-mac.dmg',
+  linux:
+    'https://github.com/celo-tools/celo-web-wallet/releases/download/v0.9.0/Celo-Wallet-0.9.0-linux-x86_64.AppImage',
+}
+
 // TODO find a nice way to switch btwn configs at build/run time
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configMainnet: Config = {
@@ -51,11 +60,7 @@ const configMainnet: Config = {
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
-  desktopUrls: {
-    windows: 'TODO',
-    mac: 'https://www.dropbox.com/s/wl563lcl24mop3u/Celo%20Wallet-0.9.0-mac.dmg?dl=1',
-    linux: 'TODO',
-  },
+  desktopUrls,
   chainId: 42220,
   contractAddresses: {
     [CeloContract.Accounts]: '0x7d21685C17607338b313a7174bAb6620baD0aaB7',
@@ -84,11 +89,7 @@ const configAlfajores: Config = {
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
-  desktopUrls: {
-    windows: 'TODO',
-    mac: 'TODO',
-    linux: 'TODO',
-  },
+  desktopUrls,
   chainId: 44787,
   contractAddresses: {
     [CeloContract.Accounts]: '0xed7f51A34B4e71fbE69B3091FcF879cD14bD73A9',
