@@ -1,9 +1,9 @@
+import 'src/features/ledger/buffer' // Must be the first import
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
 import { TransportError, TransportStatusError } from '@ledgerhq/errors'
 import { BigNumber, providers, Signer, utils } from 'ethers'
 import { config } from 'src/config'
 import { CELO_LEDGER_APP_MIN_VERSION } from 'src/consts'
-import 'src/features/ledger/buffer' // Must be the first import
 import { CeloLedgerApp } from 'src/features/ledger/CeloLedgerApp'
 import { getLedgerTransport } from 'src/features/ledger/ledgerTransport'
 import { getTokenData } from 'src/features/ledger/tokenData'
