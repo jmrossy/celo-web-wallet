@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers'
 import { WEI_PER_UNIT } from 'src/consts'
-import { Currency, getOtherCurrency } from 'src/currency'
+import { CELO, cUSD, Token } from 'src/currency'
 import { ExchangeRate } from 'src/features/exchange/types'
 import { TokenExchangeTx } from 'src/features/types'
 import { fromWei, toWei } from 'src/utils/amount'
@@ -8,18 +8,18 @@ import { logger } from 'src/utils/logger'
 
 export function useExchangeValues(
   fromAmount: number | string | null | undefined,
-  fromCurrency: Currency | null | undefined,
-  cUsdToCelo: ExchangeRate | null | undefined,
+  fromToken: Token | null | undefined,
+  toToken: Token | null | undefined,
+  toCeloRate: ExchangeRate | null | undefined,
   isFromAmountWei: boolean
 ) {
-  if (!fromCurrency || !cUsdToCelo) {
+  if (!fromToken || !toToken || !toCeloRate) {
     // Return some defaults when values are missing
-    return getDefaultExchangeValues()
+    return getDefaultExchangeValues(fromToken, toToken)
   }
 
   try {
-    const toCurrency = getOtherCurrency(fromCurrency)
-    const exchangeRate = fromCurrency === Currency.cUSD ? cUsdToCelo.rate : 1 / cUsdToCelo.rate
+    const exchangeRate = fromToken.id === CELO.id ? 1 / toCeloRate.rate : toCeloRate.rate
     const exchangeRateWei = toWei(exchangeRate)
 
     const fromAmountWei = isFromAmountWei ? BigNumber.from(fromAmount) : toWei(fromAmount)
@@ -29,37 +29,40 @@ export function useExchangeValues(
     return {
       from: {
         weiAmount: fromAmountWei.toString(),
-        currency: fromCurrency,
+        token: fromToken,
       },
       to: {
         weiAmount: toAmountWei.toString(),
-        currency: toCurrency,
+        token: toToken,
       },
       rate: {
         weiBasis: WEI_PER_UNIT,
         weiRate: exchangeRateWei.toString(),
         rate: exchangeRate,
-        lastUpdated: cUsdToCelo.lastUpdated,
+        lastUpdated: toCeloRate.lastUpdated,
       },
     }
   } catch (error) {
     logger.warn('Error computing exchange values')
-    return getDefaultExchangeValues(fromCurrency)
+    return getDefaultExchangeValues(fromToken, toToken)
   }
 }
 
-function getDefaultExchangeValues(fromCurrency?: Currency | null) {
-  const _fromCurrency = fromCurrency || Currency.cUSD
-  const _toCurrency = getOtherCurrency(_fromCurrency)
+function getDefaultExchangeValues(
+  _fromToken: Token | null | undefined,
+  _toToken: Token | null | undefined
+) {
+  const fromToken = _fromToken || cUSD
+  const toToken = _toToken || CELO
 
   return {
     from: {
       weiAmount: '0',
-      currency: _fromCurrency,
+      token: fromToken,
     },
     to: {
       weiAmount: '0',
-      currency: _toCurrency,
+      token: toToken,
     },
     rate: {
       rate: 0,
@@ -70,11 +73,13 @@ function getDefaultExchangeValues(fromCurrency?: Currency | null) {
   }
 }
 
-export function computeRate(tx: TokenExchangeTx) {
+// This assumes to or from token is CELO
+export function computeToCeloRate(tx: TokenExchangeTx) {
   if (!tx) {
     return {
-      weiRate: 0,
+      weiRate: '0',
       weiBasis: WEI_PER_UNIT,
+      otherToken: cUSD,
     }
   }
   const fromValue = fromWei(tx.fromValue)
@@ -82,14 +87,17 @@ export function computeRate(tx: TokenExchangeTx) {
 
   if (!fromValue || !toValue) {
     return {
-      weiRate: 0,
+      weiRate: '0',
       weiBasis: WEI_PER_UNIT,
+      otherToken: cUSD,
     }
   }
 
-  const rate = tx.fromToken === Currency.cUSD ? fromValue / toValue : toValue / fromValue
+  const rate = tx.fromToken.id === CELO.id ? toValue / fromValue : fromValue / toValue
+  const otherToken = tx.fromToken.id === CELO.id ? tx.toToken : tx.fromToken
   return {
     weiRate: toWei(rate).toString(),
     weiBasis: WEI_PER_UNIT,
+    otherToken,
   }
 }

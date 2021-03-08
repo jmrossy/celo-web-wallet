@@ -1,4 +1,4 @@
-import { Currency } from 'src/currency'
+import { NativeTokenId, Token } from 'src/currency'
 import { VoteValue } from 'src/features/governance/types'
 
 interface Transaction {
@@ -12,7 +12,7 @@ interface Transaction {
   timestamp: number
   gasPrice: string
   gasUsed: string
-  feeCurrency?: Currency
+  feeCurrency?: NativeTokenId
   gatewayFee?: string
   gatewayFeeRecipient?: string
 }
@@ -25,6 +25,7 @@ export enum TransactionType {
   CeloTokenTransferWithComment,
   CeloTokenApprove,
   CeloNativeTransfer,
+  OtherTokenTransfer,
   EscrowTransfer,
   EscrowWithdraw,
   TokenExchange,
@@ -45,55 +46,62 @@ export interface StableTokenTransferTx extends Transaction {
   type: TransactionType.StableTokenTransfer
   comment?: string
   isOutgoing: boolean
-  currency: Currency.cUSD
+  token: Token // TODO avoid putting full token data here to reduce storage?
 }
 
 export interface StableTokenApproveTx extends Transaction {
   type: TransactionType.StableTokenApprove
-  currency: Currency.cUSD
   approvedValue: string
   spender: string
+  token: Token
 }
 
 export interface CeloTokenTransferTx extends Transaction {
   type: TransactionType.CeloTokenTransfer
   comment?: string
   isOutgoing: boolean
-  currency: Currency.CELO
+  token: Token
+}
+
+export interface CeloTokenApproveTx extends Transaction {
+  type: TransactionType.CeloTokenApprove
+  token: Token
+  approvedValue: string
+  spender: string
 }
 
 export interface CeloNativeTransferTx extends Transaction {
   type: TransactionType.CeloNativeTransfer
   isOutgoing: boolean
   comment: undefined
-  currency: Currency.CELO
+  token: Token
+}
+
+export interface OtherTokenTransfer extends Transaction {
+  type: TransactionType.OtherTokenTransfer
+  comment?: string
+  isOutgoing: boolean
+  token: Token
 }
 
 export interface EscrowTransferTx extends Transaction {
   type: TransactionType.EscrowTransfer
   isOutgoing: true
-  currency: Currency
+  token: Token
   comment?: string
 }
 
 export interface EscrowWithdrawTx extends Transaction {
   type: TransactionType.EscrowWithdraw
-  currency: Currency
+  token: Token
   isOutgoing: false
   comment?: string
 }
 
-export interface CeloTokenApproveTx extends Transaction {
-  type: TransactionType.CeloTokenApprove
-  currency: Currency.CELO
-  approvedValue: string
-  spender: string
-}
-
 export interface TokenExchangeTx extends Transaction {
   type: TransactionType.TokenExchange
-  fromToken: Currency
-  toToken: Currency
+  fromToken: Token
+  toToken: Token
   fromValue: string
   toValue: string
 }
@@ -135,6 +143,7 @@ export type TokenTransaction =
   | CeloTokenTransferTx
   | StableTokenApproveTx
   | CeloTokenApproveTx
+  | OtherTokenTransfer
 
 export type EscrowTransaction = EscrowTransferTx | EscrowWithdrawTx
 
@@ -148,6 +157,10 @@ export type CeloTransaction =
   | GovernanceVoteTx
   | OtherTx
 
-export type TokenTransfer = StableTokenTransferTx | CeloTokenTransferTx | CeloNativeTransferTx
+export type TokenTransfer =
+  | StableTokenTransferTx
+  | CeloTokenTransferTx
+  | CeloNativeTransferTx
+  | OtherTokenTransfer
 
 export type TransactionMap = Record<string, CeloTransaction> // hash to item

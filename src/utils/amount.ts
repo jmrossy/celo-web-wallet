@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
-import { Currency, getCurrencyProps } from 'src/currency'
+import { Currency, getCurrencyProps, Token } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { getTotalFee } from 'src/features/fees/utils'
 import { Balances } from 'src/features/wallet/types'
@@ -150,12 +150,12 @@ export function fromWei(value: BigNumberish | null | undefined): number {
 // with a minimum floor, configured per currency
 export function fromWeiRounded(
   value: BigNumberish | null | undefined,
-  currency: Currency,
+  token: Token,
   roundDownIfSmall = false
 ): string {
   if (!value) return '0'
 
-  const { decimals, minValue: _minValue } = getCurrencyProps(currency)
+  const { decimals, minValue: _minValue } = token
   const minValue = FixedNumber.from(`${_minValue}`) // FixedNumber throws error when given number for some reason
   const bareMinValue = FixedNumber.from(`${_minValue / 5}`)
 

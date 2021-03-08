@@ -1,6 +1,6 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContract, getCurrencyFromContract } from 'src/blockchain/contracts'
+import { getContract, getTokenFromContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
 import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
@@ -537,7 +537,7 @@ function parseOutgoingEscrowTransfer(
     throw new Error(`Escrow tx has invalid aruments: ${tokenAddress}, ${value}`)
   }
 
-  const currency = getCurrencyFromContract(tokenAddress)
+  const currency = getTokenFromContract(tokenAddress)
   if (!currency) {
     throw new Error(`No currency found for token address: ${tokenAddress}`)
   }

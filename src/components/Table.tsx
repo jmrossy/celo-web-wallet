@@ -15,7 +15,7 @@ type DataElement = { id: string } & Record<string, any>
 interface Props<T extends DataElement> {
   columns: TableColumn[]
   data: T[]
-  ExpandedRow: FunctionComponent<{ row: T }>
+  ExpandedRow?: FunctionComponent<{ row: T }>
   initialSortBy?: string // column id
   isLoading?: boolean
 }
@@ -101,7 +101,7 @@ export function Table<T extends DataElement>(props: Props<T>) {
                     )
                   })}
                 </tr>
-                {isExpanded && (
+                {ExpandedRow && isExpanded && (
                   <tr>
                     <td colSpan={columns.length}>
                       <ExpandedRow row={row} />

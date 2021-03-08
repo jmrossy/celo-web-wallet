@@ -3,7 +3,7 @@ import { ExchangeIcon } from 'src/components/icons/Exchange'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency, getCurrencyProps } from 'src/currency'
+import { CELO, Token } from 'src/currency'
 import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -21,7 +21,7 @@ interface FeedItemContent {
   description: string
   subDescription: string
   value: string
-  currency: Currency
+  token: Token
   isPositive?: boolean
 }
 
@@ -32,8 +32,8 @@ export function FeedItem(props: FeedItemProps) {
     onClick(tx.hash)
   }
 
-  const { icon, description, subDescription, value, currency, isPositive } = getContentByTxType(tx)
-  const { symbol, color } = getCurrencyProps(currency)
+  const { icon, description, subDescription, value, token, isPositive } = getContentByTxType(tx)
+  const { label: symbol, color } = token
   const sign = isPositive === true ? '+' : isPositive === false ? '-' : undefined
 
   return (
@@ -48,7 +48,7 @@ export function FeedItem(props: FeedItemProps) {
             </div>
           </Box>
           <div css={style.moneyContainer}>
-            <MoneyValue amountInWei={value} currency={currency} hideSymbol={true} sign={sign} />
+            <MoneyValue amountInWei={value} token={token} hideSymbol={true} sign={sign} />
             <div css={[style.currency, { color }]}>{symbol}</div>
           </div>
         </Box>
@@ -66,7 +66,7 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     icon: <Identicon address={tx.to} />,
     description: `Transaction ${tx.hash.substr(0, 8)}`,
     subDescription: getFormattedTimestamp(tx.timestamp),
-    currency: Currency.CELO,
+    token: CELO,
     value: tx.value,
   }
 
@@ -80,7 +80,7 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
       ...defaultContent,
       icon: <Identicon address={tx.isOutgoing ? tx.to : tx.from} />,
       description: tx.comment || (tx.isOutgoing ? 'Payment Sent' : 'Payment Received'),
-      currency: tx.currency,
+      token: tx.token,
       isPositive: !tx.isOutgoing,
     }
   }
@@ -92,26 +92,17 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     return {
       ...defaultContent,
       description: 'Transfer Approval',
-      currency: tx.currency,
+      token: tx.token,
       value: '0',
     }
   }
 
   if (tx.type === TransactionType.TokenExchange) {
-    let description: string
-    let currency: Currency
-    if (tx.fromToken === Currency.CELO) {
-      description = 'CELO to cUSD Exchange'
-      currency = Currency.cUSD
-    } else {
-      description = 'cUSD to CELO Exchange'
-      currency = Currency.CELO
-    }
     return {
       ...defaultContent,
       icon: <ExchangeIcon toToken={tx.toToken} />,
-      description,
-      currency,
+      description: `${tx.fromToken.label} to ${tx.toToken.label} Exchange`,
+      token: tx.toToken,
       value: tx.toValue,
       isPositive: true,
     }
@@ -121,7 +112,7 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     return {
       ...defaultContent,
       description: tx.isOutgoing ? 'Escrow Payment' : 'Escrow Withdrawal',
-      currency: tx.currency,
+      token: tx.token,
       isPositive: !tx.isOutgoing,
     }
   }

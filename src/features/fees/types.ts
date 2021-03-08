@@ -1,4 +1,4 @@
-import { Currency } from 'src/currency'
+import { Token } from 'src/currency'
 
 export interface GasPrice {
   value: string
@@ -9,5 +9,5 @@ export interface FeeEstimate {
   gasPrice: string
   gasLimit: string
   fee: string // in wei
-  currency: Currency
+  token: Token
 }

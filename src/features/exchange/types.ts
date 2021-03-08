@@ -1,4 +1,4 @@
-import { Currency } from 'src/currency'
+import { Token } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 
 export interface ExchangeRate {
@@ -8,7 +8,8 @@ export interface ExchangeRate {
 
 export interface ExchangeTokenParams {
   amountInWei: string
-  fromCurrency: Currency
+  fromToken: Token
+  toToken: Token
   exchangeRate?: ExchangeRate
   feeEstimates?: FeeEstimate[]
 }

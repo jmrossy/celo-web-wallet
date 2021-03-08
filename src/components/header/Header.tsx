@@ -1,17 +1,17 @@
-import { shallowEqual, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { AccountMenu } from 'src/components/header/AccountMenu'
 import Logo from 'src/components/icons/logo.svg'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency } from 'src/currency'
+import { CELO, cEUR, cUSD } from 'src/currency'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function Header() {
-  const balances = useSelector((s: RootState) => s.wallet.balances, shallowEqual)
+  const tokens = useSelector((s: RootState) => s.wallet.balances.tokens)
 
   return (
     <Box align="center" justify="between" styles={style.container}>
@@ -20,16 +20,23 @@ export function Header() {
       </Link>
       <Box direction="row" align="center" justify="center" wrap={true} css={style.balances}>
         <MoneyValue
-          amountInWei={balances.cUsd}
-          currency={Currency.cUSD}
+          amountInWei={tokens.cUSD.value}
+          token={cUSD}
           roundDownIfSmall={true}
           baseFontSize={1.4}
           containerCss={style.balanceContainer}
         />
         <MoneyValue
-          amountInWei={balances.celo}
+          amountInWei={tokens.cEUR.value}
+          token={cEUR}
           roundDownIfSmall={true}
-          currency={Currency.CELO}
+          baseFontSize={1.4}
+          containerCss={style.balanceContainer}
+        />
+        <MoneyValue
+          amountInWei={tokens.CELO.value}
+          roundDownIfSmall={true}
+          token={CELO}
           containerCss={style.balanceContainer}
           baseFontSize={1.4}
         />

@@ -2,7 +2,7 @@ import { getContractName } from 'src/blockchain/contracts'
 import { Address } from 'src/components/Address'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { config } from 'src/config'
-import { Currency } from 'src/currency'
+import { CELO } from 'src/currency'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
@@ -33,11 +33,11 @@ export function GenericTransactionReview({ tx }: Props) {
       <TransactionProperty label="Amount">
         <div css={style.value}>
           <span css={style.amountLabel}>Value: </span>
-          <MoneyValue amountInWei={tx.value} currency={Currency.CELO} />
+          <MoneyValue amountInWei={tx.value} token={CELO} />
         </div>
         <div css={style.value}>
           <span css={style.amountLabel}>Fee: </span>
-          <MoneyValue amountInWei={feeValue} currency={feeCurrency} />
+          <MoneyValue amountInWei={feeValue} token={feeCurrency} />
         </div>
       </TransactionProperty>
       {contractName && (

@@ -30,6 +30,7 @@ import { SettingsScreen } from 'src/features/settings/SettingsScreen'
 import { ExploreValidatorsScreen } from 'src/features/validators/ExploreValidatorsScreen'
 import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmationScreen'
 import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
+import { BalanceDetailsScreen } from 'src/features/wallet/BalanceDetailsScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
@@ -71,6 +72,7 @@ export const App = () => {
               <Route path="stake-review" element={<StakeConfirmationScreen />} />
               <Route path="governance" element={<GovernanceFormScreen />} />
               <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
+              <Route path="balances" element={<BalanceDetailsScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
               <Route path="settings" element={<SettingsScreen />} />
             </Route>

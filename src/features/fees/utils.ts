@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
-import { Currency } from 'src/currency'
+import { Currency, NativeTokenId, NativeTokens } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { CeloTransaction } from 'src/features/types'
 import { logger } from 'src/utils/logger'
@@ -61,7 +61,8 @@ export function getFeeFromConfirmedTx(tx: CeloTransaction) {
   const feeValue = BigNumber.from(tx.gasPrice)
     .mul(tx.gasUsed)
     .add(tx.gatewayFee ?? 0)
-  return { feeValue, feeCurrency: tx.feeCurrency ?? Currency.CELO }
+  const feeCurrency = NativeTokens[tx.feeCurrency ?? NativeTokenId.CELO]
+  return { feeValue, feeCurrency }
 }
 
 // Gets fee from state and returns amount, fee, and total, all in wei

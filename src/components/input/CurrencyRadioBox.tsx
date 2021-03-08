@@ -8,6 +8,7 @@ export interface CurrencyRadioBoxInputProps extends RadioBoxInputProps {
   value: Currency
 }
 
+// TODO remove
 export function CurrencyRadioBox(props: PropsWithChildren<CurrencyRadioBoxInputProps>) {
   const { value, checked, containerCss, ...passThroughProps } = props
 

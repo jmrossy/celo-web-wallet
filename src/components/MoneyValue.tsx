@@ -1,11 +1,11 @@
 import { BigNumberish } from 'ethers'
-import { Currency, getCurrencyProps } from 'src/currency'
+import { Token } from 'src/currency'
 import { Styles } from 'src/styles/types'
 import { fromWeiRounded } from 'src/utils/amount'
 
 interface MoneyValueProps {
   amountInWei: BigNumberish
-  currency: Currency
+  token: Token
   roundDownIfSmall?: boolean
   baseFontSize?: number // in em units
   margin?: string | number
@@ -20,7 +20,7 @@ interface MoneyValueProps {
 export function MoneyValue(props: MoneyValueProps) {
   const {
     amountInWei,
-    currency,
+    token,
     roundDownIfSmall,
     baseFontSize,
     margin,
@@ -32,10 +32,10 @@ export function MoneyValue(props: MoneyValueProps) {
     fontWeight,
   } = props
 
-  const { symbol, color } = getCurrencyProps(currency)
+  const { label: symbol, color } = token
   const fontStyles = getFonts(baseFontSize, fontWeight)
 
-  const formattedAmount = fromWeiRounded(amountInWei, currency, roundDownIfSmall)
+  const formattedAmount = fromWeiRounded(amountInWei, token, roundDownIfSmall)
   const isZero = formattedAmount === '0'
 
   return (
