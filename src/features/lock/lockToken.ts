@@ -15,11 +15,12 @@ import { getTotalUnlockedCelo } from 'src/features/lock/utils'
 import { LockTokenTx, LockTokenType, TransactionType } from 'src/features/types'
 import { GroupVotes } from 'src/features/validators/types'
 import { getTotalNonvotingLocked } from 'src/features/validators/utils'
-import { createAccountRegisterTx } from 'src/features/wallet/accountsContract'
+import { createAccountRegisterTx, fetchAccountStatus } from 'src/features/wallet/accountsContract'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { setAccountIsRegistered } from 'src/features/wallet/walletSlice'
 import {
+  areAmountsNearlyEqual,
   BigNumberMin,
   getAdjustedAmount,
   validateAmount,
@@ -46,13 +47,14 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
+    const { locked, pendingFree, pendingBlocked } = balances.lockedCelo
     const adjustedBalances = { ...balances }
     if (action === LockActionType.Lock) {
       adjustedBalances.celo = getTotalUnlockedCelo(balances).toString()
     } else if (action === LockActionType.Unlock) {
-      adjustedBalances.celo = balances.lockedCelo.locked
+      adjustedBalances.celo = locked
     } else if (action === LockActionType.Withdraw) {
-      adjustedBalances.celo = balances.lockedCelo.pendingFree
+      adjustedBalances.celo = pendingFree
     }
     errors = {
       ...errors,
@@ -60,13 +62,25 @@ export function validate(
     }
 
     // Special case handling for withdraw which is confusing
-    if (
-      action === LockActionType.Withdraw &&
-      BigNumber.from(balances.lockedCelo.pendingFree).lte(0)
-    ) {
+    if (action === LockActionType.Withdraw && BigNumber.from(pendingFree).lte(0)) {
       errors = {
         ...errors,
         ...invalidInput('amount', 'No pending available to withdraw'),
+      }
+    }
+
+    // Special case handling for locking whole balance
+    if (action === LockActionType.Lock && !errors.amount) {
+      const remainingAfterPending = BigNumber.from(amountInWei).sub(pendingFree).sub(pendingBlocked)
+      if (
+        remainingAfterPending.gt(0) &&
+        (remainingAfterPending.gte(balances.celo) ||
+          areAmountsNearlyEqual(remainingAfterPending, balances.celo, Currency.CELO))
+      ) {
+        errors = {
+          ...errors,
+          ...invalidInput('amount', 'Locking whole balance is not allowed'),
+        }
       }
     }
 
@@ -112,11 +126,17 @@ function* lockToken(params: LockTokenParams) {
     throw new Error('Fee estimates missing or do not match txPlan')
   }
 
+  const { txPlan: txPlanAdjusted, feeEstimates: feeEstimatesAdjusted } = yield* call(
+    ensureAccountNotAlreadyRegistered,
+    txPlan,
+    feeEstimates
+  )
+
   logger.info(`Executing ${action} for ${amountInWei} CELO`)
   yield* call<TxPlanExecutor<LockTokenTxPlanItem>>(
     executeTxPlan,
-    txPlan,
-    feeEstimates,
+    txPlanAdjusted,
+    feeEstimatesAdjusted,
     createActionTx,
     createPlaceholderTx,
     'lockToken'
@@ -190,7 +210,7 @@ export function getLockActionTxPlan(
     let amountRemaining = BigNumber.from(amountInWei)
     const pwSorted = pendingWithdrawals.sort((a, b) => b.index - a.index)
     for (const p of pwSorted) {
-      if (amountRemaining.lte(MIN_LOCK_AMOUNT)) break
+      if (amountRemaining.lt(MIN_LOCK_AMOUNT)) break
       const txAmount = BigNumberMin(amountRemaining, BigNumber.from(p.value))
       const adjustedAmount = getAdjustedAmount(txAmount, p.value, Currency.CELO)
       txs.push({
@@ -278,13 +298,31 @@ async function createWithdrawCeloTx(
 }
 
 async function ensureAccountNotGovernanceVoting() {
-  const governance = getContract(CeloContract.Governance)
   const address = getSigner().signer.address
+  const governance = getContract(CeloContract.Governance)
   const isVoting: boolean = await governance.isVoting(address)
   if (isVoting)
     throw new Error(
       'Account has voted for an active governance proposal. You must wait until the proposal is done.'
     )
+}
+
+// This is necessary in case the isAccountRegistered in state is
+// stale or incorrect, which is rare but does happen
+function* ensureAccountNotAlreadyRegistered(txPlan: LockTokenTxPlan, feeEstimates: FeeEstimate[]) {
+  if (txPlan[0].type !== TransactionType.AccountRegistration) {
+    // Not trying to register, no adjustments needed
+    return { txPlan, feeEstimates }
+  }
+
+  // Force fetch latest account status
+  const { isRegistered } = yield* call(fetchAccountStatus, true)
+  if (isRegistered) {
+    // Remove the account registration tx from plan and estimates
+    return { txPlan: txPlan.slice(1), feeEstimates: feeEstimates.slice(1) }
+  } else {
+    return { txPlan, feeEstimates }
+  }
 }
 
 export const {

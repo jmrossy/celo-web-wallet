@@ -20,6 +20,7 @@ import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { getResultChartData, getSummaryChartData } from 'src/features/validators/barCharts'
 import { validate } from 'src/features/validators/stakeToken'
 import {
+  GroupVotes,
   stakeActionLabel,
   StakeActionType,
   StakeTokenParams,
@@ -78,11 +79,16 @@ export function StakeFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
-  } = useCustomForm<StakeTokenForm>(getInitialValues(location, tx), onSubmit, validateForm)
+    resetErrors,
+  } = useCustomForm<StakeTokenForm>(
+    getInitialValues(location, tx, groupVotes),
+    onSubmit,
+    validateForm
+  )
 
   // Keep form in sync with tx state
   useEffect(() => {
-    const initialValues = getInitialValues(location, tx)
+    const initialValues = getInitialValues(location, tx, groupVotes)
     resetValues(initialValues)
     // Ensure we have the info needed otherwise send user back
     if (!groups || !groups.length) {
@@ -114,6 +120,7 @@ export function StakeFormScreen() {
       autoSetAmount = '0'
     }
     setValues({ ...values, [name]: value, amount: autoSetAmount })
+    resetErrors()
   }
 
   const onUseMax = () => {
@@ -124,6 +131,7 @@ export function StakeFormScreen() {
       values.groupAddress
     )
     setValues({ ...values, amount: fromWeiRounded(maxAmount, Currency.CELO, true) })
+    resetErrors()
   }
 
   const onGoBack = () => {
@@ -270,16 +278,30 @@ function HelpModal() {
   )
 }
 
-function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null): StakeTokenForm {
-  const groupAddress = location?.state?.groupAddress
-  const initialGroup = groupAddress && utils.isAddress(groupAddress) ? groupAddress : ''
-  if (!tx || !tx.params || tx.type !== TxFlowType.Stake) {
-    return {
-      ...initialValues,
-      groupAddress: initialGroup,
-    }
-  } else {
+function getInitialValues(
+  location: Location<any>,
+  tx: TxFlowTransaction | null,
+  groupVotes: GroupVotes
+): StakeTokenForm {
+  if (tx && tx.params && tx.type === TxFlowType.Stake) {
     return amountFieldFromWei(tx.params)
+  }
+
+  const initialAction = location?.state?.action ?? initialValues.action
+  const groupAddress = location?.state?.groupAddress
+  const initialGroup =
+    groupAddress && utils.isAddress(groupAddress) ? groupAddress : initialValues.groupAddress
+
+  // Auto use pending when defaulting to activate
+  const initialAmount =
+    groupAddress && groupVotes[groupAddress] && initialAction === StakeActionType.Activate
+      ? fromWeiRounded(groupVotes[groupAddress].pending, Currency.CELO, true)
+      : initialValues.amount
+
+  return {
+    groupAddress: initialGroup,
+    action: initialAction,
+    amount: initialAmount,
   }
 }
 

@@ -12,6 +12,7 @@ export function useNavHintModal(
   body: string,
   navLabel: string,
   navTarget: string,
+  navState?: Record<string, unknown>,
   onClose?: () => void
 ) {
   const navigate = useNavigate()
@@ -29,7 +30,7 @@ export function useNavHintModal(
       color: Color.altGrey,
     }
     const onActionClick = (action: ModalAction) => {
-      if (action.key === 'nav') navigate(navTarget)
+      if (action.key === 'nav') navigate(navTarget, navState ? { state: navState } : undefined)
       if (onClose) onClose()
       closeModal()
     }

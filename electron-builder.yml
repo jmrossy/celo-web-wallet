@@ -21,7 +21,6 @@ mac:
   entitlementsInherit: electron/build/mac/entitlements.plist
   target:
     - dmg
-    - zip
 
 linux:
   artifactName: ${productName}-${version}-${os}-${arch}.${ext}

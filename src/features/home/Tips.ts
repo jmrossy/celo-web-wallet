@@ -1,4 +1,6 @@
-export const Tips = [
+import { config } from 'src/config'
+
+const Tips = [
   [
     'Transaction fees can be paid in any currency but they are smaller when paid with CELO.',
     'Consider keeping some CELO in your account to pay for fees. It will be used by default.',
@@ -17,11 +19,7 @@ export const Tips = [
   ],
   [
     'Your wallet can be imported in many places at once.',
-    'For example, use your Account Key to load it into the Valora mobile app.',
-  ],
-  [
-    'Using this wallet in a browser is only safe for small accounts or Ledger users.',
-    'For large accounts, downloading the Desktop App is strongly recommended.',
+    'For example, you can import your Account Key into the Valora mobile app.',
   ],
   [
     'You can lock CELO to participate in Celo network elections and governance.',
@@ -29,8 +27,16 @@ export const Tips = [
   ],
 ]
 
+const WebTips = [
+  ...Tips,
+  [
+    'Using this wallet in a browser is only safe for small accounts or Ledger users.',
+    'For large accounts, downloading the Desktop App is strongly recommended.',
+  ],
+]
+
 export function useDailyTip() {
-  // TODO save the starting date in storage so tips can be cycled through in order from the first
+  const tips = config.isElectron ? Tips : WebTips
   const date = new Date().getDate()
-  return Tips[date % Tips.length]
+  return tips[date % tips.length]
 }
