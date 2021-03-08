@@ -8,6 +8,7 @@ interface ActivatableStatus {
   status: boolean
   lastUpdated: number | null
   reminderDismissed: boolean
+  groupAddresses: string[] // the groups whose votes can be activated
 }
 
 interface ValidatorsState {
@@ -29,6 +30,7 @@ export const validatorsInitialState: ValidatorsState = {
     status: false,
     lastUpdated: null,
     reminderDismissed: false,
+    groupAddresses: [],
   },
 }
 

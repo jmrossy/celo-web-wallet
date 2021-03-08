@@ -13,6 +13,7 @@ import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
 import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
+import { StakeActionType } from 'src/features/validators/types'
 import { dismissActivatableReminder } from 'src/features/validators/validatorsSlice'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
@@ -61,16 +62,18 @@ export function HomeScreen() {
   // END PIN MIGRATION
 
   // Detect if user has unactivated staking votes
-  const { status: hasActivatableVotes, reminderDismissed: votesReminderDismissed } = useSelector(
-    (state: RootState) => state.validators.hasActivatable
-  )
-  const showActivateModal = hasActivatableVotes && !votesReminderDismissed
+  const hasActivatable = useSelector((state: RootState) => state.validators.hasActivatable)
+  const showActivateModal =
+    hasActivatable.status &&
+    hasActivatable.groupAddresses.length &&
+    !hasActivatable.reminderDismissed
   useNavHintModal(
     showActivateModal,
     'Activate Your Votes!',
     'You have pending validator votes that are ready to be activated. They must be activated to start earning staking rewards.',
     'Activate',
     '/stake',
+    { groupAddress: hasActivatable.groupAddresses[0], action: StakeActionType.Activate },
     () => {
       dispatch(dismissActivatableReminder())
     }

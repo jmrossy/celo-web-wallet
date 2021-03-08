@@ -16,6 +16,10 @@ export function useCustomForm<V>(
     setTouched({})
   }
 
+  const resetErrors = () => {
+    setErrors({ isValid: true })
+  }
+
   useEffect(() => {
     resetValues(initialValues)
   }, [])
@@ -52,5 +56,6 @@ export function useCustomForm<V>(
     handleSubmit,
     setValues,
     resetValues,
+    resetErrors,
   }
 }
