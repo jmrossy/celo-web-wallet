@@ -60,6 +60,5 @@ jobs:
           name: celowallet-artifacts
           path: |
             dist-electron/*-mac*.dmg
-            dist-electron/*-mac*.zip
             dist-electron/*-linux*.AppImage
             dist-electron/*-win*.exe
