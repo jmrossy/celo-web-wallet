@@ -4,7 +4,7 @@ import { getContract } from 'src/blockchain/contracts'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import { MIN_LOCKED_GOLD_TO_VOTE } from 'src/consts'
-import { Currency } from 'src/currency'
+import { CELO } from 'src/currency'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { validateFeeEstimate } from 'src/features/fees/utils'
@@ -58,12 +58,7 @@ export function validate(
     errors = {
       ...errors,
       ...validateFeeEstimate(feeEstimate),
-      ...validateAmountWithFees(
-        '0',
-        Currency.CELO,
-        balances,
-        feeEstimate ? [feeEstimate] : undefined
-      ),
+      ...validateAmountWithFees('0', CELO, balances, feeEstimate ? [feeEstimate] : undefined),
     }
   }
 

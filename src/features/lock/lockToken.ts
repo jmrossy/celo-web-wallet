@@ -6,7 +6,7 @@ import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCK_AMOUNT } from 'src/consts'
-import { Currency } from 'src/currency'
+import { CELO } from 'src/currency'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -49,16 +49,17 @@ export function validate(
   } else {
     const { locked, pendingFree, pendingBlocked } = balances.lockedCelo
     const adjustedBalances = { ...balances }
+    const adjustedCelo = adjustedBalances.tokens.CELO
     if (action === LockActionType.Lock) {
-      adjustedBalances.celo = getTotalUnlockedCelo(balances).toString()
+      adjustedCelo.value = getTotalUnlockedCelo(balances).toString()
     } else if (action === LockActionType.Unlock) {
-      adjustedBalances.celo = locked
+      adjustedCelo.value = locked
     } else if (action === LockActionType.Withdraw) {
-      adjustedBalances.celo = pendingFree
+      adjustedCelo.value = pendingFree
     }
     errors = {
       ...errors,
-      ...validateAmount(amountInWei, Currency.CELO, adjustedBalances, undefined, MIN_LOCK_AMOUNT),
+      ...validateAmount(amountInWei, CELO, adjustedBalances, undefined, MIN_LOCK_AMOUNT),
     }
 
     // Special case handling for withdraw which is confusing
@@ -72,10 +73,11 @@ export function validate(
     // Special case handling for locking whole balance
     if (action === LockActionType.Lock && !errors.amount) {
       const remainingAfterPending = BigNumber.from(amountInWei).sub(pendingFree).sub(pendingBlocked)
+      const celoBalance = balances.tokens.CELO.value
       if (
         remainingAfterPending.gt(0) &&
-        (remainingAfterPending.gte(balances.celo) ||
-          areAmountsNearlyEqual(remainingAfterPending, balances.celo, Currency.CELO))
+        (remainingAfterPending.gte(celoBalance) ||
+          areAmountsNearlyEqual(remainingAfterPending, celoBalance, CELO))
       ) {
         errors = {
           ...errors,
@@ -88,7 +90,7 @@ export function validate(
       errors = {
         ...errors,
         ...validateFeeEstimates(feeEstimates),
-        ...validateAmountWithFees(amountInWei, Currency.CELO, adjustedBalances, feeEstimates),
+        ...validateAmountWithFees(amountInWei, CELO, adjustedBalances, feeEstimates),
       }
     }
   }

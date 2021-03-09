@@ -7,10 +7,10 @@ export interface Token {
   color: string
   minValue: number
   displayDecimals: number
-  contractAddress: string
-  decimals: number
+  address: string // contract address
+  decimals: number // TODO support decimals other than 18
   chainId: number
-  isNative: boolean // can it pay for gas
+  isNative?: boolean // can it pay for gas
   ticker?: string // for ledger, usually the same as id except cGLD
   signature?: string
   rawData?: string
@@ -20,20 +20,38 @@ export interface TokenWithBalance extends Token {
   value: string
 }
 
+export enum NativeTokenId {
+  CELO = 'CELO',
+  cUSD = 'cUSD',
+  cEUR = 'cEUR',
+}
+
 interface INativeTokens {
+  CELO: Token
   cUSD: Token
   cEUR: Token
-  CELO: Token
 }
 
 export const NativeTokens: INativeTokens = {
+  CELO: {
+    id: 'CELO',
+    label: 'CELO',
+    color: Color.primaryGold,
+    minValue: 0.001,
+    displayDecimals: 3,
+    address: config.contractAddresses.GoldToken,
+    ticker: 'cGLD',
+    decimals: 18,
+    chainId: config.chainId,
+    isNative: true,
+  },
   cUSD: {
     id: 'cUSD',
     label: 'cUSD',
     color: Color.primaryGreen,
     minValue: 0.01,
     displayDecimals: 2,
-    contractAddress: config.contractAddresses.StableToken,
+    address: config.contractAddresses.StableToken,
     decimals: 18,
     chainId: config.chainId,
     isNative: true,
@@ -44,19 +62,7 @@ export const NativeTokens: INativeTokens = {
     color: Color.primaryGreen,
     minValue: 0.01,
     displayDecimals: 2,
-    contractAddress: config.contractAddresses.StableToken, // TODO
-    decimals: 18,
-    chainId: config.chainId,
-    isNative: true,
-  },
-  CELO: {
-    id: 'CELO',
-    label: 'CELO',
-    color: Color.primaryGold,
-    minValue: 0.001,
-    displayDecimals: 3,
-    contractAddress: config.contractAddresses.GoldToken,
-    ticker: 'cGLD',
+    address: config.contractAddresses.StableToken, // TODO
     decimals: 18,
     chainId: config.chainId,
     isNative: true,
@@ -65,20 +71,15 @@ export const NativeTokens: INativeTokens = {
 
 export type Tokens = INativeTokens & Record<string, Token>
 
+// Just re-export directly for convinient access
+export const CELO = NativeTokens.CELO
 export const cUSD = NativeTokens.cUSD
 export const cEUR = NativeTokens.cEUR
-export const CELO = NativeTokens.CELO
-
-export enum NativeTokenId {
-  cUSD = 'cUSD',
-  cEUR = 'cEUR',
-  CELO = 'CELO',
-}
 
 //TODO
 export enum Currency {
-  cUSD = 'cusd',
   CELO = 'celo',
+  cUSD = 'cusd',
 }
 
 // interface CurrencyProps {

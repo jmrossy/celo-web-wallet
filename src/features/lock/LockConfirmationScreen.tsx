@@ -8,7 +8,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { StackedBarChart } from 'src/components/StackedBarChart'
-import { Currency } from 'src/currency'
+import { CELO } from 'src/currency'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
@@ -93,7 +93,7 @@ export function LockConfirmationScreen() {
         <Box direction="row" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>Value</label>
           <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue amountInWei={amount} currency={Currency.CELO} baseFontSize={1.2} />
+            <MoneyValue amountInWei={amount} token={CELO} baseFontSize={1.2} />
           </Box>
         </Box>
 
@@ -117,7 +117,7 @@ export function LockConfirmationScreen() {
             <Box justify="end" align="end" styles={style.valueCol}>
               <MoneyValue
                 amountInWei={feeAmount}
-                currency={feeCurrency}
+                token={feeCurrency}
                 baseFontSize={1.2}
                 margin="0 0 0 0.25em"
               />

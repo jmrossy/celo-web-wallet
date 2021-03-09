@@ -1,9 +1,9 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
-import { Currency, getCurrencyProps, Token } from 'src/currency'
+import { Token } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { getTotalFee } from 'src/features/fees/utils'
 import { Balances } from 'src/features/wallet/types'
-import { getCurrencyBalance } from 'src/features/wallet/utils'
+import { getTokenBalance } from 'src/features/wallet/utils'
 import { logger } from 'src/utils/logger'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
@@ -17,7 +17,7 @@ export function range(length: number, start = 0, step = 1) {
 
 export function validateAmount(
   _amountInWei: BigNumberish,
-  currency: Currency,
+  token: Token,
   balances: Balances,
   max?: BigNumberish,
   min?: BigNumberish
@@ -29,7 +29,7 @@ export function validateAmount(
     return invalidInput('amount', 'Amount too small')
   }
 
-  if (max && amountInWei.gte(max) && !areAmountsNearlyEqual(amountInWei, max, currency)) {
+  if (max && amountInWei.gte(max) && !areAmountsNearlyEqual(amountInWei, max, token)) {
     logger.warn(`Invalid amount, too big: ${amountInWei.toString()}`)
     return invalidInput('amount', 'Amount too big')
   }
@@ -38,12 +38,12 @@ export function validateAmount(
     throw new Error('Checking amount validity without fresh balances')
   }
 
-  const balance = getCurrencyBalance(balances, currency)
+  const balance = getTokenBalance(balances, token)
   if (amountInWei.gt(balance)) {
-    if (areAmountsNearlyEqual(amountInWei, balance, currency)) {
+    if (areAmountsNearlyEqual(amountInWei, balance, token)) {
       logger.debug('Validation allowing amount that nearly equals balance')
     } else {
-      logger.warn(`Exceeds ${currency} balance: ${amountInWei.toString()}`)
+      logger.warn(`Exceeds ${token.id} balance: ${amountInWei.toString()}`)
       return invalidInput('amount', 'Amount too big')
     }
   }
@@ -53,7 +53,7 @@ export function validateAmount(
 
 export function validateAmountWithFees(
   txAmountInWei: BigNumberish,
-  txCurrency: Currency,
+  txCurrency: Token,
   balances: Balances,
   feeEstimates: FeeEstimate[] | undefined
 ): ErrorState | null {
@@ -64,8 +64,8 @@ export function validateAmountWithFees(
 
   const { totalFee, feeCurrency } = getTotalFee(feeEstimates)
 
-  if (feeCurrency === txCurrency) {
-    const balance = getCurrencyBalance(balances, txCurrency)
+  if (feeCurrency.id === txCurrency.id) {
+    const balance = getTokenBalance(balances, txCurrency)
     const amountWithFee = totalFee.add(txAmountInWei)
     if (amountWithFee.gt(balance)) {
       if (areAmountsNearlyEqual(amountWithFee, balance, txCurrency)) {
@@ -76,7 +76,7 @@ export function validateAmountWithFees(
       }
     }
   } else {
-    const balance = getCurrencyBalance(balances, feeCurrency)
+    const balance = getTokenBalance(balances, feeCurrency)
     if (totalFee.gt(balance)) {
       logger.error(`Total fee exceeds ${txCurrency} balance`)
       return invalidInput('fee', 'Fee exceeds balance')
@@ -89,16 +89,16 @@ export function validateAmountWithFees(
 // Get amount that is adjusted when user input is nearly the same as their balance
 export function getAdjustedAmountFromBalances(
   _amountInWei: string,
-  txCurrency: Currency,
+  txCurrency: Token,
   balances: Balances,
   feeEstimates: FeeEstimate[]
 ): BigNumber {
   const amountInWei = BigNumber.from(_amountInWei)
-  const balance = BigNumber.from(getCurrencyBalance(balances, txCurrency))
+  const balance = BigNumber.from(getTokenBalance(balances, txCurrency))
 
   if (areAmountsNearlyEqual(amountInWei, balance, txCurrency)) {
     const { totalFee, feeCurrency } = getTotalFee(feeEstimates)
-    if (txCurrency === feeCurrency) {
+    if (txCurrency.id === feeCurrency.id) {
       // TODO this still leaves a small bit in the account because
       // the static gas limit is higher than needed. Fix will require
       // computing exact gas, but that still doesn't work well for feeCurrency=cUSD
@@ -116,7 +116,7 @@ export function getAdjustedAmountFromBalances(
 export function getAdjustedAmount(
   _amountInWei: BigNumberish,
   _maxAmount: BigNumberish,
-  txCurrency: Currency
+  txCurrency: Token
 ): BigNumber {
   const amountInWei = BigNumber.from(_amountInWei)
   const maxAmount = BigNumber.from(_maxAmount)
@@ -133,10 +133,9 @@ export function getAdjustedAmount(
 export function areAmountsNearlyEqual(
   amountInWei1: BigNumber,
   amountInWei2: BigNumberish,
-  currency: Currency
+  token: Token
 ) {
-  const { minValue } = getCurrencyProps(currency)
-  const minValueWei = toWei(minValue)
+  const minValueWei = toWei(token.minValue)
   // Is difference btwn amount and balance less than min amount shown for currency
   return amountInWei1.sub(amountInWei2).abs().lt(minValueWei)
 }

@@ -11,7 +11,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { StackedBarChart } from 'src/components/StackedBarChart'
-import { Currency } from 'src/currency'
+import { CELO } from 'src/currency'
 import { getResultChartData, getSummaryChartData } from 'src/features/lock/barCharts'
 import { validate } from 'src/features/lock/lockToken'
 import { lockActionLabel, LockActionType, LockTokenParams } from 'src/features/lock/types'
@@ -79,7 +79,7 @@ export function LockFormScreen() {
     const { name, value } = event.target
     let autoSetAmount: string
     if (value === LockActionType.Withdraw) {
-      autoSetAmount = fromWeiRounded(balances.lockedCelo.pendingFree, Currency.CELO, true)
+      autoSetAmount = fromWeiRounded(balances.lockedCelo.pendingFree, CELO, true)
     } else {
       autoSetAmount = '0'
     }
@@ -91,11 +91,11 @@ export function LockFormScreen() {
     const { locked, pendingFree } = balances.lockedCelo
     let maxAmount = '0'
     if (values.action === LockActionType.Lock) {
-      maxAmount = fromWeiRounded(getTotalUnlockedCelo(balances), Currency.CELO, true)
+      maxAmount = fromWeiRounded(getTotalUnlockedCelo(balances), CELO, true)
     } else if (values.action === LockActionType.Unlock) {
-      maxAmount = fromWeiRounded(locked, Currency.CELO, true)
+      maxAmount = fromWeiRounded(locked, CELO, true)
     } else if (values.action === LockActionType.Withdraw) {
-      maxAmount = fromWeiRounded(pendingFree, Currency.CELO, true)
+      maxAmount = fromWeiRounded(pendingFree, CELO, true)
     }
     setValues({ ...values, amount: maxAmount })
     resetErrors()

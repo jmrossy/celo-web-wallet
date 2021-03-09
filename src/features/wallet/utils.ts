@@ -2,13 +2,23 @@ import { BigNumber, utils } from 'ethers'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { MNEMONIC_LENGTH_MAX, MNEMONIC_LENGTH_MIN, NULL_ADDRESS } from 'src/consts'
-import { Currency } from 'src/currency'
+import { Token } from 'src/currency'
 import { Balances } from 'src/features/wallet/types'
 import { select } from 'typed-redux-saga'
 
 export function useAreBalancesEmpty() {
-  const { cUsd, celo } = useSelector((s: RootState) => s.wallet.balances)
-  return BigNumber.from(cUsd).lte(0) && BigNumber.from(celo).lte(0)
+  const balances = useSelector((s: RootState) => s.wallet.balances)
+  return areBalancesEmpty(balances)
+}
+
+export function areBalancesEmpty(balances: Balances) {
+  let totalBalance = BigNumber.from(0)
+  for (const token of Object.values(balances.tokens)) {
+    totalBalance = totalBalance.add(token.value)
+  }
+  const { locked, pendingBlocked, pendingFree } = balances.lockedCelo
+  totalBalance = totalBalance.add(locked).add(pendingBlocked).add(pendingFree)
+  return totalBalance.gt(0)
 }
 
 export function useIsVoteSignerAccount() {
@@ -45,11 +55,11 @@ export function* getVoterAccountAddress() {
   return account.voteSignerFor ?? address
 }
 
-export function getCurrencyBalance(balances: Balances, currency: Currency) {
+export function getTokenBalance(balances: Balances, token: Token) {
   if (!balances) throw new Error('No balances provided')
-  if (currency === Currency.CELO) return balances.celo
-  if (currency === Currency.cUSD) return balances.cUsd
-  throw new Error(`Unsupported currency ${currency}`)
+  const balance = balances.tokens[token.id]
+  if (!balance) new Error(`Unknown token ${token.id}`)
+  return balance.value
 }
 
 export function isValidMnemonic(mnemonic: string) {

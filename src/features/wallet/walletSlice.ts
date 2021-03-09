@@ -3,6 +3,7 @@ import { persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import { SignerType } from 'src/blockchain/signer'
+import { CELO, cEUR, cUSD } from 'src/currency'
 import { SecretType } from 'src/features/pincode/types'
 import { Balances } from 'src/features/wallet/types'
 import { isValidDerivationPath } from 'src/features/wallet/utils'
@@ -37,8 +38,20 @@ export const walletInitialState: Wallet = {
   type: null,
   derivationPath: null,
   balances: {
-    cUsd: '0',
-    celo: '0',
+    tokens: {
+      CELO: {
+        ...CELO,
+        value: '0',
+      },
+      cUSD: {
+        ...cUSD,
+        value: '0',
+      },
+      cEUR: {
+        ...cEUR,
+        value: '0',
+      },
+    },
     lockedCelo: {
       locked: '0',
       pendingBlocked: '0',
@@ -70,8 +83,8 @@ const walletSlice = createSlice({
       state.derivationPath = derivationPath
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {
-      const { cUsd, celo, lockedCelo, lastUpdated } = action.payload
-      assert(cUsd && celo && lockedCelo && lastUpdated, 'Invalid balance')
+      const { tokens, lockedCelo, lastUpdated } = action.payload
+      assert(tokens && lockedCelo && lastUpdated, 'Invalid balance')
       state.balances = action.payload
     },
     setAccountStatus: (state, action: PayloadAction<AccountStatus>) => {

@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import { Currency } from 'src/currency'
+import { CELO } from 'src/currency'
 import { LockActionType, LockTokenParams } from 'src/features/lock/types'
 import { getTotalCelo, getTotalPendingCelo, hasPendingCelo } from 'src/features/lock/utils'
 import { Balances } from 'src/features/wallet/types'
@@ -8,14 +8,18 @@ import { fromWeiRounded } from 'src/utils/amount'
 
 // Just for convinience / shortness cause this file has lots of conversions
 function fromWei(value: BigNumberish) {
-  return parseFloat(fromWeiRounded(value, Currency.CELO, true))
+  return parseFloat(fromWeiRounded(value, CELO, true))
 }
 
 export function getSummaryChartData(balances: Balances) {
   const hasPending = hasPendingCelo(balances)
   const total = getTotalCelo(balances)
 
-  const unlocked = { label: 'Unlocked', value: fromWei(balances.celo), color: Color.primaryGold }
+  const unlocked = {
+    label: 'Unlocked',
+    value: fromWei(balances.tokens.CELO.value),
+    color: Color.primaryGold,
+  }
   const locked = {
     label: 'Locked',
     value: fromWei(balances.lockedCelo.locked),
@@ -60,7 +64,7 @@ function addUpToMax(v1: BigNumber, toAdd: BigNumber, max: BigNumber) {
 }
 
 export function getResultChartData(balances: Balances, values: LockTokenParams) {
-  let unlocked = BigNumber.from(balances.celo)
+  let unlocked = BigNumber.from(balances.tokens.CELO.value)
   let pending = getTotalPendingCelo(balances)
   let locked = BigNumber.from(balances.lockedCelo.locked)
   const total = getTotalCelo(balances)

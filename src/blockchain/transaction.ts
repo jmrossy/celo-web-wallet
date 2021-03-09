@@ -8,7 +8,7 @@ import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
 import { getProvider } from 'src/blockchain/provider'
 import { getSigner } from 'src/blockchain/signer'
-import { CELO } from 'src/currency'
+import { NativeTokenId, NativeTokens } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 
 export async function sendTransaction(tx: CeloTransactionRequest, feeEstimate?: FeeEstimate) {
@@ -26,7 +26,7 @@ export async function signTransaction(tx: CeloTransactionRequest, feeEstimate?: 
   }
 
   const { gasPrice, gasLimit, token } = feeEstimate
-  const feeCurrencyAddress = token.id === CELO.id ? undefined : token.contractAddress
+  const feeCurrencyAddress = token === NativeTokenId.CELO ? undefined : NativeTokens[token].address
 
   const signedTx = await signer.signTransaction({
     ...tx,

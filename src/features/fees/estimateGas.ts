@@ -1,7 +1,7 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
-import { Currency } from 'src/currency'
+import { NativeTokenId } from 'src/currency'
 import { TransactionType } from 'src/features/types'
 
 const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
@@ -30,7 +30,7 @@ const STABLE_TOKEN_GAS_MULTIPLIER = 5
 export async function estimateGas(
   type: TransactionType,
   tx?: CeloTransactionRequest,
-  feeCurrency?: Currency,
+  feeCurrency?: NativeTokenId,
   forceEstimation?: boolean
 ) {
   if (forceEstimation || !PRECOMPUTED_GAS_ESTIMATES[type]) {
@@ -39,9 +39,9 @@ export async function estimateGas(
   }
 
   const gasLimit = BigNumber.from(PRECOMPUTED_GAS_ESTIMATES[type])
-  if (!feeCurrency || feeCurrency === Currency.CELO) {
+  if (!feeCurrency || feeCurrency === NativeTokenId.CELO) {
     return gasLimit
-  } else if (feeCurrency === Currency.cUSD) {
+  } else if (feeCurrency === NativeTokenId.cUSD || feeCurrency === NativeTokenId.cEUR) {
     // TODO find a more scientific was to fix the gas estimation issue.
     // Since txs paid with cUSD also involve token transfers, the gas needed
     // is more than what estimateGas returns
@@ -51,13 +51,13 @@ export async function estimateGas(
   }
 }
 
-async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: Currency) {
+async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: NativeTokenId) {
   const signer = getSigner().signer
   const gasLimit = await signer.estimateGas(tx)
 
-  if (!feeCurrency || feeCurrency === Currency.CELO) {
+  if (!feeCurrency || feeCurrency === NativeTokenId.CELO) {
     return gasLimit
-  } else if (feeCurrency === Currency.cUSD) {
+  } else if (feeCurrency === NativeTokenId.cUSD || feeCurrency === NativeTokenId.cEUR) {
     // TODO find a more scientific was to fix the gas estimation issue.
     // Since txs paid with cUSD also involve token transfers, the gas needed
     // is more than what estimateGas returns

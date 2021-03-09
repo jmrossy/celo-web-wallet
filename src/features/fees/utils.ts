@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
-import { Currency, NativeTokenId, NativeTokens } from 'src/currency'
+import { NativeTokenId, NativeTokens } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { CeloTransaction } from 'src/features/types'
 import { logger } from 'src/utils/logger'
@@ -13,10 +13,10 @@ export function validateFeeEstimate(estimate: FeeEstimate | undefined | null): E
     return invalidInput('fee', 'No fee set')
   }
 
-  const { gasPrice, gasLimit, fee, currency } = estimate
+  const { gasPrice, gasLimit, fee, token } = estimate
 
-  if (!currency || (currency !== Currency.CELO && currency !== Currency.cUSD)) {
-    logger.error(`Invalid fee currency: ${currency}`)
+  if (!Object.values(NativeTokenId).includes(token)) {
+    logger.error(`Invalid fee currency: ${token}`)
     return invalidInput('fee', 'Invalid fee currency')
   }
 
@@ -81,7 +81,8 @@ export function useFee(amountInWei: string | null | undefined, txCount = 1) {
 
   let total = BigNumber.from(amountInWei)
   let feeAmount = BigNumber.from(0)
-  const feeCurrency = feeEstimates[0].currency // all estimates use the same currency
+  // Assumes all estimates use the same currency
+  const feeCurrency = NativeTokens[feeEstimates[0].token]
   for (let i = 0; i < txCount; i++) {
     const estimate = feeEstimates[i]
     if (!estimate) {
@@ -107,7 +108,8 @@ export function getTotalFee(feeEstimates: FeeEstimate[]) {
     (total: BigNumber, curr: FeeEstimate) => total.add(curr.fee),
     BigNumber.from(0)
   )
-  const feeCurrency = feeEstimates[0].currency // assumes same fee currency for all estimates
+  // Assumes all estimates use the same currency
+  const feeCurrency = NativeTokens[feeEstimates[0].token]
   return {
     totalFee,
     feeCurrency,

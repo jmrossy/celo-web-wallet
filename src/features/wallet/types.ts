@@ -1,7 +1,9 @@
-import { TokenWithBalance } from 'src/currency'
+import { NativeTokenId, TokenWithBalance } from 'src/currency'
 import { LockedCeloBalances } from 'src/features/lock/types'
 
-export type TokenBalances = Record<string, TokenWithBalance> // token id to balance in wei
+type NativeTokenBalances = { [t in NativeTokenId]: TokenWithBalance }
+
+export type TokenBalances = NativeTokenBalances & Record<string, TokenWithBalance> // token id to balance in wei
 
 export interface Balances {
   // All balances are represented in wei
