@@ -18,6 +18,7 @@ export enum CeloContract {
 const debugMode = __DEBUG__ ?? false
 // @ts-ignore Defined by webpack define plugin
 const isElectron = __IS_ELECTRON__ ?? false
+// const isElectron = true
 // @ts-ignore Defined by webpack define plugin
 const version = __VERSION__ || null
 
@@ -42,11 +43,11 @@ interface Config {
 
 const desktopUrls = {
   windows:
-    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.0.0/Celo-Wallet-1.0.0-win.exe',
+    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.0.2/Celo-Wallet-1.0.2-win.exe',
   mac:
-    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.0.0/Celo-Wallet-1.0.0-mac.dmg',
+    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.0.2/Celo-Wallet-1.0.2-mac.dmg',
   linux:
-    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.0.0/Celo-Wallet-1.0.0-linux-x86_64.AppImage',
+    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.0.2/Celo-Wallet-1.0.2-linux-x86_64.AppImage',
 }
 
 // TODO find a nice way to switch btwn configs at build/run time

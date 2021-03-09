@@ -16,7 +16,7 @@ interface Props {
 export function WebWalletWarning({ type, onClose }: Props) {
   const caseText =
     type === 'create'
-      ? 'If you plan to use this account for large amounts'
+      ? 'If you will use large amounts in this account'
       : 'If you are importing a large account'
 
   return (
@@ -74,7 +74,8 @@ const style: Stylesheet = {
     padding: '0 0.5em',
   },
   warningIcon: {
-    height: '1.4em',
-    width: '1.5em',
+    height: '1.2em',
+    width: '1.35em',
+    paddingTop: 1,
   },
 }

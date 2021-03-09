@@ -63,6 +63,7 @@ export function LockFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
+    resetErrors,
   } = useCustomForm<LockTokenForm>(getInitialValues(tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
@@ -83,6 +84,7 @@ export function LockFormScreen() {
       autoSetAmount = '0'
     }
     setValues({ ...values, [name]: value, amount: autoSetAmount })
+    resetErrors()
   }
 
   const onUseMax = () => {
@@ -96,6 +98,7 @@ export function LockFormScreen() {
       maxAmount = fromWeiRounded(pendingFree, Currency.CELO, true)
     }
     setValues({ ...values, amount: maxAmount })
+    resetErrors()
   }
 
   const summaryData = useMemo(() => getSummaryChartData(balances), [balances])

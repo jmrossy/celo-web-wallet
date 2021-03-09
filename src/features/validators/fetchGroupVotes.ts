@@ -74,6 +74,7 @@ async function checkHasActivatable(groupVotes: GroupVotes, accountAddress: strin
       status: false,
       lastUpdated: Date.now(),
       reminderDismissed: false,
+      groupAddresses: [],
     }
   }
 
@@ -84,11 +85,15 @@ async function checkHasActivatable(groupVotes: GroupVotes, accountAddress: strin
     'hasActivatablePendingVotes',
     groupAddrsAndAccount
   )
-  const status = hasActivatable.some((v) => !!v)
+  if (groupsWithPending.length !== hasActivatable.length)
+    throw new Error('Groups, activatable lists size mismatch')
+  const groupToActivate = groupsWithPending.filter((v, i) => !!hasActivatable[i])
+  const status = groupToActivate.length > 0
 
   return {
     status,
     lastUpdated: Date.now(),
     reminderDismissed: false,
+    groupAddresses: groupToActivate,
   }
 }
