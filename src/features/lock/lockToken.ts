@@ -198,7 +198,7 @@ export function getLockActionTxPlan(
 
   if (action === LockActionType.Unlock) {
     // If only all three cases where this simple :)
-    const adjutedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, Currency.CELO)
+    const adjutedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, CELO)
     return [{ type: TransactionType.UnlockCelo, amountInWei: adjutedAmount.toString() }]
   } else if (action === LockActionType.Lock) {
     const txs: LockTokenTxPlan = []
@@ -214,7 +214,7 @@ export function getLockActionTxPlan(
     for (const p of pwSorted) {
       if (amountRemaining.lt(MIN_LOCK_AMOUNT)) break
       const txAmount = BigNumberMin(amountRemaining, BigNumber.from(p.value))
-      const adjustedAmount = getAdjustedAmount(txAmount, p.value, Currency.CELO)
+      const adjustedAmount = getAdjustedAmount(txAmount, p.value, CELO)
       txs.push({
         type: TransactionType.RelockCelo,
         pendingWithdrawal: p,

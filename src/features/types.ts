@@ -42,46 +42,40 @@ export enum TransactionType {
   Other,
 }
 
-export interface StableTokenTransferTx extends Transaction {
-  type: TransactionType.StableTokenTransfer
+interface TokenTransferTx extends Transaction {
   comment?: string
   isOutgoing: boolean
   token: Token // TODO avoid putting full token data here to reduce storage?
 }
 
-export interface StableTokenApproveTx extends Transaction {
+interface TokenApproveTx extends Transaction {
+  approvedValue: string
+  spender: string
+  token: Token
+}
+
+export interface StableTokenTransferTx extends TokenTransferTx {
+  type: TransactionType.StableTokenTransfer
+}
+
+export interface StableTokenApproveTx extends TokenApproveTx {
   type: TransactionType.StableTokenApprove
-  approvedValue: string
-  spender: string
-  token: Token
 }
 
-export interface CeloTokenTransferTx extends Transaction {
+export interface CeloTokenTransferTx extends TokenTransferTx {
   type: TransactionType.CeloTokenTransfer
-  comment?: string
-  isOutgoing: boolean
-  token: Token
 }
 
-export interface CeloTokenApproveTx extends Transaction {
+export interface CeloTokenApproveTx extends TokenApproveTx {
   type: TransactionType.CeloTokenApprove
-  token: Token
-  approvedValue: string
-  spender: string
 }
 
-export interface CeloNativeTransferTx extends Transaction {
+export interface CeloNativeTransferTx extends TokenTransferTx {
   type: TransactionType.CeloNativeTransfer
-  isOutgoing: boolean
-  comment: undefined
-  token: Token
 }
 
-export interface OtherTokenTransfer extends Transaction {
+export interface OtherTokenTransfer extends TokenTransferTx {
   type: TransactionType.OtherTokenTransfer
-  comment?: string
-  isOutgoing: boolean
-  token: Token
 }
 
 export interface EscrowTransferTx extends Transaction {
@@ -145,6 +139,12 @@ export type TokenTransaction =
   | CeloTokenApproveTx
   | OtherTokenTransfer
 
+export type TokenTransfer =
+  | StableTokenTransferTx
+  | CeloTokenTransferTx
+  | CeloNativeTransferTx
+  | OtherTokenTransfer
+
 export type EscrowTransaction = EscrowTransferTx | EscrowWithdrawTx
 
 export type CeloTransaction =
@@ -156,11 +156,5 @@ export type CeloTransaction =
   | StakeTokenTx
   | GovernanceVoteTx
   | OtherTx
-
-export type TokenTransfer =
-  | StableTokenTransferTx
-  | CeloTokenTransferTx
-  | CeloNativeTransferTx
-  | OtherTokenTransfer
 
 export type TransactionMap = Record<string, CeloTransaction> // hash to item

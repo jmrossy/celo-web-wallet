@@ -26,6 +26,7 @@ export function SendConfirmationScreen() {
   const navigate = useNavigate()
 
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tokens = useSelector((state: RootState) => state.wallet.balances.tokens)
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -42,6 +43,7 @@ export function SendConfirmationScreen() {
 
   if (!tx || tx.type !== TxFlowType.Send) return null
   const params = tx.params
+  const txToken = tokens[params.tokenId]
 
   const { amount, total, feeAmount, feeCurrency, feeEstimates } = useFee(params.amountInWei)
 
@@ -88,7 +90,7 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>Value</label>
           <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue amountInWei={amount} currency={params.currency} baseFontSize={1.2} />
+            <MoneyValue amountInWei={amount} token={txToken} baseFontSize={1.2} />
           </Box>
         </Box>
 
@@ -113,7 +115,7 @@ export function SendConfirmationScreen() {
               <label>+</label>
               <MoneyValue
                 amountInWei={feeAmount}
-                currency={feeCurrency}
+                token={feeCurrency}
                 baseFontSize={1.2}
                 margin="0 0 0 0.25em"
               />
@@ -127,12 +129,7 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow} justify="between">
           <label css={[style.labelCol, style.totalLabel]}>Total</label>
           <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue
-              amountInWei={total}
-              currency={params.currency}
-              baseFontSize={1.2}
-              fontWeight={700}
-            />
+            <MoneyValue amountInWei={total} token={txToken} baseFontSize={1.2} fontWeight={700} />
           </Box>
         </Box>
 

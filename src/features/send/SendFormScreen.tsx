@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 import { Location } from 'history'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -8,16 +8,17 @@ import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { AddressInput } from 'src/components/input/AddressInput'
-import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
 import { NumberInput } from 'src/components/input/NumberInput'
+import { SelectInput } from 'src/components/input/SelectInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { Currency } from 'src/currency'
+import { cUSD } from 'src/currency'
 import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
+import { Balances } from 'src/features/wallet/types'
 import { getTokenBalance } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -33,7 +34,7 @@ interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
 const initialValues: SendTokenForm = {
   recipient: '',
   amount: '',
-  currency: Currency.cUSD,
+  tokenId: cUSD.id,
   comment: '',
 }
 
@@ -75,11 +76,14 @@ export function SendFormScreen() {
   }
 
   const onUseMax = () => {
-    const currency = values.currency
-    const balance = getTokenBalance(balances, currency)
-    const maxAmount = fromWeiRounded(balance, currency, true)
+    const tokenId = values.tokenId
+    const token = balances.tokens[tokenId]
+    const balance = getTokenBalance(balances, token)
+    const maxAmount = fromWeiRounded(balance, token, true)
     setValues({ ...values, amount: maxAmount })
   }
+
+  const selectOptions = useMemo(() => getSelectOptions(balances), [balances])
 
   return (
     <ScreenContentFrame>
@@ -132,25 +136,17 @@ export function SendFormScreen() {
             </Box>
             <Box direction="column" align="start" margin="0 0 0 1.5em">
               <label css={style.inputLabel}>Currency</label>
-              <Box direction="row" justify="between" align="start" styles={style.radioBox}>
-                <CurrencyRadioBox
-                  tabIndex={0}
-                  label="cUSD"
-                  value={Currency.cUSD}
-                  name="currency"
-                  checked={values.currency === Currency.cUSD}
-                  onChange={handleChange}
-                  containerCss={{ marginRight: '0.5em' }}
-                />
-                <CurrencyRadioBox
-                  tabIndex={1}
-                  label="CELO"
-                  value={Currency.CELO}
-                  name="currency"
-                  checked={values.currency === Currency.CELO}
-                  onChange={handleChange}
-                />
-              </Box>
+              <SelectInput
+                name="tokenId"
+                autoComplete={false}
+                width="3em"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.tokenId}
+                options={selectOptions}
+                placeholder="Currency"
+                {...errors['tokenId']}
+              />
             </Box>
           </Box>
 
@@ -191,6 +187,13 @@ function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null)
   } else {
     return amountFieldFromWei(tx.params)
   }
+}
+
+function getSelectOptions(balances: Balances) {
+  return Object.values(balances.tokens).map((t) => ({
+    display: t.label,
+    value: t.id,
+  }))
 }
 
 const style: Stylesheet = {
@@ -240,9 +243,5 @@ const style: Stylesheet = {
     [mq[768]]: {
       fontSize: '1em',
     },
-  },
-  radioBox: {
-    height: '100%',
-    width: '100%',
   },
 }

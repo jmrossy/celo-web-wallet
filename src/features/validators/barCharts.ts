@@ -1,6 +1,6 @@
 import { BigNumber, BigNumberish } from 'ethers'
 import { BARCHART_MIN_SHOW_AMOUNT } from 'src/consts'
-import { Currency } from 'src/currency'
+import { CELO } from 'src/currency'
 import {
   GroupVotes,
   StakeActionType,
@@ -15,7 +15,7 @@ import { BigNumberMax, BigNumberMin, fromWeiRounded } from 'src/utils/amount'
 
 // Just for convinience / shortness cause this file has lots of conversions
 function fromWei(value: BigNumberish) {
-  return parseFloat(fromWeiRounded(value, Currency.CELO, true))
+  return parseFloat(fromWeiRounded(value, CELO, true))
 }
 
 export function getSummaryChartData(

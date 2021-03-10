@@ -3,7 +3,7 @@ import { RootState } from 'src/app/rootReducer'
 import { getLatestBlockDetails, getNumBlocksPerInterval } from 'src/blockchain/blocks'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
-import { Currency } from 'src/currency'
+import { NativeTokenId } from 'src/currency'
 import { updatePairPrice } from 'src/features/tokenPrice/tokenPriceSlice'
 import { QuoteCurrency, TokenPriceHistory } from 'src/features/tokenPrice/types'
 import { areAddressesEqual, ensureLeading0x } from 'src/utils/addresses'
@@ -26,7 +26,7 @@ const EXPECTED_MIN_CELO_TO_USD = 0.1
 const EXPECTED_MAX_CELO_TO_USD = 100
 
 interface FetchTokenPriceParams {
-  baseCurrency: Currency
+  baseCurrency: NativeTokenId
   quoteCurrency: QuoteCurrency
   numDays?: number // 7 by default
 }
@@ -36,10 +36,10 @@ function* fetchTokenPrice(params: FetchTokenPriceParams) {
   const numDays = _numDays || DEFAULT_HISTORY_NUM_DAYS
 
   const prices = yield* select((state: RootState) => state.tokenPrice.prices)
-  const pairPrices = prices[baseCurrency][quoteCurrency]
+  const basePrices = prices[baseCurrency]
 
   // Is data already present in store?
-  if (isPriceListComplete(pairPrices, numDays)) return
+  if (basePrices && isPriceListComplete(basePrices[quoteCurrency], numDays)) return
 
   const newPrices = yield* call(fetchTokenPriceFromBlockscout, baseCurrency, quoteCurrency, numDays)
   yield* put(updatePairPrice({ baseCurrency, quoteCurrency, prices: newPrices }))
@@ -64,11 +64,11 @@ function isPriceListComplete(prices: TokenPriceHistory | undefined, numDays: num
 
 // Fetches token prices by retrieving and parsing the oracle reporting tx logs
 async function fetchTokenPriceFromBlockscout(
-  baseCurrency: Currency,
+  baseCurrency: NativeTokenId,
   quoteCurrency: QuoteCurrency,
   numDays: number
 ): Promise<TokenPriceHistory> {
-  if (baseCurrency !== Currency.CELO || quoteCurrency !== QuoteCurrency.USD) {
+  if (baseCurrency !== NativeTokenId.CELO || quoteCurrency !== QuoteCurrency.USD) {
     throw new Error('Only CELO <-> USD is currently supported')
   }
 

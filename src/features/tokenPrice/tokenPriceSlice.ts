@@ -1,17 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Currency } from 'src/currency'
+import { NativeTokenId } from 'src/currency'
 import { PairPriceUpdate, QuoteCurrency, TokenPriceHistory } from 'src/features/tokenPrice/types'
 
 interface TokenPrices {
-  // base currency to quote currency to price list
-  prices: Record<Currency, Partial<Record<QuoteCurrency, TokenPriceHistory>>>
+  // Base currency to quote currency to price list
+  prices: Partial<Record<NativeTokenId, Partial<Record<QuoteCurrency, TokenPriceHistory>>>>
 }
 
 export const tokenPriceInitialState: TokenPrices = {
-  prices: {
-    [Currency.CELO]: {},
-    [Currency.cUSD]: {},
-  },
+  // More tokens can be added here over time as needed
+  prices: {},
 }
 
 const tokenPriceSlice = createSlice({
@@ -20,7 +18,10 @@ const tokenPriceSlice = createSlice({
   reducers: {
     updatePairPrice: (state, action: PayloadAction<PairPriceUpdate>) => {
       const { baseCurrency, quoteCurrency, prices } = action.payload
-      state.prices[baseCurrency][quoteCurrency] = prices
+      state.prices[baseCurrency] = {
+        ...state.prices[baseCurrency],
+        [quoteCurrency]: prices,
+      }
     },
   },
 })

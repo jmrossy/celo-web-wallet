@@ -1,18 +1,18 @@
-import { Currency } from 'src/currency'
+import { NativeTokenId } from 'src/currency'
 
 export enum QuoteCurrency {
-  cUSD = 'cusd',
-  CELO = 'celo',
-  BTC = 'btc',
-  USD = 'usd',
-  USDT = 'usdt',
+  cUSD = 'cUSD',
+  CELO = 'CELO',
+  BTC = 'BTC',
+  USD = 'USD',
+  USDT = 'USDT',
 }
 
 // Must be ordered from oldest to newest
 export type TokenPriceHistory = Array<{ timestamp: number; price: number }>
 
 export interface PairPriceUpdate {
-  baseCurrency: Currency
+  baseCurrency: NativeTokenId
   quoteCurrency: QuoteCurrency
   prices: TokenPriceHistory
 }

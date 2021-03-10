@@ -4,7 +4,7 @@ import ReactFrappeChart from 'react-frappe-charts'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
-import { Currency } from 'src/currency'
+import { NativeTokenId } from 'src/currency'
 import { fetchTokenPriceActions } from 'src/features/tokenPrice/fetchPrices'
 import { QuoteCurrency } from 'src/features/tokenPrice/types'
 import { findPriceForDay, tokenPriceHistoryToChartData } from 'src/features/tokenPrice/utils'
@@ -23,16 +23,17 @@ export function PriceChartCelo({ showHeaderPrice, containerCss, height }: PriceC
   useEffect(() => {
     dispatch(
       fetchTokenPriceActions.trigger({
-        baseCurrency: Currency.CELO,
+        baseCurrency: NativeTokenId.CELO,
         quoteCurrency: QuoteCurrency.USD,
       })
     )
   }, [])
 
   const allPrices = useSelector((s: RootState) => s.tokenPrice.prices)
-  const prices = allPrices[Currency.CELO][QuoteCurrency.USD]
-  const chartData = tokenPriceHistoryToChartData(prices)
-  const todayPrice = findPriceForDay(prices, new Date())
+  const celoPrices = allPrices[NativeTokenId.CELO]
+  const celoUsdPrices = celoPrices ? celoPrices[QuoteCurrency.USD] : undefined
+  const chartData = tokenPriceHistoryToChartData(celoUsdPrices)
+  const todayPrice = findPriceForDay(celoUsdPrices, new Date())
 
   const exchangeRate = useSelector((s: RootState) => s.exchange.cUsdToCelo)
   const celoToCusd = exchangeRate ? 1 / exchangeRate.rate : null
