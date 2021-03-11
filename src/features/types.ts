@@ -26,6 +26,7 @@ export enum TransactionType {
   CeloTokenApprove,
   CeloNativeTransfer,
   OtherTokenTransfer,
+  OtherTokenApprove,
   EscrowTransfer,
   EscrowWithdraw,
   TokenExchange,
@@ -74,8 +75,12 @@ export interface CeloNativeTransferTx extends TokenTransferTx {
   type: TransactionType.CeloNativeTransfer
 }
 
-export interface OtherTokenTransfer extends TokenTransferTx {
+export interface OtherTokenTransferTx extends TokenTransferTx {
   type: TransactionType.OtherTokenTransfer
+}
+
+export interface OtherTokenApproveTx extends TokenApproveTx {
+  type: TransactionType.OtherTokenApprove
 }
 
 export interface EscrowTransferTx extends Transaction {
@@ -137,13 +142,14 @@ export type TokenTransaction =
   | CeloTokenTransferTx
   | StableTokenApproveTx
   | CeloTokenApproveTx
-  | OtherTokenTransfer
+  | OtherTokenTransferTx
+  | OtherTokenApproveTx
 
 export type TokenTransfer =
   | StableTokenTransferTx
   | CeloTokenTransferTx
   | CeloNativeTransferTx
-  | OtherTokenTransfer
+  | OtherTokenTransferTx
 
 export type EscrowTransaction = EscrowTransferTx | EscrowWithdrawTx
 

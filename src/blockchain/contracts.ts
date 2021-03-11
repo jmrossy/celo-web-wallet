@@ -11,7 +11,7 @@ import { ABI as StableTokenAbi } from 'src/blockchain/ABIs/stableToken'
 import { ABI as ValidatorsAbi } from 'src/blockchain/ABIs/validators'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { CELO, cUSD, Token } from 'src/currency'
+import { NativeTokens, Token } from 'src/currency'
 import { areAddressesEqual } from 'src/utils/addresses'
 
 let contractCache: Partial<Record<CeloContract, Contract>> = {}
@@ -58,20 +58,18 @@ function getContractAbi(c: CeloContract) {
 
 export function getContractName(address: string): string | null {
   if (!address) return null
-
   for (const [name, cAddress] of Object.entries(config.contractAddresses)) {
     if (areAddressesEqual(address, cAddress)) {
       return name
     }
   }
-
   return null
 }
 
 export function getTokenFromContract(address: string): Token | null {
-  const name = getContractName(address)
-  if (name === CeloContract.StableToken) return cUSD
-  if (name === CeloContract.GoldToken) return CELO
+  for (const t of Object.values(NativeTokens)) {
+    if (areAddressesEqual(address, t.Address)) return t
+  }
   return null
 }
 

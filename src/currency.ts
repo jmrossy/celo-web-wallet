@@ -10,10 +10,10 @@ export interface Token {
   address: string // contract address
   decimals: number // TODO support decimals other than 18
   chainId: number
-  isNative?: boolean // can it pay for gas
   ticker?: string // for ledger, usually the same as id except cGLD
   signature?: string
   rawData?: string
+  exchangeAddress?: string // Mento contract for token
 }
 
 export interface TokenWithBalance extends Token {
@@ -26,7 +26,9 @@ export enum NativeTokenId {
   cEUR = 'cEUR',
 }
 
-interface INativeTokens {
+export const StableTokenIds = [NativeTokenId.cUSD, NativeTokenId.cEUR]
+
+export interface INativeTokens {
   CELO: Token
   cUSD: Token
   cEUR: Token
@@ -34,8 +36,8 @@ interface INativeTokens {
 
 export const NativeTokens: INativeTokens = {
   CELO: {
-    id: 'CELO',
-    label: 'CELO',
+    id: NativeTokenId.CELO,
+    label: NativeTokenId.CELO,
     color: Color.primaryGold,
     minValue: 0.001,
     displayDecimals: 3,
@@ -43,35 +45,34 @@ export const NativeTokens: INativeTokens = {
     ticker: 'cGLD',
     decimals: 18,
     chainId: config.chainId,
-    isNative: true,
   },
   cUSD: {
-    id: 'cUSD',
-    label: 'cUSD',
+    id: NativeTokenId.cUSD,
+    label: NativeTokenId.cUSD,
     color: Color.primaryGreen,
     minValue: 0.01,
     displayDecimals: 2,
     address: config.contractAddresses.StableToken,
     decimals: 18,
     chainId: config.chainId,
-    isNative: true,
+    exchangeAddress: config.contractAddresses.Exchange,
   },
   cEUR: {
-    id: 'cEUR',
-    label: 'cEUR',
+    id: NativeTokenId.cEUR,
+    label: NativeTokenId.cEUR,
     color: Color.primaryGreen,
     minValue: 0.01,
     displayDecimals: 2,
-    address: config.contractAddresses.StableToken, // TODO
+    address: config.contractAddresses.StableTokenEUR,
     decimals: 18,
     chainId: config.chainId,
-    isNative: true,
+    exchangeAddress: config.contractAddresses.ExchangeEUR,
   },
 }
 
 export type Tokens = INativeTokens & Record<string, Token>
 
-// Just re-export directly for convinient access
+// Just re-export directly for convenient access
 export const CELO = NativeTokens.CELO
 export const cUSD = NativeTokens.cUSD
 export const cEUR = NativeTokens.cEUR
