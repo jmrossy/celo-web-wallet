@@ -40,26 +40,29 @@ export async function fetchCurrentProposals(): Promise<Proposal[]> {
 
   // Get unexpired queued and dequeued proposals
   const queuedP: Promise<QueueRaw> = governance.getQueue()
-  const dequeuedP: Promise<string[]> = governance.getDequeue()
+  const dequeuedP: Promise<BigNumberish[]> = governance.getDequeue()
   const [queued, dequeued] = await Promise.all([queuedP, dequeuedP])
 
-  let queuedIds = queued[0].map((p) => p.toString()).filter((id) => !!id)
+  let queuedIds = queued[0].map((id) => BigNumber.from(id).toString()).filter((id) => !!id)
   if (queuedIds.length) {
     const areExpired: boolean[] = await batchCall(governance, 'isQueuedProposalExpired', queuedIds)
     queuedIds = queuedIds.filter((id, index) => !areExpired[index])
   }
 
-  let dequeuedIds = dequeued.filter((id) => !BigNumber.from(id).isZero())
+  const dequeuedIds = dequeued.filter((id) => !BigNumber.from(id).isZero())
+  let unexpiredDequeuedIds: string[] = []
   if (dequeuedIds.length) {
     const areExpired: boolean[] = await batchCall(
       governance,
       'isDequeuedProposalExpired',
       dequeuedIds
     )
-    dequeuedIds = dequeuedIds.filter((id, index) => !areExpired[index])
+    unexpiredDequeuedIds = dequeuedIds
+      .filter((id, index) => !areExpired[index])
+      .map((id) => BigNumber.from(id).toString())
   }
 
-  const allIds = [...queuedIds, ...dequeuedIds]
+  const allIds = [...queuedIds, ...unexpiredDequeuedIds]
   const numProps = allIds.length
   if (!numProps) return []
 
