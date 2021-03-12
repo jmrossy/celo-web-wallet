@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
-import { getTokenFromContract } from 'src/blockchain/contracts'
+import { getTokenByAddress } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
 import {
@@ -390,7 +390,7 @@ function parseOutgoingEscrowTransfer(
     throw new Error(`Escrow tx has invalid aruments: ${tokenAddress}, ${value}`)
   }
 
-  const token = getTokenFromContract(tokenAddress)
+  const token = getTokenByAddress(tokenAddress)
   if (!token) {
     throw new Error(`No token found for address: ${tokenAddress}`)
   }

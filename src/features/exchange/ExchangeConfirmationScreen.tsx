@@ -7,7 +7,7 @@ import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency } from 'src/currency'
+import { CELO } from 'src/currency'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
 import { useExchangeValues } from 'src/features/exchange/utils'
@@ -27,8 +27,9 @@ export function ExchangeConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const { cUsdToCelo } = useSelector((state: RootState) => state.exchange) // TODO get diff rates
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
-  const { cUsdToCelo } = useSelector((state: RootState) => state.exchange)
 
   useEffect(() => {
     if (!tx || tx.type !== TxFlowType.Exchange) {
@@ -39,20 +40,20 @@ export function ExchangeConfirmationScreen() {
 
     dispatch(
       fetchExchangeRateActions.trigger({
-        sellGold: tx.params.fromCurrency === Currency.CELO,
+        sellGold: tx.params.fromTokenId === CELO.id,
         sellAmount: tx.params.amountInWei,
         force: true,
       })
     )
 
     const approveType =
-      tx.params.fromCurrency === Currency.CELO
+      tx.params.fromTokenId === CELO.id
         ? TransactionType.CeloTokenApprove
         : TransactionType.StableTokenApprove
 
     dispatch(
       estimateFeeActions.trigger({
-        preferredCurrency: tx.params.fromCurrency,
+        preferredCurrency: tx.params.fromTokenId,
         txs: [{ type: approveType }, { type: TransactionType.TokenExchange }],
       })
     )
@@ -65,7 +66,9 @@ export function ExchangeConfirmationScreen() {
 
   const { from, to, rate } = useExchangeValues(
     params.amountInWei,
-    params.fromCurrency,
+    params.fromTokenId,
+    params.toTokenId,
+    balances,
     cUsdToCelo,
     true
   )
@@ -101,7 +104,7 @@ export function ExchangeConfirmationScreen() {
             <label css={[style.label, style.labelWidth]}>Value</label>
             <MoneyValue
               amountInWei={from.weiAmount}
-              currency={from.currency}
+              token={from.token}
               baseFontSize={1.2}
               containerCss={style.valueWidth}
             />
@@ -121,7 +124,7 @@ export function ExchangeConfirmationScreen() {
             {feeAmount && feeCurrency ? (
               <Box styles={style.valueWidth} justify="end" align="end">
                 <label css={{ ...style.label, marginRight: '0.25em' }}>+</label>
-                <MoneyValue amountInWei={feeAmount} currency={feeCurrency} baseFontSize={1.2} />
+                <MoneyValue amountInWei={feeAmount} token={feeCurrency} baseFontSize={1.2} />
               </Box>
             ) : (
               // TODO a proper loader (need to update mocks)
@@ -133,7 +136,7 @@ export function ExchangeConfirmationScreen() {
             <label css={[style.totalLabel, style.labelWidth]}>Total In</label>
             <MoneyValue
               amountInWei={totalIn}
-              currency={from.currency}
+              token={from.token}
               baseFontSize={1.2}
               containerCss={style.valueWidth}
               fontWeight={700}
@@ -144,7 +147,7 @@ export function ExchangeConfirmationScreen() {
             <label css={[style.totalLabel, style.labelWidth]}>Total Out</label>
             <MoneyValue
               amountInWei={to.weiAmount}
-              currency={to.currency}
+              token={to.token}
               baseFontSize={1.2}
               containerCss={style.valueWidth}
               fontWeight={700}
@@ -179,9 +182,9 @@ export function ExchangeConfirmationScreen() {
           <label css={style.label}>Rate</label>
           {cUsdToCelo ? (
             <>
-              <MoneyValue amountInWei={rate.weiBasis} currency={from.currency} baseFontSize={1.2} />
+              <MoneyValue amountInWei={rate.weiBasis} token={from.token} baseFontSize={1.2} />
               <span css={style.valueText}>=</span>
-              <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
+              <MoneyValue amountInWei={rate.weiRate} token={to.token} baseFontSize={1.2} />
             </>
           ) : (
             // TODO a proper loader (need to update mocks)

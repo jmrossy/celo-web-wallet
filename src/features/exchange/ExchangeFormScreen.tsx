@@ -1,14 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
-import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
 import { NumberInput } from 'src/components/input/NumberInput'
+import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency } from 'src/currency'
+import { NativeTokenId } from 'src/currency'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { validate } from 'src/features/exchange/exchangeToken'
 import { ExchangeTokenParams } from 'src/features/exchange/types'
@@ -16,6 +16,7 @@ import { useExchangeValues } from 'src/features/exchange/utils'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
+import { Balances } from 'src/features/wallet/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -29,14 +30,15 @@ interface ExchangeTokenForm extends Omit<ExchangeTokenParams, 'amountInWei'> {
 
 const initialValues: ExchangeTokenForm = {
   amount: '',
-  fromCurrency: Currency.cUSD,
+  fromTokenId: NativeTokenId.cUSD,
+  toTokenId: NativeTokenId.CELO,
 }
 
 export function ExchangeFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
-  const { cUsdToCelo } = useSelector((state: RootState) => state.exchange)
+  const { cUsdToCelo } = useSelector((state: RootState) => state.exchange) // TODO get diff rates
   const { transaction: tx } = useSelector((state: RootState) => state.txFlow)
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
 
@@ -68,10 +70,14 @@ export function ExchangeFormScreen() {
 
   const { to, from, rate } = useExchangeValues(
     values.amount,
-    values.fromCurrency,
+    values.fromTokenId,
+    values.toTokenId,
+    balances,
     cUsdToCelo,
     false
   )
+
+  const selectOptions = useMemo(() => getSelectOptions(balances), [balances])
 
   return (
     <ScreenContentFrame>
@@ -94,28 +100,22 @@ export function ExchangeFormScreen() {
             </Box>
             <Box direction="row" align="center" styles={style.inputRow}>
               <label css={style.inputLabel}>From Currency</label>
-              <CurrencyRadioBox
-                tabIndex={0}
-                label="cUSD"
-                value={Currency.cUSD}
-                name="fromCurrency"
-                checked={values.fromCurrency === Currency.cUSD}
+              <SelectInput
+                name="fromTokenId"
+                autoComplete={false}
+                width="3em"
                 onChange={handleChange}
-                containerCss={{ marginRight: '0.5em' }}
-              />
-              <CurrencyRadioBox
-                tabIndex={1}
-                label="CELO"
-                value={Currency.CELO}
-                name="fromCurrency"
-                checked={values.fromCurrency === Currency.CELO}
-                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.fromTokenId}
+                options={selectOptions}
+                placeholder="From Currency"
+                {...errors['fromTokenId']}
               />
             </Box>
 
             <Box direction="row" align="center" styles={style.inputRow}>
               <label css={style.inputLabel}>Output Amount</label>
-              <MoneyValue amountInWei={to.weiAmount} currency={to.currency} baseFontSize={1.2} />
+              <MoneyValue amountInWei={to.weiAmount} token={to.token} baseFontSize={1.2} />
             </Box>
 
             <Button type="submit" size="m">
@@ -130,12 +130,12 @@ export function ExchangeFormScreen() {
               <>
                 <MoneyValue
                   amountInWei={rate.weiBasis}
-                  currency={from.currency}
+                  token={from.token}
                   baseFontSize={1.2}
                   margin="0 0 0 1em"
                 />
                 <span css={style.valueText}>:</span>
-                <MoneyValue amountInWei={rate.weiRate} currency={to.currency} baseFontSize={1.2} />
+                <MoneyValue amountInWei={rate.weiRate} token={to.token} baseFontSize={1.2} />
               </>
             ) : (
               <span css={style.valueText}>Loading...</span>
@@ -158,6 +158,13 @@ function getInitialValues(tx: TxFlowTransaction | null) {
   } else {
     return amountFieldFromWei(tx.params)
   }
+}
+
+function getSelectOptions(balances: Balances) {
+  return Object.values(balances.tokens).map((t) => ({
+    display: t.label,
+    value: t.id,
+  }))
 }
 
 const style: Stylesheet = {

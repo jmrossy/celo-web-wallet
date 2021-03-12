@@ -3,23 +3,28 @@ import { WEI_PER_UNIT } from 'src/consts'
 import { CELO, cUSD, Token } from 'src/currency'
 import { ExchangeRate } from 'src/features/exchange/types'
 import { TokenExchangeTx } from 'src/features/types'
+import { Balances } from 'src/features/wallet/types'
 import { fromWei, toWei } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 
 export function useExchangeValues(
   fromAmount: number | string | null | undefined,
-  fromToken: Token | null | undefined,
-  toToken: Token | null | undefined,
+  fromTokenId: string | null | undefined,
+  toTokenId: string | null | undefined,
+  balances: Balances,
   toCeloRate: ExchangeRate | null | undefined,
   isFromAmountWei: boolean
 ) {
-  if (!fromToken || !toToken || !toCeloRate) {
+  if (!fromTokenId || !toTokenId || !toCeloRate) {
     // Return some defaults when values are missing
-    return getDefaultExchangeValues(fromToken, toToken)
+    return getDefaultExchangeValues(cUSD, CELO)
   }
 
+  const fromToken = balances.tokens[fromTokenId]
+  const toToken = balances.tokens[toTokenId]
+
   try {
-    const exchangeRate = fromToken.id === CELO.id ? 1 / toCeloRate.rate : toCeloRate.rate
+    const exchangeRate = fromTokenId === CELO.id ? 1 / toCeloRate.rate : toCeloRate.rate
     const exchangeRateWei = toWei(exchangeRate)
 
     const fromAmountWei = isFromAmountWei ? BigNumber.from(fromAmount) : toWei(fromAmount)

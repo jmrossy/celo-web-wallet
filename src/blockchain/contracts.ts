@@ -38,6 +38,7 @@ function getContractAbi(c: CeloContract) {
     case CeloContract.Escrow:
       return EscrowAbi
     case CeloContract.Exchange:
+    case CeloContract.ExchangeEUR:
       return ExchangeAbi
     case CeloContract.GoldToken:
       return GoldTokenAbi
@@ -48,6 +49,7 @@ function getContractAbi(c: CeloContract) {
     case CeloContract.SortedOracles:
       return SortedOraclesAbi
     case CeloContract.StableToken:
+    case CeloContract.StableTokenEUR:
       return StableTokenAbi
     case CeloContract.Validators:
       return ValidatorsAbi
@@ -56,9 +58,17 @@ function getContractAbi(c: CeloContract) {
   }
 }
 
-export function getContractName(address: string): string | null {
+export function getContractByAddress(address: string): Contract | null {
+  const name = getContractName(address)
+  if (name) return getContract(name)
+  else return null
+}
+
+export function getContractName(address: string): CeloContract | null {
   if (!address) return null
-  for (const [name, cAddress] of Object.entries(config.contractAddresses)) {
+  const contractNames = Object.keys(config.contractAddresses) as Array<CeloContract> // Object.keys loses types
+  for (const name of contractNames) {
+    const cAddress = config.contractAddresses[name]
     if (areAddressesEqual(address, cAddress)) {
       return name
     }
@@ -66,7 +76,8 @@ export function getContractName(address: string): string | null {
   return null
 }
 
-export function getTokenFromContract(address: string): Token | null {
+export function getTokenByAddress(address: string): Token | null {
+  if (!address) return null
   for (const t of Object.values(NativeTokens)) {
     if (areAddressesEqual(address, t.Address)) return t
   }
