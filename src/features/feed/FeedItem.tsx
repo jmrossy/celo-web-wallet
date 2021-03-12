@@ -3,11 +3,11 @@ import { ExchangeIcon } from 'src/components/icons/Exchange'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { CELO, Token } from 'src/currency'
 import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
+import { CELO, Token } from 'src/tokens'
 
 interface FeedItemProps {
   tx: CeloTransaction

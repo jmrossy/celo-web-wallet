@@ -2,14 +2,6 @@ import { BigNumber, BigNumberish, utils } from 'ethers'
 import { getTokenByAddress } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
-import {
-  CELO,
-  INativeTokens,
-  NativeTokenId,
-  NativeTokens,
-  StableTokenIds,
-  Token,
-} from 'src/currency'
 import { AbiInterfaceMap, BlockscoutTokenTransfer, BlockscoutTx } from 'src/features/feed/types'
 import { OrderedVoteValue } from 'src/features/governance/types'
 import {
@@ -32,6 +24,7 @@ import {
   TokenTransaction,
   TransactionType,
 } from 'src/features/types'
+import { CELO, INativeTokens, NativeTokenId, NativeTokens, StableTokenIds, Token } from 'src/tokens'
 import { areAddressesEqual, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 

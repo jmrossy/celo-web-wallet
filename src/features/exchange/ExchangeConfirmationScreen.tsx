@@ -7,7 +7,6 @@ import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { CELO } from 'src/currency'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
 import { useExchangeValues } from 'src/features/exchange/utils'
@@ -22,6 +21,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { CELO } from 'src/tokens'
 
 export function ExchangeConfirmationScreen() {
   const dispatch = useDispatch()

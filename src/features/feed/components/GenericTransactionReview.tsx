@@ -2,7 +2,6 @@ import { getContractName } from 'src/blockchain/contracts'
 import { Address } from 'src/components/Address'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { config } from 'src/config'
-import { CELO } from 'src/currency'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
@@ -12,6 +11,7 @@ import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { CeloTransaction } from 'src/features/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
+import { CELO } from 'src/tokens'
 
 interface Props {
   tx: CeloTransaction

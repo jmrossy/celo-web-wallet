@@ -1,6 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
 import { BARCHART_MIN_SHOW_AMOUNT } from 'src/consts'
-import { CELO } from 'src/currency'
 import {
   GroupVotes,
   StakeActionType,
@@ -10,6 +9,7 @@ import {
 import { findValidatorGroupName, getStakingMaxAmount } from 'src/features/validators/utils'
 import { Balances } from 'src/features/wallet/types'
 import { ChartDataColors, ChartDataColorsLighter, Color } from 'src/styles/Color'
+import { CELO } from 'src/tokens'
 import { shortenAddress } from 'src/utils/addresses'
 import { BigNumberMax, BigNumberMin, fromWeiRounded } from 'src/utils/amount'
 

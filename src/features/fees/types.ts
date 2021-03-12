@@ -1,4 +1,4 @@
-import { NativeTokenId } from 'src/currency'
+import { NativeTokenId } from 'src/tokens'
 
 export interface GasPrice {
   value: string

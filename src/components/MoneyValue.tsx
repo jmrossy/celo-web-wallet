@@ -1,6 +1,6 @@
 import { BigNumberish } from 'ethers'
-import { Token } from 'src/currency'
 import { Styles } from 'src/styles/types'
+import { Token } from 'src/tokens'
 import { fromWeiRounded } from 'src/utils/amount'
 
 interface MoneyValueProps {

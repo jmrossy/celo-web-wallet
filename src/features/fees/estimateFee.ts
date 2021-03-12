@@ -1,12 +1,12 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
-import { NativeTokenId } from 'src/currency'
 import { estimateGas } from 'src/features/fees/estimateGas'
 import { setFeeEstimate } from 'src/features/fees/feeSlice'
 import { fetchGasPriceIfStale } from 'src/features/fees/gasPrice'
 import { FeeEstimate } from 'src/features/fees/types'
 import { TransactionType } from 'src/features/types'
 import { fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import { NativeTokenId } from 'src/tokens'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put } from 'typed-redux-saga'
 

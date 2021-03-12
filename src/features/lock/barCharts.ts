@@ -1,9 +1,9 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import { CELO } from 'src/currency'
 import { LockActionType, LockTokenParams } from 'src/features/lock/types'
 import { getTotalCelo, getTotalPendingCelo, hasPendingCelo } from 'src/features/lock/utils'
 import { Balances } from 'src/features/wallet/types'
 import { Color } from 'src/styles/Color'
+import { CELO } from 'src/tokens'
 import { fromWeiRounded } from 'src/utils/amount'
 
 // Just for convinience / shortness cause this file has lots of conversions

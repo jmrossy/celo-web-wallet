@@ -4,13 +4,13 @@ import ReactFrappeChart from 'react-frappe-charts'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
-import { NativeTokenId } from 'src/currency'
 import { fetchTokenPriceActions } from 'src/features/tokenPrice/fetchPrices'
 import { QuoteCurrency } from 'src/features/tokenPrice/types'
 import { findPriceForDay, tokenPriceHistoryToChartData } from 'src/features/tokenPrice/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Styles, Stylesheet } from 'src/styles/types'
+import { NativeTokenId } from 'src/tokens'
 
 interface PriceChartProps {
   showHeaderPrice: boolean

@@ -9,7 +9,6 @@ import {
   MAX_SEND_TOKEN_SIZE,
   MAX_SEND_TOKEN_SIZE_LEDGER,
 } from 'src/consts'
-import { CELO, cUSD, Token } from 'src/currency'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { validateFeeEstimate } from 'src/features/fees/utils'
@@ -18,6 +17,7 @@ import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
+import { CELO, cUSD, Token } from 'src/tokens'
 import {
   getAdjustedAmountFromBalances,
   validateAmount,

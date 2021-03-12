@@ -5,10 +5,10 @@ import { AccountMenu } from 'src/components/header/AccountMenu'
 import Logo from 'src/components/icons/logo.svg'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { CELO, cEUR, cUSD } from 'src/currency'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { CELO, cEUR, cUSD } from 'src/tokens'
 
 export function Header() {
   const tokens = useSelector((s: RootState) => s.wallet.balances.tokens)

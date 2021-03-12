@@ -1,5 +1,5 @@
-import { NativeTokenId, TokenWithBalance } from 'src/currency'
 import { LockedCeloBalances } from 'src/features/lock/types'
+import { NativeTokenId, TokenWithBalance } from 'src/tokens'
 
 type NativeTokenBalances = { [t in NativeTokenId]: TokenWithBalance }
 

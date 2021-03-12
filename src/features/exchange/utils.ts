@@ -1,9 +1,9 @@
 import { BigNumber } from 'ethers'
 import { WEI_PER_UNIT } from 'src/consts'
-import { CELO, cUSD, Token } from 'src/currency'
 import { ExchangeRate } from 'src/features/exchange/types'
 import { TokenExchangeTx } from 'src/features/types'
 import { Balances } from 'src/features/wallet/types'
+import { CELO, cUSD, Token } from 'src/tokens'
 import { fromWei, toWei } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 

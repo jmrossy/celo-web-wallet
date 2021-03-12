@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { NativeTokenId } from 'src/currency'
 import { PairPriceUpdate, QuoteCurrency, TokenPriceHistory } from 'src/features/tokenPrice/types'
+import { NativeTokenId } from 'src/tokens'
 
 interface TokenPrices {
   // Base currency to quote currency to price list

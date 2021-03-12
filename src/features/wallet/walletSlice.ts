@@ -3,10 +3,10 @@ import { persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import { SignerType } from 'src/blockchain/signer'
-import { CELO, cEUR, cUSD } from 'src/currency'
 import { SecretType } from 'src/features/pincode/types'
 import { Balances } from 'src/features/wallet/types'
 import { isValidDerivationPath } from 'src/features/wallet/utils'
+import { CELO, cEUR, cUSD } from 'src/tokens'
 import { assert } from 'src/utils/validation'
 
 interface Wallet {

@@ -11,7 +11,7 @@ import { ABI as StableTokenAbi } from 'src/blockchain/ABIs/stableToken'
 import { ABI as ValidatorsAbi } from 'src/blockchain/ABIs/validators'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { NativeTokens, Token } from 'src/currency'
+import { NativeTokens, Token } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 
 let contractCache: Partial<Record<CeloContract, Contract>> = {}

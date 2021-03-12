@@ -1,5 +1,4 @@
 import { MoneyValue } from 'src/components/MoneyValue'
-import { CELO } from 'src/currency'
 import { computeToCeloRate } from 'src/features/exchange/utils'
 import {
   TransactionProperty,
@@ -9,6 +8,7 @@ import { TransactionStatusProperty } from 'src/features/feed/components/Transact
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { TokenExchangeTx } from 'src/features/types'
 import { Stylesheet } from 'src/styles/types'
+import { CELO } from 'src/tokens'
 
 interface Props {
   tx: TokenExchangeTx

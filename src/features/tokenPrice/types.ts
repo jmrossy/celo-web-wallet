@@ -1,4 +1,4 @@
-import { NativeTokenId } from 'src/currency'
+import { NativeTokenId } from 'src/tokens'
 
 export enum QuoteCurrency {
   cUSD = 'cUSD',

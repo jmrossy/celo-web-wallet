@@ -9,7 +9,6 @@ import {
   MAX_EXCHANGE_TOKEN_SIZE_LEDGER,
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
-import { CELO, NativeTokenId, NativeTokens, Token } from 'src/currency'
 import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
@@ -19,6 +18,7 @@ import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
+import { CELO, NativeTokenId, NativeTokens, Token } from 'src/tokens'
 import {
   fromWei,
   getAdjustedAmountFromBalances,

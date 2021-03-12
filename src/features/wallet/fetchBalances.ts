@@ -4,7 +4,6 @@ import { getContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { CeloContract, config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
-import { CELO, cUSD, Token, TokenWithBalance } from 'src/currency'
 import { fetchLockedCeloStatus, fetchTotalLocked } from 'src/features/lock/fetchLockedStatus'
 import { LockedCeloBalances } from 'src/features/lock/types'
 import { fetchStakingBalances } from 'src/features/validators/fetchGroupVotes'
@@ -15,6 +14,7 @@ import {
   updateBalances,
   walletInitialState,
 } from 'src/features/wallet/walletSlice'
+import { CELO, cUSD, Token, TokenWithBalance } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'

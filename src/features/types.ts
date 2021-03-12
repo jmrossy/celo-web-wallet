@@ -1,5 +1,5 @@
-import { NativeTokenId, Token } from 'src/currency'
 import { VoteValue } from 'src/features/governance/types'
+import { NativeTokenId, Token } from 'src/tokens'
 
 interface Transaction {
   type: TransactionType

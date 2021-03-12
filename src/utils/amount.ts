@@ -1,9 +1,9 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
-import { Token } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
 import { getTotalFee } from 'src/features/fees/utils'
 import { Balances } from 'src/features/wallet/types'
 import { getTokenBalance } from 'src/features/wallet/utils'
+import { Token } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 

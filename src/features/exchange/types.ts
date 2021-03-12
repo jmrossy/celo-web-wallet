@@ -1,5 +1,5 @@
-import { NativeTokenId } from 'src/currency'
 import { FeeEstimate } from 'src/features/fees/types'
+import { NativeTokenId } from 'src/tokens'
 
 export interface ExchangeRate {
   rate: number

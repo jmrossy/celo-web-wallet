@@ -1,8 +1,8 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
-import { NativeTokenId } from 'src/currency'
 import { TransactionType } from 'src/features/types'
+import { NativeTokenId } from 'src/tokens'
 
 const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.StableTokenTransfer]: 95000,
