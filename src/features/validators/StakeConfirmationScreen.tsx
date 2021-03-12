@@ -129,7 +129,7 @@ export function StakeConfirmationScreen() {
             <Box justify="end" align="end" styles={style.valueCol}>
               <MoneyValue
                 amountInWei={feeAmount}
-                currency={feeCurrency}
+                token={feeCurrency}
                 baseFontSize={1.2}
                 margin="0 0 0 0.25em"
               />

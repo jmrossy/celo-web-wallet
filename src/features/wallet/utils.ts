@@ -18,7 +18,16 @@ export function areBalancesEmpty(balances: Balances) {
   }
   const { locked, pendingBlocked, pendingFree } = balances.lockedCelo
   totalBalance = totalBalance.add(locked).add(pendingBlocked).add(pendingFree)
-  return totalBalance.gt(0)
+  return totalBalance.eq(0)
+}
+
+// Does the balance have at least minValue of any token
+export function hasMinTokenBalance(minValue: string, balances: Balances) {
+  const minValueBn = BigNumber.from(minValue)
+  for (const token of Object.values(balances.tokens)) {
+    if (minValueBn.lte(token.value)) return true
+  }
+  return false
 }
 
 export function useIsVoteSignerAccount() {

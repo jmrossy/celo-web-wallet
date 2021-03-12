@@ -139,7 +139,7 @@ export function SendFormScreen() {
               <SelectInput
                 name="tokenId"
                 autoComplete={false}
-                width="3em"
+                width="5em"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.tokenId}

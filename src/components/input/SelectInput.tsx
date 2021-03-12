@@ -174,7 +174,7 @@ const style: Stylesheet = {
   },
   dropdownContainer: {
     position: 'absolute',
-    top: 53,
+    top: 50,
     left: 0,
     right: 0,
     maxHeight: '15em',

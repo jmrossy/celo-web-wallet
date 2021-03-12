@@ -53,7 +53,7 @@ export function validateAmount(
 
 export function validateAmountWithFees(
   txAmountInWei: BigNumberish,
-  txCurrency: Token,
+  txToken: Token,
   balances: Balances,
   feeEstimates: FeeEstimate[] | undefined
 ): ErrorState | null {
@@ -64,21 +64,21 @@ export function validateAmountWithFees(
 
   const { totalFee, feeCurrency } = getTotalFee(feeEstimates)
 
-  if (feeCurrency.id === txCurrency.id) {
-    const balance = getTokenBalance(balances, txCurrency)
+  if (feeCurrency.id === txToken.id) {
+    const balance = getTokenBalance(balances, txToken)
     const amountWithFee = totalFee.add(txAmountInWei)
     if (amountWithFee.gt(balance)) {
-      if (areAmountsNearlyEqual(amountWithFee, balance, txCurrency)) {
+      if (areAmountsNearlyEqual(amountWithFee, balance, txToken)) {
         logger.debug('Validation allowing amount that nearly equals balance')
       } else {
-        logger.error(`Fee plus amount exceeds ${txCurrency} balance`)
+        logger.error(`Fee plus amount exceeds ${txToken} balance`)
         return invalidInput('fee', 'Fee plus amount exceeds balance')
       }
     }
   } else {
     const balance = getTokenBalance(balances, feeCurrency)
     if (totalFee.gt(balance)) {
-      logger.error(`Total fee exceeds ${txCurrency} balance`)
+      logger.error(`Total fee exceeds ${txToken} balance`)
       return invalidInput('fee', 'Fee exceeds balance')
     }
   }
@@ -89,16 +89,16 @@ export function validateAmountWithFees(
 // Get amount that is adjusted when user input is nearly the same as their balance
 export function getAdjustedAmountFromBalances(
   _amountInWei: string,
-  txCurrency: Token,
+  txToken: Token,
   balances: Balances,
   feeEstimates: FeeEstimate[]
 ): BigNumber {
   const amountInWei = BigNumber.from(_amountInWei)
-  const balance = BigNumber.from(getTokenBalance(balances, txCurrency))
+  const balance = BigNumber.from(getTokenBalance(balances, txToken))
 
-  if (areAmountsNearlyEqual(amountInWei, balance, txCurrency)) {
+  if (areAmountsNearlyEqual(amountInWei, balance, txToken)) {
     const { totalFee, feeCurrency } = getTotalFee(feeEstimates)
-    if (txCurrency.id === feeCurrency.id) {
+    if (txToken.id === feeCurrency.id) {
       // TODO this still leaves a small bit in the account because
       // the static gas limit is higher than needed. Fix will require
       // computing exact gas, but that still doesn't work well for feeCurrency=cUSD
@@ -116,11 +116,11 @@ export function getAdjustedAmountFromBalances(
 export function getAdjustedAmount(
   _amountInWei: BigNumberish,
   _maxAmount: BigNumberish,
-  txCurrency: Token
+  txToken: Token
 ): BigNumber {
   const amountInWei = BigNumber.from(_amountInWei)
   const maxAmount = BigNumber.from(_maxAmount)
-  if (areAmountsNearlyEqual(amountInWei, maxAmount, txCurrency)) {
+  if (areAmountsNearlyEqual(amountInWei, maxAmount, txToken)) {
     return maxAmount
   } else {
     // Just the amount entered, no adjustment needed
@@ -136,7 +136,7 @@ export function areAmountsNearlyEqual(
   token: Token
 ) {
   const minValueWei = toWei(token.minValue)
-  // Is difference btwn amount and balance less than min amount shown for currency
+  // Is difference btwn amount and balance less than min amount shown for token
   return amountInWei1.sub(amountInWei2).abs().lt(minValueWei)
 }
 
@@ -146,7 +146,7 @@ export function fromWei(value: BigNumberish | null | undefined): number {
 }
 
 // Similar to fromWei above but rounds to set number of decimals
-// with a minimum floor, configured per currency
+// with a minimum floor, configured per token
 export function fromWeiRounded(
   value: BigNumberish | null | undefined,
   token: Token,
@@ -154,7 +154,7 @@ export function fromWeiRounded(
 ): string {
   if (!value) return '0'
 
-  const { decimals, minValue: _minValue } = token
+  const { displayDecimals, minValue: _minValue } = token
   const minValue = FixedNumber.from(`${_minValue}`) // FixedNumber throws error when given number for some reason
   const bareMinValue = FixedNumber.from(`${_minValue / 5}`)
 
@@ -170,7 +170,7 @@ export function fromWeiRounded(
     return minValue.toString()
   }
 
-  return amount.round(decimals).toString()
+  return amount.round(displayDecimals).toString()
 }
 
 export function toWei(value: BigNumberish | null | undefined): BigNumber {

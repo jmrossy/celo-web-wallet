@@ -60,7 +60,7 @@ const tableColumns: TableColumn[] = [
   },
   {
     header: 'Contract Address',
-    id: 'contractAddress',
+    id: 'address',
     renderer: (addr) => shortenAddress(addr, true),
   },
 ]

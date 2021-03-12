@@ -31,12 +31,12 @@ export function TokenTransferReview({ tx }: Props) {
       <TransactionProperty label="Amount">
         <div css={style.value}>
           <span css={style.amountLabel}>{amountLabel}</span>
-          <MoneyValue amountInWei={tx.value} currency={tx.currency} />
+          <MoneyValue amountInWei={tx.value} token={tx.token} />
         </div>
         {tx.isOutgoing && (
           <div css={style.value}>
             <span css={style.amountLabel}>Fee: </span>
-            <MoneyValue amountInWei={feeValue} currency={feeCurrency} />
+            <MoneyValue amountInWei={feeValue} token={feeCurrency} />
           </div>
         )}
       </TransactionProperty>
