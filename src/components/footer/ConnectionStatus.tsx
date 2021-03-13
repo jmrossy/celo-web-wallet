@@ -148,5 +148,10 @@ const style: Stylesheet = {
       height: '1em',
       width: '1em',
     },
+    ':hover': {
+      '& span': {
+        textDecoration: 'underline',
+      },
+    },
   },
 }

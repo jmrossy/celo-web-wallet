@@ -39,7 +39,7 @@ export const AccountMenu = () => {
   const [isOpen, setOpen] = useState(false)
 
   const isMobile = useIsMobile()
-  const identiconSize = isMobile ? 30 : 40
+  const identiconSize = isMobile ? 28 : 38
 
   const { showModalWithContent } = useModal()
   const onLogout = useLogoutModal()
@@ -153,7 +153,7 @@ const style: Stylesheet = {
     },
   },
   address: {
-    fontSize: '1.3em',
+    fontSize: '1.25em',
     letterSpacing: '0.06em',
   },
   caretContainer: {

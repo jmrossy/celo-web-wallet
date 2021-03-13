@@ -14,6 +14,7 @@ export interface Token {
   signature?: string
   rawData?: string
   exchangeAddress?: string // Mento contract for token
+  sortOrder?: number // for order preference in balance lists
 }
 
 export interface TokenWithBalance extends Token {
@@ -45,6 +46,7 @@ export const NativeTokens: INativeTokens = {
     ticker: 'cGLD',
     decimals: 18,
     chainId: config.chainId,
+    sortOrder: 2,
   },
   cUSD: {
     id: NativeTokenId.cUSD,
@@ -56,6 +58,7 @@ export const NativeTokens: INativeTokens = {
     decimals: 18,
     chainId: config.chainId,
     exchangeAddress: config.contractAddresses.Exchange,
+    sortOrder: 1,
   },
   cEUR: {
     id: NativeTokenId.cEUR,
@@ -67,6 +70,7 @@ export const NativeTokens: INativeTokens = {
     decimals: 18,
     chainId: config.chainId,
     exchangeAddress: config.contractAddresses.ExchangeEUR,
+    sortOrder: 3,
   },
 }
 
