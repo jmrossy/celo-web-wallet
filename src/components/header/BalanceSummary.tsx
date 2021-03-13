@@ -29,7 +29,7 @@ export function BalanceSummary() {
       if (t1Sort < t2Sort) return -1
       if (t1Sort > t2Sort) return 1
       return t1.id < t2.id ? -1 : 1
-    }) // todo prefer natives
+    })
     const totalTokens = sortedTokens.length
     if (totalTokens <= numItems) {
       return { tokensToShow: sortedTokens, hiddenTokens: 0 }

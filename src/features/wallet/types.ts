@@ -15,7 +15,7 @@ export interface Balances {
 export interface BalanceTableRow {
   id: string
   token: string
-  balance: string
+  balance: number
   balanceWei: string
-  contractAddress: string
+  address: string
 }

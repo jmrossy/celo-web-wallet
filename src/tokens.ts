@@ -46,7 +46,7 @@ export const NativeTokens: INativeTokens = {
     ticker: 'cGLD',
     decimals: 18,
     chainId: config.chainId,
-    sortOrder: 2,
+    sortOrder: 3,
   },
   cUSD: {
     id: NativeTokenId.cUSD,
@@ -70,7 +70,7 @@ export const NativeTokens: INativeTokens = {
     decimals: 18,
     chainId: config.chainId,
     exchangeAddress: config.contractAddresses.ExchangeEUR,
-    sortOrder: 3,
+    sortOrder: 2,
   },
 }
 
@@ -80,3 +80,11 @@ export type Tokens = INativeTokens & Record<string, Token>
 export const CELO = NativeTokens.CELO
 export const cUSD = NativeTokens.cUSD
 export const cEUR = NativeTokens.cEUR
+
+export const LockedCELO: Token = {
+  ...CELO,
+  id: 'lockedCELO',
+  label: 'Locked CELO',
+  address: config.contractAddresses.LockedGold,
+  sortOrder: CELO.sortOrder! + 1,
+}
