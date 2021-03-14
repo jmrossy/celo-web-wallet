@@ -1,7 +1,9 @@
 import { PropsWithChildren, ReactElement } from 'react'
+import { transparentButtonStyles } from 'src/components/buttons/Button'
 import QuestionIcon from 'src/components/icons/question_mark.svg'
 import { Box } from 'src/components/layout/Box'
 import { ModalOkAction } from 'src/components/modal/modal'
+import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
 import { Tooltip, TooltipProps } from 'src/components/Tooltip'
 import { Stylesheet } from 'src/styles/types'
@@ -57,11 +59,7 @@ const style: Stylesheet = {
     cursor: 'help',
   },
   button: {
-    padding: 0,
-    background: 'none',
-    border: 'none',
-    outline: 'none',
-    cursor: 'pointer',
+    ...transparentButtonStyles,
     ':hover': {
       opacity: 0.8,
     },
@@ -71,12 +69,6 @@ const style: Stylesheet = {
     marginBottom: '-0.25em',
   },
   helpModalContainer: {
-    p: {
-      fontSize: '1em',
-      textAlign: 'center',
-      maxWidth: '25em',
-      lineHeight: '1.6em',
-      margin: '1em 0 0 0',
-    },
+    p: modalStyles.p,
   },
 }

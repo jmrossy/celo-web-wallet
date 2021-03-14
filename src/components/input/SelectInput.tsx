@@ -13,7 +13,6 @@ export interface SelectInputProps {
   autoComplete: boolean
   width: string | number
   height?: number // defaults to 40
-  margin?: string | number
   value: string | undefined
   options: SelectOptions
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -123,14 +122,13 @@ function getDisplayValue(options: SelectOptions, optionValue?: string) {
 }
 
 function getInputStyles(props: SelectInputProps, inputValue: string) {
-  const { autoComplete, width, height, margin, error, disabled } = props
+  const { autoComplete, width, height, error, disabled } = props
 
   const styleBase = {
     ...getSharedInputStyles(error),
     padding: '2px 10px',
     width,
     height: height ?? 40,
-    margin,
   }
 
   // Just a simple input field

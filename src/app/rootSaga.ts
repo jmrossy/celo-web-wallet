@@ -82,6 +82,12 @@ import {
   stakeTokenSagaName,
 } from 'src/features/validators/stakeToken'
 import {
+  addTokenActions,
+  addTokenReducer,
+  addTokenSaga,
+  addTokenSagaName,
+} from 'src/features/wallet/addToken'
+import {
   createWalletActions,
   createWalletReducer,
   createWalletSaga,
@@ -168,6 +174,11 @@ export const monitoredSagas: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
+  },
+  [addTokenSagaName]: {
+    saga: addTokenSaga,
+    reducer: addTokenReducer,
+    actions: addTokenActions,
   },
   [lockTokenSagaName]: {
     saga: lockTokenSaga,

@@ -5,10 +5,10 @@ import LinuxLogo from 'src/components/icons/logos/linux.svg'
 import WindowsLogo from 'src/components/icons/logos/windows.svg'
 import { Box } from 'src/components/layout/Box'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
+import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
-import { Font } from 'src/styles/fonts'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { Styles } from 'src/styles/types'
 
 interface ButtonProps {
   styles?: Styles
@@ -62,17 +62,8 @@ export function DownloadDesktopModal({ limitFeatureVersion }: { limitFeatureVers
 
   return (
     <Box direction="column" align="center" justify="center">
-      <h3 css={style.h3}>{text}</h3>
+      <h3 css={modalStyles.h3}>{text}</h3>
       <ModalLinkGrid links={links} />
     </Box>
   )
-}
-
-const style: Stylesheet = {
-  h3: {
-    ...Font.body,
-    textAlign: 'center',
-    maxWidth: '24em',
-    lineHeight: '1.6em',
-  },
 }

@@ -19,3 +19,7 @@ export interface BalanceTableRow {
   balanceWei: string
   address: string
 }
+
+export interface AddTokenParams {
+  address: string
+}

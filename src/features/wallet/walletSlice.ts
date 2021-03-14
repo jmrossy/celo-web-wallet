@@ -109,7 +109,7 @@ const walletSlice = createSlice({
     },
     addToken: (state, action: PayloadAction<Token>) => {
       const newToken = action.payload
-      assert(newToken, 'No new token provided')
+      assert(newToken && newToken.id, 'No new token provided')
       assert(!state.balances.tokens[newToken.id], 'Token already exists')
       const newTokenWithValue = { ...newToken, value: '0' }
       state.balances.tokens = { ...state.balances.tokens, [newToken.id]: newTokenWithValue }
