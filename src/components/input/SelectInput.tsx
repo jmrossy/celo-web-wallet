@@ -15,12 +15,14 @@ export interface SelectInputProps {
   height?: number // defaults to 40
   value: string | undefined
   options: SelectOptions
+  maxOptions?: number // max number of suggestions to show
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   error?: boolean
   helpText?: string
   placeholder?: string
   disabled?: boolean
+  allowRawOption?: boolean // user's input is included in select options
 }
 
 export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
@@ -29,11 +31,13 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
     autoComplete,
     value,
     options,
+    maxOptions,
     onBlur,
     onChange,
     helpText,
     placeholder,
     disabled,
+    allowRawOption,
   } = props
 
   const initialInput = getDisplayValue(options, value)
@@ -41,7 +45,7 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
   const [showDropdown, setShowDropdown] = useState(false)
 
   useEffect(() => {
-    setInputValue(getDisplayValue(options, value))
+    setInputValue(getDisplayValue(options, value, allowRawOption))
   }, [value])
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +66,9 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
     onChange({ target: { name, value } } as any)
   }
 
-  const filteredOptions = autoComplete ? sortAndFilter(options, inputValue ?? '') : options
+  const filteredOptions = autoComplete
+    ? sortAndFilter(options, inputValue ?? '', maxOptions, allowRawOption)
+    : options
 
   const inputStyle = getInputStyles(props, inputValue)
 
@@ -109,16 +115,27 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
   )
 }
 
-function sortAndFilter(options: SelectOptions, input: string) {
-  return options
+function sortAndFilter(
+  options: SelectOptions,
+  input: string,
+  maxOptions?: number,
+  allowRawOption?: boolean
+) {
+  const filtered = options
     .sort((a, b) => (a.display < b.display ? -1 : 1))
     .filter((o) => o.display.toLowerCase().includes(input.toLowerCase()))
+  if (input && allowRawOption) {
+    filtered.unshift({ display: input, value: input })
+  }
+  return maxOptions ? filtered.slice(0, maxOptions) : filtered
 }
 
-function getDisplayValue(options: SelectOptions, optionValue?: string) {
+function getDisplayValue(options: SelectOptions, optionValue?: string, allowRawOption?: boolean) {
   if (!optionValue) return ''
   const option = options.find((o) => o.value === optionValue)
-  return option ? option.display : ''
+  if (option && option.display) return option.display
+  else if (allowRawOption) return optionValue
+  else return ''
 }
 
 function getInputStyles(props: SelectInputProps, inputValue: string) {

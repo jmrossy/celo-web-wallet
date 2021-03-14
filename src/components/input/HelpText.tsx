@@ -3,18 +3,18 @@ import { Color } from 'src/styles/Color'
 
 interface HelpTextProps {
   color?: Color
+  margin?: string
 }
 
 export const HelpText = (props: PropsWithChildren<HelpTextProps>) => {
-  const { color, children } = props
+  const { color, margin, children } = props
 
   return (
     <span
       css={{
         color: color ?? Color.textError,
-        marginTop: 4,
         fontSize: '0.9rem',
-        marginBottom: '-1.3em',
+        margin: margin ?? '4px 0 -1.3em 0',
       }}
     >
       {children}

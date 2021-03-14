@@ -1,5 +1,6 @@
 import { utils } from 'ethers'
-import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import { RootState } from 'src/app/rootReducer'
+import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { AddTokenParams, Balances } from 'src/features/wallet/types'
 import { addToken as addTokenAction } from 'src/features/wallet/walletSlice'
 import { CELO } from 'src/tokens'
@@ -7,10 +8,13 @@ import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { put, select } from 'typed-redux-saga'
 
 export function validate(params: AddTokenParams, balances?: Balances): ErrorState {
   const { address } = params
+  if (!address) {
+    return invalidInput('address', 'Token address is required')
+  }
   if (!utils.isAddress(address)) {
     logger.error(`Invalid token address: ${address}`)
     return invalidInput('address', 'Invalid token address')
@@ -27,13 +31,15 @@ export function validate(params: AddTokenParams, balances?: Balances): ErrorStat
 }
 
 function* addToken(params: AddTokenParams) {
-  const balances = yield* call(fetchBalancesIfStale)
+  const balances = yield* select((state: RootState) => state.wallet.balances)
   validateOrThrow(() => validate(params, balances), 'Invalid Token')
 
-  const newToken = CELO // TODO
-  yield* put(addTokenAction(newToken))
+  if (!balances) {
+    const newToken = CELO // TODO
+    yield* put(addTokenAction(newToken))
 
-  yield* put(fetchBalancesActions.trigger())
+    yield* put(fetchBalancesActions.trigger())
+  }
 }
 
 export const {
