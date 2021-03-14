@@ -183,6 +183,9 @@ const style: Stylesheet = {
     ':hover': {
       background: Color.fillLight,
     },
+    ':active': {
+      background: Color.fillMedium,
+    },
   },
   liOpen: {
     background: Color.fillLight,
