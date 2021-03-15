@@ -1,14 +1,17 @@
-import { utils } from 'ethers'
+import { BigNumber, BigNumberish, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
+import { getTokenContract } from 'src/blockchain/contracts'
+import { config } from 'src/config'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { AddTokenParams, Balances } from 'src/features/wallet/types'
 import { addToken as addTokenAction } from 'src/features/wallet/walletSlice'
-import { CELO } from 'src/tokens'
+import { Color } from 'src/styles/Color'
+import { CELO, Token } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { put, select } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 export function validate(params: AddTokenParams, balances?: Balances): ErrorState {
   const { address } = params
@@ -34,11 +37,31 @@ function* addToken(params: AddTokenParams) {
   const balances = yield* select((state: RootState) => state.wallet.balances)
   validateOrThrow(() => validate(params, balances), 'Invalid Token')
 
-  if (!balances) {
-    const newToken = CELO // TODO
-    yield* put(addTokenAction(newToken))
+  const newToken = yield* call(getTokenInfo, params.address)
+  yield* put(addTokenAction(newToken))
 
-    yield* put(fetchBalancesActions.trigger())
+  yield* put(fetchBalancesActions.trigger())
+}
+
+async function getTokenInfo(tokenAddress: string): Promise<Token> {
+  const contract = getTokenContract(tokenAddress)
+  // Note this assumes the existence of decimals and symbols methods,
+  // which are technically optional. May revisit later
+  const symbolP: Promise<string> = contract.symbol()
+  const decimalsP: Promise<BigNumberish> = contract.decimals()
+  const [symbol, decimalsBN] = await Promise.all([symbolP, decimalsP])
+  const decimals = BigNumber.from(decimalsBN).toNumber()
+  if (!symbol || typeof symbol !== 'string') throw new Error('Invalid token symbol')
+  if (decimals !== CELO.decimals) throw new Error('Invalid token decimals') // TODO only 18 is supported atm
+  return {
+    id: symbol,
+    label: symbol.substring(0, 8),
+    color: Color.accentBlue,
+    minValue: CELO.minValue,
+    displayDecimals: CELO.displayDecimals,
+    address: tokenAddress,
+    decimals,
+    chainId: config.chainId,
   }
 }
 

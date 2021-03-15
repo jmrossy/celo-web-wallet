@@ -1,8 +1,8 @@
-import { BigNumber } from 'ethers'
+import { BigNumber, BigNumberish, Contract } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContract } from 'src/blockchain/contracts'
+import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
-import { CeloContract, config } from 'src/config'
+import { config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
 import { fetchLockedCeloStatus, fetchTotalLocked } from 'src/features/lock/fetchLockedStatus'
 import { LockedCeloBalances } from 'src/features/lock/types'
@@ -14,7 +14,7 @@ import {
   updateBalances,
   walletInitialState,
 } from 'src/features/wallet/walletSlice'
-import { CELO, cUSD, Token, TokenWithBalance } from 'src/tokens'
+import { CELO, cEUR, NativeTokens, Token, TokenWithBalance } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -68,6 +68,8 @@ async function fetchTokenBalances(
     if (t.id === CELO.id) {
       fetchPromises.push(fetchCeloBalance(address))
     } else {
+      // TODO remove when cEUR is live
+      if (t.id === cEUR.id) continue
       fetchPromises.push(fetchTokenBalance(address, t))
     }
   }
@@ -78,6 +80,7 @@ async function fetchTokenBalances(
   return tokenBalances
 }
 
+// TODO cut this?
 async function fetchCeloBalance(address: string): Promise<TokenWithBalance> {
   const provider = getProvider()
   const balance = await provider.getBalance(address)
@@ -85,10 +88,15 @@ async function fetchCeloBalance(address: string): Promise<TokenWithBalance> {
 }
 
 async function fetchTokenBalance(address: string, token: Token): Promise<TokenWithBalance> {
-  // TODO dynamically find the right contract and query it
-  const stableToken = getContract(CeloContract.StableToken)
-  const balance: BigNumber = await stableToken.balanceOf(address)
-  return { ...cUSD, value: balance.toString() }
+  let contract: Contract | null
+  if (Object.keys(NativeTokens).includes(token.id)) {
+    contract = getContractByAddress(token.address)
+  } else {
+    contract = getTokenContract(token.address)
+  }
+  if (!contract) throw new Error(`No contract found for token: ${token.id}`)
+  const balance: BigNumberish = await contract.balanceOf(address)
+  return { ...token, value: BigNumber.from(balance).toString() }
 }
 
 function* fetchVoterBalances() {

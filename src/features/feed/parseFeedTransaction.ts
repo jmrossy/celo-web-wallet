@@ -1,5 +1,4 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
-import { getTokenByAddress } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
 import { AbiInterfaceMap, BlockscoutTokenTransfer, BlockscoutTx } from 'src/features/feed/types'
@@ -79,9 +78,9 @@ function isValidTokenTransfer(tx: BlockscoutTokenTransfer) {
 
 export function parseTransaction(
   tx: BlockscoutTx,
-  address: string,
-  tokens: Record<string, Token>,
-  exchanges: Record<string, Token>,
+  address: string, // wallet address
+  tokens: Record<string, Token>, // address to token
+  exchanges: Record<string, Token>, // address to token
   abiInterfaces: AbiInterfaceMap
 ): CeloTransaction | null {
   const to = normalizeAddress(tx.to)
@@ -359,7 +358,7 @@ function parseOutgoingEscrowTx(
     if (name === 'transfer') {
       const tokenAddress: string | undefined = txDescription.args.token
       const value: BigNumberish | undefined = txDescription.args.value
-      return parseOutgoingEscrowTransfer(tx, tokenAddress, value)
+      return parseOutgoingEscrowTransfer(tx, tokens, tokenAddress, value)
     }
 
     if (name === 'withdraw') {
@@ -376,6 +375,7 @@ function parseOutgoingEscrowTx(
 
 function parseOutgoingEscrowTransfer(
   tx: BlockscoutTx,
+  tokens: Record<string, Token>,
   tokenAddress?: string,
   value?: BigNumberish
 ): EscrowTransferTx {
@@ -383,7 +383,7 @@ function parseOutgoingEscrowTransfer(
     throw new Error(`Escrow tx has invalid aruments: ${tokenAddress}, ${value}`)
   }
 
-  const token = getTokenByAddress(tokenAddress)
+  const token = tokens[tokenAddress]
   if (!token) {
     throw new Error(`No token found for address: ${tokenAddress}`)
   }

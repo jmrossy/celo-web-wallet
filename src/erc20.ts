@@ -15,7 +15,7 @@ const KNOWN_ERC20_TOKENS: Token[] = [
     displayDecimals: 2,
     address: '0x64dEFa3544c695db8c535D289d843a189aa26b98',
     decimals: 18,
-    chainId: 44787,
+    chainId: 42220,
   },
   {
     id: 'mCELO',
@@ -25,7 +25,7 @@ const KNOWN_ERC20_TOKENS: Token[] = [
     displayDecimals: 3,
     address: '0x7037F7296B2fc7908de7b57a89efaa8319f0C500',
     decimals: 18,
-    chainId: 44787,
+    chainId: 42220,
   },
 ]
 
