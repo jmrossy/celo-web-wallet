@@ -53,7 +53,7 @@ export function ExchangeConfirmationScreen() {
 
     dispatch(
       estimateFeeActions.trigger({
-        preferredCurrency: tx.params.fromTokenId,
+        preferredToken: tx.params.fromTokenId,
         txs: [{ type: approveType }, { type: TransactionType.TokenExchange }],
       })
     )

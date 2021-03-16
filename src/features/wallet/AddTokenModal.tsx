@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { HelpText } from 'src/components/input/HelpText'
 import { SelectInput } from 'src/components/input/SelectInput'
@@ -21,15 +22,18 @@ const initialValues: AddTokenParams = {
 
 export function AddTokenModal(props: { close: () => void }) {
   const dispatch = useDispatch()
+  const balances = useSelector((state: RootState) => state.wallet.balances)
 
   const onSubmit = (values: AddTokenParams) => {
     dispatch(addTokenActions.trigger(values))
   }
 
+  const validateForm = (values: AddTokenParams) => validate(values, balances)
+
   const { values, errors, handleChange, handleBlur, handleSubmit } = useCustomForm<AddTokenParams>(
     initialValues,
     onSubmit,
-    validate
+    validateForm
   )
 
   const sagaStatus = useSagaStatus(addTokenSagaName, '', undefined, props.close, true, false)

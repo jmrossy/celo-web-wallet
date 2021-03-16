@@ -13,7 +13,7 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
-export function validate(params: AddTokenParams, balances?: Balances): ErrorState {
+export function validate(params: AddTokenParams, balances: Balances): ErrorState {
   const { address } = params
   if (!address) {
     return invalidInput('address', 'Token address is required')
@@ -22,13 +22,11 @@ export function validate(params: AddTokenParams, balances?: Balances): ErrorStat
     logger.error(`Invalid token address: ${address}`)
     return invalidInput('address', 'Invalid token address')
   }
-  if (balances) {
-    const currentTokenAddrs = Object.values(balances.tokens).map((t) => t.address)
-    const alreadyExists = currentTokenAddrs.some((a) => areAddressesEqual(a, address))
-    if (alreadyExists) {
-      logger.error(`Token already exists in wallet: ${address}`)
-      return invalidInput('address', 'Token already exists')
-    }
+  const currentTokenAddrs = Object.values(balances.tokens).map((t) => t.address)
+  const alreadyExists = currentTokenAddrs.some((a) => areAddressesEqual(a, address))
+  if (alreadyExists) {
+    logger.error(`Token already exists in wallet: ${address}`)
+    return invalidInput('address', 'Token already exists')
   }
   return { isValid: true }
 }

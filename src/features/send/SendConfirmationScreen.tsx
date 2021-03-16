@@ -20,6 +20,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { isNativeToken, NativeTokenId } from 'src/tokens'
 
 export function SendConfirmationScreen() {
   const dispatch = useDispatch()
@@ -35,10 +36,12 @@ export function SendConfirmationScreen() {
       return
     }
 
-    const type = tx.params.comment
+    const { comment, tokenId } = tx.params
+    const type = comment
       ? TransactionType.StableTokenTransferWithComment
       : TransactionType.StableTokenTransfer
-    dispatch(estimateFeeActions.trigger({ txs: [{ type }] }))
+    const txToken = isNativeToken(tokenId) ? (tokenId as NativeTokenId) : undefined
+    dispatch(estimateFeeActions.trigger({ txs: [{ type }], txToken }))
   }, [tx])
 
   if (!tx || tx.type !== TxFlowType.Send) return null

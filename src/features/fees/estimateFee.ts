@@ -2,6 +2,7 @@ import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
 import { estimateGas } from 'src/features/fees/estimateGas'
 import { setFeeEstimate } from 'src/features/fees/feeSlice'
+import { resolveTokenPreferenceOrder } from 'src/features/fees/feeTokenOrder'
 import { fetchGasPriceIfStale } from 'src/features/fees/gasPrice'
 import { FeeEstimate } from 'src/features/fees/types'
 import { TransactionType } from 'src/features/types'
@@ -13,83 +14,42 @@ import { call, put } from 'typed-redux-saga'
 interface EstimateFeeParams {
   txs: Array<{ type: TransactionType; tx?: CeloTransactionRequest }>
   forceGasEstimation?: boolean
-  preferredCurrency?: NativeTokenId
+  preferredToken?: NativeTokenId
+  txToken?: NativeTokenId
 }
 
-// Enough CELO  | Enough cUSD	| Preference |  Fee
-// yes	          yes	          celo	        celo
-// yes	          yes	          cusd	        cusd
-// yes	          no	          celo	        celo
-// yes	          no	          cusd	        celo
-// no	            yes	          celo	        cusd
-// no	            yes	          cusd	        cusd
-// no	            no	          celo	        celo
-// no	            no	          cusd	        cusd
-// yes	          yes	          -	            celo
-// yes	          no	          -	            celo
-// no	            yes	          -	            cusd
-// no	            no	          -	            celo|cusd
-
-// TODO support cEUR for gas
 function* estimateFee(params: EstimateFeeParams) {
   // Clear fee while new few is computed
   yield* put(setFeeEstimate(null))
 
   const balances = yield* call(fetchBalancesIfStale)
-  const celoBalance = BigNumber.from(balances.tokens.CELO.value)
-  const cUsdBalance = BigNumber.from(balances.tokens.cUSD.value)
 
-  const { txs, forceGasEstimation: force, preferredCurrency } = params
-
+  const { txs, forceGasEstimation: force, preferredToken, txToken } = params
   if (!txs || !txs.length) throw new Error('No txs provided for fee estimation')
 
-  if (celoBalance.lte(0) && cUsdBalance.lte(0)) {
-    // Just use CELO for empty accounts
-    const { estimates } = yield* call(calculateFee, NativeTokenId.CELO, txs, force)
-    yield* put(setFeeEstimate(estimates))
-    return
-  }
+  const preferenceOrder = resolveTokenPreferenceOrder(balances, preferredToken, txToken)
 
-  if (preferredCurrency === NativeTokenId.CELO) {
-    // Try CELO, then try cUSD, fallback to CELO
-    yield* call(
-      estimateFeeWithPreference,
-      NativeTokenId.CELO,
-      NativeTokenId.cUSD,
-      celoBalance,
-      cUsdBalance,
-      txs,
-      force
-    )
-    return
-  }
-
-  if (preferredCurrency === NativeTokenId.cUSD) {
-    // Try cUSD, then try CELO, fallback to cUSD
-    yield* call(
-      estimateFeeWithPreference,
-      NativeTokenId.cUSD,
-      NativeTokenId.CELO,
-      cUsdBalance,
-      celoBalance,
-      txs,
-      force
-    )
-    return
-  }
-
-  if (celoBalance.gt(0)) {
-    // Try CELO, fallback to cUSD
-    const { estimates, totalFee } = yield* call(calculateFee, NativeTokenId.CELO, txs, force)
-    if (celoBalance.gte(totalFee)) {
-      yield* put(setFeeEstimate(estimates))
+  // Check all tokens in order of preference to find
+  // one that can afford the fee
+  let firstEstimate: FeeEstimate[] | null = null
+  for (let i = 0; i < preferenceOrder.length; i++) {
+    const token = preferenceOrder[i]
+    const tokenBal = BigNumber.from(balances.tokens[token].value)
+    // If there's no balance and its not the first preference token, skip
+    if (tokenBal.lte(0) && i !== 0) continue
+    const result = yield* call(calculateFee, token, txs, force)
+    if (result.totalFee.lte(tokenBal)) {
+      yield* put(setFeeEstimate(result.estimates))
       return
     }
+    if (i === 0) firstEstimate = result.estimates
   }
 
-  // Otherwise use cUSD
-  const { estimates } = yield* call(calculateFee, NativeTokenId.cUSD, txs, force)
-  yield* put(setFeeEstimate(estimates))
+  if (!firstEstimate) throw new Error('No estimates computed, expected at least 1')
+
+  // If here is reached, no tokens could afford the fee
+  // Set the first one anyway to show something
+  yield* put(setFeeEstimate(firstEstimate))
 }
 
 export const {
@@ -98,31 +58,6 @@ export const {
   reducer: estimateFeeReducer,
   actions: estimateFeeActions,
 } = createMonitoredSaga<EstimateFeeParams>(estimateFee, 'estimateFee')
-
-function* estimateFeeWithPreference(
-  primaryCurrency: NativeTokenId,
-  alternativeCurrency: NativeTokenId,
-  primaryBalance: BigNumber,
-  alternativeBalance: BigNumber,
-  txs: Array<{ type: TransactionType; tx?: CeloTransactionRequest }>,
-  force?: boolean
-) {
-  // Try primary, then alternate, then fallback primary
-
-  const primaryResult = yield* call(calculateFee, primaryCurrency, txs, force)
-  if (primaryResult.totalFee.lte(primaryBalance) || alternativeBalance.lte(0)) {
-    yield* put(setFeeEstimate(primaryResult.estimates))
-    return
-  }
-
-  const altResult = yield* call(calculateFee, alternativeCurrency, txs, force)
-  if (altResult.totalFee.lte(alternativeBalance)) {
-    yield* put(setFeeEstimate(altResult.estimates))
-    return
-  }
-
-  yield* put(setFeeEstimate(primaryResult.estimates))
-}
 
 function* calculateFee(
   token: NativeTokenId,

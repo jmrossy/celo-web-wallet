@@ -8,14 +8,14 @@ import { NativeTokenId } from 'src/tokens'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
 
-export function* fetchGasPriceIfStale(feeCurrency: NativeTokenId) {
+export function* fetchGasPriceIfStale(feeToken: NativeTokenId) {
   const gasPrices = yield* select((state: RootState) => state.fees.gasPrices)
-  const gasPrice = gasPrices[feeCurrency]
+  const gasPrice = gasPrices[feeToken]
 
   if (!gasPrice || isStale(gasPrice.lastUpdated, GAS_PRICE_STALE_TIME)) {
-    const price = yield* call(fetchGasPrice, feeCurrency)
+    const price = yield* call(fetchGasPrice, feeToken)
     yield* put(
-      updateGasPrice({ token: feeCurrency, value: price.toString(), lastUpdated: Date.now() })
+      updateGasPrice({ token: feeToken, value: price.toString(), lastUpdated: Date.now() })
     )
     return price
   } else {
@@ -23,10 +23,10 @@ export function* fetchGasPriceIfStale(feeCurrency: NativeTokenId) {
   }
 }
 
-function fetchGasPrice(feeCurrency: NativeTokenId) {
+function fetchGasPrice(feeToken: NativeTokenId) {
   const signer = getSigner().signer
 
-  if (!feeCurrency || feeCurrency === NativeTokenId.CELO) {
+  if (!feeToken || feeToken === NativeTokenId.CELO) {
     return signer.getGasPrice()
   } else {
     // TODO cEUR
