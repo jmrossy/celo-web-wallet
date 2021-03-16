@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 import { Location } from 'history'
-import { useEffect, useMemo } from 'react'
+import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -22,7 +22,7 @@ import { getTokenBalance } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { cUSD } from 'src/tokens'
+import { cUSD, isNativeToken } from 'src/tokens'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -62,6 +62,7 @@ export function SendFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
+    resetErrors,
   } = useCustomForm<SendTokenForm>(getInitialValues(location, tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
@@ -81,6 +82,16 @@ export function SendFormScreen() {
     const balance = getTokenBalance(balances, token)
     const maxAmount = fromWeiRounded(balance, token, true)
     setValues({ ...values, amount: maxAmount })
+    resetErrors()
+  }
+
+  const onTokenSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target
+    const isNative = isNativeToken(value)
+    // Reset comment if token is not native
+    const comment = isNative ? values.comment : ''
+    setValues({ ...values, [name]: value, comment })
+    resetErrors()
   }
 
   const selectOptions = useMemo(() => getSelectOptions(balances), [balances])
@@ -140,7 +151,7 @@ export function SendFormScreen() {
                 name="tokenId"
                 autoComplete={false}
                 width="5em"
-                onChange={handleChange}
+                onChange={onTokenSelect}
                 onBlur={handleBlur}
                 value={values.tokenId}
                 options={selectOptions}
@@ -163,6 +174,7 @@ export function SendFormScreen() {
               minHeight="5em"
               maxHeight="7em"
               fillWidth={true}
+              disabled={!isNativeToken(values.tokenId)}
               {...errors['comment']}
             />
           </Box>

@@ -12,6 +12,7 @@ export interface TextAreaProps {
   margin?: string | number
   value: string | undefined
   placeholder?: string
+  disabled?: boolean
   error?: boolean
   helpText?: string
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
@@ -30,6 +31,7 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
     margin,
     value,
     placeholder,
+    disabled,
     error,
     helpText,
     onChange,
@@ -57,6 +59,7 @@ export function TextArea(props: PropsWithChildren<TextAreaProps>) {
         }}
         value={value}
         placeholder={placeholder}
+        disabled={disabled}
         onChange={onChange}
         onBlur={onBlur}
         onFocus={onFocus}

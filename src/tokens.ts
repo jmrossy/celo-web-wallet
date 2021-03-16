@@ -74,6 +74,10 @@ export const NativeTokens: INativeTokens = {
   },
 }
 
+export function isNativeToken(tokenId: string) {
+  return Object.keys(NativeTokens).includes(tokenId)
+}
+
 export type Tokens = INativeTokens & Record<string, Token>
 
 // Just re-export directly for convenient access

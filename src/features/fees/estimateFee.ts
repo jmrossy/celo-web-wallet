@@ -36,8 +36,8 @@ function* estimateFee(params: EstimateFeeParams) {
   yield* put(setFeeEstimate(null))
 
   const balances = yield* call(fetchBalancesIfStale)
-  const celoBalance = BigNumber.from(balances.tokens.CELO)
-  const cUsdBalance = BigNumber.from(balances.tokens.cUSD)
+  const celoBalance = BigNumber.from(balances.tokens.CELO.value)
+  const cUsdBalance = BigNumber.from(balances.tokens.cUSD.value)
 
   const { txs, forceGasEstimation: force, preferredCurrency } = params
 

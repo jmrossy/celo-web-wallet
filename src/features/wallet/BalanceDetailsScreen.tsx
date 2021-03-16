@@ -2,8 +2,10 @@ import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { defaultButtonStyles } from 'src/components/buttons/Button'
+import { CloseButton } from 'src/components/buttons/CloseButton'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { ModalAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Table, TableColumn } from 'src/components/Table'
@@ -11,11 +13,12 @@ import { getTotalLockedCelo } from 'src/features/lock/utils'
 import { AddTokenModal } from 'src/features/wallet/AddTokenModal'
 import { fetchBalancesActions, fetchBalancesSagaName } from 'src/features/wallet/fetchBalances'
 import { Balances, BalanceTableRow, TokenBalances } from 'src/features/wallet/types'
+import { removeToken } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { LockedCELO, Token } from 'src/tokens'
+import { isNativeToken, LockedCELO } from 'src/tokens'
 import { fromWeiRounded } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 
@@ -42,6 +45,7 @@ export function BalanceDetailsScreen() {
   const responsiveTableColumns = isMobile ? tableColumns : tableColumnsWithWei
 
   const { showModalWithContent, closeModal } = useModal()
+
   const onClickAdd = () => {
     showModalWithContent('Add New Token', <AddTokenModal close={closeModal} />)
   }
@@ -67,7 +71,7 @@ export function BalanceDetailsScreen() {
 const tableColumns: TableColumn[] = [
   {
     header: 'Currency',
-    id: 'token',
+    id: 'label',
   },
   {
     header: 'Balance',
@@ -76,7 +80,7 @@ const tableColumns: TableColumn[] = [
   {
     header: 'Contract Address',
     id: 'address',
-    renderer: renderAddress,
+    renderer: renderAddressAndRemoveButton,
   },
 ]
 
@@ -90,8 +94,46 @@ const tableColumnsWithWei: TableColumn[] = [
   tableColumns[2],
 ]
 
-function renderAddress(token: Token) {
-  return <CopiableAddress address={token.address} length="short" />
+function renderAddressAndRemoveButton(row: BalanceTableRow) {
+  const { id, label, address } = row
+  const isNative = isNativeToken(id) || id === LockedCELO.id
+
+  const dispatch = useDispatch()
+  const { showModal, closeModal } = useModal()
+
+  const onClickRemove = () => {
+    const actions = [
+      { key: 'cancel', label: 'Cancel', color: Color.altGrey },
+      { key: 'remove', label: 'Remove', color: Color.primaryGreen },
+    ]
+    const actionClick = (action: ModalAction) => {
+      if (action.key === 'remove') dispatch(removeToken(id))
+      closeModal()
+    }
+    showModal(
+      'Remove Token',
+      'Note, this will not affect your balance. It will only hide this token from your wallet.',
+      actions,
+      `Would you like to remove ${label}?`,
+      's',
+      actionClick
+    )
+  }
+
+  return (
+    <div css={style.addressContainer}>
+      <CopiableAddress address={address} length="short" />
+      {!isNative && (
+        <div css={style.removeButtonContainer}>
+          <CloseButton
+            onClick={onClickRemove}
+            styles={style.removeButton}
+            iconStyles={style.removeButton}
+          />
+        </div>
+      )}
+    </div>
+  )
 }
 
 function balancesToTableData(balances: Balances): BalanceTableRow[] {
@@ -108,7 +150,7 @@ function balancesToTableData(balances: Balances): BalanceTableRow[] {
   for (const token of Object.values(tokensWithLocked)) {
     tableRows.push({
       id: token.id,
-      token: token.label,
+      label: token.label,
       balance: parseFloat(fromWeiRounded(token.value, token)),
       balanceWei: token.value,
       address: token.address,
@@ -140,5 +182,18 @@ const style: Stylesheet = {
     ':active': {
       backgroundColor: Color.fillMedium,
     },
+  },
+  addressContainer: {
+    position: 'relative',
+  },
+  removeButtonContainer: {
+    position: 'absolute',
+    right: '-3em',
+    top: '0.25em',
+    paddingRight: '0.5em',
+  },
+  removeButton: {
+    height: '1em',
+    width: '1em',
   },
 }

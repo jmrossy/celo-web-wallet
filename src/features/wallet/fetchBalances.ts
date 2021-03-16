@@ -14,7 +14,7 @@ import {
   updateBalances,
   walletInitialState,
 } from 'src/features/wallet/walletSlice'
-import { CELO, cEUR, NativeTokens, Token, TokenWithBalance } from 'src/tokens'
+import { CELO, cEUR, isNativeToken, Token, TokenWithBalance } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -89,7 +89,7 @@ async function fetchCeloBalance(address: string): Promise<TokenWithBalance> {
 
 async function fetchTokenBalance(address: string, token: Token): Promise<TokenWithBalance> {
   let contract: Contract | null
-  if (Object.keys(NativeTokens).includes(token.id)) {
+  if (isNativeToken(token.id)) {
     contract = getContractByAddress(token.address)
   } else {
     contract = getTokenContract(token.address)

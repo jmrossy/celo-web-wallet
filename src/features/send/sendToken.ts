@@ -1,9 +1,8 @@
-import { BigNumber, providers, utils } from 'ethers'
+import { BigNumber, Contract, providers, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContract } from 'src/blockchain/contracts'
+import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
-import { CeloContract } from 'src/config'
 import {
   MAX_COMMENT_CHAR_LENGTH,
   MAX_SEND_TOKEN_SIZE,
@@ -17,7 +16,7 @@ import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
-import { CELO, cUSD, Token } from 'src/tokens'
+import { CELO, isNativeToken, Token } from 'src/tokens'
 import {
   getAdjustedAmountFromBalances,
   validateAmount,
@@ -65,11 +64,19 @@ export function validate(
     }
   }
 
-  if (comment && comment.length > MAX_COMMENT_CHAR_LENGTH) {
-    logger.error(`Invalid comment: ${comment}`)
-    errors = {
-      ...errors,
-      ...invalidInput('comment', 'Comment is too long'),
+  if (comment) {
+    if (!isNativeToken(params.tokenId)) {
+      logger.error('Using comment for non-native token')
+      errors = {
+        ...errors,
+        ...invalidInput('comment', 'Comments disabled for custom tokens'),
+      }
+    } else if (comment.length > MAX_COMMENT_CHAR_LENGTH) {
+      logger.error(`Comment too long: ${comment}`)
+      errors = {
+        ...errors,
+        ...invalidInput('comment', 'Comment is too long'),
+      }
     }
   }
 
@@ -122,47 +129,68 @@ async function createSendTx(params: SendTokenParams, balances: Balances) {
   return { signedTx, type, token }
 }
 
-// TODO support cEUR and any ERC20
-async function getTokenTransferTx(
+function getTokenTransferTx(
   token: Token,
   recipient: string,
   amountInWei: BigNumber,
   comment?: string
 ) {
-  if (token.id === CELO.id) {
+  let contract: Contract | null
+
+  if (token.id === CELO.id && !comment) {
+    return createSimpleCeloTransferTx(recipient, amountInWei)
+  } else if (isNativeToken(token.id)) {
+    contract = getContractByAddress(token.address)
+    if (!contract) throw new Error(`No contract found for token: ${token.id}`)
     if (comment) {
-      const goldToken = getContract(CeloContract.GoldToken)
-      const tx = await goldToken.populateTransaction.transferWithComment(
-        recipient,
-        amountInWei,
-        comment
-      )
-      return { tx, type: TransactionType.CeloTokenTransfer }
+      return createTransferWithCommentTx(token, recipient, amountInWei, comment, contract)
     } else {
-      return {
-        tx: {
-          to: recipient,
-          value: amountInWei,
-        },
-        type: TransactionType.CeloTokenTransfer,
-      }
-    }
-  } else if (token.id === cUSD.id) {
-    const stableToken = getContract(CeloContract.StableToken)
-    if (comment) {
-      const tx = await stableToken.populateTransaction.transferWithComment(
-        recipient,
-        amountInWei,
-        comment
-      )
-      return { tx, type: TransactionType.StableTokenTransfer }
-    } else {
-      const tx = await stableToken.populateTransaction.transfer(recipient, amountInWei)
-      return { tx, type: TransactionType.StableTokenTransfer }
+      return createTransferTx(token, recipient, amountInWei, contract)
     }
   } else {
-    throw new Error(`Unsupported currency: ${token}`)
+    contract = getTokenContract(token.address)
+    return createTransferTx(token, recipient, amountInWei, contract)
   }
+}
+
+function createSimpleCeloTransferTx(recipient: string, amountInWei: BigNumber) {
+  // Using 'raw' tx instead of smart contract call to save on gas fees
+  return {
+    tx: {
+      to: recipient,
+      value: amountInWei,
+    },
+    type: TransactionType.CeloNativeTransfer,
+  }
+}
+
+async function createTransferTx(
+  token: Token,
+  recipient: string,
+  amountInWei: BigNumber,
+  contract: Contract
+) {
+  const tx = await contract.populateTransaction.transfer(recipient, amountInWei)
+  let type: TransactionType
+  if (token.id === CELO.id) type = TransactionType.CeloTokenTransfer
+  else if (isNativeToken(token.id)) type = TransactionType.StableTokenTransfer
+  else type = TransactionType.OtherTokenTransfer
+  return { tx, type }
+}
+
+async function createTransferWithCommentTx(
+  token: Token,
+  recipient: string,
+  amountInWei: BigNumber,
+  comment: string,
+  contract: Contract
+) {
+  const tx = await contract.populateTransaction.transferWithComment(recipient, amountInWei, comment)
+  // Note not using TransferWithComment type here because type is for the placeholder tx
+  // and the feed doesn't currently distinguish btwn comment/non-comment types
+  const type =
+    token.id === CELO.id ? TransactionType.CeloTokenTransfer : TransactionType.StableTokenTransfer
+  return { tx, type }
 }
 
 function getPlaceholderTx(
@@ -182,6 +210,7 @@ function getPlaceholderTx(
 
   return {
     ...createPlaceholderForTx(txReceipt, params.amountInWei, params.feeEstimate!),
+    to: params.recipient,
     isOutgoing: true,
     comment: params.comment,
     type,
