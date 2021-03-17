@@ -58,7 +58,7 @@ const style: Stylesheet = {
       top: '1.5em',
     },
     [mq[1200]]: {
-      right: '2em',
+      right: '2.5em',
       top: '2em',
     },
   },
