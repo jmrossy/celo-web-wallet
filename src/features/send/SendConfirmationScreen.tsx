@@ -35,12 +35,12 @@ export function SendConfirmationScreen() {
       navigate('/send')
       return
     }
-
     const { comment, tokenId } = tx.params
     const type = comment
       ? TransactionType.StableTokenTransferWithComment
       : TransactionType.StableTokenTransfer
     const txToken = isNativeToken(tokenId) ? (tokenId as NativeTokenId) : undefined
+    // TODO force estimation for non-native tokens
     dispatch(estimateFeeActions.trigger({ txs: [{ type }], txToken }))
   }, [tx])
 

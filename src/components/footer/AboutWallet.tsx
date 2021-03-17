@@ -50,13 +50,13 @@ const style: Stylesheet = {
     maxWidth: '26em',
   },
   text: {
-    ...Font.body,
+    ...Font.body2,
     margin: '0.3em 0',
     textAlign: 'center',
     lineHeight: '1.5em',
   },
   version: {
-    ...Font.body,
+    ...Font.body2,
     textAlign: 'center',
     margin: '0.6em 0 0.1em 0',
   },

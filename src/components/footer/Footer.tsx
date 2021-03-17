@@ -81,7 +81,7 @@ const style: Stylesheet = {
     opacity: 0.8,
     padding: '0 1.2em',
     fontSize: '0.8em',
-    fontWeight: 300,
+    fontWeight: 400,
     color: Color.primaryBlack,
     textAlign: 'center',
     textDecoration: 'none',
@@ -92,7 +92,7 @@ const style: Stylesheet = {
   address: {
     padding: '0 1.3em',
     fontSize: '0.8em',
-    fontWeight: 300,
+    fontWeight: 400,
     color: Color.primaryBlack,
     display: 'none',
     [mq[1200]]: {

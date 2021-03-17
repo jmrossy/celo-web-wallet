@@ -80,7 +80,7 @@ async function fetchTokenBalances(
   return tokenBalances
 }
 
-// TODO cut this?
+// TODO Figure out why the balanceOf result is incorrect for GoldToken
 async function fetchCeloBalance(address: string): Promise<TokenWithBalance> {
   const provider = getProvider()
   const balance = await provider.getBalance(address)

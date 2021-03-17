@@ -90,7 +90,7 @@ export function HomeScreen() {
         {showGraph && (
           <>
             <HrDivider styles={style.divider} />
-            <Box direction="row" align="end" margin="0 0 2em 0">
+            <Box direction="row" align="end" margin="0 0 1.5em 0">
               <img src={Chart} css={style.icon} alt="Price chart" />
               <label css={style.celoPriceLabel}>Celo Price</label>
             </Box>

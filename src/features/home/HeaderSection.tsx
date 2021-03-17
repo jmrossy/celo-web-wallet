@@ -41,7 +41,7 @@ const style: Stylesheet = {
     [mq[768]]: {
       display: 'block',
       ...Font.h1,
-      margin: '0.2em 0 1.2em 0',
+      margin: '0 0 1.1em 0',
       color: Color.primaryGreen,
     },
   },

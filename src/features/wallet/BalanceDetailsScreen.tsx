@@ -167,12 +167,13 @@ const style: Stylesheet = {
   },
   h1: {
     ...Font.h2Green,
-    marginBottom: '2em',
+    marginBottom: '1.5em',
   },
   addButton: {
     ...defaultButtonStyles,
     width: '100%',
     padding: '0.5em 1em',
+    marginTop: '0.5em',
     borderRadius: 6,
     color: `${Color.primaryBlack}cc`,
     backgroundColor: Color.fillLighter,
