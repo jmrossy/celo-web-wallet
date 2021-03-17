@@ -16,6 +16,7 @@ import {
   ValidatorStatus,
 } from 'src/features/validators/types'
 import { updateValidatorGroups } from 'src/features/validators/validatorsSlice'
+import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
@@ -174,6 +175,10 @@ async function fetchValidatorGroupVotes(groups: ValidatorGroup[]) {
     const groupAddr = eligibleGroups[i]
     const numVotes = groupVotes[i]
     const group = groupsMap[groupAddr]
+    if (!group) {
+      logger.warn('No group found matching votes, group list must be stale')
+      continue
+    }
     group.eligible = true
     group.capacity = getValidatorGroupCapacity(group, totalValidators, totalLocked)
     group.votes = numVotes.toString()
