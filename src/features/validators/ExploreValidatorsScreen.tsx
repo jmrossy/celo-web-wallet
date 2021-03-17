@@ -28,6 +28,7 @@ import { formatNumberWithCommas } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 
 export function ExploreValidatorsScreen() {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -36,6 +37,10 @@ export function ExploreValidatorsScreen() {
 
   const onClickRefresh = () => {
     dispatch(fetchValidatorsActions.trigger({ force: true }))
+  }
+
+  const onClickVote = () => {
+    navigate('/stake')
   }
 
   const status = useSagaStatus(
@@ -53,7 +58,7 @@ export function ExploreValidatorsScreen() {
   return (
     <ScreenContentFrame>
       <div css={style.content}>
-        <h1 css={Font.h2Green}>
+        <h1 css={style.h1}>
           Explore Validators{' '}
           <RefreshButton
             width="15px"
@@ -62,11 +67,16 @@ export function ExploreValidatorsScreen() {
             styles={style.refreshIcon}
           />
         </h1>
-        <h3 css={style.h3}>
-          For more detailed lists, see{' '}
-          <TextLink link="https://celo.org/validators/explore">celo.org</TextLink> or{' '}
-          <TextLink link="https://thecelo.com/">thecelo.com</TextLink>
-        </h3>
+        <Box direction="row" align="end" justify="between" margin="0 0 2em 0" styles={style.h3Row}>
+          <h3 css={style.h3}>
+            For more details, see{' '}
+            <TextLink link="https://celo.org/validators/explore">celo.org</TextLink> or{' '}
+            <TextLink link="https://thecelo.com/">thecelo.com</TextLink>
+          </h3>
+          <Button size="m" styles={style.voteButton} onClick={onClickVote}>
+            See / Change Your Votes
+          </Button>
+        </Box>
         <Table<ValidatorGroupTableRow>
           columns={tableColumns}
           data={data}
@@ -159,7 +169,7 @@ function ExpandedRow({ row: group }: { row: ValidatorGroupTableRow }) {
     <div css={style.expandedGroupContainer}>
       <Box direction="row" align="center" justify="between" margin="0 0 0.75em 0">
         <CopiableAddress address={address} length="full" />
-        <Button size="s" styles={style.voteButton} onClick={() => onClickVote(address)}>
+        <Button size="s" styles={style.groupVoteButton} onClick={() => onClickVote(address)}>
           Vote for Group
         </Button>
       </Box>
@@ -194,9 +204,21 @@ const style: Stylesheet = {
   content: {
     width: '100%',
   },
+  h1: {
+    ...Font.h2Green,
+    marginBottom: '0.3em',
+  },
+  h3Row: {
+    maxWidth: '80em', // should match table
+  },
   h3: {
     ...Font.body,
-    marginBottom: '1.5em',
+    margin: 0,
+    paddingBottom: '0.2em',
+  },
+  voteButton: {
+    width: '12em',
+    height: '2.5em',
   },
   refreshIcon: {
     position: 'relative',
@@ -212,7 +234,7 @@ const style: Stylesheet = {
     borderLeft: '1px solid #D8DADB',
     paddingLeft: '1.5em',
   },
-  voteButton: {
+  groupVoteButton: {
     width: '7em',
     height: '1.75em',
     fontSize: '0.9em',
