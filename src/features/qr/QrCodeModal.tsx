@@ -1,6 +1,5 @@
 import { Address } from 'src/components/Address'
 import { Box } from 'src/components/layout/Box'
-import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { QrCode } from 'src/features/qr/QrCode'
 import { encodeAddressForQr } from 'src/features/qr/utils'
@@ -11,8 +10,7 @@ export function useAddressQrCodeModal() {
     const data = encodeAddressForQr(address)
     showModalWithContent(
       'Your Wallet Address',
-      <AddressQrCodeModal address={address} data={data} />,
-      ModalOkAction
+      <AddressQrCodeModal address={address} data={data} />
     )
   }
 }
