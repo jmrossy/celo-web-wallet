@@ -1,4 +1,4 @@
-import { BigNumber, providers } from 'ethers'
+import { BigNumber, BigNumberish, providers } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
@@ -98,7 +98,8 @@ async function createVoteTx(params: GovernanceVoteParams) {
 
   const governance = getContract(CeloContract.Governance)
 
-  const dequeued: string[] = await governance.getDequeue()
+  const dequeuedBN: BigNumberish[] = await governance.getDequeue()
+  const dequeued = dequeuedBN.map((d) => BigNumber.from(d).toString())
   const propsalIndex = dequeued.findIndex((d) => d === proposalId)
   if (propsalIndex < 0) throw new Error('Proposal not found in dequeued list')
 

@@ -60,8 +60,8 @@ export function GovernanceConfirmationScreen() {
     'governanceVote',
     1,
     'Sending Vote...',
-    'Vote Registered!',
-    'Your governance vote has been sent successfully',
+    'Vote Sent!',
+    'Your vote has been cast successfully',
     'Vote Failed',
     'Your vote could not be processed'
   )

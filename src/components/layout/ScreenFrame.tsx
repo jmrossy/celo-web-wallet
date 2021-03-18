@@ -154,7 +154,7 @@ function MobileNotHome(props: PropsWithChildren<any>) {
     <Box direction="row" styles={style.contentContainer}>
       <Box direction="column" align="center" styles={style.feedContainer}>
         <Button onClick={onButtonClick} margin="0.75em 0" size="icon" width="34px" height="34px">
-          <img width="22px" height="22px" src={PlusIcon} alt="Plus" />
+          <img width="18px" height="18px" src={PlusIcon} alt="Plus" />
         </Button>
         <TransactionFeed collapsed={true} />
       </Box>
