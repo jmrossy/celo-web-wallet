@@ -4,6 +4,8 @@ import ReactFrappeChart from 'react-frappe-charts'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
+import { WEI_PER_UNIT } from 'src/consts'
+import { getSimpleExchangeRate } from 'src/features/exchange/utils'
 import { fetchTokenPriceActions } from 'src/features/tokenPrice/fetchPrices'
 import { QuoteCurrency } from 'src/features/tokenPrice/types'
 import { findPriceForDay, tokenPriceHistoryToChartData } from 'src/features/tokenPrice/utils'
@@ -35,10 +37,20 @@ export function PriceChartCelo({ showHeaderPrice, containerCss, height }: PriceC
   const chartData = tokenPriceHistoryToChartData(celoUsdPrices)
   const todayPrice = findPriceForDay(celoUsdPrices, new Date())
 
-  const exchangeRate = useSelector((s: RootState) => s.exchange.cUsdToCelo)
-  const celoToCusd = exchangeRate ? 1 / exchangeRate.rate : null
-
-  const headerRate = celoToCusd ?? todayPrice
+  const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)
+  const cUsdToCelo = toCeloRates[NativeTokenId.cUSD]
+  let celoToCusdSimpleRate: number | null = null
+  if (cUsdToCelo) {
+    const simleRate = getSimpleExchangeRate(
+      WEI_PER_UNIT,
+      cUsdToCelo.stableBucket,
+      cUsdToCelo.celoBucket,
+      cUsdToCelo.spread,
+      true
+    )
+    celoToCusdSimpleRate = simleRate.exchangeRateNum
+  }
+  const headerRate = celoToCusdSimpleRate ?? todayPrice
   const chartHeight = height || 250
 
   return (

@@ -5,11 +5,12 @@ import { isSignerLedger } from 'src/blockchain/signer'
 import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import {
   EXCHANGE_RATE_STALE_TIME,
+  MAX_EXCHANGE_LOSS,
   MAX_EXCHANGE_TOKEN_SIZE,
   MAX_EXCHANGE_TOKEN_SIZE_LEDGER,
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
-import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
+import { ExchangeTokenParams, SimpleExchangeRate } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
@@ -85,7 +86,7 @@ export function validate(
   return errors
 }
 
-export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState | null {
+export function validateExchangeRate(exchangeRate?: SimpleExchangeRate): ErrorState | null {
   if (!exchangeRate) {
     return { isValid: false, fee: { error: true, helpText: 'No exchange rate set' } }
   }
@@ -93,12 +94,12 @@ export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState | 
   const { rate, lastUpdated } = exchangeRate
 
   if (!rate || rate < MIN_EXCHANGE_RATE) {
-    logger.error(`Exchange rate too low: ${rate}`)
-    return { isValid: false, fee: { error: true, helpText: 'Exchange rate too low' } }
+    logger.error(`Exchange rate seems too low: ${rate}`)
+    return { isValid: false, fee: { error: true, helpText: 'Exchange rate seems too low' } }
   }
 
   if (isStale(lastUpdated, EXCHANGE_RATE_STALE_TIME * 2)) {
-    logger.error(`Exchange rate too stale`)
+    logger.error(`Exchange rate too stale: ${lastUpdated}`)
     return { isValid: false, fee: { error: true, helpText: 'Exchange rate too stale' } }
   }
 
@@ -130,7 +131,7 @@ function* exchangeToken(params: ExchangeTokenParams) {
   const exchangeContract = getContractByAddress(exchangeAddress)
   if (!exchangeContract) throw new Error(`No exchange contract found for ${stableToken.id}`)
 
-  // Need to account for case where user intends to send entire balance
+  // Need to account for case where user intends to exchange entire balance
   const adjustedAmount = getAdjustedAmountFromBalances(
     amountInWei,
     fromToken,
@@ -248,8 +249,8 @@ export const {
   actions: exchangeTokenActions,
 } = createMonitoredSaga<ExchangeTokenParams>(exchangeToken, 'exchangeToken')
 
-function getMinBuyAmount(amountInWei: BigNumber, exchangeRate: ExchangeRate) {
-  // Allow a small (2%) wiggle room to increase success rate even if
+function getMinBuyAmount(amountInWei: BigNumber, exchangeRate: SimpleExchangeRate) {
+  // Allow a small wiggle room to increase success rate even if
   // rate changes slightly before tx goes out
-  return toWei(fromWei(amountInWei) * exchangeRate.rate * 0.98)
+  return toWei(fromWei(amountInWei) * exchangeRate.rate * (1 - MAX_EXCHANGE_LOSS))
 }

@@ -28,7 +28,7 @@ export function ExchangeConfirmationScreen() {
   const navigate = useNavigate()
 
   const balances = useSelector((state: RootState) => state.wallet.balances)
-  const { cUsdToCelo } = useSelector((state: RootState) => state.exchange) // TODO get diff rates
+  const toCeloRates = useSelector((state: RootState) => state.exchange.toCeloRates)
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
 
   useEffect(() => {
@@ -40,8 +40,6 @@ export function ExchangeConfirmationScreen() {
 
     dispatch(
       fetchExchangeRateActions.trigger({
-        sellGold: tx.params.fromTokenId === CELO.id,
-        sellAmount: tx.params.amountInWei,
         force: true,
       })
     )
@@ -69,7 +67,7 @@ export function ExchangeConfirmationScreen() {
     params.fromTokenId,
     params.toTokenId,
     balances,
-    cUsdToCelo,
+    toCeloRates,
     true
   )
 
@@ -80,8 +78,9 @@ export function ExchangeConfirmationScreen() {
   }
 
   const onExchange = () => {
-    if (!tx || !cUsdToCelo || !feeEstimates) return
-    dispatch(exchangeTokenActions.trigger({ ...params, exchangeRate: rate, feeEstimates }))
+    if (!tx || !rate.isReady || !feeEstimates) return
+    const exchangeRate = { rate: rate.value, lastUpdated: rate.lastUpdated }
+    dispatch(exchangeTokenActions.trigger({ ...params, exchangeRate, feeEstimates }))
   }
 
   const { isWorking } = useTxFlowStatusModals(
@@ -172,7 +171,7 @@ export function ExchangeConfirmationScreen() {
               size="m"
               width="10em"
               icon={ExchangeIcon}
-              disabled={isWorking || !feeAmount || !cUsdToCelo}
+              disabled={isWorking || !feeAmount || !rate.isReady}
             >
               Exchange
             </Button>
@@ -180,11 +179,11 @@ export function ExchangeConfirmationScreen() {
         </Box>
         <div css={style.rateBox}>
           <label css={style.label}>Rate</label>
-          {cUsdToCelo ? (
+          {rate.isReady ? (
             <>
               <MoneyValue amountInWei={rate.weiBasis} token={from.token} baseFontSize={1.2} />
               <span css={style.valueText}>=</span>
-              <MoneyValue amountInWei={rate.weiRate} token={to.token} baseFontSize={1.2} />
+              <MoneyValue amountInWei={rate.weiValue} token={to.token} baseFontSize={1.2} />
             </>
           ) : (
             // TODO a proper loader (need to update mocks)

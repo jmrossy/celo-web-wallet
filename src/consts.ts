@@ -20,6 +20,7 @@ export const MAX_GAS_PRICE = '5000000000' // 5 Gwei
 export const MAX_GAS_LIMIT = '10000000' // 10 million
 
 export const MIN_EXCHANGE_RATE = 0.01 // 100 cUSD per Celo
+export const MAX_EXCHANGE_LOSS = 0.02 // 2%
 
 export const MIN_LOCK_AMOUNT = '10000000000000000' // 0.01 CELO
 export const MIN_LOCKED_GOLD_TO_VOTE = '200000000000000000' // 0.2 Celo
@@ -29,7 +30,7 @@ export const BARCHART_MIN_SHOW_AMOUNT = '10000000000000000' // 0.01 CELO
 export const ACCOUNT_UNLOCK_TIMEOUT = 600000 // 10 minutes
 export const BALANCE_STALE_TIME = 15000 // 15 seconds
 export const GAS_PRICE_STALE_TIME = 10000 // 10 seconds
-export const EXCHANGE_RATE_STALE_TIME = 15000 // 15 seconds
+export const EXCHANGE_RATE_STALE_TIME = 20000 // 20 seconds
 export const ACCOUNT_STATUS_STALE_TIME = 43200000 // 12 hours
 export const VALIDATOR_LIST_STALE_TIME = 43200000 // 12 hours
 export const VALIDATOR_VOTES_STALE_TIME = 300000 // 5 minutes

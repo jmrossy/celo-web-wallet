@@ -38,12 +38,12 @@ export function ExchangeFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
-  const { cUsdToCelo } = useSelector((state: RootState) => state.exchange) // TODO get diff rates
-  const { transaction: tx } = useSelector((state: RootState) => state.txFlow)
+  const toCeloRates = useSelector((state: RootState) => state.exchange.toCeloRates)
+  const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
 
   useEffect(() => {
-    dispatch(fetchExchangeRateActions.trigger({}))
+    dispatch(fetchExchangeRateActions.trigger({ force: false }))
   }, [])
 
   const onSubmit = (values: ExchangeTokenForm) => {
@@ -73,7 +73,7 @@ export function ExchangeFormScreen() {
     values.fromTokenId,
     values.toTokenId,
     balances,
-    cUsdToCelo,
+    toCeloRates,
     false
   )
 
@@ -126,7 +126,7 @@ export function ExchangeFormScreen() {
         <Box direction="column" styles={style.chartColumn}>
           <Box direction="row" align="center" styles={style.rateRow}>
             <label css={Font.inputLabel}>Current Rate</label>
-            {cUsdToCelo ? (
+            {rate.isReady ? (
               <>
                 <MoneyValue
                   amountInWei={rate.weiBasis}
@@ -135,7 +135,7 @@ export function ExchangeFormScreen() {
                   margin="0 0 0 1em"
                 />
                 <span css={style.valueText}>:</span>
-                <MoneyValue amountInWei={rate.weiRate} token={to.token} baseFontSize={1.2} />
+                <MoneyValue amountInWei={rate.weiValue} token={to.token} baseFontSize={1.2} />
               </>
             ) : (
               <span css={style.valueText}>Loading...</span>
