@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 import { Location } from 'history'
-import { ChangeEvent, useEffect, useMemo } from 'react'
+import { ChangeEvent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -8,8 +8,7 @@ import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { AddressInput } from 'src/components/input/AddressInput'
-import { NumberInput } from 'src/components/input/NumberInput'
-import { SelectInput } from 'src/components/input/SelectInput'
+import { AmountAndCurrencyInput } from 'src/components/input/AmountAndCurrencyInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -17,7 +16,6 @@ import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
-import { Balances } from 'src/features/wallet/types'
 import { getTokenBalance } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -94,8 +92,6 @@ export function SendFormScreen() {
     resetErrors()
   }
 
-  const selectOptions = useMemo(() => getSelectOptions(balances), [balances])
-
   return (
     <ScreenContentFrame>
       <div css={style.content}>
@@ -125,41 +121,23 @@ export function SendFormScreen() {
             </Box>
           </Box>
 
-          <Box direction="row" styles={style.inputRow} justify="between">
-            <Box direction="column" justify="end" align="start">
+          <div css={style.inputRow}>
+            <Box direction="row" justify="between" align="start">
               <label css={style.inputLabel}>Amount</label>
-              <div css={style.amountContainer}>
-                <NumberInput
-                  step="0.01"
-                  width="6.5em"
-                  margin="0 0.75em 0 0"
-                  name="amount"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.amount}
-                  placeholder="1.00"
-                  {...errors['amount']}
-                />
-                <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
-                  Max Amount
-                </TextButton>
-              </div>
+              <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
+                Use Max
+              </TextButton>
             </Box>
-            <Box direction="column" align="start" margin="0 0 0 1.5em">
-              <label css={style.inputLabel}>Currency</label>
-              <SelectInput
-                name="tokenId"
-                autoComplete={false}
-                width="5em"
-                onChange={onTokenSelect}
-                onBlur={handleBlur}
-                value={values.tokenId}
-                options={selectOptions}
-                placeholder="Currency"
-                {...errors['tokenId']}
-              />
-            </Box>
-          </Box>
+            <AmountAndCurrencyInput
+              tokenValue={values.tokenId}
+              onTokenSelect={onTokenSelect}
+              onTokenBlur={handleBlur}
+              amountValue={values.amount}
+              onAmountChange={handleChange}
+              onAmountBlur={handleBlur}
+              errors={errors}
+            />
+          </div>
 
           <Box direction="column" align="start" styles={style.inputRow}>
             <label css={style.inputLabel}>Comment (optional)</label>
@@ -171,8 +149,8 @@ export function SendFormScreen() {
               onBlur={handleBlur}
               minWidth="16em"
               maxWidth="24em"
-              minHeight="5em"
-              maxHeight="7em"
+              minHeight="4em"
+              maxHeight="6em"
               fillWidth={true}
               disabled={!isNativeToken(values.tokenId)}
               {...errors['comment']}
@@ -199,13 +177,6 @@ function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null)
   } else {
     return amountFieldFromWei(tx.params)
   }
-}
-
-function getSelectOptions(balances: Balances) {
-  return Object.values(balances.tokens).map((t) => ({
-    display: t.label,
-    value: t.id,
-  }))
 }
 
 const style: Stylesheet = {
@@ -237,23 +208,8 @@ const style: Stylesheet = {
       marginLeft: '0.75em',
     },
   },
-  amountContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    [mq[480]]: {
-      flexDirection: 'row',
-    },
-  },
   maxAmountButton: {
-    margin: '0.6em 0 0 0.2em',
-    textAlign: 'left',
-    fontWeight: 300,
+    fontWeight: 400,
     fontSize: '0.9em',
-    [mq[480]]: {
-      margin: 0,
-    },
-    [mq[768]]: {
-      fontSize: '1em',
-    },
   },
 }

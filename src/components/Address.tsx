@@ -133,7 +133,7 @@ const style: Stylesheet = {
     paddingBottom: '4px',
     paddingLeft: '30px',
     paddingRight: '6px',
-    borderRadius: 3,
+    borderRadius: 4,
   },
   addressChunk: {
     padding: '0px 3px',

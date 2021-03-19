@@ -90,8 +90,11 @@ const style: Stylesheet = {
       fontSize: '1em',
       margin: '0 1em',
     },
+    [mq[1024]]: {
+      margin: '0 1.2em',
+    },
     [mq[1200]]: {
-      margin: '0 1.3em',
+      margin: '0 1.4em',
     },
     ':hover': {
       filter: 'brightness(1.1)',

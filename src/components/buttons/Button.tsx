@@ -130,7 +130,7 @@ export const transparentButtonStyles: Styles = {
 
 export const defaultButtonStyles: Styles = {
   ...transparentButtonStyles,
-  borderRadius: 3,
+  borderRadius: 4,
   color: Color.primaryWhite,
   backgroundColor: Color.primaryGreen,
   fontWeight: 500,

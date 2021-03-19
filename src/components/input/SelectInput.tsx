@@ -1,12 +1,16 @@
-import { ChangeEvent, PropsWithChildren, useEffect, useState } from 'react'
+import { ChangeEvent, PropsWithChildren, ReactElement, useEffect, useState } from 'react'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
-import { Stylesheet } from 'src/styles/types'
+import { Styles, Stylesheet } from 'src/styles/types'
 
-type SelectOptions = Array<{ display: string; value: string }>
+export interface SelectOption {
+  display: string
+  value: string
+}
+export type SelectOptions = Array<SelectOption>
 
 export interface SelectInputProps {
   name: string
@@ -16,13 +20,16 @@ export interface SelectInputProps {
   value: string | undefined
   options: SelectOptions
   maxOptions?: number // max number of suggestions to show
-  onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  allowRawOption?: boolean // user's input is included in select options
+  onBlur?: (event: ChangeEvent<HTMLInputElement>) => void
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
   error?: boolean
   helpText?: string
   placeholder?: string
   disabled?: boolean
-  allowRawOption?: boolean // user's input is included in select options
+  inputStyles?: Styles
+  renderDropdownOption?: (o: SelectOption) => ReactElement
+  renderDropdownValue?: (v: string) => ReactElement | null
 }
 
 export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
@@ -32,12 +39,15 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
     value,
     options,
     maxOptions,
+    allowRawOption,
     onBlur,
     onChange,
     helpText,
     placeholder,
     disabled,
-    allowRawOption,
+    inputStyles,
+    renderDropdownOption,
+    renderDropdownValue,
   } = props
 
   const initialInput = getDisplayValue(options, value)
@@ -70,7 +80,7 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
     ? sortAndFilter(options, inputValue ?? '', maxOptions, allowRawOption)
     : options
 
-  const inputStyle = getInputStyles(props, inputValue)
+  const formattedInputStyle = getInputStyles(props, inputValue, inputStyles)
 
   return (
     <Box direction="column">
@@ -79,7 +89,7 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
           <input
             type="text"
             name={name}
-            css={inputStyle}
+            css={formattedInputStyle}
             value={inputValue}
             onClick={handleClick}
             onFocus={handleClick}
@@ -89,12 +99,13 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
             disabled={disabled}
           />
         ) : (
-          <div css={inputStyle} onClick={handleClick} tabIndex={0}>
-            {inputValue || placeholder}
+          // Tab index is required here to workaround a browser bug
+          <div css={formattedInputStyle} onClick={handleClick} tabIndex={0}>
+            {(renderDropdownValue ? renderDropdownValue(inputValue) : inputValue) || placeholder}
           </div>
         )}
         <div css={style.chevronContainer}>
-          <ChevronIcon direction="s" height="8px" width="13px" />
+          <ChevronIcon direction="s" height="8px" width="12px" />
         </div>
         {showDropdown && (
           <div css={style.dropdownContainer}>
@@ -104,7 +115,7 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
                 css={style.option}
                 onMouseDown={() => handleOptionClick(o.value)}
               >
-                {o.display}
+                {renderDropdownOption ? renderDropdownOption(o) : o.display}
               </div>
             ))}
           </div>
@@ -138,7 +149,7 @@ function getDisplayValue(options: SelectOptions, optionValue?: string, allowRawO
   else return ''
 }
 
-function getInputStyles(props: SelectInputProps, inputValue: string) {
+function getInputStyles(props: SelectInputProps, inputValue: string, styleOverrides?: Styles) {
   const { autoComplete, width, height, error, disabled } = props
 
   const styleBase = {
@@ -146,6 +157,7 @@ function getInputStyles(props: SelectInputProps, inputValue: string) {
     padding: '2px 10px',
     width,
     height: height ?? 40,
+    ...styleOverrides,
   }
 
   // Just a simple input field
@@ -184,8 +196,9 @@ const style: Stylesheet = {
   },
   chevronContainer: {
     position: 'absolute',
-    right: 15,
+    right: 14,
     top: 15,
+    opacity: 0.75,
   },
   dropdownContainer: {
     zIndex: 100,
@@ -195,7 +208,7 @@ const style: Stylesheet = {
     right: 0,
     maxHeight: '15em',
     overflow: 'auto',
-    borderRadius: 3,
+    borderRadius: 4,
     border: `1px solid ${Color.borderInactive}`,
     background: Color.primaryWhite,
     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.06)',

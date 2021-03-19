@@ -161,7 +161,7 @@ const style: Stylesheet = {
     marginTop: '1em',
     width: '20em',
     padding: '1em',
-    borderRadius: 3,
+    borderRadius: 4,
     border: `1px solid ${Color.primaryWhite}`,
     ':hover': {
       borderColor: Color.altGrey,

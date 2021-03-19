@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { defaultButtonStyles } from 'src/components/buttons/Button'
 import Eye from 'src/components/icons/eye.svg'
 import Paste from 'src/components/icons/paste.svg'
 import { Box } from 'src/components/layout/Box'
@@ -76,7 +77,7 @@ const style: Stylesheet = {
     zIndex: 5,
     backgroundColor: Color.fillLight,
     padding: '5px 18px 5px 5px',
-    borderRadius: 3,
+    borderRadius: 4,
     [mq[768]]: {
       minWidth: '20em',
     },
@@ -85,31 +86,21 @@ const style: Stylesheet = {
     zIndex: 5,
     backgroundColor: Color.fillLight,
     padding: '1em',
-    borderRadius: 3,
+    borderRadius: 4,
   },
   line: {
     padding: '0px 2px',
     lineHeight: '22px',
   },
   button: {
+    ...defaultButtonStyles,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
-    backgroundColor: Color.primaryGreen,
     height: 27,
     width: 27,
     borderRadius: 3,
-    border: 'none',
-    outline: 'none',
-    cursor: 'pointer',
-    ':hover': {
-      backgroundColor: '#4cdd91',
-    },
-    ':active': {
-      backgroundColor: '#0fb972',
-    },
-    //@ts-ignore
     ':nth-of-type(2)': {
       marginTop: 10,
     },

@@ -241,7 +241,7 @@ const style: Stylesheet = {
     right: '0.2em',
     width: '20.7em',
     padding: '1.3em 0.2em 0 0.8em',
-    borderRadius: 3,
+    borderRadius: 4,
     zIndex: backdropZIndex + 1,
     background: Color.primaryWhite,
     border: `1px solid ${Color.fillLight}`,

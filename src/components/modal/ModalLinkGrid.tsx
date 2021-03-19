@@ -45,7 +45,7 @@ const style: Stylesheet = {
   },
   linkContent: {
     textDecoration: 'none',
-    borderRadius: 3,
+    borderRadius: 4,
     width: '4.6em',
     height: '5.8em',
     margin: '0 0.5em',
