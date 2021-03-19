@@ -4,6 +4,8 @@ import { RootState } from 'src/app/rootReducer'
 import { defaultButtonStyles } from 'src/components/buttons/Button'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
+import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
+import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { ModalAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
@@ -72,6 +74,7 @@ const tableColumns: TableColumn[] = [
   {
     header: 'Currency',
     id: 'label',
+    renderer: renderLabel,
   },
   {
     header: 'Balance',
@@ -93,6 +96,15 @@ const tableColumnsWithWei: TableColumn[] = [
   },
   tableColumns[2],
 ]
+
+function renderLabel(row: BalanceTableRow) {
+  return (
+    <Box align="center">
+      <TokenIcon token={row.token} size="1.5em" />
+      <div css={style.tokenLabel}>{row.label}</div>
+    </Box>
+  )
+}
 
 function renderAddressAndRemoveButton(row: BalanceTableRow) {
   const { id, label, address } = row
@@ -154,6 +166,7 @@ function balancesToTableData(balances: Balances): BalanceTableRow[] {
       balance: parseFloat(fromWeiRounded(token.value, token)),
       balanceWei: token.value,
       address: token.address,
+      token,
     })
   }
 
@@ -169,6 +182,12 @@ const style: Stylesheet = {
     ...Font.h2Green,
     marginBottom: '1.5em',
   },
+  tokenLabel: {
+    paddingLeft: '0.4em',
+  },
+  addressContainer: {
+    position: 'relative',
+  },
   addButton: {
     ...defaultButtonStyles,
     width: '100%',
@@ -183,9 +202,6 @@ const style: Stylesheet = {
     ':active': {
       backgroundColor: Color.fillMedium,
     },
-  },
-  addressContainer: {
-    position: 'relative',
   },
   removeButtonContainer: {
     position: 'absolute',

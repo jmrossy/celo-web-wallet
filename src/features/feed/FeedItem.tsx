@@ -47,10 +47,10 @@ export function FeedItem(props: FeedItemProps) {
               <div css={style.subDescriptionText}>{subDescription}</div>
             </div>
           </Box>
-          <div css={style.moneyContainer}>
-            <MoneyValue amountInWei={value} token={token} hideSymbol={true} sign={sign} />
+          <Box direction="column" align="end">
+            <MoneyValue amountInWei={value} token={token} symbol="none" sign={sign} />
             <div css={[style.currency, { color }]}>{symbol}</div>
-          </div>
+          </Box>
         </Box>
       ) : (
         <Box direction="row" align="center" justify="center">
@@ -198,9 +198,6 @@ const style: Stylesheet = {
     ...Font.subtitle,
     marginTop: '0.4em',
     marginLeft: '1em',
-  },
-  moneyContainer: {
-    textAlign: 'right',
   },
   currency: {
     ...Font.subtitle,

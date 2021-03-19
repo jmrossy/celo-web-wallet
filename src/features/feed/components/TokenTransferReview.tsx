@@ -1,4 +1,5 @@
 import { Address } from 'src/components/Address'
+import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import {
   TransactionProperty,
@@ -29,15 +30,15 @@ export function TokenTransferReview({ tx }: Props) {
         </div>
       </TransactionProperty>
       <TransactionProperty label="Amount">
-        <div css={style.value}>
+        <Box styles={style.value}>
           <span css={style.amountLabel}>{amountLabel}</span>
           <MoneyValue amountInWei={tx.value} token={tx.token} />
-        </div>
+        </Box>
         {tx.isOutgoing && (
-          <div css={style.value}>
+          <Box styles={style.value}>
             <span css={style.amountLabel}>Fee: </span>
             <MoneyValue amountInWei={feeValue} token={feeCurrency} />
-          </div>
+          </Box>
         )}
       </TransactionProperty>
       {tx.comment && (

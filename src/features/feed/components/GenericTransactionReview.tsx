@@ -1,5 +1,6 @@
 import { getContractName } from 'src/blockchain/contracts'
 import { Address } from 'src/components/Address'
+import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { config } from 'src/config'
 import {
@@ -31,14 +32,14 @@ export function GenericTransactionReview({ tx }: Props) {
         </div>
       </TransactionProperty>
       <TransactionProperty label="Amount">
-        <div css={style.value}>
+        <Box styles={style.value}>
           <span css={style.amountLabel}>Value: </span>
           <MoneyValue amountInWei={tx.value} token={CELO} />
-        </div>
-        <div css={style.value}>
+        </Box>
+        <Box styles={style.value}>
           <span css={style.amountLabel}>Fee: </span>
           <MoneyValue amountInWei={feeValue} token={feeCurrency} />
-        </div>
+        </Box>
       </TransactionProperty>
       {contractName && (
         <TransactionProperty label={'Target Contract'}>

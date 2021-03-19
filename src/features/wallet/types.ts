@@ -1,5 +1,5 @@
 import { LockedCeloBalances } from 'src/features/lock/types'
-import { NativeTokenId, TokenWithBalance } from 'src/tokens'
+import { NativeTokenId, Token, TokenWithBalance } from 'src/tokens'
 
 type NativeTokenBalances = { [t in NativeTokenId]: TokenWithBalance }
 
@@ -18,6 +18,7 @@ export interface BalanceTableRow {
   balance: number
   balanceWei: string
   address: string
+  token: Token
 }
 
 export interface AddTokenParams {

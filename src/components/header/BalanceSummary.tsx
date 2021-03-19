@@ -56,6 +56,7 @@ export function BalanceSummary() {
           roundDownIfSmall={true}
           baseFontSize={1.4}
           containerCss={style.balanceContainer}
+          symbol="icon"
         />
       ))}
       {hiddenTokens > 0 && (
@@ -90,10 +91,10 @@ const style: Stylesheet = {
       margin: '0 1em',
     },
     [mq[1200]]: {
-      margin: '0 1.2em',
+      margin: '0 1.3em',
     },
     ':hover': {
-      filter: 'brightness(1.15)',
+      filter: 'brightness(1.1)',
     },
   },
   moreTokensContainer: {
