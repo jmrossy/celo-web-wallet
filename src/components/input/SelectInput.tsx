@@ -97,7 +97,7 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
           <ChevronIcon direction="s" height="8px" width="13px" />
         </div>
         {showDropdown && (
-          <div css={{ ...style.dropdownContainer }}>
+          <div css={style.dropdownContainer}>
             {filteredOptions.map((o) => (
               <div
                 key={`select-option-${o.value}`}
@@ -188,6 +188,7 @@ const style: Stylesheet = {
     top: 15,
   },
   dropdownContainer: {
+    zIndex: 100,
     position: 'absolute',
     top: 50,
     left: 0,

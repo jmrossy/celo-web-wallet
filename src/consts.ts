@@ -19,8 +19,10 @@ export const MAX_FEE_SIZE = '1000000000000000000' // 1 Token
 export const MAX_GAS_PRICE = '5000000000' // 5 Gwei
 export const MAX_GAS_LIMIT = '10000000' // 10 million
 
-export const MIN_EXCHANGE_RATE = 0.01 // 100 cUSD per Celo
-export const MAX_EXCHANGE_LOSS = 0.02 // 2%
+export const MIN_EXCHANGE_RATE = 0.01 // 1<->100 ratio
+export const MAX_EXCHANGE_RATE = 100 // 1<->100 ratio
+export const MAX_EXCHANGE_LOSS = 0.01 // 1%
+export const MAX_EXCHANGE_SPREAD = 0.05
 
 export const MIN_LOCK_AMOUNT = '10000000000000000' // 0.01 CELO
 export const MIN_LOCKED_GOLD_TO_VOTE = '200000000000000000' // 0.2 Celo

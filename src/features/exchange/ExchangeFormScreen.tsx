@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -20,7 +20,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { NativeTokenId } from 'src/tokens'
+import { CELO, isStableToken, NativeTokenId, NativeTokens } from 'src/tokens'
 import { amountFieldFromWei, amountFieldToWei } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
@@ -61,6 +61,8 @@ export function ExchangeFormScreen() {
     handleBlur,
     handleSubmit,
     resetValues,
+    setValues,
+    resetErrors,
   } = useCustomForm<ExchangeTokenForm>(getInitialValues(tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
@@ -68,7 +70,22 @@ export function ExchangeFormScreen() {
     resetValues(getInitialValues(tx))
   }, [tx])
 
-  const { to, from, rate } = useExchangeValues(
+  const onSelectToken = (isFromToken: boolean) => (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target
+    const targetField = isFromToken ? 'fromTokenId' : 'toTokenId'
+    const otherField = isFromToken ? 'toTokenId' : 'fromTokenId'
+    if (isStableToken(value)) {
+      setValues({ ...values, [name]: value, [otherField]: NativeTokenId.CELO })
+    } else {
+      const newTokenId = isStableToken(values[targetField])
+        ? values[targetField]
+        : NativeTokenId.cUSD
+      setValues({ ...values, [name]: value, [otherField]: newTokenId })
+    }
+    resetErrors()
+  }
+
+  const { to, rate } = useExchangeValues(
     values.amount,
     values.fromTokenId,
     values.toTokenId,
@@ -76,6 +93,8 @@ export function ExchangeFormScreen() {
     toCeloRates,
     false
   )
+  const stableTokenId = values.fromTokenId === CELO.id ? values.toTokenId : values.fromTokenId
+  const stableToken = NativeTokens[stableTokenId]
 
   const selectOptions = useMemo(() => getSelectOptions(balances), [balances])
 
@@ -90,7 +109,7 @@ export function ExchangeFormScreen() {
               <NumberInput
                 step="0.01"
                 name="amount"
-                width="7.4em"
+                width="8em"
                 onChange={handleChange}
                 value={values.amount}
                 onBlur={handleBlur}
@@ -103,13 +122,27 @@ export function ExchangeFormScreen() {
               <SelectInput
                 name="fromTokenId"
                 autoComplete={false}
-                width="5em"
-                onChange={handleChange}
+                width="8em"
+                onChange={onSelectToken(true)}
                 onBlur={handleBlur}
                 value={values.fromTokenId}
                 options={selectOptions}
                 placeholder="From Currency"
                 {...errors['fromTokenId']}
+              />
+            </Box>
+            <Box direction="row" align="center" styles={style.inputRow}>
+              <label css={style.inputLabel}>To Currency</label>
+              <SelectInput
+                name="toTokenId"
+                autoComplete={false}
+                width="8em"
+                onChange={onSelectToken(false)}
+                onBlur={handleBlur}
+                value={values.toTokenId}
+                options={selectOptions}
+                placeholder="To Currency"
+                {...errors['toTokenId']}
               />
             </Box>
 
@@ -129,13 +162,13 @@ export function ExchangeFormScreen() {
             {rate.isReady ? (
               <>
                 <MoneyValue
-                  amountInWei={rate.weiBasis}
-                  token={from.token}
+                  amountInWei={rate.fromCeloWeiValue}
+                  token={stableToken}
                   baseFontSize={1.2}
                   margin="0 0 0 1em"
                 />
                 <span css={style.valueText}>:</span>
-                <MoneyValue amountInWei={rate.weiValue} token={to.token} baseFontSize={1.2} />
+                <MoneyValue amountInWei={rate.weiBasis} token={CELO} baseFontSize={1.2} />
               </>
             ) : (
               <span css={style.valueText}>Loading...</span>
@@ -176,9 +209,9 @@ const style: Stylesheet = {
     },
   },
   inputRow: {
-    marginBottom: '2em',
+    marginBottom: '1em',
     [mq[1200]]: {
-      marginBottom: '3em',
+      marginBottom: '1.5em',
     },
   },
   inputLabel: {

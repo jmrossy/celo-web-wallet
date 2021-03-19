@@ -78,6 +78,10 @@ export function isNativeToken(tokenId: string) {
   return Object.keys(NativeTokens).includes(tokenId)
 }
 
+export function isStableToken(tokenId: string) {
+  return StableTokenIds.includes(tokenId as NativeTokenId)
+}
+
 export type Tokens = INativeTokens & Record<string, Token>
 
 // Just re-export directly for convenient access

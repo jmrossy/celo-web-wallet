@@ -23,7 +23,7 @@ import {
   TokenTransaction,
   TransactionType,
 } from 'src/features/types'
-import { CELO, INativeTokens, NativeTokenId, NativeTokens, StableTokenIds, Token } from 'src/tokens'
+import { CELO, INativeTokens, isStableToken, NativeTokenId, NativeTokens, Token } from 'src/tokens'
 import { areAddressesEqual, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
@@ -261,7 +261,7 @@ function parseOutgoingTokenTransfer(
 
   if (token.id === CELO.id) {
     return { ...result, type: TransactionType.CeloTokenTransfer, token }
-  } else if (StableTokenIds.includes(token.id as NativeTokenId)) {
+  } else if (isStableToken(token.id)) {
     return { ...result, type: TransactionType.StableTokenTransfer, token }
   } else {
     return { ...result, type: TransactionType.OtherTokenTransfer, token }
@@ -283,7 +283,7 @@ function parseTokenApproveTx(
 
   if (token.id === CELO.id) {
     return { ...result, type: TransactionType.CeloTokenApprove, token }
-  } else if (StableTokenIds.includes(token.id as NativeTokenId)) {
+  } else if (isStableToken(token.id)) {
     return { ...result, type: TransactionType.StableTokenApprove, token }
   } else {
     return { ...result, type: TransactionType.OtherTokenApprove, token }
@@ -333,7 +333,7 @@ function parseTxWithTokenTransfers(
 
     if (token.id === CELO.id) {
       return { ...result, type: TransactionType.CeloTokenTransfer, token }
-    } else if (StableTokenIds.includes(token.id as NativeTokenId)) {
+    } else if (isStableToken(token.id)) {
       return { ...result, type: TransactionType.StableTokenTransfer, token }
     } else {
       return { ...result, type: TransactionType.OtherTokenTransfer, token }

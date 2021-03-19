@@ -1,10 +1,11 @@
 import { BigNumber, BigNumberish } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContractByAddress } from 'src/blockchain/contracts'
-import { EXCHANGE_RATE_STALE_TIME } from 'src/consts'
+import { EXCHANGE_RATE_STALE_TIME, MAX_EXCHANGE_SPREAD } from 'src/consts'
 import { resetExchangeRates, setExchangeRates } from 'src/features/exchange/exchangeSlice'
 import { ExchangeRate, ToCeloRates } from 'src/features/exchange/types'
 import { NativeTokens, StableTokenIds, Token } from 'src/tokens'
+import { fromFixidity } from 'src/utils/amount'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
@@ -43,8 +44,6 @@ export const {
 } = createMonitoredSaga<FetchExchangeRateParams>(fetchExchangeRate, 'fetchExchangeRate')
 
 async function fetchCeloExchangeRate(stableToken: Token): Promise<ExchangeRate> {
-  // const sellGold = _sellGold || false
-  // const sellAmount = _sellAmount || WEI_PER_UNIT
   const exchangeAddress = stableToken.exchangeAddress
   if (!exchangeAddress) throw new Error(`Token ${stableToken.id} has no known exchange address`)
   const exchangeContract = getContractByAddress(exchangeAddress)
@@ -52,30 +51,28 @@ async function fetchCeloExchangeRate(stableToken: Token): Promise<ExchangeRate> 
 
   const spreadP: Promise<BigNumberish> = exchangeContract.spread()
   const bucketsP: Promise<[BigNumberish, BigNumberish]> = exchangeContract.getBuyAndSellBuckets(
-    true
+    false
   )
-  const [spreadBN, bucketsBN] = await Promise.all([spreadP, bucketsP])
-  const spread = BigNumber.from(spreadBN).toString()
-  const [stableBucketBN, celoBucketBN] = bucketsBN
-  const stableBucket = BigNumber.from(stableBucketBN).toString()
-  const celoBucket = BigNumber.from(celoBucketBN).toString()
+  const [spreadRaw, bucketsRaw] = await Promise.all([spreadP, bucketsP])
 
-  // TODO add some checks here
-  console.log('spread', spread)
-  console.log('stable', BigNumber.from(stableBucket).toString())
-  console.log('gold', BigNumber.from(celoBucket).toString())
-  // const buyAmount = await exchange.getBuyTokenAmount(sellAmount, sellGold)
+  const spread = fromFixidity(spreadRaw)
+  if (spread <= 0 || spread > MAX_EXCHANGE_SPREAD)
+    throw new Error(`Invalid exchange spread: ${spread}`)
 
-  // // Example:
-  // // sellGold: false (i.e. buying gold with cUSD)
-  // // sellAmount: 2 cUSD
-  // // buyAmount: 0.2 CELO
-  // // toCeloRate should be 0.1
-  // const toCeloRate = sellGold
-  //   ? fromWei(sellAmount) / fromWei(buyAmount)
-  //   : fromWei(buyAmount) / fromWei(sellAmount)
+  const [celoBucketRaw, stableBucketRaw] = bucketsRaw
+  const celoBucket = BigNumber.from(celoBucketRaw)
+  const stableBucket = BigNumber.from(stableBucketRaw)
+  if (celoBucket.lte(0) || stableBucket.lte(0))
+    throw new Error(
+      `Invalid exchange buckets: ${celoBucket.toString()}, ${stableBucket.toString()}`
+    )
 
-  return { stableBucket, celoBucket, spread, lastUpdated: Date.now() }
+  return {
+    celoBucket: celoBucket.toString(),
+    stableBucket: stableBucket.toString(),
+    spread: spread.toString(),
+    lastUpdated: Date.now(),
+  }
 }
 
 function areRatesStale(rates: ToCeloRates) {

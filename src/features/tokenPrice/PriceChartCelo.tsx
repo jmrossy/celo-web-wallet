@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
 import { WEI_PER_UNIT } from 'src/consts'
-import { getSimpleExchangeRate } from 'src/features/exchange/utils'
+import { calcSimpleExchangeRate } from 'src/features/exchange/utils'
 import { fetchTokenPriceActions } from 'src/features/tokenPrice/fetchPrices'
 import { QuoteCurrency } from 'src/features/tokenPrice/types'
 import { findPriceForDay, tokenPriceHistoryToChartData } from 'src/features/tokenPrice/utils'
@@ -31,26 +31,27 @@ export function PriceChartCelo({ showHeaderPrice, containerCss, height }: PriceC
     )
   }, [])
 
+  const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)
   const allPrices = useSelector((s: RootState) => s.tokenPrice.prices)
   const celoPrices = allPrices[NativeTokenId.CELO]
   const celoUsdPrices = celoPrices ? celoPrices[QuoteCurrency.USD] : undefined
   const chartData = tokenPriceHistoryToChartData(celoUsdPrices)
-  const todayPrice = findPriceForDay(celoUsdPrices, new Date())
 
-  const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)
-  const cUsdToCelo = toCeloRates[NativeTokenId.cUSD]
-  let celoToCusdSimpleRate: number | null = null
-  if (cUsdToCelo) {
-    const simleRate = getSimpleExchangeRate(
-      WEI_PER_UNIT,
-      cUsdToCelo.stableBucket,
-      cUsdToCelo.celoBucket,
-      cUsdToCelo.spread,
-      true
-    )
-    celoToCusdSimpleRate = simleRate.exchangeRateNum
+  let headerRate: number | null = null
+  if (showHeaderPrice) {
+    const cUsdToCelo = toCeloRates[NativeTokenId.cUSD]
+    const celoToCUsdRate = cUsdToCelo
+      ? calcSimpleExchangeRate(
+          WEI_PER_UNIT,
+          cUsdToCelo.stableBucket,
+          cUsdToCelo.celoBucket,
+          cUsdToCelo.spread,
+          true
+        ).exchangeRateNum
+      : null
+    headerRate = celoToCUsdRate || findPriceForDay(celoUsdPrices, new Date())
   }
-  const headerRate = celoToCusdSimpleRate ?? todayPrice
+
   const chartHeight = height || 250
 
   return (

@@ -6,6 +6,7 @@ import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blo
 import {
   EXCHANGE_RATE_STALE_TIME,
   MAX_EXCHANGE_LOSS,
+  MAX_EXCHANGE_RATE,
   MAX_EXCHANGE_TOKEN_SIZE,
   MAX_EXCHANGE_TOKEN_SIZE_LEDGER,
   MIN_EXCHANGE_RATE,
@@ -96,6 +97,10 @@ export function validateExchangeRate(exchangeRate?: SimpleExchangeRate): ErrorSt
   if (!rate || rate < MIN_EXCHANGE_RATE) {
     logger.error(`Exchange rate seems too low: ${rate}`)
     return { isValid: false, fee: { error: true, helpText: 'Exchange rate seems too low' } }
+  }
+  if (rate > MAX_EXCHANGE_RATE) {
+    logger.error(`Exchange rate seems too high: ${rate}`)
+    return { isValid: false, fee: { error: true, helpText: 'Exchange rate seems too high' } }
   }
 
   if (isStale(lastUpdated, EXCHANGE_RATE_STALE_TIME * 2)) {
