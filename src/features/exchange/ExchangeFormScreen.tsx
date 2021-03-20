@@ -1,10 +1,10 @@
-import { ChangeEvent, useEffect, useMemo } from 'react'
+import { ChangeEvent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
-import { NumberInput } from 'src/components/input/NumberInput'
-import { SelectInput } from 'src/components/input/SelectInput'
+import { TextButton } from 'src/components/buttons/TextButton'
+import { AmountAndCurrencyInput } from 'src/components/input/AmountAndCurrencyInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
@@ -15,13 +15,12 @@ import { useExchangeValues } from 'src/features/exchange/utils'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
-import { Balances } from 'src/features/wallet/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { CELO, isStableToken, NativeTokenId, NativeTokens } from 'src/tokens'
-import { amountFieldFromWei, amountFieldToWei } from 'src/utils/amount'
+import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
 interface ExchangeTokenForm extends Omit<ExchangeTokenParams, 'amountInWei'> {
@@ -85,6 +84,14 @@ export function ExchangeFormScreen() {
     resetErrors()
   }
 
+  const onUseMax = () => {
+    const tokenId = values.fromTokenId
+    const token = balances.tokens[tokenId]
+    const maxAmount = fromWeiRounded(token.value, token, true)
+    setValues({ ...values, amount: maxAmount })
+    resetErrors()
+  }
+
   const { to, rate } = useExchangeValues(
     values.amount,
     values.fromTokenId,
@@ -95,8 +102,7 @@ export function ExchangeFormScreen() {
   )
   const stableTokenId = values.fromTokenId === CELO.id ? values.toTokenId : values.fromTokenId
   const stableToken = NativeTokens[stableTokenId]
-
-  const selectOptions = useMemo(() => getSelectOptions(balances), [balances])
+  const toAmount = fromWeiRounded(to.weiAmount, to.token, true)
 
   return (
     <ScreenContentFrame>
@@ -104,52 +110,40 @@ export function ExchangeFormScreen() {
       <Box styles={style.containerBox}>
         <Box direction="column">
           <form onSubmit={handleSubmit}>
-            <Box direction="row" align="center" styles={style.inputRow}>
-              <label css={style.inputLabel}>Amount to Exchange</label>
-              <NumberInput
-                step="0.01"
-                name="amount"
-                width="8em"
-                onChange={handleChange}
-                value={values.amount}
-                onBlur={handleBlur}
-                placeholder="1.00"
-                {...errors['amount']}
+            <div css={style.inputRow}>
+              <Box direction="row" justify="between" align="start">
+                <label css={style.inputLabel}>From Currency</label>
+                <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
+                  Use Max
+                </TextButton>
+              </Box>
+              <AmountAndCurrencyInput
+                tokenValue={values.fromTokenId}
+                onTokenSelect={onSelectToken(true)}
+                onTokenBlur={handleBlur}
+                amountValue={values.amount}
+                onAmountChange={handleChange}
+                onAmountBlur={handleBlur}
+                errors={errors}
+                tokenInputName="fromTokenId"
+                nativeTokensOnly={true}
               />
-            </Box>
-            <Box direction="row" align="center" styles={style.inputRow}>
-              <label css={style.inputLabel}>From Currency</label>
-              <SelectInput
-                name="fromTokenId"
-                autoComplete={false}
-                width="8em"
-                onChange={onSelectToken(true)}
-                onBlur={handleBlur}
-                value={values.fromTokenId}
-                options={selectOptions}
-                placeholder="From Currency"
-                {...errors['fromTokenId']}
-              />
-            </Box>
-            <Box direction="row" align="center" styles={style.inputRow}>
+            </div>
+            <div css={style.inputRow}>
               <label css={style.inputLabel}>To Currency</label>
-              <SelectInput
-                name="toTokenId"
-                autoComplete={false}
-                width="8em"
-                onChange={onSelectToken(false)}
-                onBlur={handleBlur}
-                value={values.toTokenId}
-                options={selectOptions}
-                placeholder="To Currency"
-                {...errors['toTokenId']}
+              <AmountAndCurrencyInput
+                tokenValue={values.toTokenId}
+                onTokenSelect={onSelectToken(false)}
+                onTokenBlur={handleBlur}
+                amountValue={toAmount}
+                onAmountChange={handleChange}
+                onAmountBlur={handleBlur}
+                errors={errors}
+                tokenInputName="toTokenId"
+                inputDisabled={true}
+                nativeTokensOnly={true}
               />
-            </Box>
-
-            <Box direction="row" align="center" styles={style.inputRow}>
-              <label css={style.inputLabel}>Output Amount</label>
-              <MoneyValue amountInWei={to.weiAmount} token={to.token} baseFontSize={1.2} />
-            </Box>
+            </div>
 
             <Button type="submit" size="m">
               Continue
@@ -157,7 +151,7 @@ export function ExchangeFormScreen() {
           </form>
         </Box>
         <Box direction="column" styles={style.chartColumn}>
-          <Box direction="row" align="center" styles={style.rateRow}>
+          <Box direction="row" align="center" justify="center" styles={style.rateRow}>
             <label css={Font.inputLabel}>Current Rate</label>
             {rate.isReady ? (
               <>
@@ -166,15 +160,22 @@ export function ExchangeFormScreen() {
                   token={stableToken}
                   baseFontSize={1.2}
                   margin="0 0 0 1em"
+                  containerCss={style.rateValue}
                 />
                 <span css={style.valueText}>:</span>
-                <MoneyValue amountInWei={rate.weiBasis} token={CELO} baseFontSize={1.2} />
+                <MoneyValue
+                  amountInWei={rate.weiBasis}
+                  token={CELO}
+                  baseFontSize={1.2}
+                  containerCss={style.rateValue}
+                />
               </>
             ) : (
               <span css={style.valueText}>Loading...</span>
             )}
           </Box>
           <PriceChartCelo
+            stableTokenId={stableTokenId}
             showHeaderPrice={false}
             containerCss={style.chartContainer}
             height={200}
@@ -193,13 +194,6 @@ function getInitialValues(tx: TxFlowTransaction | null) {
   }
 }
 
-function getSelectOptions(balances: Balances) {
-  return Object.values(balances.tokens).map((t) => ({
-    display: t.label,
-    value: t.id,
-  }))
-}
-
 const style: Stylesheet = {
   containerBox: {
     flexDirection: 'column',
@@ -209,15 +203,16 @@ const style: Stylesheet = {
     },
   },
   inputRow: {
-    marginBottom: '1em',
+    maxWidth: '26em',
+    marginBottom: '1.5em',
     [mq[1200]]: {
-      marginBottom: '1.5em',
+      marginBottom: '3em',
     },
   },
   inputLabel: {
     ...Font.inputLabel,
-    width: '10em',
-    marginRight: '1em',
+    display: 'block',
+    marginBottom: '0.75em',
   },
   valueText: {
     fontSize: '1.1em',
@@ -225,13 +220,17 @@ const style: Stylesheet = {
     color: Color.primaryGrey,
     margin: '0 0.5em',
   },
+  maxAmountButton: {
+    fontWeight: 400,
+    fontSize: '0.9em',
+  },
   chartColumn: {
     marginTop: '3em',
     marginLeft: 0,
     width: '100%',
     [mq[1200]]: {
-      marginLeft: '8em',
-      marginTop: 0,
+      marginLeft: '6em',
+      marginTop: '-0.2em',
       width: 'calc(100% - 150px - 10em)',
       maxWidth: '30em',
     },
@@ -239,8 +238,12 @@ const style: Stylesheet = {
   rateRow: {
     backgroundColor: Color.fillLighter,
     padding: '0.5em 1em',
-    marginBottom: '0.5em',
+    marginBottom: '0.2em',
     marginRight: '1.5em',
+    borderRadius: 6,
+  },
+  rateValue: {
+    paddingBottom: 3,
   },
   chartContainer: {
     minWidth: 300,

@@ -20,6 +20,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { NativeTokenId } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 
 export function HomeScreen() {
@@ -95,7 +96,7 @@ export function HomeScreen() {
               <label css={style.celoPriceLabel}>Celo Price</label>
             </Box>
 
-            <PriceChartCelo showHeaderPrice={true} />
+            <PriceChartCelo stableTokenId={NativeTokenId.cUSD} showHeaderPrice={true} />
           </>
         )}
       </div>

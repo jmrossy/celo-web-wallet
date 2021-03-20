@@ -16,7 +16,6 @@ import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
-import { getTokenBalance } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -77,8 +76,7 @@ export function SendFormScreen() {
   const onUseMax = () => {
     const tokenId = values.tokenId
     const token = balances.tokens[tokenId]
-    const balance = getTokenBalance(balances, token)
-    const maxAmount = fromWeiRounded(balance, token, true)
+    const maxAmount = fromWeiRounded(token.value, token, true)
     setValues({ ...values, amount: maxAmount })
     resetErrors()
   }

@@ -7,7 +7,6 @@ import { Box } from 'src/components/layout/Box'
 import { WEI_PER_UNIT } from 'src/consts'
 import { calcSimpleExchangeRate } from 'src/features/exchange/utils'
 import { fetchTokenPriceActions } from 'src/features/tokenPrice/fetchPrices'
-import { QuoteCurrency } from 'src/features/tokenPrice/types'
 import { findPriceForDay, tokenPriceHistoryToChartData } from 'src/features/tokenPrice/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -15,18 +14,21 @@ import { Styles, Stylesheet } from 'src/styles/types'
 import { NativeTokenId } from 'src/tokens'
 
 interface PriceChartProps {
+  stableTokenId: NativeTokenId
   showHeaderPrice: boolean
   containerCss?: Styles
   height?: number | string
 }
 
-export function PriceChartCelo({ showHeaderPrice, containerCss, height }: PriceChartProps) {
+export function PriceChartCelo(props: PriceChartProps) {
+  const { stableTokenId, showHeaderPrice, containerCss, height } = props
+
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(
       fetchTokenPriceActions.trigger({
         baseCurrency: NativeTokenId.CELO,
-        quoteCurrency: QuoteCurrency.USD,
+        quoteCurrency: stableTokenId,
       })
     )
   }, [])
@@ -34,7 +36,7 @@ export function PriceChartCelo({ showHeaderPrice, containerCss, height }: PriceC
   const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)
   const allPrices = useSelector((s: RootState) => s.tokenPrice.prices)
   const celoPrices = allPrices[NativeTokenId.CELO]
-  const celoUsdPrices = celoPrices ? celoPrices[QuoteCurrency.USD] : undefined
+  const celoUsdPrices = celoPrices ? celoPrices[stableTokenId] : undefined
   const chartData = tokenPriceHistoryToChartData(celoUsdPrices)
 
   let headerRate: number | null = null

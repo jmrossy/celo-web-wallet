@@ -7,6 +7,7 @@ import { SelectInput, SelectOption } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
+import { isNativeToken } from 'src/tokens'
 import { ErrorState } from 'src/utils/validation'
 
 interface Props {
@@ -17,6 +18,9 @@ interface Props {
   onAmountChange: (event: ChangeEvent<HTMLInputElement>) => void
   onAmountBlur: (event: ChangeEvent<HTMLInputElement>) => void
   errors: ErrorState
+  tokenInputName?: string
+  inputDisabled?: boolean
+  nativeTokensOnly?: boolean
 }
 
 export const AmountAndCurrencyInput = (props: Props) => {
@@ -28,16 +32,21 @@ export const AmountAndCurrencyInput = (props: Props) => {
     onAmountChange,
     onAmountBlur,
     errors,
+    tokenInputName,
+    inputDisabled,
+    nativeTokensOnly,
   } = props
 
   const tokens = useSelector((state: RootState) => state.wallet.balances.tokens)
 
   const selectOptions = useMemo(
     () =>
-      Object.values(tokens).map((t) => ({
-        display: t.label,
-        value: t.id,
-      })),
+      Object.values(tokens)
+        .filter((t) => (nativeTokensOnly ? isNativeToken(t.id) : true))
+        .map((t) => ({
+          display: t.label,
+          value: t.id,
+        })),
     [tokens]
   )
 
@@ -59,10 +68,12 @@ export const AmountAndCurrencyInput = (props: Props) => {
     )
   }
 
+  const selectName = tokenInputName ?? 'tokenId'
+
   return (
     <Box justify="start" align="center">
       <SelectInput
-        name="tokenId"
+        name={selectName}
         autoComplete={false}
         width="7em"
         onChange={onTokenSelect}
@@ -73,7 +84,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
         inputStyles={style.token}
         renderDropdownOption={renderDropdownOption}
         renderDropdownValue={renderDropdownValue}
-        {...errors['tokenId']}
+        {...errors[selectName]}
       />
       <NumberInput
         step="0.01"
@@ -84,6 +95,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
         value={amountValue}
         placeholder="1.00"
         inputStyles={style.amount}
+        disabled={inputDisabled}
         {...errors['amount']}
       />
     </Box>

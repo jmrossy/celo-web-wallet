@@ -17,6 +17,7 @@ interface MoneyValueProps {
   amountCss?: Styles
   containerCss?: Styles
   fontWeight?: number
+  iconSize?: string
 }
 
 export function MoneyValue(props: MoneyValueProps) {
@@ -32,6 +33,7 @@ export function MoneyValue(props: MoneyValueProps) {
     amountCss,
     containerCss,
     fontWeight,
+    iconSize,
   } = props
 
   const { label, color } = token
@@ -51,7 +53,7 @@ export function MoneyValue(props: MoneyValueProps) {
       {(!symbol || symbol === 'text') && (
         <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{label}</span>
       )}
-      {symbol === 'icon' && <TokenIcon token={token} size="1.5em" />}
+      {symbol === 'icon' && <TokenIcon token={token} size={iconSize ?? '1.5em'} />}
       <span css={{ ...fontStyles.amount, ...amountCss }}>{formattedAmount}</span>
     </Box>
   )

@@ -86,27 +86,33 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
     <Box direction="column">
       <div css={style.container} onBlur={handleBlur}>
         {autoComplete ? (
-          <input
-            type="text"
-            name={name}
-            css={formattedInputStyle}
-            value={inputValue}
-            onClick={handleClick}
-            onFocus={handleClick}
-            onChange={handleChange}
-            autoComplete="off"
-            placeholder={placeholder}
-            disabled={disabled}
-          />
+          <>
+            <input
+              type="text"
+              name={name}
+              css={formattedInputStyle}
+              value={inputValue}
+              onClick={handleClick}
+              onFocus={handleClick}
+              onChange={handleChange}
+              autoComplete="off"
+              placeholder={placeholder}
+              disabled={disabled}
+            ></input>
+            <div css={style.chevronContainer}>
+              <ChevronIcon direction="s" height="8px" width="12px" />
+            </div>
+          </>
         ) : (
           // Tab index is required here to workaround a browser bug
           <div css={formattedInputStyle} onClick={handleClick} tabIndex={0}>
             {(renderDropdownValue ? renderDropdownValue(inputValue) : inputValue) || placeholder}
+            <div css={style.chevronContainer}>
+              <ChevronIcon direction="s" height="8px" width="12px" />
+            </div>
           </div>
         )}
-        <div css={style.chevronContainer}>
-          <ChevronIcon direction="s" height="8px" width="12px" />
-        </div>
+
         {showDropdown && (
           <div css={style.dropdownContainer}>
             {filteredOptions.map((o) => (

@@ -5,7 +5,7 @@ import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { updatePairPrice } from 'src/features/tokenPrice/tokenPriceSlice'
 import { QuoteCurrency, TokenPriceHistory } from 'src/features/tokenPrice/types'
-import { NativeTokenId } from 'src/tokens'
+import { isNativeToken, NativeTokenId } from 'src/tokens'
 import { areAddressesEqual, ensureLeading0x } from 'src/utils/addresses'
 import { fromFixidity } from 'src/utils/amount'
 import {
@@ -22,8 +22,8 @@ const DEFAULT_HISTORY_NUM_DAYS = 7
 const MAX_HISTORY_NUM_DAYS = 30
 const BLOCK_FETCHING_INTERVAL_SIZE = 300 // 6 minutes
 const MEDIAN_UPDATED_TOPIC_0 = '0xa9981ebfc3b766a742486e898f54959b050a66006dbce1a4155c1f84a08bcf41'
-const EXPECTED_MIN_CELO_TO_USD = 0.1
-const EXPECTED_MAX_CELO_TO_USD = 100
+const EXPECTED_MIN_CELO_TO_STABLE = 0.1
+const EXPECTED_MAX_CELO_TO_STABLE = 100
 
 interface FetchTokenPriceParams {
   baseCurrency: NativeTokenId
@@ -68,8 +68,8 @@ async function fetchTokenPriceFromBlockscout(
   quoteCurrency: QuoteCurrency,
   numDays: number
 ): Promise<TokenPriceHistory> {
-  if (baseCurrency !== NativeTokenId.CELO || quoteCurrency !== QuoteCurrency.USD) {
-    throw new Error('Only CELO <-> USD is currently supported')
+  if (baseCurrency !== NativeTokenId.CELO || !isNativeToken(quoteCurrency)) {
+    throw new Error('Only CELO <-> Native currency is currently supported')
   }
 
   if (numDays > MAX_HISTORY_NUM_DAYS) {
@@ -129,7 +129,10 @@ function parseBlockscoutOracleLogs(
       }
 
       const valueAdjusted = fromFixidity(value)
-      if (valueAdjusted <= EXPECTED_MIN_CELO_TO_USD || valueAdjusted >= EXPECTED_MAX_CELO_TO_USD) {
+      if (
+        valueAdjusted <= EXPECTED_MIN_CELO_TO_STABLE ||
+        valueAdjusted >= EXPECTED_MAX_CELO_TO_STABLE
+      ) {
         throw new Error(`Invalid median value: ${value}`)
       }
 
