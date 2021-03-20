@@ -115,41 +115,44 @@ export function ExchangeConfirmationScreen() {
             align="end"
             justify="between"
           >
-            <Box direction="row" justify="between" align="end" styles={style.labelWidth}>
+            <Box direction="row" align="end" styles={style.labelWidth}>
               <label css={style.label}>
                 Fee <FeeHelpIcon />
               </label>
             </Box>
             {feeAmount && feeCurrency ? (
               <Box styles={style.valueWidth} justify="end" align="end">
-                <label css={{ ...style.label, marginRight: '0.25em' }}>+</label>
-                <MoneyValue amountInWei={feeAmount} token={feeCurrency} baseFontSize={1.2} />
+                <label>+</label>
+                <MoneyValue
+                  amountInWei={feeAmount}
+                  token={feeCurrency}
+                  baseFontSize={1.2}
+                  margin="0 0 0 0.25em"
+                />
               </Box>
             ) : (
               // TODO a proper loader (need to update mocks)
-              <div css={style.valueWidth}>...</div>
+              <div css={style.loadingDots}>...</div>
             )}
           </Box>
 
-          <Box direction="row" styles={style.inputRow} align="end">
+          <Box direction="row" styles={style.inputRow} align="end" justify="between">
             <label css={[style.totalLabel, style.labelWidth]}>Total In</label>
             <MoneyValue
               amountInWei={totalIn}
               token={from.token}
               baseFontSize={1.2}
-              containerCss={style.valueWidth}
-              fontWeight={700}
+              fontWeight={500}
             />
           </Box>
 
-          <Box direction="row" styles={style.inputRow} align="end">
+          <Box direction="row" styles={style.inputRow} align="end" justify="between">
             <label css={[style.totalLabel, style.labelWidth]}>Total Out</label>
             <MoneyValue
               amountInWei={to.weiAmount}
               token={to.token}
               baseFontSize={1.2}
-              containerCss={style.valueWidth}
-              fontWeight={700}
+              fontWeight={500}
             />
           </Box>
 
@@ -160,7 +163,7 @@ export function ExchangeConfirmationScreen() {
               size="m"
               color={Color.altGrey}
               disabled={isWorking}
-              margin="0 2em 0 0"
+              margin="0 1em 0 0"
               width="5.5em"
             >
               Back
@@ -178,23 +181,40 @@ export function ExchangeConfirmationScreen() {
           </Box>
         </Box>
         <div css={style.rateBox}>
-          <label css={style.label}>Rate</label>
+          <label css={style.rateLabel}>Rate</label>
           {rate.isReady ? (
             <>
-              <MoneyValue amountInWei={rate.weiBasis} token={from.token} baseFontSize={1.2} />
-              <span css={style.valueText}>=</span>
-              <MoneyValue amountInWei={rate.weiValue} token={to.token} baseFontSize={1.2} />
+              <MoneyValue
+                amountInWei={rate.weiBasis}
+                token={from.token}
+                baseFontSize={1.2}
+                containerCss={style.rateValue}
+              />
+              <div>
+                <img
+                  css={style.rateIcon}
+                  width="18px"
+                  height="18px"
+                  src={ExchangeIcon}
+                  alt="RateArrows"
+                />
+              </div>
+              <MoneyValue
+                amountInWei={rate.weiValue}
+                token={to.token}
+                baseFontSize={1.2}
+                containerCss={style.rateValue}
+              />
             </>
           ) : (
             // TODO a proper loader (need to update mocks)
-            <span css={style.valueText}>...</span>
+            <span css={style.loadingDots}>...</span>
           )}
         </div>
       </div>
     </ScreenContentFrame>
   )
 }
-
 const style: Stylesheet = {
   container: {
     display: 'flex',
@@ -217,8 +237,8 @@ const style: Stylesheet = {
   },
   totalLabel: {
     ...Font.inputLabel,
+    ...Font.bold,
     color: Color.primaryGrey,
-    fontWeight: 600,
   },
   labelWidth: {
     width: '9em',
@@ -227,11 +247,7 @@ const style: Stylesheet = {
       width: '11em',
     },
   },
-  valueWidth: {
-    width: '7em',
-    textAlign: 'end',
-  },
-  valueText: {
+  loadingDots: {
     fontSize: '1.2em',
     fontWeight: 400,
     color: Color.primaryGrey,
@@ -244,28 +260,44 @@ const style: Stylesheet = {
     padding: '0.75em',
     margin: '0.5em 0 1em 0',
     background: Color.fillLighter,
-    '& > *': {
+    borderRadius: 6,
+    '& > div': {
       margin: '0 0.5em',
     },
     [mq[768]]: {
       flexDirection: 'column',
-      margin: '0 0 0 2em',
+      margin: '0 0 0 3em',
       padding: '1em 2.5em',
-      '& > *': {
+      '& > div': {
         margin: '0.55em 0',
       },
     },
   },
   rateLabel: {
-    fontWeight: 300,
-    fontSize: '1.1em',
-    marginBottom: '0.5em',
+    ...Font.inputLabel,
+    color: Color.primaryGrey,
+    marginBottom: 0,
+  },
+  rateIcon: {
+    filter: 'brightness(0.7)',
+    width: '1em',
+    height: '1em',
+    [mq[768]]: {
+      width: '1.2em',
+      height: '1.2em',
+      transform: 'rotate(90deg)',
+    },
+  },
+  rateValue: {
+    paddingBottom: 3,
+    margin: '0 0.5em 0 0',
+    [mq[768]]: {
+      margin: '0.55em 0',
+      paddingBottom: 0,
+    },
   },
   bottomBorder: {
     paddingBottom: '1.25em',
     borderBottom: `1px solid ${Color.borderMedium}`,
-  },
-  icon: {
-    marginBottom: '-0.3em',
   },
 }

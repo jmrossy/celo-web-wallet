@@ -16,15 +16,17 @@ const tokenPriceSlice = createSlice({
   name: 'tokenPrice',
   initialState: tokenPriceInitialState,
   reducers: {
-    updatePairPrice: (state, action: PayloadAction<PairPriceUpdate>) => {
-      const { baseCurrency, quoteCurrency, prices } = action.payload
-      state.prices[baseCurrency] = {
-        ...state.prices[baseCurrency],
-        [quoteCurrency]: prices,
+    updatePairPrices: (state, action: PayloadAction<PairPriceUpdate[]>) => {
+      for (const ppu of action.payload) {
+        const { baseCurrency, quoteCurrency, prices } = ppu
+        state.prices[baseCurrency] = {
+          ...state.prices[baseCurrency],
+          [quoteCurrency]: prices,
+        }
       }
     },
   },
 })
 
-export const { updatePairPrice } = tokenPriceSlice.actions
+export const { updatePairPrices } = tokenPriceSlice.actions
 export const tokenPriceReducer = tokenPriceSlice.reducer

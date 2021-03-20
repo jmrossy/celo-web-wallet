@@ -132,7 +132,7 @@ export function SendConfirmationScreen() {
         <Box direction="row" styles={style.inputRow} justify="between">
           <label css={[style.labelCol, style.totalLabel]}>Total</label>
           <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue amountInWei={total} token={txToken} baseFontSize={1.2} fontWeight={700} />
+            <MoneyValue amountInWei={total} token={txToken} baseFontSize={1.2} fontWeight={500} />
           </Box>
         </Box>
 
@@ -188,13 +188,12 @@ const style: Stylesheet = {
     textAlign: 'end',
   },
   totalLabel: {
+    ...Font.bold,
     color: Color.primaryGrey,
-    fontWeight: 600,
   },
   valueLabel: {
-    color: Color.primaryBlack,
+    ...Font.body,
     fontSize: '1.2em',
-    fontWeight: 400,
   },
   bottomBorder: {
     paddingBottom: '1.25em',

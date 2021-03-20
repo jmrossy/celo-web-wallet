@@ -3,9 +3,14 @@ import { RootState } from 'src/app/rootReducer'
 import { getLatestBlockDetails, getNumBlocksPerInterval } from 'src/blockchain/blocks'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
-import { updatePairPrice } from 'src/features/tokenPrice/tokenPriceSlice'
-import { QuoteCurrency, TokenPriceHistory } from 'src/features/tokenPrice/types'
-import { isNativeToken, NativeTokenId } from 'src/tokens'
+import { updatePairPrices } from 'src/features/tokenPrice/tokenPriceSlice'
+import {
+  PairPriceUpdate,
+  QuoteCurrency,
+  TokenPriceHistory,
+  TokenPricePoint,
+} from 'src/features/tokenPrice/types'
+import { isNativeToken, NativeTokenId, NativeTokens, StableTokenIds } from 'src/tokens'
 import { areAddressesEqual, ensureLeading0x } from 'src/utils/addresses'
 import { fromFixidity } from 'src/utils/amount'
 import {
@@ -34,6 +39,12 @@ interface FetchTokenPriceParams {
 function* fetchTokenPrice(params: FetchTokenPriceParams) {
   const { baseCurrency, quoteCurrency, numDays: _numDays } = params
   const numDays = _numDays || DEFAULT_HISTORY_NUM_DAYS
+  if (numDays > MAX_HISTORY_NUM_DAYS) {
+    throw new Error(`Cannot retrieve prices for such a wide window: ${numDays}`)
+  }
+  if (baseCurrency !== NativeTokenId.CELO || !isNativeToken(quoteCurrency)) {
+    throw new Error('Only CELO <-> Native currency is currently supported')
+  }
 
   const prices = yield* select((state: RootState) => state.tokenPrice.prices)
   const basePrices = prices[baseCurrency]
@@ -41,8 +52,8 @@ function* fetchTokenPrice(params: FetchTokenPriceParams) {
   // Is data already present in store?
   if (basePrices && isPriceListComplete(basePrices[quoteCurrency], numDays)) return
 
-  const newPrices = yield* call(fetchTokenPriceFromBlockscout, baseCurrency, quoteCurrency, numDays)
-  yield* put(updatePairPrice({ baseCurrency, quoteCurrency, prices: newPrices }))
+  const pairPriceUpdates = yield* call(fetchStableTokenPricesFromBlockscout, numDays)
+  yield* put(updatePairPrices(pairPriceUpdates))
 }
 
 export const {
@@ -63,51 +74,57 @@ function isPriceListComplete(prices: TokenPriceHistory | undefined, numDays: num
 }
 
 // Fetches token prices by retrieving and parsing the oracle reporting tx logs
-async function fetchTokenPriceFromBlockscout(
-  baseCurrency: NativeTokenId,
-  quoteCurrency: QuoteCurrency,
-  numDays: number
-): Promise<TokenPriceHistory> {
-  if (baseCurrency !== NativeTokenId.CELO || !isNativeToken(quoteCurrency)) {
-    throw new Error('Only CELO <-> Native currency is currently supported')
-  }
-
-  if (numDays > MAX_HISTORY_NUM_DAYS) {
-    throw new Error(`Cannot retrieve prices for such a wide window: ${numDays}`)
-  }
-
+async function fetchStableTokenPricesFromBlockscout(numDays: number) {
   const baseUrl = config.blockscoutUrl
   const oracleContractAddress = config.contractAddresses[CeloContract.SortedOracles]
   const oracleContract = getContract(CeloContract.SortedOracles)
   const numBlocksPerDay = getNumBlocksPerInterval(86400)
   const numBlocksPerInterval = getNumBlocksPerInterval(BLOCK_FETCHING_INTERVAL_SIZE)
-  const prices: TokenPriceHistory = []
+  const tokenToPrices = new Map<NativeTokenId, TokenPriceHistory>()
 
   const latestBlock = await getLatestBlockDetails()
-  if (!latestBlock) {
-    throw new Error('Latest block number needed for fetching prices')
-  }
+  if (!latestBlock) throw new Error('Latest block number needed for fetching prices')
 
   for (let i = 0; i < numDays; i++) {
     const toBlock = latestBlock.number - numBlocksPerDay * i
     const fromBlock = toBlock - numBlocksPerInterval
     const url = `${baseUrl}/api?module=logs&action=getLogs&fromBlock=${fromBlock}&toBlock=${toBlock}&address=${oracleContractAddress}&topic0=${MEDIAN_UPDATED_TOPIC_0}`
     const txLogs = await queryBlockscout<Array<BlockscoutTransactionLog>>(url)
-    prices.unshift(parseBlockscoutOracleLogs(txLogs, oracleContract))
+    const tokenToPrice = parseBlockscoutOracleLogs(txLogs, oracleContract)
+    // The nested loop here is awkward but helps us fetch all token prices for one day in one query
+    // Just prepends the new price point to each tokens history
+    for (const [id, price] of tokenToPrice) {
+      if (!tokenToPrices.has(id)) tokenToPrices.set(id, [])
+      tokenToPrices.get(id)!.unshift(price)
+    }
   }
 
-  return prices
+  const pairPriceUpdates: PairPriceUpdate[] = []
+  for (const [id, prices] of tokenToPrices) {
+    pairPriceUpdates.push({ baseCurrency: NativeTokenId.CELO, quoteCurrency: id, prices })
+  }
+  return pairPriceUpdates
 }
 
 function parseBlockscoutOracleLogs(
   logs: Array<BlockscoutTransactionLog>,
   oracleContract: Contract
 ) {
-  if (!logs || !logs.length) {
-    throw new Error('No oracle logs found in time range')
+  const tokenToPrice = new Map<NativeTokenId, TokenPricePoint>()
+  for (const id of StableTokenIds) {
+    const tokenAddress = NativeTokens[id].address
+    const price = parseBlockscoutOracleLogsForToken(logs, oracleContract, tokenAddress)
+    if (price) tokenToPrice.set(id, price)
   }
+  return tokenToPrice
+}
 
-  const stableTokenAddress = config.contractAddresses[CeloContract.StableToken]
+function parseBlockscoutOracleLogsForToken(
+  logs: Array<BlockscoutTransactionLog>,
+  oracleContract: Contract,
+  searchToken: string
+): TokenPricePoint | null {
+  if (!logs || !logs.length) throw new Error('No oracle logs found in time range')
 
   for (const log of logs) {
     try {
@@ -124,8 +141,9 @@ function parseBlockscoutOracleLogs(
       }
 
       const { token, value } = logDescription.args
-      if (!token || !areAddressesEqual(token, stableTokenAddress)) {
-        throw new Error(`Invalid token arg in log: ${token}`)
+      if (!token || !areAddressesEqual(token, searchToken)) {
+        // Log is likely for a different token
+        continue
       }
 
       const valueAdjusted = fromFixidity(value)
@@ -147,5 +165,6 @@ function parseBlockscoutOracleLogs(
     }
   }
 
-  throw new Error('All attempts at log parsing failed')
+  logger.error(`All log parse attempts failed or no log found for token ${searchToken}`)
+  return null
 }

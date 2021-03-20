@@ -8,8 +8,12 @@ export enum ForeignQuoteCurrency {
 
 export type QuoteCurrency = NativeTokenId | ForeignQuoteCurrency
 
+export interface TokenPricePoint {
+  timestamp: number
+  price: number
+}
 // Must be ordered from oldest to newest
-export type TokenPriceHistory = Array<{ timestamp: number; price: number }>
+export type TokenPriceHistory = Array<TokenPricePoint>
 
 export interface PairPriceUpdate {
   baseCurrency: NativeTokenId

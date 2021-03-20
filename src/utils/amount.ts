@@ -18,9 +18,9 @@ export function range(length: number, start = 0, step = 1) {
 export function validateAmount(
   _amountInWei: BigNumberish,
   token: Token,
-  balances: Balances,
-  max?: BigNumberish,
-  min?: BigNumberish
+  balances?: Balances | null,
+  max?: BigNumberish | null,
+  min?: BigNumberish | null
 ): ErrorState | null {
   const amountInWei = BigNumber.from(_amountInWei)
 
@@ -34,17 +34,18 @@ export function validateAmount(
     return invalidInput('amount', 'Amount too big')
   }
 
-  if (!balances.lastUpdated) {
-    throw new Error('Checking amount validity without fresh balances')
-  }
-
-  const balance = getTokenBalance(balances, token)
-  if (amountInWei.gt(balance)) {
-    if (areAmountsNearlyEqual(amountInWei, balance, token)) {
-      logger.debug('Validation allowing amount that nearly equals balance')
-    } else {
-      logger.warn(`Exceeds ${token.id} balance: ${amountInWei.toString()}`)
-      return invalidInput('amount', 'Amount too big')
+  if (balances) {
+    if (!balances.lastUpdated) {
+      return invalidInput('amount', 'Balances stale, please refresh')
+    }
+    const balance = getTokenBalance(balances, token)
+    if (amountInWei.gt(balance)) {
+      if (areAmountsNearlyEqual(amountInWei, balance, token)) {
+        logger.debug('Validation allowing amount that nearly equals balance')
+      } else {
+        logger.warn(`Exceeds ${token.id} balance: ${amountInWei.toString()}`)
+        return invalidInput('amount', 'Amount too big')
+      }
     }
   }
 

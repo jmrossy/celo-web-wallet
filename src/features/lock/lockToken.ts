@@ -10,7 +10,7 @@ import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
 import { LockActionType, LockTokenParams, PendingWithdrawal } from 'src/features/lock/types'
-import { getTotalUnlockedCelo } from 'src/features/lock/utils'
+import { getTotalPendingCelo, getTotalUnlockedCelo } from 'src/features/lock/utils'
 import { LockTokenTx, LockTokenType, TransactionType } from 'src/features/types'
 import { GroupVotes } from 'src/features/validators/types'
 import { getTotalNonvotingLocked } from 'src/features/validators/utils'
@@ -41,56 +41,60 @@ export function validate(
   let errors: ErrorState = { isValid: true }
 
   if (!Object.values(LockActionType).includes(action)) {
-    errors = { ...errors, ...invalidInput('action', 'Invalid Action Type') }
+    return invalidInput('action', 'Invalid Action Type')
   }
 
   if (!amountInWei) {
-    errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
-  } else {
-    const { locked, pendingFree, pendingBlocked } = balances.lockedCelo
-    const adjustedBalances = { ...balances }
-    const adjustedCelo = adjustedBalances.tokens.CELO
-    if (action === LockActionType.Lock) {
-      adjustedCelo.value = getTotalUnlockedCelo(balances).toString()
-    } else if (action === LockActionType.Unlock) {
-      adjustedCelo.value = locked
-    } else if (action === LockActionType.Withdraw) {
-      adjustedCelo.value = pendingFree
-    }
+    return invalidInput('amount', 'Amount Missing')
+  }
+
+  const { locked, pendingFree, pendingBlocked } = balances.lockedCelo
+  let maxAmount = null
+  if (action === LockActionType.Lock) {
+    maxAmount = getTotalUnlockedCelo(balances).toString()
+  } else if (action === LockActionType.Unlock) {
+    maxAmount = locked
+  } else if (action === LockActionType.Withdraw) {
+    maxAmount = pendingFree
+  }
+  errors = {
+    ...errors,
+    ...validateAmount(amountInWei, CELO, null, maxAmount, MIN_LOCK_AMOUNT),
+  }
+
+  // Special case handling for withdraw which is confusing
+  if (action === LockActionType.Withdraw && BigNumber.from(pendingFree).lte(0)) {
     errors = {
       ...errors,
-      ...validateAmount(amountInWei, CELO, adjustedBalances, undefined, MIN_LOCK_AMOUNT),
+      ...invalidInput('amount', 'No pending available to withdraw'),
     }
+  }
 
-    // Special case handling for withdraw which is confusing
-    if (action === LockActionType.Withdraw && BigNumber.from(pendingFree).lte(0)) {
+  // Special case handling for locking whole balance
+  if (action === LockActionType.Lock && !errors.amount) {
+    const remainingAfterPending = BigNumber.from(amountInWei).sub(pendingFree).sub(pendingBlocked)
+    const celoBalance = balances.tokens.CELO.value
+    if (
+      remainingAfterPending.gt(0) &&
+      (remainingAfterPending.gte(celoBalance) ||
+        areAmountsNearlyEqual(remainingAfterPending, celoBalance, CELO))
+    ) {
       errors = {
         ...errors,
-        ...invalidInput('amount', 'No pending available to withdraw'),
-      }
-    }
-
-    // Special case handling for locking whole balance
-    if (action === LockActionType.Lock && !errors.amount) {
-      const remainingAfterPending = BigNumber.from(amountInWei).sub(pendingFree).sub(pendingBlocked)
-      const celoBalance = balances.tokens.CELO.value
-      if (
-        remainingAfterPending.gt(0) &&
-        (remainingAfterPending.gte(celoBalance) ||
-          areAmountsNearlyEqual(remainingAfterPending, celoBalance, CELO))
-      ) {
-        errors = {
-          ...errors,
-          ...invalidInput('amount', 'Locking whole balance is not allowed'),
-        }
+        ...invalidInput('amount', 'Locking whole balance is not allowed'),
       }
     }
 
     if (validateFee) {
+      let amountAffectingBalance = '0'
+      if (action === LockActionType.Lock) {
+        const netDiff = BigNumber.from(amountInWei).sub(getTotalPendingCelo(balances))
+        amountAffectingBalance = netDiff.gt(0) ? netDiff.toString() : '0'
+      }
       errors = {
         ...errors,
         ...validateFeeEstimates(feeEstimates),
-        ...validateAmountWithFees(amountInWei, CELO, adjustedBalances, feeEstimates),
+        ...validateAmountWithFees(amountAffectingBalance, CELO, balances, feeEstimates),
       }
     }
   }

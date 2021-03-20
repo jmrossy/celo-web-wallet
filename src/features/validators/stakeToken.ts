@@ -55,12 +55,10 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    const adjustedBalances = { ...voterBalances }
     const maxAmount = getStakingMaxAmount(params.action, voterBalances, votes, params.groupAddress)
-    adjustedBalances.tokens.CELO.value = maxAmount.toString()
     errors = {
       ...errors,
-      ...validateAmount(amountInWei, CELO, adjustedBalances, undefined, MIN_VOTE_AMOUNT),
+      ...validateAmount(amountInWei, CELO, null, maxAmount, MIN_VOTE_AMOUNT),
     }
   }
 
