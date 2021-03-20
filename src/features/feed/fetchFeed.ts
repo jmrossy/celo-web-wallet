@@ -72,12 +72,14 @@ interface BlockscoutTokenTransfer extends BlockscoutTxBase {
 }
 
 // Triggers polling of feed fetching
-export function* feedFetchPoller() {
-  // TODO only do this when home screen is showing
+export function* feedAndBalancesFetchPoller() {
+  let i = 0
   while (true) {
     yield* delay(POLL_DELAY)
     if (!isSignerSet()) continue
     yield* put(fetchFeedActions.trigger())
+    if (i === 2) yield* put(fetchBalancesActions.trigger())
+    i = (i + 1) % 3
   }
 }
 
