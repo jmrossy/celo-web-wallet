@@ -15,7 +15,7 @@ import {
   exchangeTokenSagaName,
 } from 'src/features/exchange/exchangeToken'
 import {
-  feedFetchPoller,
+  feedAndBalancesFetchPoller,
   fetchFeedActions,
   fetchFeedReducer,
   fetchFeedSaga,
@@ -114,7 +114,7 @@ function* init() {
 }
 
 // All regular sagas must be included here
-const sagas = [feedFetchPoller]
+const sagas = [feedAndBalancesFetchPoller]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {

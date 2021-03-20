@@ -24,11 +24,14 @@ const QUERY_DEBOUNCE_TIME = 2000 // 2 seconds
 const POLL_DELAY = 10000 // 10 seconds
 
 // Triggers polling of feed fetching
-export function* feedFetchPoller() {
+export function* feedAndBalancesFetchPoller() {
+  let i = 0
   while (true) {
     yield* delay(POLL_DELAY)
     if (!isSignerSet()) continue
     yield* put(fetchFeedActions.trigger())
+    if (i === 2) yield* put(fetchBalancesActions.trigger())
+    i = (i + 1) % 3
   }
 }
 
