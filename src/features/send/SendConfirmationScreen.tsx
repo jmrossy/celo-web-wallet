@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -11,16 +12,20 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
-import { sendTokenActions } from 'src/features/send/sendToken'
+import {
+  createTransferTx,
+  getTokenTransferType,
+  sendTokenActions,
+} from 'src/features/send/sendToken'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
-import { TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { isNativeToken, NativeTokenId } from 'src/tokens'
+import { logger } from 'src/utils/logger'
 
 export function SendConfirmationScreen() {
   const dispatch = useDispatch()
@@ -35,13 +40,23 @@ export function SendConfirmationScreen() {
       navigate('/send')
       return
     }
-    const { comment, tokenId } = tx.params
-    const type = comment
-      ? TransactionType.StableTokenTransferWithComment
-      : TransactionType.StableTokenTransfer
-    const txToken = isNativeToken(tokenId) ? (tokenId as NativeTokenId) : undefined
-    // TODO force estimation for non-native tokens
-    dispatch(estimateFeeActions.trigger({ txs: [{ type }], txToken }))
+    const { tokenId, recipient, amountInWei } = tx.params
+    const type = getTokenTransferType(tx.params)
+    if (isNativeToken(tokenId)) {
+      const txToken = tokenId as NativeTokenId
+      dispatch(estimateFeeActions.trigger({ txs: [{ type }], txToken }))
+    } else {
+      // There are no gas pre-computes for non-native tokens, need to get real tx to estimate
+      const token = tokens[tokenId]
+      const txRequestP = createTransferTx(token, recipient, BigNumber.from(amountInWei))
+      txRequestP
+        .then((txRequest) =>
+          dispatch(
+            estimateFeeActions.trigger({ txs: [{ type, tx: txRequest }], forceGasEstimation: true })
+          )
+        )
+        .catch((e) => logger.error('Error computing token transfer gas', e))
+    }
   }, [tx])
 
   if (!tx || tx.type !== TxFlowType.Send) return null
@@ -194,6 +209,8 @@ const style: Stylesheet = {
   valueLabel: {
     ...Font.body,
     fontSize: '1.2em',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   bottomBorder: {
     paddingBottom: '1.25em',

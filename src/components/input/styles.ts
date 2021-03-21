@@ -12,6 +12,10 @@ export const sharedInputStyles: Styles = {
     color: Color.borderInactive,
     opacity: 1 /* Firefox */,
   },
+  ':disabled': {
+    background: '#FAFAFA',
+    color: Color.primaryBlack,
+  },
 }
 
 export const sharedInputStylesWithError: Styles = {

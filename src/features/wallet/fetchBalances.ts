@@ -69,7 +69,7 @@ async function fetchTokenBalances(
       fetchPromises.push(fetchCeloBalance(address))
     } else {
       // TODO remove when cEUR is live
-      if (t.id === cEUR.id) continue
+      if (t.id === cEUR.id && config.chainId !== 44787) continue
       fetchPromises.push(fetchTokenBalance(address, t))
     }
   }

@@ -129,8 +129,8 @@ function* exchangeToken(params: ExchangeTokenParams) {
   const fromToken = NativeTokens[fromTokenId]
   const toToken = NativeTokens[toTokenId]
   const stableToken = fromToken.id === CELO.id ? toToken : fromToken
-  const stableTokenContract = getContractByAddress(stableToken.address)
-  if (!stableTokenContract) throw new Error(`No token contract found for ${stableToken.id}`)
+  const fromTokenContract = getContractByAddress(fromToken.address)
+  if (!fromTokenContract) throw new Error(`No token contract found for ${fromToken.id}`)
   const exchangeAddress = stableToken.exchangeAddress
   if (!exchangeAddress) throw new Error(`Token ${stableToken.id} has no known exchange address`)
   const exchangeContract = getContractByAddress(exchangeAddress)
@@ -148,7 +148,7 @@ function* exchangeToken(params: ExchangeTokenParams) {
   const signedApproveTx = yield* call(
     createApproveTx,
     adjustedAmount,
-    stableTokenContract,
+    fromTokenContract,
     exchangeAddress,
     feeEstimates[0]
   )
@@ -182,11 +182,11 @@ function* exchangeToken(params: ExchangeTokenParams) {
 
 async function createApproveTx(
   amountInWei: BigNumber,
-  stableTokenContract: Contract,
+  fromTokenContract: Contract,
   exchangeContractAddress: string,
   feeEstimate: FeeEstimate
 ) {
-  const txRequest = await stableTokenContract.populateTransaction.approve(
+  const txRequest = await fromTokenContract.populateTransaction.approve(
     exchangeContractAddress,
     amountInWei
   )
