@@ -6,7 +6,7 @@ import { Box } from 'src/components/layout/Box'
 import { FeedItem } from 'src/features/feed/FeedItem'
 import { openTransaction } from 'src/features/feed/feedSlice'
 import { TransactionMap } from 'src/features/types'
-import { useAreBalancesEmpty } from 'src/features/wallet/utils'
+import { areBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -17,7 +17,8 @@ export function TransactionFeed(props: { collapsed?: boolean }) {
   const transactions = useSelector((s: RootState) => s.feed.transactions)
   const sortedTransaction = getSortedTransactions(transactions)
   const isFeedEmpty = !sortedTransaction.length
-  const isWalletEmpty = useAreBalancesEmpty()
+  const balances = useSelector((s: RootState) => s.wallet.balances)
+  const isWalletEmpty = areBalancesEmpty(balances)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -47,6 +48,7 @@ export function TransactionFeed(props: { collapsed?: boolean }) {
           {sortedTransaction.map((tx) => (
             <FeedItem
               tx={tx}
+              tokens={balances.tokens}
               key={tx.hash}
               onClick={onFeedItemClick}
               isOpen={openTransactionHash === tx.hash}

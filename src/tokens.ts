@@ -1,4 +1,5 @@
 import { config } from 'src/config'
+import { NULL_ADDRESS } from 'src/consts'
 import { Color } from 'src/styles/Color'
 
 export interface Token {
@@ -74,14 +75,6 @@ export const NativeTokens: INativeTokens = {
   },
 }
 
-export function isNativeToken(tokenId: string) {
-  return Object.keys(NativeTokens).includes(tokenId)
-}
-
-export function isStableToken(tokenId: string) {
-  return StableTokenIds.includes(tokenId as NativeTokenId)
-}
-
 export type Tokens = INativeTokens & Record<string, Token>
 
 // Just re-export directly for convenient access
@@ -95,4 +88,28 @@ export const LockedCELO: Token = {
   label: 'Locked CELO',
   address: config.contractAddresses.LockedGold,
   sortOrder: CELO.sortOrder! + 1,
+}
+
+export const UnknownToken: Token = {
+  id: 'unknown',
+  label: 'Unknown',
+  color: Color.textGrey,
+  minValue: 0.01,
+  displayDecimals: 2,
+  address: NULL_ADDRESS,
+  decimals: 18,
+  chainId: config.chainId,
+}
+
+export function isNativeToken(tokenId: string) {
+  return Object.keys(NativeTokens).includes(tokenId)
+}
+
+export function isStableToken(tokenId: string) {
+  return StableTokenIds.includes(tokenId as NativeTokenId)
+}
+
+export function getTokenById(id: string, tokens: Tokens) {
+  if (tokens[id]) return tokens[id]
+  else return UnknownToken
 }

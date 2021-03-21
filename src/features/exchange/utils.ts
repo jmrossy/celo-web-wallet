@@ -135,29 +135,24 @@ function getDefaultExchangeValues(
 
 // This assumes either the to or the from token is CELO
 export function computeToCeloRate(tx: TokenExchangeTx) {
-  if (!tx) {
-    return {
-      weiRate: '0',
-      weiBasis: WEI_PER_UNIT,
-      otherToken: cUSD,
-    }
+  const defaultRate = {
+    weiRate: '0',
+    weiBasis: WEI_PER_UNIT,
+    otherTokenId: cUSD.id,
   }
+
+  if (!tx) return defaultRate
+
   const fromValue = fromWei(tx.fromValue)
   const toValue = fromWei(tx.toValue)
 
-  if (!fromValue || !toValue) {
-    return {
-      weiRate: '0',
-      weiBasis: WEI_PER_UNIT,
-      otherToken: cUSD,
-    }
-  }
+  if (!fromValue || !toValue) return defaultRate
 
-  const rate = tx.fromToken.id === CELO.id ? toValue / fromValue : fromValue / toValue
-  const otherToken = tx.fromToken.id === CELO.id ? tx.toToken : tx.fromToken
+  const rate = tx.fromTokenId === CELO.id ? toValue / fromValue : fromValue / toValue
+  const otherTokenId = tx.fromTokenId === CELO.id ? tx.toTokenId : tx.fromTokenId
   return {
     weiRate: toWei(rate).toString(),
     weiBasis: WEI_PER_UNIT,
-    otherToken,
+    otherTokenId,
   }
 }

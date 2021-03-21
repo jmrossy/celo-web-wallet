@@ -8,14 +8,16 @@ import {
 import { TransactionStatusProperty } from 'src/features/feed/components/TransactionStatusProperty'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { TokenExchangeTx } from 'src/features/types'
+import { useTokens } from 'src/features/wallet/utils'
 import { Stylesheet } from 'src/styles/types'
-import { CELO } from 'src/tokens'
+import { CELO, getTokenById } from 'src/tokens'
 
 interface Props {
   tx: TokenExchangeTx
 }
 
 export function TokenExchangeReview({ tx }: Props) {
+  const tokens = useTokens()
   const { feeValue, feeCurrency } = getFeeFromConfirmedTx(tx)
   const rate = computeToCeloRate(tx)
 
@@ -25,11 +27,11 @@ export function TokenExchangeReview({ tx }: Props) {
       <TransactionProperty label="Amount">
         <Box styles={style.value}>
           <span css={style.amountLabel}>In: </span>
-          <MoneyValue amountInWei={tx.fromValue} token={tx.fromToken} />
+          <MoneyValue amountInWei={tx.fromValue} token={getTokenById(tx.fromTokenId, tokens)} />
         </Box>
         <Box styles={style.value}>
           <span css={style.amountLabel}>Out: </span>
-          <MoneyValue amountInWei={tx.toValue} token={tx.toToken} />
+          <MoneyValue amountInWei={tx.toValue} token={getTokenById(tx.fromTokenId, tokens)} />
         </Box>
       </TransactionProperty>
       <TransactionProperty label="Fee">
@@ -41,7 +43,7 @@ export function TokenExchangeReview({ tx }: Props) {
         <Box styles={style.value}>
           <MoneyValue amountInWei={rate.weiBasis} token={CELO} />
           <span css={style.rateDivider}> : </span>
-          <MoneyValue amountInWei={rate.weiRate} token={rate.otherToken} />
+          <MoneyValue amountInWei={rate.weiRate} token={getTokenById(rate.otherTokenId, tokens)} />
         </Box>
       </TransactionProperty>
     </TransactionPropertyGroup>

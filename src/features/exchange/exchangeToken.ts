@@ -240,8 +240,8 @@ function getExchangePlaceholderTx(
   return {
     ...createPlaceholderForTx(txReceipt, amountInWei.toString(), feeEstimate),
     type: TransactionType.TokenExchange,
-    fromToken,
-    toToken,
+    fromTokenId: fromToken.id,
+    toTokenId: toToken.id,
     fromValue: amountInWei.toString(),
     toValue: minBuyAmount.toString(),
   }

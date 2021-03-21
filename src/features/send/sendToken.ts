@@ -232,7 +232,7 @@ function getPlaceholderTx(
     isOutgoing: true,
     comment: params.comment,
     type: adjustedType,
-    token,
+    tokenId: token.id,
   }
 }
 

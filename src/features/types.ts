@@ -1,5 +1,5 @@
 import { VoteValue } from 'src/features/governance/types'
-import { NativeTokenId, Token } from 'src/tokens'
+import { NativeTokenId } from 'src/tokens'
 
 interface Transaction {
   type: TransactionType
@@ -46,13 +46,13 @@ export enum TransactionType {
 interface TokenTransferTx extends Transaction {
   comment?: string
   isOutgoing: boolean
-  token: Token // TODO avoid putting full token data here to reduce storage?
+  tokenId: string
 }
 
 interface TokenApproveTx extends Transaction {
   approvedValue: string
   spender: string
-  token: Token
+  tokenId: string
 }
 
 export interface StableTokenTransferTx extends TokenTransferTx {
@@ -86,21 +86,21 @@ export interface OtherTokenApproveTx extends TokenApproveTx {
 export interface EscrowTransferTx extends Transaction {
   type: TransactionType.EscrowTransfer
   isOutgoing: true
-  token: Token
+  tokenId: string
   comment?: string
 }
 
 export interface EscrowWithdrawTx extends Transaction {
   type: TransactionType.EscrowWithdraw
-  token: Token
+  tokenId: string
   isOutgoing: false
   comment?: string
 }
 
 export interface TokenExchangeTx extends Transaction {
   type: TransactionType.TokenExchange
-  fromToken: Token
-  toToken: Token
+  fromTokenId: string
+  toTokenId: string
   fromValue: string
   toValue: string
 }

@@ -8,13 +8,16 @@ import {
 import { TransactionStatusProperty } from 'src/features/feed/components/TransactionStatusProperty'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { EscrowTransaction, TokenTransfer } from 'src/features/types'
+import { useTokens } from 'src/features/wallet/utils'
 import { Stylesheet } from 'src/styles/types'
+import { getTokenById } from 'src/tokens'
 
 interface Props {
   tx: TokenTransfer | EscrowTransaction
 }
 
 export function TokenTransferReview({ tx }: Props) {
+  const tokens = useTokens()
   const amountLabel = tx.isOutgoing ? 'Sent: ' : 'Received: '
   const addressLabel = tx.isOutgoing ? 'Sent To' : 'Received From'
   const address = tx.isOutgoing ? tx.to : tx.from
@@ -32,7 +35,7 @@ export function TokenTransferReview({ tx }: Props) {
       <TransactionProperty label="Amount">
         <Box styles={style.value}>
           <span css={style.amountLabel}>{amountLabel}</span>
-          <MoneyValue amountInWei={tx.value} token={tx.token} />
+          <MoneyValue amountInWei={tx.value} token={getTokenById(tx.tokenId, tokens)} />
         </Box>
         {tx.isOutgoing && (
           <Box styles={style.value}>

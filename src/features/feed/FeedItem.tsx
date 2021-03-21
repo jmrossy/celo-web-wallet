@@ -7,11 +7,12 @@ import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { CELO, Token } from 'src/tokens'
+import { CELO, getTokenById, Token, Tokens } from 'src/tokens'
 import { trimToLength } from 'src/utils/string'
 
 interface FeedItemProps {
   tx: CeloTransaction
+  tokens: Tokens
   isOpen: boolean
   onClick: (hash: string) => void
   collapsed?: boolean
@@ -27,13 +28,16 @@ interface FeedItemContent {
 }
 
 export function FeedItem(props: FeedItemProps) {
-  const { tx, isOpen, onClick, collapsed } = props
+  const { tx, tokens, isOpen, onClick, collapsed } = props
 
   const handleClick = () => {
     onClick(tx.hash)
   }
 
-  const { icon, description, subDescription, value, token, isPositive } = getContentByTxType(tx)
+  const { icon, description, subDescription, value, token, isPositive } = getContentByTxType(
+    tx,
+    tokens
+  )
   const { label: symbol, color } = token
   const sign = isPositive === true ? '+' : isPositive === false ? '-' : undefined
 
@@ -62,7 +66,7 @@ export function FeedItem(props: FeedItemProps) {
   )
 }
 
-function getContentByTxType(tx: CeloTransaction): FeedItemContent {
+function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemContent {
   const defaultContent = {
     icon: <Identicon address={tx.to} />,
     description: `Transaction ${tx.hash.substr(0, 8)}`,
@@ -86,7 +90,7 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
       ...defaultContent,
       icon: <Identicon address={tx.isOutgoing ? tx.to : tx.from} />,
       description,
-      token: tx.token,
+      token: getTokenById(tx.tokenId, tokens),
       isPositive: !tx.isOutgoing,
     }
   }
@@ -98,17 +102,19 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     return {
       ...defaultContent,
       description: 'Transfer Approval',
-      token: tx.token,
+      token: getTokenById(tx.tokenId, tokens),
       value: '0',
     }
   }
 
   if (tx.type === TransactionType.TokenExchange) {
+    const fromToken = getTokenById(tx.fromTokenId, tokens)
+    const toToken = getTokenById(tx.toTokenId, tokens)
     return {
       ...defaultContent,
-      icon: <ExchangeIcon toToken={tx.toToken} />,
-      description: `${tx.fromToken.label} to ${tx.toToken.label} Exchange`,
-      token: tx.toToken,
+      icon: <ExchangeIcon toToken={toToken} />,
+      description: `${fromToken.label} to ${toToken.label} Exchange`,
+      token: toToken,
       value: tx.toValue,
       isPositive: true,
     }
@@ -118,7 +124,7 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     return {
       ...defaultContent,
       description: tx.isOutgoing ? 'Escrow Payment' : 'Escrow Withdrawal',
-      token: tx.token,
+      token: getTokenById(tx.tokenId, tokens),
       isPositive: !tx.isOutgoing,
     }
   }

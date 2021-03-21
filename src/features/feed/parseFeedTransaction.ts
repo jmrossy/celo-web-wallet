@@ -207,8 +207,8 @@ function parseTokenExchange(
   return {
     ...parseOtherTx(tx),
     type: TransactionType.TokenExchange,
-    fromToken: sellGold ? CELO : token,
-    toToken: sellGold ? token : CELO,
+    fromTokenId: sellGold ? CELO.id : token.id,
+    toTokenId: sellGold ? token.id : CELO.id,
     fromValue: BigNumber.from(sellAmount).toString(),
     toValue: BigNumber.from(toValue).toString(),
   }
@@ -260,11 +260,11 @@ function parseOutgoingTokenTransfer(
   const result = { ...parseOtherTx(tx), to, value: valueBn.toString(), comment, isOutgoing: true }
 
   if (token.id === CELO.id) {
-    return { ...result, type: TransactionType.CeloTokenTransfer, token }
+    return { ...result, type: TransactionType.CeloTokenTransfer, tokenId: token.id }
   } else if (isStableToken(token.id)) {
-    return { ...result, type: TransactionType.StableTokenTransfer, token }
+    return { ...result, type: TransactionType.StableTokenTransfer, tokenId: token.id }
   } else {
-    return { ...result, type: TransactionType.OtherTokenTransfer, token }
+    return { ...result, type: TransactionType.OtherTokenTransfer, tokenId: token.id }
   }
 }
 
@@ -282,11 +282,11 @@ function parseTokenApproveTx(
   const result = { ...parseOtherTx(tx), spender, approvedValue: approvedValueBn.toString() }
 
   if (token.id === CELO.id) {
-    return { ...result, type: TransactionType.CeloTokenApprove, token }
+    return { ...result, type: TransactionType.CeloTokenApprove, tokenId: token.id }
   } else if (isStableToken(token.id)) {
-    return { ...result, type: TransactionType.StableTokenApprove, token }
+    return { ...result, type: TransactionType.StableTokenApprove, tokenId: token.id }
   } else {
-    return { ...result, type: TransactionType.OtherTokenApprove, token }
+    return { ...result, type: TransactionType.OtherTokenApprove, tokenId: token.id }
   }
 }
 
@@ -332,11 +332,11 @@ function parseTxWithTokenTransfers(
     }
 
     if (token.id === CELO.id) {
-      return { ...result, type: TransactionType.CeloTokenTransfer, token }
+      return { ...result, type: TransactionType.CeloTokenTransfer, tokenId: token.id }
     } else if (isStableToken(token.id)) {
-      return { ...result, type: TransactionType.StableTokenTransfer, token }
+      return { ...result, type: TransactionType.StableTokenTransfer, tokenId: token.id }
     } else {
-      return { ...result, type: TransactionType.OtherTokenTransfer, token }
+      return { ...result, type: TransactionType.OtherTokenTransfer, tokenId: token.id }
     }
   } catch (error) {
     logger.error('Failed to parse tx with token transfers', error, tx)
@@ -393,7 +393,7 @@ function parseOutgoingEscrowTransfer(
     type: TransactionType.EscrowTransfer,
     value: BigNumber.from(value).toString(),
     isOutgoing: true,
-    token,
+    tokenId: token.id,
   }
 }
 
@@ -568,7 +568,7 @@ function parseNativeTransferTx(tx: BlockscoutTx, address: string): CeloNativeTra
     type: TransactionType.CeloNativeTransfer,
     isOutgoing: areAddressesEqual(tx.from, address),
     comment: undefined,
-    token: CELO,
+    tokenId: CELO.id,
   }
 }
 

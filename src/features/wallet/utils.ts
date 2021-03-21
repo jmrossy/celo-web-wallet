@@ -30,6 +30,10 @@ export function hasMinTokenBalance(minValue: string, balances: Balances) {
   return false
 }
 
+export function useTokens() {
+  return useSelector((s: RootState) => s.wallet.balances.tokens)
+}
+
 export function useIsVoteSignerAccount() {
   const voteSignerFor = useSelector((s: RootState) => s.wallet.account.voteSignerFor)
   return !!voteSignerFor
