@@ -100,7 +100,7 @@ const tableColumnsWithWei: TableColumn[] = [
 function renderLabel(row: BalanceTableRow) {
   return (
     <Box align="center">
-      <TokenIcon token={row.token} size="1.5em" />
+      <TokenIcon token={row.token} size="m" />
       <div css={style.tokenLabel}>{row.label}</div>
     </Box>
   )
@@ -183,7 +183,7 @@ const style: Stylesheet = {
     marginBottom: '1.5em',
   },
   tokenLabel: {
-    paddingLeft: '0.4em',
+    paddingLeft: '0.6em',
   },
   addressContainer: {
     position: 'relative',
@@ -207,7 +207,7 @@ const style: Stylesheet = {
     position: 'absolute',
     right: '-3em',
     top: '0.25em',
-    paddingRight: '0.5em',
+    paddingRight: '0.75em',
   },
   removeButton: {
     height: '1em',

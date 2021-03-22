@@ -9,7 +9,7 @@ import { CELO, cEUR, cUSD, Token } from 'src/tokens'
 
 interface Props {
   token: Token
-  size: number | string
+  size: 's' | 'm' | 'l'
 }
 
 function _TokenIcon({ token, size }: Props) {
@@ -18,12 +18,14 @@ function _TokenIcon({ token, size }: Props) {
   else if (token.id === cUSD.id) icon = cUSDIcon
   else if (token.id === cEUR.id) icon = cEURIcon
 
+  const { fallbackImgSize, actualSize, fontSize } = sizeValues[size]
+
   return icon ? (
     <img
-      width="16px"
-      height="16px"
+      width={fallbackImgSize}
+      height={fallbackImgSize}
       src={icon}
-      css={{ height: size, width: size }}
+      css={{ height: actualSize, width: actualSize }}
       alt={token.label}
       title={token.label}
     />
@@ -32,17 +34,42 @@ function _TokenIcon({ token, size }: Props) {
       align="center"
       justify="center"
       styles={{
-        ...Font.bold,
-        height: size,
-        width: size,
+        height: actualSize,
+        width: actualSize,
         borderRadius: '50%',
         backgroundColor: token.color || Color.primaryGrey,
-        color: '#FFFFFF',
       }}
     >
-      <div>{token.label[0]}</div>
+      <div
+        css={{
+          ...Font.bold,
+          fontSize,
+          color: '#FFFFFF',
+          paddingLeft: size === 'l' ? 1 : 0,
+        }}
+      >
+        {token.label[0].toUpperCase()}
+      </div>
     </Box>
   )
+}
+
+const sizeValues = {
+  s: {
+    fallbackImgSize: '22px',
+    actualSize: '1.4em',
+    fontSize: '0.9em',
+  },
+  m: {
+    fallbackImgSize: '24px',
+    actualSize: '1.5em',
+    fontSize: '0.95em',
+  },
+  l: {
+    fallbackImgSize: '26px',
+    actualSize: '1.7em',
+    fontSize: '1em',
+  },
 }
 
 export const TokenIcon = memo(_TokenIcon)

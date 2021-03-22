@@ -57,7 +57,7 @@ export function BalanceSummary() {
           baseFontSize={1.4}
           containerCss={style.balanceContainer}
           symbol="icon"
-          iconSize="1.7em"
+          iconSize="l"
         />
       ))}
       {hiddenTokens > 0 && (

@@ -52,7 +52,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
 
   const renderDropdownOption = (option: SelectOption) => (
     <Box align="center">
-      <TokenIcon token={tokens[option.value]} size="1.1em" />
+      <TokenIcon token={tokens[option.value]} size="s" />
       <div css={style.tokenDropdownLabel}>{option.display}</div>
     </Box>
   )
@@ -62,7 +62,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
     if (!option) return null
     return (
       <Box align="center">
-        <TokenIcon token={tokens[option.value]} size="1.4em" />
+        <TokenIcon token={tokens[option.value]} size="s" />
         <div css={{ ...Font.bold, ...style.tokenDropdownLabel }}>{value}</div>
       </Box>
     )

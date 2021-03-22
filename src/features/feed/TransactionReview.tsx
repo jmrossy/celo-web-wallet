@@ -72,7 +72,8 @@ function getContentByTxType(tx: CeloTransaction) {
   if (
     tx.type === TransactionType.StableTokenTransfer ||
     tx.type === TransactionType.CeloNativeTransfer ||
-    tx.type === TransactionType.CeloTokenTransfer
+    tx.type === TransactionType.CeloTokenTransfer ||
+    tx.type === TransactionType.OtherTokenTransfer
   ) {
     return {
       header: tx.isOutgoing ? 'Payment Sent' : 'Payment Received',

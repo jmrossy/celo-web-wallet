@@ -52,7 +52,6 @@ const desktopUrls = {
     'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.0.5/Celo-Wallet-1.0.5-linux-x86_64.AppImage',
 }
 
-// TODO find a nice way to switch btwn configs at build/run time
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configMainnet: Config = {
   debug: debugMode,

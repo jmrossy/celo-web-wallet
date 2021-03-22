@@ -23,7 +23,15 @@ import {
   TokenTransaction,
   TransactionType,
 } from 'src/features/types'
-import { CELO, INativeTokens, isStableToken, NativeTokenId, NativeTokens, Token } from 'src/tokens'
+import {
+  CELO,
+  INativeTokens,
+  isNativeToken,
+  isStableToken,
+  NativeTokenId,
+  NativeTokens,
+  Token,
+} from 'src/tokens'
 import { areAddressesEqual, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
@@ -62,17 +70,14 @@ function isValidTokenTransfer(tx: BlockscoutTokenTransfer) {
   if (!isValidTransaction(tx)) {
     return
   }
-
   if (!tx.value || BigNumber.from(tx.value).lte(0)) {
     logger.warn(`token transfer ${tx.hash} has invalid value`)
     return false
   }
-
   if (!tx.tokenSymbol) {
-    logger.warn(`token transfer  ${tx.hash} has invalid token symbol`)
+    logger.warn(`token transfer ${tx.hash} has no token symbol`)
     return false
   }
-
   return true
 }
 
@@ -303,40 +308,43 @@ function parseTxWithTokenTransfers(
 
   try {
     const totals: Record<string, BigNumber> = {} // token id to sum
+    let biggestTransfer = tx.tokenTransfers[0]
     for (const transfer of tx.tokenTransfers) {
       if (!isValidTokenTransfer(transfer)) continue
-      const token = tokenSymbolToToken(transfer.tokenSymbol, tokens)
-      if (!totals[token.id]) totals[token.id] = BigNumber.from(0)
+      const tokenId = tokenSymbolToTokenId(transfer.tokenSymbol, tokens)
+      const transferValue = BigNumber.from(transfer.value)
+      if (!totals[tokenId]) totals[tokenId] = BigNumber.from(0)
       if (areAddressesEqual(transfer.to, address)) {
-        totals[token.id] = totals[token.id].add(transfer.value)
+        totals[tokenId] = totals[tokenId].add(transferValue)
       } else if (areAddressesEqual(transfer.from, address)) {
-        totals[token.id] = totals[token.id].sub(transfer.value)
+        totals[tokenId] = totals[tokenId].sub(transferValue)
       } else {
         continue
       }
+      if (transferValue.gt(biggestTransfer.value)) biggestTransfer = transfer
     }
 
-    // This logic assumes blockscout puts the main transfer (i.e. not gas
-    // transfers) first the list. If that changes this needs to be smarter.
-    const mainTransfer = tx.tokenTransfers[0]
-    const token = tokenSymbolToToken(mainTransfer.tokenSymbol, tokens)
-    const comment = tryParseTransferComment(mainTransfer, token, abiInterfaces)
+    // This logic assumes the biggest transfer is the 'main' transfer that
+    // should define the tx's token and properties
+    // If this doesn't work well, manually parsing the tx data may work too
+    const tokenId = tokenSymbolToTokenId(biggestTransfer.tokenSymbol, tokens)
+    const comment = tryParseTransferComment(biggestTransfer, tokenId, abiInterfaces)
 
     const result = {
       ...parseOtherTx(tx),
-      from: mainTransfer.from,
-      to: mainTransfer.to,
-      value: totals[token.id].toString(),
+      from: biggestTransfer.from,
+      to: biggestTransfer.to,
+      value: totals[tokenId].toString(),
       comment,
       isOutgoing: false,
     }
 
-    if (token.id === CELO.id) {
-      return { ...result, type: TransactionType.CeloTokenTransfer, tokenId: token.id }
-    } else if (isStableToken(token.id)) {
-      return { ...result, type: TransactionType.StableTokenTransfer, tokenId: token.id }
+    if (tokenId === CELO.id) {
+      return { ...result, type: TransactionType.CeloTokenTransfer, tokenId }
+    } else if (isStableToken(tokenId)) {
+      return { ...result, type: TransactionType.StableTokenTransfer, tokenId }
     } else {
-      return { ...result, type: TransactionType.OtherTokenTransfer, tokenId: token.id }
+      return { ...result, type: TransactionType.OtherTokenTransfer, tokenId }
     }
   } catch (error) {
     logger.error('Failed to parse tx with token transfers', error, tx)
@@ -509,11 +517,12 @@ function parseGovernanceTx(
 
     if (name === 'vote') {
       const voteValueIndex = BigNumber.from(txDescription.args.value).toNumber()
+      const proposalId = BigNumber.from(txDescription.args.proposalId).toString()
       const voteValue = OrderedVoteValue[voteValueIndex]
       return {
         ...parseOtherTx(tx),
         type: TransactionType.GovernanceVote,
-        proposalId: txDescription.args.proposalId,
+        proposalId,
         vote: voteValue,
       }
     }
@@ -528,18 +537,16 @@ function parseGovernanceTx(
 
 function tryParseTransferComment(
   tx: BlockscoutTokenTransfer,
-  token: Token,
+  tokenId: string,
   abiInterfaces: AbiInterfaceMap
 ): string | undefined {
   try {
     // Only supports native token contracts for now as transferWithComment
     // isn't in the ERC20 standard
-    if (!Object.values(NativeTokenId).includes(token.id as NativeTokenId)) {
-      return undefined
-    }
+    if (!isNativeToken(tokenId)) return undefined
 
     const abiInterface =
-      token.id === CELO.id
+      tokenId === CELO.id
         ? abiInterfaces[CeloContract.GoldToken]
         : abiInterfaces[CeloContract.StableToken]
     const txDescription = abiInterface!.parseTransaction({ data: tx.input })
@@ -584,20 +591,21 @@ function parseOtherTx(tx: BlockscoutTx): OtherTx {
     timestamp: BigNumber.from(tx.timeStamp).toNumber(),
     gasPrice: tx.gasPrice,
     gasUsed: tx.gasUsed,
-    feeCurrency: tokenSymbolToToken(tx.feeCurrency).id as NativeTokenId,
+    feeCurrency: tokenSymbolToTokenId(tx.feeCurrency) as NativeTokenId,
     gatewayFee: tx.gatewayFee,
     gatewayFeeRecipient: tx.gatewayFeeRecipient,
   }
 }
 
-function tokenSymbolToToken(
+function tokenSymbolToTokenId(
   symbol: string | null | undefined,
   tokens: Record<string, Token> | INativeTokens = NativeTokens
-): Token {
+): string {
+  if (!symbol) return CELO.id
   for (const token of Object.values(tokens)) {
-    if (symbol && symbol.toLowerCase() === token.id.toLowerCase()) return token
+    if (symbol.toLowerCase() === token.id.toLowerCase()) return token.id
   }
-  return CELO
+  return symbol
 }
 
 function isTxInputEmpty(tx: BlockscoutTx) {

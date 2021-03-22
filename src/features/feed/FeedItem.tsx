@@ -78,7 +78,8 @@ function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemConten
   if (
     tx.type === TransactionType.StableTokenTransfer ||
     tx.type === TransactionType.CeloNativeTransfer ||
-    tx.type === TransactionType.CeloTokenTransfer
+    tx.type === TransactionType.CeloTokenTransfer ||
+    tx.type === TransactionType.OtherTokenTransfer
   ) {
     const description = tx.comment
       ? trimToLength(tx.comment, 24)
