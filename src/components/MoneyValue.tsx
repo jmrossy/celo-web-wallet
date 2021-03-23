@@ -11,7 +11,7 @@ interface MoneyValueProps {
   roundDownIfSmall?: boolean
   baseFontSize?: number // in em units
   margin?: string | number
-  symbol?: 'text' | 'icon' | 'none'
+  symbolType?: 'text' | 'icon' | 'none'
   sign?: string // e.g. plus or minus symbol
   symbolCss?: Styles
   amountCss?: Styles
@@ -27,7 +27,7 @@ export function MoneyValue(props: MoneyValueProps) {
     roundDownIfSmall,
     baseFontSize,
     margin,
-    symbol,
+    symbolType,
     sign,
     symbolCss,
     amountCss,
@@ -36,8 +36,8 @@ export function MoneyValue(props: MoneyValueProps) {
     iconSize,
   } = props
 
-  const { label, color } = token
-  const fontStyles = getFonts(baseFontSize, fontWeight, symbol)
+  const { symbol: tokenSymbol, color } = token
+  const fontStyles = getFonts(baseFontSize, fontWeight, symbolType)
 
   const formattedAmount = fromWeiRounded(amountInWei, token, roundDownIfSmall)
   const isZero = formattedAmount === '0'
@@ -45,15 +45,15 @@ export function MoneyValue(props: MoneyValueProps) {
   return (
     <Box
       direction="row"
-      align={symbol === 'icon' ? 'center' : 'end'}
+      align={symbolType === 'icon' ? 'center' : 'end'}
       styles={containerCss}
       margin={margin}
     >
       {!!sign && !isZero && <span css={fontStyles.amount}>{sign}</span>}
-      {(!symbol || symbol === 'text') && (
-        <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{label}</span>
+      {(!symbolType || symbolType === 'text') && (
+        <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{tokenSymbol}</span>
       )}
-      {symbol === 'icon' && <TokenIcon token={token} size={iconSize ?? 's'} />}
+      {symbolType === 'icon' && <TokenIcon token={token} size={iconSize ?? 's'} />}
       <span css={{ ...fontStyles.amount, ...amountCss }}>{formattedAmount}</span>
     </Box>
   )

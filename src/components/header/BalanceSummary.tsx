@@ -56,7 +56,7 @@ export function BalanceSummary() {
           roundDownIfSmall={true}
           baseFontSize={1.4}
           containerCss={style.balanceContainer}
-          symbol="icon"
+          symbolType="icon"
           iconSize="l"
         />
       ))}

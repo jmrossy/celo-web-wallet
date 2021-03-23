@@ -9,7 +9,8 @@ import { Token } from 'src/tokens'
 const KNOWN_ERC20_TOKENS: Token[] = [
   {
     id: 'mCUSD',
-    label: 'mCUSD',
+    symbol: 'mCUSD',
+    name: 'Moola cUSD',
     color: Color.accentBlue,
     minValue: 0.01,
     displayDecimals: 2,
@@ -19,7 +20,8 @@ const KNOWN_ERC20_TOKENS: Token[] = [
   },
   {
     id: 'mCELO',
-    label: 'mCELO',
+    symbol: 'mCELO',
+    name: 'Moola CELO',
     color: Color.accentBlue,
     minValue: 0.001,
     displayDecimals: 3,

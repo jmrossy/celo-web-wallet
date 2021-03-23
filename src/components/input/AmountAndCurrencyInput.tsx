@@ -44,7 +44,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
       Object.values(tokens)
         .filter((t) => (nativeTokensOnly ? isNativeToken(t.id) : true))
         .map((t) => ({
-          display: t.label,
+          display: t.symbol,
           value: t.id,
         })),
     [tokens]

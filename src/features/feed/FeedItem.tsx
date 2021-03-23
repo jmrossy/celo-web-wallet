@@ -38,7 +38,7 @@ export function FeedItem(props: FeedItemProps) {
     tx,
     tokens
   )
-  const { label: symbol, color } = token
+  const { symbol, color } = token
   const sign = isPositive === true ? '+' : isPositive === false ? '-' : undefined
 
   return (
@@ -53,7 +53,7 @@ export function FeedItem(props: FeedItemProps) {
             </div>
           </Box>
           <Box direction="column" align="end">
-            <MoneyValue amountInWei={value} token={token} symbol="none" sign={sign} />
+            <MoneyValue amountInWei={value} token={token} symbolType="none" sign={sign} />
             <div css={[style.currency, { color }]}>{symbol}</div>
           </Box>
         </Box>
@@ -114,7 +114,7 @@ function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemConten
     return {
       ...defaultContent,
       icon: <ExchangeIcon toToken={toToken} />,
-      description: `${fromToken.label} to ${toToken.label} Exchange`,
+      description: `${fromToken.symbol} to ${toToken.symbol} Exchange`,
       token: toToken,
       value: tx.toValue,
       isPositive: true,

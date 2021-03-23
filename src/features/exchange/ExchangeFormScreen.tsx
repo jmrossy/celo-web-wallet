@@ -230,7 +230,7 @@ const style: Stylesheet = {
     width: '100%',
     [mq[1200]]: {
       marginLeft: '6em',
-      marginTop: '-0.2em',
+      marginTop: '-0.3em',
       width: 'calc(100% - 150px - 10em)',
       maxWidth: '30em',
     },

@@ -2,7 +2,8 @@ import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
 import { TransactionType } from 'src/features/types'
-import { NativeTokenId } from 'src/tokens'
+import { isStableToken, NativeTokenId } from 'src/tokens'
+import { logger } from 'src/utils/logger'
 
 const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.StableTokenTransfer]: 95000,
@@ -25,6 +26,7 @@ const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.GovernanceVote]: 550000, //TODO
 }
 
+const CELO_GAS_MULTIPLIER = 2
 const STABLE_TOKEN_GAS_MULTIPLIER = 5
 
 export async function estimateGas(
@@ -35,13 +37,15 @@ export async function estimateGas(
 ) {
   if (forceEstimation || !PRECOMPUTED_GAS_ESTIMATES[type]) {
     if (!tx) throw new Error('Tx must be provided when forcing gas estimation')
+    logger.debug(`manually computing gas estimate for type: ${type}`)
     return computeGasEstimate(tx, feeCurrency)
   }
 
   const gasLimit = BigNumber.from(PRECOMPUTED_GAS_ESTIMATES[type])
   if (!feeCurrency || feeCurrency === NativeTokenId.CELO) {
+    logger.debug(`using CELO precompute gas for type: ${type}`)
     return gasLimit
-  } else if (feeCurrency === NativeTokenId.cUSD || feeCurrency === NativeTokenId.cEUR) {
+  } else if (isStableToken(feeCurrency)) {
     // TODO find a more scientific was to fix the gas estimation issue.
     // Since txs paid with cUSD also involve token transfers, the gas needed
     // is more than what estimateGas returns
@@ -56,8 +60,8 @@ async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: Nati
   const gasLimit = await signer.estimateGas(tx)
 
   if (!feeCurrency || feeCurrency === NativeTokenId.CELO) {
-    return gasLimit
-  } else if (feeCurrency === NativeTokenId.cUSD || feeCurrency === NativeTokenId.cEUR) {
+    return gasLimit.mul(CELO_GAS_MULTIPLIER)
+  } else if (isStableToken(feeCurrency)) {
     // TODO find a more scientific was to fix the gas estimation issue.
     // Since txs paid with cUSD also involve token transfers, the gas needed
     // is more than what estimateGas returns

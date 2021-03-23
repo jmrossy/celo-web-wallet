@@ -26,8 +26,8 @@ function _TokenIcon({ token, size }: Props) {
       height={fallbackImgSize}
       src={icon}
       css={{ height: actualSize, width: actualSize }}
-      alt={token.label}
-      title={token.label}
+      alt={token.symbol}
+      title={token.symbol}
     />
   ) : (
     <Box
@@ -48,7 +48,7 @@ function _TokenIcon({ token, size }: Props) {
           paddingLeft: size === 'l' ? 1 : 0,
         }}
       >
-        {token.label[0].toUpperCase()}
+        {token.symbol[0].toUpperCase()}
       </div>
     </Box>
   )

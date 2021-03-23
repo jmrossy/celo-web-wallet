@@ -4,7 +4,8 @@ import { Color } from 'src/styles/Color'
 
 export interface Token {
   id: string
-  label: string // for display, usually the same as id
+  symbol: string // usually the same as id
+  name: string
   color: string
   minValue: number
   displayDecimals: number
@@ -39,7 +40,8 @@ export interface INativeTokens {
 export const NativeTokens: INativeTokens = {
   CELO: {
     id: NativeTokenId.CELO,
-    label: NativeTokenId.CELO,
+    symbol: NativeTokenId.CELO,
+    name: 'Celo Native',
     color: Color.primaryGold,
     minValue: 0.001,
     displayDecimals: 3,
@@ -51,7 +53,8 @@ export const NativeTokens: INativeTokens = {
   },
   cUSD: {
     id: NativeTokenId.cUSD,
-    label: NativeTokenId.cUSD,
+    symbol: NativeTokenId.cUSD,
+    name: 'Celo Dollar',
     color: Color.primaryGreen,
     minValue: 0.01,
     displayDecimals: 2,
@@ -63,7 +66,8 @@ export const NativeTokens: INativeTokens = {
   },
   cEUR: {
     id: NativeTokenId.cEUR,
-    label: NativeTokenId.cEUR,
+    symbol: NativeTokenId.cEUR,
+    name: 'Celo Euro',
     color: Color.primaryGreen,
     minValue: 0.01,
     displayDecimals: 2,
@@ -85,14 +89,16 @@ export const cEUR = NativeTokens.cEUR
 export const LockedCELO: Token = {
   ...CELO,
   id: 'lockedCELO',
-  label: 'Locked CELO',
+  symbol: 'Locked CELO',
+  name: 'Locked CELO',
   address: config.contractAddresses.LockedGold,
   sortOrder: CELO.sortOrder! + 1,
 }
 
 export const UnknownToken: Token = {
   id: 'unknown',
-  label: 'Unknown',
+  symbol: 'unknown',
+  name: 'Unknown Token',
   color: Color.textGrey,
   minValue: 0.01,
   displayDecimals: 2,

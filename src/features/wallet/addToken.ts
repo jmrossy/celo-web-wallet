@@ -43,17 +43,20 @@ function* addToken(params: AddTokenParams) {
 
 async function getTokenInfo(tokenAddress: string): Promise<Token> {
   const contract = getTokenContract(tokenAddress)
-  // Note this assumes the existence of decimals and symbols methods,
+  // Note this assumes the existence of decimals, symbols, and name methods,
   // which are technically optional. May revisit later
   const symbolP: Promise<string> = contract.symbol()
+  const nameP: Promise<string> = contract.name()
   const decimalsP: Promise<BigNumberish> = contract.decimals()
-  const [symbol, decimalsBN] = await Promise.all([symbolP, decimalsP])
+  const [symbol, name, decimalsBN] = await Promise.all([symbolP, nameP, decimalsP])
   const decimals = BigNumber.from(decimalsBN).toNumber()
   if (!symbol || typeof symbol !== 'string') throw new Error('Invalid token symbol')
+  if (!name || typeof name !== 'string') throw new Error('Invalid token name')
   if (decimals !== CELO.decimals) throw new Error('Invalid token decimals') // TODO only 18 is supported atm
   return {
     id: symbol,
-    label: symbol.substring(0, 8),
+    symbol: symbol.substring(0, 8),
+    name,
     color: Color.accentBlue,
     minValue: CELO.minValue,
     displayDecimals: CELO.displayDecimals,

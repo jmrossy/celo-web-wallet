@@ -11,10 +11,11 @@ import { ModalAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Table, TableColumn } from 'src/components/Table'
+import { config } from 'src/config'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
 import { AddTokenModal } from 'src/features/wallet/AddTokenModal'
 import { fetchBalancesActions, fetchBalancesSagaName } from 'src/features/wallet/fetchBalances'
-import { Balances, BalanceTableRow, TokenBalances } from 'src/features/wallet/types'
+import { Balances, BalanceTableRow } from 'src/features/wallet/types'
 import { removeToken } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -151,18 +152,21 @@ function renderAddressAndRemoveButton(row: BalanceTableRow) {
 function balancesToTableData(balances: Balances): BalanceTableRow[] {
   const tableRows: BalanceTableRow[] = []
 
-  const tokensWithLocked: TokenBalances = {
-    ...balances.tokens,
-    lockedCELO: {
-      ...LockedCELO,
-      value: getTotalLockedCelo(balances).toString(),
-    },
-  }
+  // Only show Locked CELO on desktop for now
+  const tokens = config.isElectron
+    ? {
+        ...balances.tokens,
+        lockedCELO: {
+          ...LockedCELO,
+          value: getTotalLockedCelo(balances).toString(),
+        },
+      }
+    : balances.tokens
 
-  for (const token of Object.values(tokensWithLocked)) {
+  for (const token of Object.values(tokens)) {
     tableRows.push({
       id: token.id,
-      label: token.label,
+      label: token.symbol,
       balance: parseFloat(fromWeiRounded(token.value, token)),
       balanceWei: token.value,
       address: token.address,
