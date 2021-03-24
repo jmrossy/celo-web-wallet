@@ -11,7 +11,7 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
-import { sendTokenActions } from 'src/features/send/sendToken'
+import { sendTokenActions, sendTokenSagaName } from 'src/features/send/sendToken'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -56,15 +56,16 @@ export function SendConfirmationScreen() {
     dispatch(sendTokenActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
   }
 
-  const { isWorking } = useTxFlowStatusModals(
-    'sendToken',
-    1,
-    'Sending Payment...',
-    'Payment Sent!',
-    'Your payment has been sent successfully',
-    'Payment Failed',
-    'Your payment could not be processed'
-  )
+  const { isWorking } = useTxFlowStatusModals({
+    sagaName: sendTokenSagaName,
+    signaturesNeeded: 1,
+    loadingTitle: 'Sending Payment...',
+    successTitle: 'Payment Sent!',
+    successMsg: 'Your payment has been sent successfully',
+    errorTitle: 'Payment Failed',
+    errorMsg: 'Your payment could not be processed',
+    reqSignatureWarningLabel: params.comment ? 'payments with comments' : undefined,
+  })
 
   return (
     <ScreenContentFrame>
@@ -195,6 +196,8 @@ const style: Stylesheet = {
     color: Color.primaryBlack,
     fontSize: '1.2em',
     fontWeight: 400,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   bottomBorder: {
     paddingBottom: '1.25em',

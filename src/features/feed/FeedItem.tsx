@@ -8,6 +8,7 @@ import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
+import { trimToLength } from 'src/utils/string'
 
 interface FeedItemProps {
   tx: CeloTransaction
@@ -76,10 +77,15 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
     tx.type === TransactionType.CeloTokenTransfer
   ) {
     // TODO support comment encryption
+    const description = tx.comment
+      ? trimToLength(tx.comment, 24)
+      : tx.isOutgoing
+      ? 'Payment Sent'
+      : 'Payment Received'
     return {
       ...defaultContent,
       icon: <Identicon address={tx.isOutgoing ? tx.to : tx.from} />,
-      description: tx.comment || (tx.isOutgoing ? 'Payment Sent' : 'Payment Received'),
+      description,
       currency: tx.currency,
       isPositive: !tx.isOutgoing,
     }

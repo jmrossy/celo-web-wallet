@@ -16,7 +16,11 @@ import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
 import { getResultChartData } from 'src/features/validators/barCharts'
-import { getStakeActionTxPlan, stakeTokenActions } from 'src/features/validators/stakeToken'
+import {
+  getStakeActionTxPlan,
+  stakeTokenActions,
+  stakeTokenSagaName,
+} from 'src/features/validators/stakeToken'
 import { stakeActionLabel, StakeActionType } from 'src/features/validators/types'
 import { useVoterAccountAddress, useVoterBalances } from 'src/features/wallet/utils'
 import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
@@ -65,24 +69,26 @@ export function StakeConfirmationScreen() {
     dispatch(stakeTokenActions.trigger({ ...params, feeEstimates }))
   }
 
-  const { isWorking } = useTxFlowStatusModals(
-    'stakeToken',
-    txPlan.length,
-    `${stakeActionLabel(action, true)}...`,
-    `${stakeActionLabel(action)} Complete!`,
-    `Your ${stakeActionLabel(action)} request was successful`,
-    `${stakeActionLabel(action)} Failed`,
-    `Your ${stakeActionLabel(action)} request could not be processed`,
-    txPlan.length > 1
-      ? [
-          `${stakeActionLabel(action)} requests sometimes need several transactions`,
-          'Confirm all transactions on your Ledger',
-        ]
-      : undefined,
-    action === StakeActionType.Vote
-      ? { title: "You're Almost Done!", content: <SuccessModal /> }
-      : undefined
-  )
+  const { isWorking } = useTxFlowStatusModals({
+    sagaName: stakeTokenSagaName,
+    signaturesNeeded: txPlan.length,
+    loadingTitle: `${stakeActionLabel(action, true)}...`,
+    successTitle: `${stakeActionLabel(action)} Complete!`,
+    successMsg: `Your ${stakeActionLabel(action)} request was successful`,
+    errorTitle: `${stakeActionLabel(action)} Failed`,
+    errorMsg: `Your ${stakeActionLabel(action)} request could not be processed`,
+    reqSignatureMsg:
+      txPlan.length > 1
+        ? [
+            `${stakeActionLabel(action)} requests sometimes need several transactions`,
+            'Confirm all transactions on your Ledger',
+          ]
+        : undefined,
+    customSuccessModal:
+      action === StakeActionType.Vote
+        ? { title: "You're Almost Done!", content: <SuccessModal /> }
+        : undefined,
+  })
 
   const resultData = useMemo(() => getResultChartData(voterBalances, groups, groupVotes, params), [
     voterBalances,

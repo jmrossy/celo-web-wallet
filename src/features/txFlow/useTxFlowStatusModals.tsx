@@ -10,19 +10,35 @@ import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureR
 import { txFlowFailed, txFlowSent } from 'src/features/txFlow/txFlowSlice'
 import { SagaStatus } from 'src/utils/saga'
 
+interface TxFlowStatusModalsParams {
+  sagaName: string
+  signaturesNeeded: number
+  loadingTitle: string
+  successTitle: string
+  successMsg: string
+  errorTitle: string
+  errorMsg: string
+  reqSignatureMsg?: string[]
+  reqSignatureWarningLabel?: string
+  customSuccessModal?: { title: string; content: any }
+}
+
 // Shows a request signature to loading to success/failure
 // modals based on saga status updates
-export function useTxFlowStatusModals(
-  sagaName: string,
-  signaturesNeeded: number,
-  loadingTitle: string,
-  successTitle: string,
-  successMsg: string,
-  errorTitle: string,
-  errorMsg: string,
-  reqSignatureMsg?: string[],
-  customSuccessModal?: { title: string; content: any }
-) {
+export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
+  const {
+    sagaName,
+    signaturesNeeded,
+    loadingTitle,
+    successTitle,
+    successMsg,
+    errorTitle,
+    errorMsg,
+    reqSignatureMsg,
+    reqSignatureWarningLabel,
+    customSuccessModal,
+  } = params
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -46,7 +62,7 @@ export function useTxFlowStatusModals(
     if (signaturesNeeded > 1) modalTitle += ` (${index + 1}/${signaturesNeeded})`
     showModalWithContent(
       modalTitle,
-      <SignatureRequiredModal text={modalText} />,
+      <SignatureRequiredModal text={modalText} signWarningLabel={reqSignatureWarningLabel} />,
       null,
       null,
       null,

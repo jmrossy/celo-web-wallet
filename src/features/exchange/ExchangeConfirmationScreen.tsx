@@ -9,7 +9,7 @@ import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { Currency } from 'src/currency'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
-import { exchangeTokenActions } from 'src/features/exchange/exchangeToken'
+import { exchangeTokenActions, exchangeTokenSagaName } from 'src/features/exchange/exchangeToken'
 import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
@@ -81,16 +81,19 @@ export function ExchangeConfirmationScreen() {
     dispatch(exchangeTokenActions.trigger({ ...params, exchangeRate: rate, feeEstimates }))
   }
 
-  const { isWorking } = useTxFlowStatusModals(
-    'exchangeToken',
-    2,
-    'Exchanging...',
-    'Exchange Complete!',
-    'Your exchange has been made successfully',
-    'Exchange Failed',
-    'Your exchange could not be processed',
-    ['Exchanges require two transactions', 'Confirm both transactions on your Ledger']
-  )
+  const { isWorking } = useTxFlowStatusModals({
+    sagaName: exchangeTokenSagaName,
+    signaturesNeeded: 2,
+    loadingTitle: 'Exchanging...',
+    successTitle: 'Exchange Complete!',
+    successMsg: 'Your exchange has been made successfully',
+    errorTitle: 'Exchange Failed',
+    errorMsg: 'Your exchange could not be processed',
+    reqSignatureMsg: [
+      'Exchanges require two transactions',
+      'Confirm both transactions on your Ledger',
+    ],
+  })
 
   return (
     <ScreenContentFrame>
