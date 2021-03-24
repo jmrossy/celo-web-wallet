@@ -7,7 +7,7 @@ import { isSignerLedger } from 'src/blockchain/signer'
 import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
-import { txFlowSent } from 'src/features/txFlow/txFlowSlice'
+import { txFlowFailed, txFlowSent } from 'src/features/txFlow/txFlowSlice'
 import { SagaStatus } from 'src/utils/saga'
 
 // Shows a request signature to loading to success/failure
@@ -67,6 +67,8 @@ export function useTxFlowStatusModals(
 
   const onFailure = (error: string | undefined) => {
     showErrorModal(errorTitle, errorMsg || 'Something went wrong, sorry! Please try again.', error)
+    dispatch(saga.actions.reset(null))
+    dispatch(txFlowFailed(error ?? null))
   }
 
   useEffect(() => {
