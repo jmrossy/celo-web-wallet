@@ -31,6 +31,13 @@ export async function saveWallet(pincode: string, override = false) {
     const encryptedMnemonic = await encryptMnemonic(mnemonic, pincode)
 
     storageProvider.setItem(getWalletPath(), encryptedMnemonic, override)
+
+    // Request persistent storage for site
+    // This prevents browser from clearing local storage when space runs low. Rare but possible.
+    if (navigator.storage && navigator.storage.persist) {
+      const isPersisted = await navigator.storage.persist()
+      logger.debug(`Is persisted storage granted: ${isPersisted}`)
+    }
   } catch (error) {
     logger.error('Failed to save wallet to storage', error)
     throw new Error('Failure saving wallet')
