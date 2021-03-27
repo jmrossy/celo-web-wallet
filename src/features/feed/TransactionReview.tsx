@@ -27,6 +27,7 @@ export function TransactionReview() {
   useEffect(() => {
     // On dismount clear open tx
     return () => {
+      console.log('opening null tx in txreview')
       dispatch(openTransaction(null))
     }
   }, [])

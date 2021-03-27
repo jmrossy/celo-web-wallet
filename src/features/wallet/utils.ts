@@ -1,3 +1,4 @@
+import { createSelector } from '@reduxjs/toolkit'
 import { BigNumber, utils } from 'ethers'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
@@ -6,9 +7,14 @@ import { Balances } from 'src/features/wallet/types'
 import { Token } from 'src/tokens'
 import { select } from 'typed-redux-saga'
 
+const balanceEmptySelector = createSelector(
+  (s: RootState) => s.wallet.balances,
+  (balances) => areBalancesEmpty(balances)
+)
+
 export function useAreBalancesEmpty() {
-  const balances = useSelector((s: RootState) => s.wallet.balances)
-  return areBalancesEmpty(balances)
+  const isEmpty = useSelector(balanceEmptySelector)
+  return isEmpty
 }
 
 export function areBalancesEmpty(balances: Balances) {

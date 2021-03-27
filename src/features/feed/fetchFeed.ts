@@ -92,6 +92,8 @@ async function doFetchFeed(address: string, balances: Balances, lastBlockNumber:
     if (parsedTx) newTransactions[parsedTx.hash] = parsedTx
   }
 
+  // TODO consider setting newLastBlockNumber to roughly current block
+  // to make subsequent queries smaller for blockscout
   return { newTransactions, newLastBlockNumber }
 }
 

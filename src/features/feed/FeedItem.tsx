@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 import { ExchangeIcon } from 'src/components/icons/Exchange'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
@@ -10,11 +10,21 @@ import { Stylesheet } from 'src/styles/types'
 import { CELO, getTokenById, Token, Tokens } from 'src/tokens'
 import { trimToLength } from 'src/utils/string'
 
+export const FEED_ITEM_HEIGHT_NORMAL = 70
+export const FEED_ITEM_HEIGHT_COMPACT = 65
+
 interface FeedItemProps {
+  index: number
+  style: CSSProperties // comes from react-window
+  data: FeedItemData[]
+}
+
+export interface FeedItemData {
   tx: CeloTransaction
   tokens: Tokens
   isOpen: boolean
   onClick: (hash: string) => void
+  itemSize: number
   collapsed?: boolean
 }
 
@@ -28,7 +38,8 @@ interface FeedItemContent {
 }
 
 export function FeedItem(props: FeedItemProps) {
-  const { tx, tokens, isOpen, onClick, collapsed } = props
+  const { index, style: containerStyle, data } = props
+  const { tx, tokens, isOpen, onClick, itemSize, collapsed } = data[index]
 
   const handleClick = () => {
     onClick(tx.hash)
@@ -42,27 +53,35 @@ export function FeedItem(props: FeedItemProps) {
   const sign = isPositive === true ? '+' : isPositive === false ? '-' : undefined
 
   return (
-    <li key={tx.hash} css={[style.li, isOpen && style.liOpen]} onClick={handleClick}>
-      {!collapsed ? (
-        <Box direction="row" align="center" justify="between">
-          <Box direction="row" align="center" justify="start">
-            {icon}
-            <div>
-              <div css={style.descriptionText}>{description}</div>
-              <div css={style.subDescriptionText}>{subDescription}</div>
-            </div>
-          </Box>
-          <Box direction="column" align="end">
-            <MoneyValue amountInWei={value} token={token} symbolType="none" sign={sign} />
-            <div css={[style.currency, { color }]}>{symbol}</div>
-          </Box>
-        </Box>
-      ) : (
-        <Box direction="row" align="center" justify="center">
-          {icon}
-        </Box>
-      )}
-    </li>
+    <div style={containerStyle}>
+      <div
+        css={[
+          style.item,
+          { height: itemSize - 2 },
+          isOpen && style.itemOpen,
+          collapsed && { justifyContent: 'center' },
+        ]}
+        onClick={handleClick}
+      >
+        {!collapsed ? (
+          <>
+            <Box direction="row" align="center" justify="start">
+              {icon}
+              <div>
+                <div css={style.descriptionText}>{description}</div>
+                <div css={style.subDescriptionText}>{subDescription}</div>
+              </div>
+            </Box>
+            <Box direction="column" align="end">
+              <MoneyValue amountInWei={value} token={token} symbolType="none" sign={sign} />
+              <div css={[style.currency, { color }]}>{symbol}</div>
+            </Box>
+          </>
+        ) : (
+          <div>{icon}</div>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -188,9 +207,11 @@ function getFormattedTimestamp(timestamp: number) {
 }
 
 const style: Stylesheet = {
-  li: {
-    listStyle: 'none',
-    padding: '1em 0.8em',
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '1px 0.8em 0 0.8em',
     borderBottom: `1px solid ${Color.borderLight}`,
     cursor: 'pointer',
     ':hover': {
@@ -200,7 +221,7 @@ const style: Stylesheet = {
       background: Color.fillMedium,
     },
   },
-  liOpen: {
+  itemOpen: {
     background: Color.fillLight,
     borderBottomColor: Color.fillLight,
   },
