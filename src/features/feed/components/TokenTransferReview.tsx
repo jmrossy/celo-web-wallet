@@ -1,4 +1,5 @@
-import { Address } from 'src/components/Address'
+import { Address, useCopyAddress, useSendToAddress } from 'src/components/Address'
+import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import {
@@ -9,6 +10,7 @@ import { TransactionStatusProperty } from 'src/features/feed/components/Transact
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { EscrowTransaction, TokenTransfer } from 'src/features/types'
 import { useTokens } from 'src/features/wallet/utils'
+import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 import { getTokenById } from 'src/tokens'
 
@@ -24,12 +26,23 @@ export function TokenTransferReview({ tx }: Props) {
 
   const { feeValue, feeCurrency } = getFeeFromConfirmedTx(tx)
 
+  const onClickCopyButton = useCopyAddress(address)
+  const onClickSendButton = useSendToAddress(address)
+
   return (
     <TransactionPropertyGroup>
       <TransactionStatusProperty tx={tx} />
       <TransactionProperty label={addressLabel}>
         <div css={style.value}>
-          <Address address={address} buttonType="send" />
+          <Address address={address} />
+          <Box direction="row" align="center" margin="1.1em 0 0 0">
+            <Button size="xs" margin="0 1.2em 0 1px" onClick={onClickCopyButton}>
+              Copy Address
+            </Button>
+            <Button size="xs" onClick={onClickSendButton}>
+              Send Payment
+            </Button>
+          </Box>
         </div>
       </TransactionProperty>
       <TransactionProperty label="Amount">
@@ -44,18 +57,18 @@ export function TokenTransferReview({ tx }: Props) {
           </Box>
         )}
       </TransactionProperty>
-      {tx.comment && (
-        <TransactionProperty label="Comment">
-          <div css={style.value}>{tx.comment} </div>
-        </TransactionProperty>
-      )}
+      <TransactionProperty label="Comment">
+        <div css={[style.value, !tx.comment && { color: Color.textGrey }]}>
+          {tx.comment || 'No comment included'}
+        </div>
+      </TransactionProperty>
     </TransactionPropertyGroup>
   )
 }
 
 const style: Stylesheet = {
   value: {
-    marginTop: '0.75em',
+    marginTop: '1em',
   },
   amountLabel: {
     display: 'inline-block',

@@ -105,18 +105,20 @@ const style: Stylesheet = {
     width: '100%',
     overflowX: 'hidden',
     overflowY: 'hidden',
-    scrollbarWidth: 'none',
-    '::-webkit-scrollbar': {
-      width: 0,
-    },
-    [mq[768]]: {
-      scrollbarWidth: 'thin',
-      scrollbarColor: 'var(--thumbBG) #fcfcfc',
+    '& > div': {
+      scrollbarWidth: 'none',
       '::-webkit-scrollbar': {
-        width: 6,
-        height: 6,
-        borderLeft: `1px solid ${Color.borderLight}`,
-        backgroundColor: '#fcfcfc',
+        width: 0,
+      },
+      [mq[768]]: {
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'var(--thumbBG) #fcfcfc',
+        '::-webkit-scrollbar': {
+          width: 6,
+          height: 6,
+          borderLeft: `1px solid ${Color.borderLight}`,
+          backgroundColor: '#fcfcfc',
+        },
       },
     },
   },

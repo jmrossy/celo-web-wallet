@@ -2,39 +2,38 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
+import { ClickToCopy } from 'src/components/buttons/ClickToCopy'
 import { CloseButton } from 'src/components/buttons/CloseButton'
-import { ChevronIcon } from 'src/components/icons/Chevron'
 import { Box } from 'src/components/layout/Box'
-import { config } from 'src/config'
 import { GenericTransactionReview } from 'src/features/feed/components/GenericTransactionReview'
 import { TokenExchangeReview } from 'src/features/feed/components/TokenExchangeReview'
 import { TokenTransferReview } from 'src/features/feed/components/TokenTransferReview'
-import {
-  TransactionProperty,
-  TransactionPropertyGroup,
-} from 'src/features/feed/components/TransactionPropertyGroup'
-import { openTransaction, toggleAdvancedDetails } from 'src/features/feed/feedSlice'
+import { TransactionProperty } from 'src/features/feed/components/TransactionPropertyGroup'
+import { openTransaction } from 'src/features/feed/feedSlice'
+import { getTransactionDescription } from 'src/features/feed/transactionDescription'
 import { CeloTransaction, TransactionType } from 'src/features/types'
+import { useTokens } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { Stylesheet } from 'src/styles/types'
+import { Tokens } from 'src/tokens'
 
 export function TransactionReview() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { transactions, openTransaction: openTx } = useSelector((s: RootState) => s.feed)
+  const tokens = useTokens()
 
   useEffect(() => {
     // On dismount clear open tx
     return () => {
-      console.log('opening null tx in txreview')
       dispatch(openTransaction(null))
     }
   }, [])
 
   // Make sure this is the correct screen
   useEffect(() => {
-    if (!openTx) {
+    if (!openTx || !transactions || !transactions[openTx]) {
       navigate('/')
     }
   }, [openTx])
@@ -43,33 +42,27 @@ export function TransactionReview() {
     navigate('/')
   }
 
-  if (!openTx) {
-    return <TransactionNotFound />
-  }
-
+  if (!openTx) return <TransactionNotFound />
   const tx = transactions[openTx]
-  if (!tx) {
-    return <TransactionNotFound />
-  }
+  if (!tx) return <TransactionNotFound />
 
-  const { header, content } = getContentByTxType(tx)
+  const { description, content } = getContentByTxType(tx, tokens)
 
   return (
     <div css={style.container}>
-      <Box align="center" justify="between" styles={style.header}>
-        <div>{header}</div>
+      <Box align="center" justify="between" styles={style.headerContainer}>
+        <h2 css={style.h2}>{description}</h2>
         <CloseButton onClick={onCloseClick} styles={style.closeButton} />
       </Box>
-      <div css={style.contentContainer}>
-        <h2 css={style.sectionHeader}>Transaction Details</h2>
-        {content}
-      </div>
+      <div css={style.contentContainer}>{content}</div>
       <TransactionAdvancedDetails tx={tx} />
     </div>
   )
 }
 
-function getContentByTxType(tx: CeloTransaction) {
+function getContentByTxType(tx: CeloTransaction, tokens: Tokens) {
+  const description = getTransactionDescription(tx, tokens, false)
+
   if (
     tx.type === TransactionType.StableTokenTransfer ||
     tx.type === TransactionType.CeloNativeTransfer ||
@@ -77,97 +70,74 @@ function getContentByTxType(tx: CeloTransaction) {
     tx.type === TransactionType.OtherTokenTransfer
   ) {
     return {
-      header: tx.isOutgoing ? 'Payment Sent' : 'Payment Received',
+      description,
       content: <TokenTransferReview tx={tx} />,
     }
   }
 
   if (tx.type === TransactionType.TokenExchange) {
     return {
-      header: 'Tokens Exchanged',
+      description,
       content: <TokenExchangeReview tx={tx} />,
     }
   }
 
   if (tx.type === TransactionType.EscrowTransfer || tx.type === TransactionType.EscrowWithdraw) {
     return {
-      header: tx.isOutgoing ? 'Payment Sent to Escrow' : 'Funds Withdrawn from Escrow',
+      description,
       content: <TokenTransferReview tx={tx} />,
     }
   }
 
   return {
-    header: 'Transaction Sent',
+    description,
     content: <GenericTransactionReview tx={tx} />,
   }
 }
 
-// TODO
 function TransactionNotFound() {
-  return <div>Transaction Not Found!</div>
+  return <div css={style.txNotFound}>Transaction Not Found!</div>
 }
 
 function TransactionAdvancedDetails({ tx }: { tx: CeloTransaction }) {
-  const hash = tx.hash
-
-  const showContent = useSelector((s: RootState) => s.feed.showAdvancedDetails)
-  const dispatch = useDispatch()
-
-  const onClickHeader = () => {
-    dispatch(toggleAdvancedDetails())
-  }
-
   return (
-    <div css={style.contentContainer}>
-      <h2 css={sectionHeaderAdvanced} onClick={onClickHeader}>
-        Advanced Details
-        <ChevronIcon
-          width="15px"
-          height="12px"
-          direction={showContent ? 'n' : 's'}
-          styles={style.chevron}
-        />
-      </h2>
-      <div css={showContent ? null : style.contentHidden}>
-        <TransactionPropertyGroup>
-          <TransactionProperty label="Transaction Hash">
-            <div css={style.value}>{hash.substring(0, hash.length / 2)}</div>
-            <div css={style.value}>{hash.substring(hash.length / 2)}</div>
-          </TransactionProperty>
-          <TransactionProperty label="Explore">
-            <div css={style.value}>
-              {' '}
-              <a
-                href={config.blockscoutUrl + `/tx/${hash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                css={Font.linkLight}
-              >
-                View on Celo Explorer
-              </a>
-            </div>
-          </TransactionProperty>
-          <TransactionProperty label="Block Number">
-            <div css={style.value}>{tx.blockNumber}</div>
-          </TransactionProperty>
-          <TransactionProperty label="Nonce">
-            <div css={style.value}>{tx.nonce}</div>
-          </TransactionProperty>
-        </TransactionPropertyGroup>
-      </div>
+    <div css={style.advancedContentContainer}>
+      <TransactionProperty label="Advanced Details">
+        <Box margin="1em 0 0 0">
+          <div css={style.advancedLabel}>Transaction Hash:</div>
+          <div>
+            <ClickToCopy text={tx.hash} maxLength={36} />
+          </div>
+        </Box>
+        <Box margin="1em 0 0 0">
+          <div css={style.advancedLabel}>Block Number:</div>
+          <div>{tx.blockNumber}</div>
+        </Box>
+        <Box margin="1em 0 0 0">
+          <div css={style.advancedLabel}>Transaction Nonce:</div>
+          <div>{tx.nonce}</div>
+        </Box>
+      </TransactionProperty>
     </div>
   )
 }
 
 const style: Stylesheet = {
   container: {
+    height: '100%',
     overflow: 'auto',
+    backgroundColor: '#F7F7F8',
   },
-  header: {
-    ...Font.h2,
+  headerContainer: {
     background: Color.accentBlue,
+    padding: '1rem 2rem',
+  },
+  h2: {
+    ...Font.h2,
+    ...Font.bold,
     color: Color.primaryWhite,
-    padding: '0.85rem 2rem',
+    margin: 0,
+    paddingLeft: 3,
   },
   closeButton: {
     position: 'relative',
@@ -180,26 +150,17 @@ const style: Stylesheet = {
     },
   },
   contentContainer: {
-    padding: '1rem 2rem',
+    padding: '2rem',
   },
-  contentHidden: {
-    maxHeight: 0,
-    opacity: 0,
-    overflow: 'hidden',
+  advancedContentContainer: {
+    padding: '0 2rem 2rem 2rem',
+    maxWidth: '60em',
   },
-  sectionHeader: {
-    ...Font.h2,
-    color: Color.textGrey,
-    marginBottom: '1.5em',
+  advancedLabel: {
+    width: '10em',
   },
-  chevron: {
-    opacity: 0.5,
-    padding: '0 0.6em',
+  txNotFound: {
+    ...Font.h3,
+    padding: '2rem',
   },
-}
-
-const sectionHeaderAdvanced: Styles = {
-  ...style.sectionHeader,
-  width: 'fit-content',
-  cursor: 'pointer',
 }

@@ -185,6 +185,9 @@ const style: Stylesheet = {
   childContent: {
     overflow: 'auto',
     flex: 1,
+    '& > div': {
+      height: '100%',
+    },
   },
   childContentNoFeed: {
     overflow: 'auto',

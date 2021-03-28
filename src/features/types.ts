@@ -15,6 +15,7 @@ interface Transaction {
   feeCurrency?: NativeTokenId
   gatewayFee?: string
   gatewayFeeRecipient?: string
+  inputData?: string
 }
 
 export enum TransactionType {

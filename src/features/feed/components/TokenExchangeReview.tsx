@@ -31,7 +31,7 @@ export function TokenExchangeReview({ tx }: Props) {
         </Box>
         <Box styles={style.value}>
           <span css={style.amountLabel}>Out: </span>
-          <MoneyValue amountInWei={tx.toValue} token={getTokenById(tx.fromTokenId, tokens)} />
+          <MoneyValue amountInWei={tx.toValue} token={getTokenById(tx.toTokenId, tokens)} />
         </Box>
       </TransactionProperty>
       <TransactionProperty label="Fee">
@@ -52,7 +52,7 @@ export function TokenExchangeReview({ tx }: Props) {
 
 const style: Stylesheet = {
   value: {
-    marginTop: '0.75em',
+    marginTop: '1em',
   },
   amountLabel: {
     display: 'inline-block',

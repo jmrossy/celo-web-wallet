@@ -3,12 +3,12 @@ import { ExchangeIcon } from 'src/components/icons/Exchange'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
+import { getTransactionDescription } from 'src/features/feed/transactionDescription'
 import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { CELO, getTokenById, Token, Tokens } from 'src/tokens'
-import { trimToLength } from 'src/utils/string'
 
 export const FEED_ITEM_HEIGHT_NORMAL = 70
 export const FEED_ITEM_HEIGHT_COMPACT = 65
@@ -88,7 +88,7 @@ export function FeedItem(props: FeedItemProps) {
 function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemContent {
   const defaultContent = {
     icon: <Identicon address={tx.to} />,
-    description: `Transaction ${tx.hash.substr(0, 8)}`,
+    description: getTransactionDescription(tx, tokens),
     subDescription: getFormattedTimestamp(tx.timestamp),
     token: CELO,
     value: tx.value,
@@ -100,16 +100,10 @@ function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemConten
     tx.type === TransactionType.CeloTokenTransfer ||
     tx.type === TransactionType.OtherTokenTransfer
   ) {
-    const description = tx.comment
-      ? trimToLength(tx.comment, 24)
-      : tx.isOutgoing
-      ? 'Payment Sent'
-      : 'Payment Received'
     // TODO support comment encryption
     return {
       ...defaultContent,
       icon: <Identicon address={tx.isOutgoing ? tx.to : tx.from} />,
-      description,
       token: getTokenById(tx.tokenId, tokens),
       isPositive: !tx.isOutgoing,
     }
@@ -121,19 +115,16 @@ function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemConten
   ) {
     return {
       ...defaultContent,
-      description: 'Transfer Approval',
       token: getTokenById(tx.tokenId, tokens),
       value: '0',
     }
   }
 
   if (tx.type === TransactionType.TokenExchange) {
-    const fromToken = getTokenById(tx.fromTokenId, tokens)
     const toToken = getTokenById(tx.toTokenId, tokens)
     return {
       ...defaultContent,
       icon: <ExchangeIcon toToken={toToken} />,
-      description: `${fromToken.symbol} to ${toToken.symbol} Exchange`,
       token: toToken,
       value: tx.toValue,
       isPositive: true,
@@ -143,7 +134,6 @@ function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemConten
   if (tx.type === TransactionType.EscrowTransfer || tx.type === TransactionType.EscrowWithdraw) {
     return {
       ...defaultContent,
-      description: tx.isOutgoing ? 'Escrow Payment' : 'Escrow Withdrawal',
       token: getTokenById(tx.tokenId, tokens),
       isPositive: !tx.isOutgoing,
     }
@@ -152,50 +142,13 @@ function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemConten
   if (tx.type === TransactionType.LockCelo || tx.type === TransactionType.RelockCelo) {
     return {
       ...defaultContent,
-      description: 'Lock CELO',
       isPositive: false,
-    }
-  }
-  if (tx.type === TransactionType.UnlockCelo) {
-    return {
-      ...defaultContent,
-      description: 'Unlock CELO',
     }
   }
   if (tx.type === TransactionType.WithdrawLockedCelo) {
     return {
       ...defaultContent,
-      description: 'Withdraw CELO',
       isPositive: true,
-    }
-  }
-
-  if (tx.type === TransactionType.ValidatorVoteCelo) {
-    return {
-      ...defaultContent,
-      description: 'Vote for Validator',
-    }
-  }
-  if (tx.type === TransactionType.ValidatorActivateCelo) {
-    return {
-      ...defaultContent,
-      description: 'Activate Validator Vote',
-    }
-  }
-  if (
-    tx.type === TransactionType.ValidatorRevokeActiveCelo ||
-    tx.type === TransactionType.ValidatorRevokePendingCelo
-  ) {
-    return {
-      ...defaultContent,
-      description: 'Revoke Validator Vote',
-    }
-  }
-
-  if (tx.type === TransactionType.GovernanceVote) {
-    return {
-      ...defaultContent,
-      description: 'Governance Vote',
     }
   }
 

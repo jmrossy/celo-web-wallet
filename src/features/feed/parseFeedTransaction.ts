@@ -586,6 +586,7 @@ function parseOtherTx(tx: BlockscoutTx): OtherTx {
     from: tx.from,
     to: tx.to,
     value: tx.value,
+    inputData: tx.input,
     blockNumber: BigNumber.from(tx.blockNumber).toNumber(),
     nonce: BigNumber.from(tx.nonce).toNumber(),
     timestamp: BigNumber.from(tx.timeStamp).toNumber(),
