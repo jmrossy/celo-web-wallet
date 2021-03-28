@@ -81,12 +81,12 @@ function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemConten
     tx.type === TransactionType.CeloTokenTransfer ||
     tx.type === TransactionType.OtherTokenTransfer
   ) {
+    // TODO support comment encryption
     const description = tx.comment
       ? trimToLength(tx.comment, 24)
       : tx.isOutgoing
       ? 'Payment Sent'
       : 'Payment Received'
-    // TODO support comment encryption
     return {
       ...defaultContent,
       icon: <Identicon address={tx.isOutgoing ? tx.to : tx.from} />,

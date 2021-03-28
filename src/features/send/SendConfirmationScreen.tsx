@@ -16,6 +16,7 @@ import {
   createTransferTx,
   getTokenTransferType,
   sendTokenActions,
+  sendTokenSagaName,
 } from 'src/features/send/sendToken'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
@@ -76,15 +77,16 @@ export function SendConfirmationScreen() {
     dispatch(sendTokenActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
   }
 
-  const { isWorking } = useTxFlowStatusModals(
-    'sendToken',
-    1,
-    'Sending Payment...',
-    'Payment Sent!',
-    'Your payment has been sent successfully',
-    'Payment Failed',
-    'Your payment could not be processed'
-  )
+  const { isWorking } = useTxFlowStatusModals({
+    sagaName: sendTokenSagaName,
+    signaturesNeeded: 1,
+    loadingTitle: 'Sending Payment...',
+    successTitle: 'Payment Sent!',
+    successMsg: 'Your payment has been sent successfully',
+    errorTitle: 'Payment Failed',
+    errorMsg: 'Your payment could not be processed',
+    reqSignatureWarningLabel: params.comment ? 'payments with comments' : undefined,
+  })
 
   return (
     <ScreenContentFrame>

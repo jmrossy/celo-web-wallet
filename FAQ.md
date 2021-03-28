@@ -12,6 +12,8 @@
 
 [Where are my keys stored?](#where-are-my-keys-stored)
 
+[Is Ledger supported?](#is-ledger-supported)
+
 [Can feature X be added?](#can-feature-x-be-added)
 
 ## Where can the app be used?
@@ -44,6 +46,12 @@ Your mnemonic, from which you keys are derived, is encrypted using your password
 - Mac: `~/Library/Application Support/celo-web-wallet`
 - Linux: `~/.config/celo-web-wallet or $XDG_CONFIG_HOME/celo-web-wallet`
 - Windows: `C:\Users\{USERNAME}\AppData\Roaming\celo-web-wallet`
+
+## Is Ledger supported?
+
+Yes, Ledger hardware is supported on both the web and desktop versions. Due to browser limitations, Ledger has been found to work best in Chrome.
+
+Note though that currently not all transactions can be parsed by the Celo Ledger app. Simple payments (like CELO or cUSD transfers) will show transaction details on the Ledger itself but transfers with comments or token exchanges will not yet show details.
 
 ## Can feature X be added?
 

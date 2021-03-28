@@ -10,7 +10,10 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
-import { governanceVoteActions } from 'src/features/governance/governanceVote'
+import {
+  governanceVoteActions,
+  governanceVoteSagaName,
+} from 'src/features/governance/governanceVote'
 import { Proposal, voteValueToLabel } from 'src/features/governance/types'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
@@ -56,15 +59,15 @@ export function GovernanceConfirmationScreen() {
     dispatch(governanceVoteActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
   }
 
-  const { isWorking } = useTxFlowStatusModals(
-    'governanceVote',
-    1,
-    'Sending Vote...',
-    'Vote Sent!',
-    'Your vote has been cast successfully',
-    'Vote Failed',
-    'Your vote could not be processed'
-  )
+  const { isWorking } = useTxFlowStatusModals({
+    sagaName: governanceVoteSagaName,
+    signaturesNeeded: 1,
+    loadingTitle: 'Sending Vote...',
+    successTitle: 'Vote Sent!',
+    successMsg: 'Your vote has been cast successfully',
+    errorTitle: 'Vote Failed',
+    errorMsg: 'Your vote could not be processed',
+  })
 
   const description = findProposalDescription(params.proposalId, proposals)
 
