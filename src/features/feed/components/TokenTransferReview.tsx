@@ -2,11 +2,11 @@ import { Address, useCopyAddress, useSendToAddress } from 'src/components/Addres
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
+import { TransactionStatusProperty } from 'src/features/feed/components/CommonTransactionProperties'
 import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/feed/components/TransactionPropertyGroup'
-import { TransactionStatusProperty } from 'src/features/feed/components/TransactionStatusProperty'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { EscrowTransaction, TokenTransfer } from 'src/features/types'
 import { useTokens } from 'src/features/wallet/utils'

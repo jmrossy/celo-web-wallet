@@ -1,0 +1,52 @@
+import { useNavigate } from 'react-router'
+import { Address } from 'src/components/Address'
+import { Button } from 'src/components/buttons/Button'
+import { Box } from 'src/components/layout/Box'
+import {
+  TransactionAmountProperty,
+  TransactionContractProperty,
+  TransactionStatusProperty,
+} from 'src/features/feed/components/CommonTransactionProperties'
+import {
+  TransactionProperty,
+  TransactionPropertyGroup,
+} from 'src/features/feed/components/TransactionPropertyGroup'
+import { StakeTokenTx } from 'src/features/types'
+import { Stylesheet } from 'src/styles/types'
+
+export function StakeTokenReview({ tx }: { tx: StakeTokenTx }) {
+  const navigate = useNavigate()
+  const onClickGroups = () => {
+    navigate('/validators')
+  }
+  const onClickVotes = () => {
+    navigate('/stake')
+  }
+
+  return (
+    <TransactionPropertyGroup>
+      <TransactionStatusProperty tx={tx} />
+      <TransactionProperty label="Validator Group">
+        <div css={style.value}>
+          <Address address={tx.groupAddress} />
+          <Box direction="row" align="center" margin="1.1em 0 0 0">
+            <Button size="xs" margin="0 1.2em 0 1px" onClick={onClickGroups}>
+              See Groups
+            </Button>
+            <Button size="xs" onClick={onClickVotes}>
+              See Votes
+            </Button>
+          </Box>
+        </div>
+      </TransactionProperty>
+      <TransactionAmountProperty tx={tx} />
+      <TransactionContractProperty tx={tx} />
+    </TransactionPropertyGroup>
+  )
+}
+
+const style: Stylesheet = {
+  value: {
+    marginTop: '1em',
+  },
+}

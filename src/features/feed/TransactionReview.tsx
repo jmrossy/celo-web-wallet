@@ -6,6 +6,8 @@ import { ClickToCopy } from 'src/components/buttons/ClickToCopy'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import { GenericTransactionReview } from 'src/features/feed/components/GenericTransactionReview'
+import { GovernanceVoteReview } from 'src/features/feed/components/GovernanceVoteReview'
+import { StakeTokenReview } from 'src/features/feed/components/StakeTokenReview'
 import { TokenExchangeReview } from 'src/features/feed/components/TokenExchangeReview'
 import { TokenTransferReview } from 'src/features/feed/components/TokenTransferReview'
 import { TransactionProperty } from 'src/features/feed/components/TransactionPropertyGroup'
@@ -86,6 +88,25 @@ function getContentByTxType(tx: CeloTransaction, tokens: Tokens) {
     return {
       description,
       content: <TokenTransferReview tx={tx} />,
+    }
+  }
+
+  if (
+    tx.type === TransactionType.ValidatorVoteCelo ||
+    tx.type === TransactionType.ValidatorActivateCelo ||
+    tx.type === TransactionType.ValidatorRevokeActiveCelo ||
+    tx.type === TransactionType.ValidatorRevokePendingCelo
+  ) {
+    return {
+      description,
+      content: <StakeTokenReview tx={tx} />,
+    }
+  }
+
+  if (tx.type === TransactionType.GovernanceVote) {
+    return {
+      description,
+      content: <GovernanceVoteReview tx={tx} />,
     }
   }
 
