@@ -12,7 +12,11 @@ import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
 import { getResultChartData } from 'src/features/lock/barCharts'
-import { getLockActionTxPlan, lockTokenActions } from 'src/features/lock/lockToken'
+import {
+  getLockActionTxPlan,
+  lockTokenActions,
+  lockTokenSagaName,
+} from 'src/features/lock/lockToken'
 import { lockActionLabel } from 'src/features/lock/types'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
@@ -62,21 +66,22 @@ export function LockConfirmationScreen() {
     dispatch(lockTokenActions.trigger({ ...params, feeEstimates }))
   }
 
-  const { isWorking } = useTxFlowStatusModals(
-    'lockToken',
-    txPlan.length,
-    `${lockActionLabel(action, true)} CELO...`,
-    `${lockActionLabel(action)} Complete!`,
-    `Your ${lockActionLabel(action)} request was successful`,
-    `${lockActionLabel(action)} Failed`,
-    `Your ${lockActionLabel(action)} request could not be processed`,
-    txPlan.length > 1
-      ? [
-          `${lockActionLabel(action)} requests sometimes need several transactions`,
-          'Confirm all transactions on your Ledger',
-        ]
-      : undefined
-  )
+  const { isWorking } = useTxFlowStatusModals({
+    sagaName: lockTokenSagaName,
+    signaturesNeeded: txPlan.length,
+    loadingTitle: `${lockActionLabel(action, true)} CELO...`,
+    successTitle: `${lockActionLabel(action)} Complete!`,
+    successMsg: `Your ${lockActionLabel(action)} request was successful`,
+    errorTitle: `${lockActionLabel(action)} Failed`,
+    errorMsg: `Your ${lockActionLabel(action)} request could not be processed`,
+    reqSignatureMsg:
+      txPlan.length > 1
+        ? [
+            `${lockActionLabel(action)} requests sometimes need several transactions`,
+            'Confirm all transactions on your Ledger',
+          ]
+        : undefined,
+  })
 
   const resultData = useMemo(() => getResultChartData(balances, params), [balances, params])
 
