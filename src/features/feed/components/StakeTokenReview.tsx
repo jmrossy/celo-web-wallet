@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
+import { config } from 'src/config'
+import { useDownloadDesktopModal } from 'src/features/download/DownloadDesktopModal'
 import {
   TransactionAmountProperty,
   TransactionContractProperty,
@@ -16,11 +18,20 @@ import { Stylesheet } from 'src/styles/types'
 
 export function StakeTokenReview({ tx }: { tx: StakeTokenTx }) {
   const navigate = useNavigate()
+  const showDownloadDesktopModal = useDownloadDesktopModal()
   const onClickGroups = () => {
-    navigate('/validators')
+    if (config.isElectron) {
+      navigate('/validators')
+    } else {
+      showDownloadDesktopModal()
+    }
   }
   const onClickVotes = () => {
-    navigate('/stake')
+    if (config.isElectron) {
+      navigate('/stake')
+    } else {
+      showDownloadDesktopModal()
+    }
   }
 
   return (

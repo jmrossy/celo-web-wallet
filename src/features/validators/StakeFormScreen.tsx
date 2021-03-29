@@ -351,6 +351,7 @@ const style: Stylesheet = {
   },
   currentSummaryContainer: {
     background: Color.fillLighter,
+    borderRadius: 6,
     padding: '1.2em',
   },
 }

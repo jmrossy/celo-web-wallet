@@ -334,6 +334,7 @@ const style: Stylesheet = {
     maxWidth: '25em',
     minHeight: '13em',
     background: Color.fillLighter,
+    borderRadius: 6,
     [mq[1024]]: {
       marginTop: '-0.5em',
     },
