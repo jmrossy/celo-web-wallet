@@ -13,5 +13,5 @@ export function CopiableAddress(props: ButtonProps) {
   const text =
     length === 'full' ? address.toUpperCase() : shortenAddress(address, true).toUpperCase()
 
-  return <ClickToCopy text={text} styles={styles} />
+  return <ClickToCopy text={text} copyText={address} styles={styles} />
 }

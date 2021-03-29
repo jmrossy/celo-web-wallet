@@ -7,15 +7,16 @@ import { trimToLength } from 'src/utils/string'
 
 interface ButtonProps {
   text: string
+  copyText?: string
   maxLength?: number
   styles?: Styles
 }
 
 export function ClickToCopy(props: ButtonProps) {
-  const { text, maxLength, styles } = props
+  const { text, copyText, maxLength, styles } = props
 
   const onClick = async () => {
-    await tryClipboardSet(text)
+    await tryClipboardSet(copyText ?? text)
   }
 
   const displayText = maxLength ? trimToLength(text, maxLength) : text

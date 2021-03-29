@@ -12,6 +12,7 @@ import PlusIcon from 'src/components/icons/plus.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MAX_SEND_TOKEN_SIZE, MAX_SEND_TOKEN_SIZE_LEDGER } from 'src/consts'
+import { pincodeActions } from 'src/features/pincode/pincode'
 import { setTxSizeLimitEnabled } from 'src/features/settings/settingsSlice'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -22,6 +23,11 @@ export function SettingsScreen() {
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  const onClickChangePassword = () => {
+    dispatch(pincodeActions.reset())
+    navigate('/change-pin')
+  }
 
   const onClickAddToken = () => {
     navigate('/balances')
@@ -56,18 +62,16 @@ export function SettingsScreen() {
               </Box>
             </Link>
           </div>
-          <div css={style.pageLinkBox}>
-            <Link to="/change-pin">
-              <Box direction="row" align="center">
-                <img src={LockIcon} alt="change pin" css={style.pageLinkIcon} />
-                <div>
-                  <h3 css={style.h3}>Change Password</h3>
-                  <div css={style.description}>
-                    Set the password used to unlock your account on this device.
-                  </div>
+          <div css={style.pageLinkBox} onClick={onClickChangePassword}>
+            <Box direction="row" align="center">
+              <img src={LockIcon} alt="change pin" css={style.pageLinkIcon} />
+              <div>
+                <h3 css={style.h3}>Change Password</h3>
+                <div css={style.description}>
+                  Set the password used to unlock your account on this device.
                 </div>
-              </Box>
-            </Link>
+              </div>
+            </Box>
           </div>
         </Box>
         <HrDivider styles={style.divider} />
@@ -158,6 +162,7 @@ const style: Stylesheet = {
     margin: '2em 0',
   },
   pageLinkBox: {
+    cursor: 'pointer',
     marginTop: '1em',
     width: '20em',
     padding: '1em',

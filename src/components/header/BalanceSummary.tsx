@@ -1,11 +1,11 @@
 import { BigNumber } from 'ethers'
 import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
+import { config } from 'src/config'
+import { useTokens } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq, useWindowSize } from 'src/styles/mediaQueries'
@@ -17,7 +17,15 @@ export function BalanceSummary() {
   if (windowWidth && windowWidth > 550) numItems = 3
   if (windowWidth && windowWidth > 1024) numItems = 4
 
-  const tokens = useSelector((s: RootState) => s.wallet.balances.tokens)
+  let tokens = useTokens()
+  // TODO-cEUR remove when activated
+  if (config.chainId === 42220) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { cEUR, ...rest } = tokens
+    // @ts-ignore
+    tokens = rest
+  }
+
   const { tokensToShow, hiddenTokens } = useMemo(() => {
     const sortedTokens = Object.values(tokens).sort((t1, t2) => {
       const t1Value = BigNumber.from(t1.value)

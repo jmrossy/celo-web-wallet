@@ -21,7 +21,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { isNativeToken, LockedCELO } from 'src/tokens'
+import { cEUR, isNativeToken, LockedCELO } from 'src/tokens'
 import { fromWeiRounded } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 
@@ -164,6 +164,8 @@ function balancesToTableData(balances: Balances): BalanceTableRow[] {
     : balances.tokens
 
   for (const token of Object.values(tokens)) {
+    // TODO-cEUR remove when activated
+    if (config.chainId === 42220 && token.id === cEUR.id) continue
     tableRows.push({
       id: token.id,
       label: token.symbol,
