@@ -1,16 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Currency } from 'src/currency'
 import { FeeEstimate, GasPrice } from 'src/features/fees/types'
+import { NativeTokenId } from 'src/tokens'
 
 interface FeeState {
-  gasPrices: Record<Currency, GasPrice | null>
+  gasPrices: Record<NativeTokenId, GasPrice | null>
   estimates: FeeEstimate[] | null
 }
 
 const feesInitialState: FeeState = {
   gasPrices: {
-    [Currency.CELO]: null,
-    [Currency.cUSD]: null,
+    [NativeTokenId.CELO]: null,
+    [NativeTokenId.cUSD]: null,
+    [NativeTokenId.cEUR]: null,
   },
   estimates: null,
 }
@@ -24,10 +25,10 @@ const feeSlice = createSlice({
     },
     updateGasPrice: (
       state,
-      action: PayloadAction<{ currency: Currency; value: string; lastUpdated: number }>
+      action: PayloadAction<{ token: NativeTokenId; value: string; lastUpdated: number }>
     ) => {
-      const { currency, value, lastUpdated } = action.payload
-      state.gasPrices[currency] = { value, lastUpdated }
+      const { token, value, lastUpdated } = action.payload
+      state.gasPrices[token] = { value, lastUpdated }
     },
   },
 })

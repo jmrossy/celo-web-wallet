@@ -1,79 +1,102 @@
-import { BigNumber } from 'ethers'
+import { BigNumber, BigNumberish, Contract } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContract } from 'src/blockchain/contracts'
+import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
-import { CeloContract, config } from 'src/config'
+import { config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
 import { fetchLockedCeloStatus, fetchTotalLocked } from 'src/features/lock/fetchLockedStatus'
 import { LockedCeloBalances } from 'src/features/lock/types'
 import { fetchStakingBalances } from 'src/features/validators/fetchGroupVotes'
 import { fetchAccountStatus } from 'src/features/wallet/accountsContract'
-import { setVoterBalances, updateBalances } from 'src/features/wallet/walletSlice'
+import { areBalancesEmpty } from 'src/features/wallet/utils'
+import {
+  setVoterBalances,
+  updateBalances,
+  walletInitialState,
+} from 'src/features/wallet/walletSlice'
+import { CELO, cEUR, isNativeToken, Token, TokenWithBalance } from 'src/tokens'
+import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
+import { Balances, TokenBalances } from './types'
 
 // Fetch wallet balances and other frequently used data like votes
 // Essentially, fetch all the data that forms need to validate inputs
 function* fetchBalances() {
-  const address = yield* select((state: RootState) => state.wallet.address)
+  const { address, balances } = yield* select((state: RootState) => state.wallet)
   if (!address) throw new Error('Cannot fetch balances before address is set')
 
-  const { celo, cUsd } = yield* call(fetchTokenBalances, address)
+  const newTokenBalances = yield* call(fetchTokenBalances, address, balances.tokens)
 
   let lockedCelo: LockedCeloBalances
   if (config.isElectron) {
     yield* call(fetchAccountStatus)
     lockedCelo = yield* call(fetchLockedCeloStatus)
   } else {
-    lockedCelo = {
-      locked: '0',
-      pendingBlocked: '0',
-      pendingFree: '0',
-    }
+    lockedCelo = { ...walletInitialState.balances.lockedCelo }
   }
 
-  const balances = { celo, cUsd, lockedCelo, lastUpdated: Date.now() }
-  yield* put(updateBalances(balances))
+  const newBalances: Balances = { tokens: newTokenBalances, lockedCelo, lastUpdated: Date.now() }
+  yield* put(updateBalances(newBalances))
 
   if (config.isElectron) {
     yield* call(fetchStakingBalances)
     yield* call(fetchVoterBalances)
   }
 
-  return balances
+  return newBalances
 }
 
 export function* fetchBalancesIfStale() {
   const balances = yield* select((state: RootState) => state.wallet.balances)
-  const { lastUpdated, cUsd, celo } = balances
-
-  if (
-    isStale(lastUpdated, BALANCE_STALE_TIME) ||
-    BigNumber.from(cUsd).isZero() ||
-    BigNumber.from(celo).isZero()
-  ) {
+  if (isStale(balances.lastUpdated, BALANCE_STALE_TIME) || areBalancesEmpty(balances)) {
     return yield* call(fetchBalances)
   } else {
     return balances
   }
 }
 
-async function fetchTokenBalances(address: string) {
-  const [celo, cUsd] = await Promise.all([fetchCeloBalance(address), fetchDollarBalance(address)])
-  return { celo, cUsd }
+async function fetchTokenBalances(
+  address: string,
+  tokensBalances: TokenBalances
+): Promise<TokenBalances> {
+  const tokens = Object.values(tokensBalances)
+  const fetchPromises: Promise<TokenWithBalance>[] = []
+  for (const t of tokens) {
+    logger.debug(`Fetching ${t.id} balance`)
+    if (t.id === CELO.id) {
+      fetchPromises.push(fetchCeloBalance(address))
+    } else {
+      // TODO remove when cEUR is live
+      if (t.id === cEUR.id && config.chainId !== 44787) continue
+      fetchPromises.push(fetchTokenBalance(address, t))
+    }
+  }
+
+  const tokenBalancesArr = await Promise.all(fetchPromises)
+  const tokenBalances = { ...walletInitialState.balances.tokens }
+  tokenBalancesArr.forEach((bal) => (tokenBalances[bal.id] = bal))
+  return tokenBalances
 }
 
-async function fetchCeloBalance(address: string) {
+// TODO Figure out why the balanceOf result is incorrect for GoldToken
+async function fetchCeloBalance(address: string): Promise<TokenWithBalance> {
   const provider = getProvider()
   const balance = await provider.getBalance(address)
-  return balance.toString()
+  return { ...CELO, value: balance.toString() }
 }
 
-async function fetchDollarBalance(address: string) {
-  const stableToken = getContract(CeloContract.StableToken)
-  const balance: BigNumber = await stableToken.balanceOf(address)
-  return balance.toString()
+async function fetchTokenBalance(address: string, token: Token): Promise<TokenWithBalance> {
+  let contract: Contract | null
+  if (isNativeToken(token.id)) {
+    contract = getContractByAddress(token.address)
+  } else {
+    contract = getTokenContract(token.address)
+  }
+  if (!contract) throw new Error(`No contract found for token: ${token.id}`)
+  const balance: BigNumberish = await contract.balanceOf(address)
+  return { ...token, value: BigNumber.from(balance).toString() }
 }
 
 function* fetchVoterBalances() {
@@ -83,8 +106,7 @@ function* fetchVoterBalances() {
   // Only the total locked is used for now so just fetching that bit
   const locked = yield* call(fetchTotalLocked, voteSignerFor)
   const voterBalances = {
-    cUsd: '0',
-    celo: '0',
+    ...walletInitialState.balances,
     lockedCelo: {
       locked,
       pendingBlocked: '0',

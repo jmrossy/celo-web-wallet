@@ -21,7 +21,7 @@ export const Backdrop = (props: BackdropProps) => {
   )
 }
 
-export const backdropZIndex = 99
+export const backdropZIndex = 999
 
 const style: Stylesheet = {
   backdrop: {

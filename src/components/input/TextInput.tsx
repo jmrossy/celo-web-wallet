@@ -2,11 +2,13 @@ import { PropsWithChildren } from 'react'
 import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
 import { Box } from 'src/components/layout/Box'
+import { Styles } from 'src/styles/types'
 
 export interface TextInputProps {
   name: string
-  width: string | number
   height?: number // defaults to 40
+  width?: string | number
+  fillWidth?: boolean
   margin?: string | number
   value: string | undefined
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -16,7 +18,7 @@ export interface TextInputProps {
   autoComplete?: string //default to "off"
   placeholder?: string
   disabled?: boolean
-  fillWidth?: boolean
+  inputStyles?: Styles
   type?: 'text' | 'number' // For use by NumberInput, don't use this directly
   step?: string // For use by NumberInput, don't use this directly
 }
@@ -24,8 +26,9 @@ export interface TextInputProps {
 export function TextInput(props: PropsWithChildren<TextInputProps>) {
   const {
     name,
-    width,
     height,
+    width,
+    fillWidth,
     margin,
     value,
     onBlur,
@@ -35,7 +38,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
     autoComplete,
     placeholder,
     disabled,
-    fillWidth,
+    inputStyles,
     type,
     step,
   } = props
@@ -55,6 +58,7 @@ export function TextInput(props: PropsWithChildren<TextInputProps>) {
           width,
           height: height ?? 40,
           margin,
+          ...inputStyles,
         }}
         value={value}
         onBlur={onBlur}

@@ -1,17 +1,17 @@
 import { BigNumber, Contract, providers } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContract } from 'src/blockchain/contracts'
+import { getContractByAddress } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
-import { CeloContract } from 'src/config'
 import {
   EXCHANGE_RATE_STALE_TIME,
+  MAX_EXCHANGE_LOSS,
+  MAX_EXCHANGE_RATE,
   MAX_EXCHANGE_TOKEN_SIZE,
   MAX_EXCHANGE_TOKEN_SIZE_LEDGER,
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
-import { Currency, getOtherCurrency } from 'src/currency'
-import { ExchangeRate, ExchangeTokenParams } from 'src/features/exchange/types'
+import { ExchangeTokenParams, SimpleExchangeRate } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
@@ -20,6 +20,7 @@ import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
+import { CELO, NativeTokenId, NativeTokens, Token } from 'src/tokens'
 import {
   fromWei,
   getAdjustedAmountFromBalances,
@@ -40,8 +41,19 @@ export function validate(
   validateRate = false,
   validateFee = false
 ): ErrorState {
-  const { amountInWei, fromCurrency, feeEstimates, exchangeRate } = params
   let errors: ErrorState = { isValid: true }
+  const { amountInWei, fromTokenId, toTokenId, feeEstimates, exchangeRate } = params
+  const fromToken = balances.tokens[fromTokenId]
+  const toToken = balances.tokens[toTokenId]
+
+  if (!Object.values(NativeTokenId).includes(fromTokenId) || !fromToken) {
+    logger.error(`Invalid from token: ${fromTokenId}`)
+    return invalidInput('fromTokenId', 'Invalid from currency')
+  }
+  if (!Object.values(NativeTokenId).includes(toTokenId) || !toToken) {
+    logger.error(`Invalid to token: ${toTokenId}`)
+    return invalidInput('toTokenId', 'Invalid to currency')
+  }
 
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
@@ -53,7 +65,7 @@ export function validate(
       : undefined
     errors = {
       ...errors,
-      ...validateAmount(amountInWei, fromCurrency, balances, maxAmount),
+      ...validateAmount(amountInWei, fromToken, balances, maxAmount),
     }
   }
 
@@ -68,14 +80,14 @@ export function validate(
     errors = {
       ...errors,
       ...validateFeeEstimates(feeEstimates),
-      ...validateAmountWithFees(amountInWei, fromCurrency, balances, feeEstimates),
+      ...validateAmountWithFees(amountInWei, fromToken, balances, feeEstimates),
     }
   }
 
   return errors
 }
 
-export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState | null {
+export function validateExchangeRate(exchangeRate?: SimpleExchangeRate): ErrorState | null {
   if (!exchangeRate) {
     return { isValid: false, fee: { error: true, helpText: 'No exchange rate set' } }
   }
@@ -83,12 +95,16 @@ export function validateExchangeRate(exchangeRate?: ExchangeRate): ErrorState | 
   const { rate, lastUpdated } = exchangeRate
 
   if (!rate || rate < MIN_EXCHANGE_RATE) {
-    logger.error(`Exchange rate too low: ${rate}`)
-    return { isValid: false, fee: { error: true, helpText: 'Exchange rate too low' } }
+    logger.error(`Exchange rate seems too low: ${rate}`)
+    return { isValid: false, fee: { error: true, helpText: 'Exchange rate seems too low' } }
+  }
+  if (rate > MAX_EXCHANGE_RATE) {
+    logger.error(`Exchange rate seems too high: ${rate}`)
+    return { isValid: false, fee: { error: true, helpText: 'Exchange rate seems too high' } }
   }
 
   if (isStale(lastUpdated, EXCHANGE_RATE_STALE_TIME * 2)) {
-    logger.error(`Exchange rate too stale`)
+    logger.error(`Exchange rate too stale: ${lastUpdated}`)
     return { isValid: false, fee: { error: true, helpText: 'Exchange rate too stale' } }
   }
 
@@ -104,20 +120,26 @@ function* exchangeToken(params: ExchangeTokenParams) {
     'Invalid transaction'
   )
 
-  const { amountInWei, fromCurrency, feeEstimates, exchangeRate } = params
-  logger.info(`Exchanging ${amountInWei} ${fromCurrency}`)
+  const { amountInWei, fromTokenId, toTokenId, feeEstimates, exchangeRate } = params
+  logger.info(`Exchanging ${amountInWei} ${fromTokenId}`)
 
-  if (!feeEstimates || feeEstimates.length !== 2) {
-    throw new Error('Fee estimates not provided correctly')
-  }
-  if (!exchangeRate) {
-    throw new Error('Exchange rate not provided correctly')
-  }
+  if (feeEstimates?.length !== 2) throw new Error('Fee estimates not provided correctly')
+  if (!exchangeRate) throw new Error('Exchange rate not provided correctly')
 
-  // Need to account for case where user intends to send entire balance
+  const fromToken = NativeTokens[fromTokenId]
+  const toToken = NativeTokens[toTokenId]
+  const stableToken = fromToken.id === CELO.id ? toToken : fromToken
+  const fromTokenContract = getContractByAddress(fromToken.address)
+  if (!fromTokenContract) throw new Error(`No token contract found for ${fromToken.id}`)
+  const exchangeAddress = stableToken.exchangeAddress
+  if (!exchangeAddress) throw new Error(`Token ${stableToken.id} has no known exchange address`)
+  const exchangeContract = getContractByAddress(exchangeAddress)
+  if (!exchangeContract) throw new Error(`No exchange contract found for ${stableToken.id}`)
+
+  // Need to account for case where user intends to exchange entire balance
   const adjustedAmount = getAdjustedAmountFromBalances(
     amountInWei,
-    fromCurrency,
+    fromToken,
     balances,
     feeEstimates
   )
@@ -126,7 +148,8 @@ function* exchangeToken(params: ExchangeTokenParams) {
   const signedApproveTx = yield* call(
     createApproveTx,
     adjustedAmount,
-    fromCurrency,
+    fromTokenContract,
+    exchangeAddress,
     feeEstimates[0]
   )
   yield* put(setNumSignatures(1))
@@ -134,7 +157,8 @@ function* exchangeToken(params: ExchangeTokenParams) {
   const signedExchangeTx = yield* call(
     createExchangeTx,
     adjustedAmount,
-    fromCurrency,
+    fromToken,
+    exchangeContract,
     minBuyAmount,
     feeEstimates[1]
   )
@@ -145,7 +169,8 @@ function* exchangeToken(params: ExchangeTokenParams) {
   // TODO consider making a placeholder for the approval as well
   const placeholderTx = getExchangePlaceholderTx(
     adjustedAmount,
-    fromCurrency,
+    fromToken,
+    toToken,
     feeEstimates[1],
     txReceipt,
     minBuyAmount
@@ -157,37 +182,29 @@ function* exchangeToken(params: ExchangeTokenParams) {
 
 async function createApproveTx(
   amountInWei: BigNumber,
-  fromCurrency: Currency,
+  fromTokenContract: Contract,
+  exchangeContractAddress: string,
   feeEstimate: FeeEstimate
 ) {
-  const exchange = getContract(CeloContract.Exchange)
-
-  let tokenContract: Contract
-  if (fromCurrency === Currency.cUSD) {
-    tokenContract = getContract(CeloContract.StableToken)
-  } else if (fromCurrency === Currency.CELO) {
-    tokenContract = getContract(CeloContract.GoldToken)
-  } else {
-    throw new Error(`Unsupported currency: ${fromCurrency}`)
-  }
-
-  const txRequest = await tokenContract.populateTransaction.approve(exchange.address, amountInWei)
-  logger.info('Signing exchange approval tx')
+  const txRequest = await fromTokenContract.populateTransaction.approve(
+    exchangeContractAddress,
+    amountInWei
+  )
+  logger.info(`Signing approval tx for ${amountInWei} to ${exchangeContractAddress}`)
   return signTransaction(txRequest, feeEstimate)
 }
 
 async function createExchangeTx(
   amountInWei: BigNumber,
-  fromCurrency: Currency,
+  fromToken: Token,
+  exchangeContract: Contract,
   minBuyAmount: BigNumber,
   feeEstimate: FeeEstimate
 ) {
-  const exchange = getContract(CeloContract.Exchange)
-  // TODO swap method for .sell once updated contract is live
-  const txRequest = await exchange.populateTransaction.exchange(
+  const txRequest = await exchangeContract.populateTransaction.sell(
     amountInWei,
     minBuyAmount,
-    fromCurrency === Currency.CELO
+    fromToken.id === CELO.id
   )
 
   // For a smoother experience on Ledger, the approval and exchange txs
@@ -214,7 +231,8 @@ async function executeExchange(signedApproveTx: string, signedExchangeTx: string
 
 function getExchangePlaceholderTx(
   amountInWei: BigNumber,
-  fromCurrency: Currency,
+  fromToken: Token,
+  toToken: Token,
   feeEstimate: FeeEstimate,
   txReceipt: providers.TransactionReceipt,
   minBuyAmount: BigNumber
@@ -222,8 +240,8 @@ function getExchangePlaceholderTx(
   return {
     ...createPlaceholderForTx(txReceipt, amountInWei.toString(), feeEstimate),
     type: TransactionType.TokenExchange,
-    fromToken: fromCurrency,
-    toToken: getOtherCurrency(fromCurrency),
+    fromTokenId: fromToken.id,
+    toTokenId: toToken.id,
     fromValue: amountInWei.toString(),
     toValue: minBuyAmount.toString(),
   }
@@ -236,8 +254,8 @@ export const {
   actions: exchangeTokenActions,
 } = createMonitoredSaga<ExchangeTokenParams>(exchangeToken, 'exchangeToken')
 
-function getMinBuyAmount(amountInWei: BigNumber, exchangeRate: ExchangeRate) {
-  // Allow a small (2%) wiggle room to increase success rate even if
+function getMinBuyAmount(amountInWei: BigNumber, exchangeRate: SimpleExchangeRate) {
+  // Allow a small wiggle room to increase success rate even if
   // rate changes slightly before tx goes out
-  return toWei(fromWei(amountInWei) * exchangeRate.rate * 0.98)
+  return toWei(fromWei(amountInWei) * exchangeRate.rate * (1 - MAX_EXCHANGE_LOSS))
 }

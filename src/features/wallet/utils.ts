@@ -1,14 +1,43 @@
+import { createSelector } from '@reduxjs/toolkit'
 import { BigNumber, utils } from 'ethers'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { MNEMONIC_LENGTH_MAX, MNEMONIC_LENGTH_MIN, NULL_ADDRESS } from 'src/consts'
-import { Currency } from 'src/currency'
 import { Balances } from 'src/features/wallet/types'
+import { Token } from 'src/tokens'
 import { select } from 'typed-redux-saga'
 
+const balanceEmptySelector = createSelector(
+  (s: RootState) => s.wallet.balances,
+  (balances) => areBalancesEmpty(balances)
+)
+
 export function useAreBalancesEmpty() {
-  const { cUsd, celo } = useSelector((s: RootState) => s.wallet.balances)
-  return BigNumber.from(cUsd).lte(0) && BigNumber.from(celo).lte(0)
+  const isEmpty = useSelector(balanceEmptySelector)
+  return isEmpty
+}
+
+export function areBalancesEmpty(balances: Balances) {
+  let totalBalance = BigNumber.from(0)
+  for (const token of Object.values(balances.tokens)) {
+    totalBalance = totalBalance.add(token.value)
+  }
+  const { locked, pendingBlocked, pendingFree } = balances.lockedCelo
+  totalBalance = totalBalance.add(locked).add(pendingBlocked).add(pendingFree)
+  return totalBalance.eq(0)
+}
+
+// Does the balance have at least minValue of any token
+export function hasMinTokenBalance(minValue: string, balances: Balances) {
+  const minValueBn = BigNumber.from(minValue)
+  for (const token of Object.values(balances.tokens)) {
+    if (minValueBn.lte(token.value)) return true
+  }
+  return false
+}
+
+export function useTokens() {
+  return useSelector((s: RootState) => s.wallet.balances.tokens)
 }
 
 export function useIsVoteSignerAccount() {
@@ -45,11 +74,11 @@ export function* getVoterAccountAddress() {
   return account.voteSignerFor ?? address
 }
 
-export function getCurrencyBalance(balances: Balances, currency: Currency) {
+export function getTokenBalance(balances: Balances, token: Token) {
   if (!balances) throw new Error('No balances provided')
-  if (currency === Currency.CELO) return balances.celo
-  if (currency === Currency.cUSD) return balances.cUsd
-  throw new Error(`Unsupported currency ${currency}`)
+  const balance = balances.tokens[token.id]
+  if (!balance) new Error(`Unknown token ${token.id}`)
+  return balance.value
 }
 
 export function isValidMnemonic(mnemonic: string) {

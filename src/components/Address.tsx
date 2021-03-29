@@ -25,22 +25,12 @@ interface Props {
 export function Address(props: Props) {
   const { address, hideIdenticon, buttonType } = props
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-
   if (!utils.isAddress(address)) {
     throw new Error('Invalid address')
   }
 
-  const onSendButtonClick = () => {
-    dispatch(txFlowReset())
-    navigate('/send', { state: { recipient: address } })
-  }
-
-  const onCopyButtonClick = async () => {
-    await tryClipboardSet(address)
-  }
-
+  const onSendButtonClick = useSendToAddress(address)
+  const onCopyButtonClick = useCopyAddress(address)
   const showQrModal = useAddressQrCodeModal()
   const onQrButtonClick = () => {
     showQrModal(address)
@@ -98,6 +88,21 @@ export function Address(props: Props) {
   )
 }
 
+export function useSendToAddress(address: string) {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  return () => {
+    dispatch(txFlowReset())
+    navigate('/send', { state: { recipient: address } })
+  }
+}
+
+export function useCopyAddress(address: string) {
+  return async () => {
+    await tryClipboardSet(address)
+  }
+}
+
 function getAddressContainerStyle(hideIdenticon?: boolean, buttonType?: ButtonType) {
   const addressContainerStyle = { ...style.addressContainer }
   if (hideIdenticon) {
@@ -133,7 +138,7 @@ const style: Stylesheet = {
     paddingBottom: '4px',
     paddingLeft: '30px',
     paddingRight: '6px',
-    borderRadius: 3,
+    borderRadius: 4,
   },
   addressChunk: {
     padding: '0px 3px',

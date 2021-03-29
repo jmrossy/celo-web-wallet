@@ -1,19 +1,30 @@
-import { ReactNode } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 import { ExchangeIcon } from 'src/components/icons/Exchange'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { Currency, getCurrencyProps } from 'src/currency'
+import { getTransactionDescription } from 'src/features/feed/transactionDescription'
 import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { trimToLength } from 'src/utils/string'
+import { CELO, getTokenById, Token, Tokens } from 'src/tokens'
+
+export const FEED_ITEM_HEIGHT_NORMAL = 70
+export const FEED_ITEM_HEIGHT_COMPACT = 65
 
 interface FeedItemProps {
+  index: number
+  style: CSSProperties // comes from react-window
+  data: FeedItemData[]
+}
+
+export interface FeedItemData {
   tx: CeloTransaction
+  tokens: Tokens
   isOpen: boolean
   onClick: (hash: string) => void
+  itemSize: number
   collapsed?: boolean
 }
 
@@ -22,71 +33,78 @@ interface FeedItemContent {
   description: string
   subDescription: string
   value: string
-  currency: Currency
+  token: Token
   isPositive?: boolean
 }
 
 export function FeedItem(props: FeedItemProps) {
-  const { tx, isOpen, onClick, collapsed } = props
+  const { index, style: containerStyle, data } = props
+  const { tx, tokens, isOpen, onClick, itemSize, collapsed } = data[index]
 
   const handleClick = () => {
     onClick(tx.hash)
   }
 
-  const { icon, description, subDescription, value, currency, isPositive } = getContentByTxType(tx)
-  const { symbol, color } = getCurrencyProps(currency)
+  const { icon, description, subDescription, value, token, isPositive } = getContentByTxType(
+    tx,
+    tokens
+  )
+  const { symbol, color } = token
   const sign = isPositive === true ? '+' : isPositive === false ? '-' : undefined
 
   return (
-    <li key={tx.hash} css={[style.li, isOpen && style.liOpen]} onClick={handleClick}>
-      {!collapsed ? (
-        <Box direction="row" align="center" justify="between">
-          <Box direction="row" align="center" justify="start">
-            {icon}
-            <div>
-              <div css={style.descriptionText}>{description}</div>
-              <div css={style.subDescriptionText}>{subDescription}</div>
-            </div>
-          </Box>
-          <div css={style.moneyContainer}>
-            <MoneyValue amountInWei={value} currency={currency} hideSymbol={true} sign={sign} />
-            <div css={[style.currency, { color }]}>{symbol}</div>
-          </div>
-        </Box>
-      ) : (
-        <Box direction="row" align="center" justify="center">
-          {icon}
-        </Box>
-      )}
-    </li>
+    <div style={containerStyle}>
+      <div
+        css={[
+          style.item,
+          { height: itemSize - 2 },
+          isOpen && style.itemOpen,
+          collapsed && { justifyContent: 'center' },
+        ]}
+        onClick={handleClick}
+      >
+        {!collapsed ? (
+          <>
+            <Box direction="row" align="center" justify="start">
+              {icon}
+              <div>
+                <div css={style.descriptionText}>{description}</div>
+                <div css={style.subDescriptionText}>{subDescription}</div>
+              </div>
+            </Box>
+            <Box direction="column" align="end">
+              <MoneyValue amountInWei={value} token={token} symbolType="none" sign={sign} />
+              <div css={[style.currency, { color }]}>{symbol}</div>
+            </Box>
+          </>
+        ) : (
+          <div>{icon}</div>
+        )}
+      </div>
+    </div>
   )
 }
 
-function getContentByTxType(tx: CeloTransaction): FeedItemContent {
+function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemContent {
   const defaultContent = {
     icon: <Identicon address={tx.to} />,
-    description: `Transaction ${tx.hash.substr(0, 8)}`,
+    description: getTransactionDescription(tx, tokens),
     subDescription: getFormattedTimestamp(tx.timestamp),
-    currency: Currency.CELO,
+    token: CELO,
     value: tx.value,
   }
 
   if (
     tx.type === TransactionType.StableTokenTransfer ||
     tx.type === TransactionType.CeloNativeTransfer ||
-    tx.type === TransactionType.CeloTokenTransfer
+    tx.type === TransactionType.CeloTokenTransfer ||
+    tx.type === TransactionType.OtherTokenTransfer
   ) {
     // TODO support comment encryption
-    const description = tx.comment
-      ? trimToLength(tx.comment, 24)
-      : tx.isOutgoing
-      ? 'Payment Sent'
-      : 'Payment Received'
     return {
       ...defaultContent,
       icon: <Identicon address={tx.isOutgoing ? tx.to : tx.from} />,
-      description,
-      currency: tx.currency,
+      token: getTokenById(tx.tokenId, tokens),
       isPositive: !tx.isOutgoing,
     }
   }
@@ -97,27 +115,17 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
   ) {
     return {
       ...defaultContent,
-      description: 'Transfer Approval',
-      currency: tx.currency,
+      token: getTokenById(tx.tokenId, tokens),
       value: '0',
     }
   }
 
   if (tx.type === TransactionType.TokenExchange) {
-    let description: string
-    let currency: Currency
-    if (tx.fromToken === Currency.CELO) {
-      description = 'CELO to cUSD Exchange'
-      currency = Currency.cUSD
-    } else {
-      description = 'cUSD to CELO Exchange'
-      currency = Currency.CELO
-    }
+    const toToken = getTokenById(tx.toTokenId, tokens)
     return {
       ...defaultContent,
-      icon: <ExchangeIcon toToken={tx.toToken} />,
-      description,
-      currency,
+      icon: <ExchangeIcon toToken={toToken} />,
+      token: toToken,
       value: tx.toValue,
       isPositive: true,
     }
@@ -126,8 +134,7 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
   if (tx.type === TransactionType.EscrowTransfer || tx.type === TransactionType.EscrowWithdraw) {
     return {
       ...defaultContent,
-      description: tx.isOutgoing ? 'Escrow Payment' : 'Escrow Withdrawal',
-      currency: tx.currency,
+      token: getTokenById(tx.tokenId, tokens),
       isPositive: !tx.isOutgoing,
     }
   }
@@ -135,50 +142,13 @@ function getContentByTxType(tx: CeloTransaction): FeedItemContent {
   if (tx.type === TransactionType.LockCelo || tx.type === TransactionType.RelockCelo) {
     return {
       ...defaultContent,
-      description: 'Lock CELO',
       isPositive: false,
-    }
-  }
-  if (tx.type === TransactionType.UnlockCelo) {
-    return {
-      ...defaultContent,
-      description: 'Unlock CELO',
     }
   }
   if (tx.type === TransactionType.WithdrawLockedCelo) {
     return {
       ...defaultContent,
-      description: 'Withdraw CELO',
       isPositive: true,
-    }
-  }
-
-  if (tx.type === TransactionType.ValidatorVoteCelo) {
-    return {
-      ...defaultContent,
-      description: 'Vote for Validator',
-    }
-  }
-  if (tx.type === TransactionType.ValidatorActivateCelo) {
-    return {
-      ...defaultContent,
-      description: 'Activate Validator Vote',
-    }
-  }
-  if (
-    tx.type === TransactionType.ValidatorRevokeActiveCelo ||
-    tx.type === TransactionType.ValidatorRevokePendingCelo
-  ) {
-    return {
-      ...defaultContent,
-      description: 'Revoke Validator Vote',
-    }
-  }
-
-  if (tx.type === TransactionType.GovernanceVote) {
-    return {
-      ...defaultContent,
-      description: 'Governance Vote',
     }
   }
 
@@ -190,16 +160,21 @@ function getFormattedTimestamp(timestamp: number) {
 }
 
 const style: Stylesheet = {
-  li: {
-    listStyle: 'none',
-    padding: '1em 0.8em',
+  item: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '1px 0.8em 0 0.8em',
     borderBottom: `1px solid ${Color.borderLight}`,
     cursor: 'pointer',
     ':hover': {
       background: Color.fillLight,
     },
+    ':active': {
+      background: Color.fillMedium,
+    },
   },
-  liOpen: {
+  itemOpen: {
     background: Color.fillLight,
     borderBottomColor: Color.fillLight,
   },
@@ -210,9 +185,6 @@ const style: Stylesheet = {
     ...Font.subtitle,
     marginTop: '0.4em',
     marginLeft: '1em',
-  },
-  moneyContainer: {
-    textAlign: 'right',
   },
   currency: {
     ...Font.subtitle,

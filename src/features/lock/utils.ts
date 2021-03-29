@@ -3,12 +3,14 @@ import { Balances } from 'src/features/wallet/types'
 
 export function getTotalCelo(balances: Balances) {
   const { locked, pendingBlocked, pendingFree } = balances.lockedCelo
-  return BigNumber.from(balances.celo).add(locked).add(pendingBlocked).add(pendingFree)
+  const celoBalance = balances.tokens.CELO.value
+  return BigNumber.from(celoBalance).add(locked).add(pendingBlocked).add(pendingFree)
 }
 
 export function getTotalUnlockedCelo(balances: Balances) {
   const { pendingBlocked, pendingFree } = balances.lockedCelo
-  return BigNumber.from(balances.celo).add(pendingBlocked).add(pendingFree)
+  const celoBalance = balances.tokens.CELO.value
+  return BigNumber.from(celoBalance).add(pendingBlocked).add(pendingFree)
 }
 
 export function getTotalLockedCelo(balances: Balances) {

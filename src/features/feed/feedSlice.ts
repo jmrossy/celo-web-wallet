@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { persistReducer } from 'redux-persist'
+import { createMigrate, persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import { CeloTransaction, TransactionMap } from 'src/features/types'
@@ -68,12 +68,29 @@ export const {
 
 const feedReducer = feedSlice.reducer
 
+const migrations = {
+  // Typings don't work well for migrations:
+  // https://github.com/rt2zz/redux-persist/issues/1065
+  0: (state: any) => {
+    // Migration to reset feed due to schema change
+    return {
+      ...state,
+      transactions: {},
+      lastUpdatedTime: null,
+      lastBlockNumber: null,
+    }
+  },
+}
+
 const feedPersistConfig = {
   key: 'feed',
-  storage: storage,
+  storage,
   stateReconciler: autoMergeLevel2,
   whitelist: ['transactions', 'lastUpdatedTime', 'lastBlockNumber'],
+  version: 0, // -1 is default
+  migrate: createMigrate(migrations),
 }
+
 export const persistedFeedReducer = persistReducer<ReturnType<typeof feedReducer>>(
   feedPersistConfig,
   feedReducer

@@ -1,15 +1,13 @@
 import { BigNumber, providers, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContract } from 'src/blockchain/contracts'
+import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
-import { CeloContract } from 'src/config'
 import {
   MAX_COMMENT_CHAR_LENGTH,
   MAX_SEND_TOKEN_SIZE,
   MAX_SEND_TOKEN_SIZE_LEDGER,
 } from 'src/consts'
-import { Currency } from 'src/currency'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { validateFeeEstimate } from 'src/features/fees/utils'
@@ -18,6 +16,7 @@ import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
+import { CELO, isNativeToken, Token } from 'src/tokens'
 import {
   getAdjustedAmountFromBalances,
   validateAmount,
@@ -34,18 +33,21 @@ export function validate(
   validateMaxAmount = true,
   validateFee = false
 ): ErrorState {
-  const { recipient, amountInWei, currency, comment, feeEstimate } = params
+  const { recipient, amountInWei, tokenId, comment, feeEstimate } = params
+  const token = balances.tokens[tokenId]
   let errors: ErrorState = { isValid: true }
 
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
+  } else if (!tokenId || !token) {
+    errors = { ...errors, ...invalidInput('tokenId', 'Invalid Currency') }
   } else {
     const maxAmount = validateMaxAmount
       ? isSignerLedger()
         ? MAX_SEND_TOKEN_SIZE_LEDGER
         : MAX_SEND_TOKEN_SIZE
       : undefined
-    errors = { ...errors, ...validateAmount(amountInWei, currency, balances, maxAmount) }
+    errors = { ...errors, ...validateAmount(amountInWei, token, balances, maxAmount) }
   }
 
   if (!utils.isAddress(recipient)) {
@@ -62,11 +64,19 @@ export function validate(
     }
   }
 
-  if (comment && comment.length > MAX_COMMENT_CHAR_LENGTH) {
-    logger.error(`Invalid comment: ${comment}`)
-    errors = {
-      ...errors,
-      ...invalidInput('comment', 'Comment is too long'),
+  if (comment) {
+    if (!isNativeToken(params.tokenId)) {
+      logger.error('Using comment for non-native token')
+      errors = {
+        ...errors,
+        ...invalidInput('comment', 'Comments disabled for custom tokens'),
+      }
+    } else if (comment.length > MAX_COMMENT_CHAR_LENGTH) {
+      logger.error(`Comment too long: ${comment}`)
+      errors = {
+        ...errors,
+        ...invalidInput('comment', 'Comment is too long'),
+      }
     }
   }
 
@@ -76,7 +86,7 @@ export function validate(
       ...validateFeeEstimate(feeEstimate),
       ...validateAmountWithFees(
         amountInWei,
-        currency,
+        token,
         balances,
         feeEstimate ? [feeEstimate] : undefined
       ),
@@ -92,110 +102,138 @@ function* sendToken(params: SendTokenParams) {
 
   validateOrThrow(() => validate(params, balances, txSizeLimitEnabled, true), 'Invalid transaction')
 
-  const { signedTx, type } = yield* call(createSendTx, params, balances)
+  const { signedTx, type, token } = yield* call(createSendTx, params, balances)
   yield* put(setNumSignatures(1))
 
   const txReceipt = yield* call(sendSignedTransaction, signedTx)
   logger.info(`Token transfer hash received: ${txReceipt.transactionHash}`)
 
-  const placeholderTx = getPlaceholderTx(params, txReceipt, type)
+  const placeholderTx = getPlaceholderTx(params, token, type, txReceipt)
   yield* put(addPlaceholderTransaction(placeholderTx))
 
   yield* put(fetchBalancesActions.trigger())
 }
 
 async function createSendTx(params: SendTokenParams, balances: Balances) {
-  const { recipient, amountInWei, currency, comment, feeEstimate } = params
+  const { recipient, amountInWei, tokenId, comment, feeEstimate } = params
+  const token = balances.tokens[tokenId]
   if (!feeEstimate) throw new Error('Fee estimate is missing')
 
   // Need to account for case where user intends to send entire balance
-  const adjustedAmount = getAdjustedAmountFromBalances(amountInWei, currency, balances, [
-    feeEstimate,
-  ])
+  const adjustedAmount = getAdjustedAmountFromBalances(amountInWei, token, balances, [feeEstimate])
 
-  const { tx, type } = await getTokenTransferTx(currency, recipient, adjustedAmount, comment)
+  const type = getTokenTransferType(params)
+  const tx = await getTokenTransferTx(type, token, recipient, adjustedAmount, comment)
 
-  logger.info(`Signing tx to send ${amountInWei} ${currency} to ${recipient}`)
+  logger.info(`Signing tx to send ${amountInWei} ${token.id} to ${recipient}`)
   const signedTx = await signTransaction(tx, feeEstimate)
-  return { signedTx, type }
+  return { signedTx, type, token }
 }
 
-async function getTokenTransferTx(
-  currency: Currency,
+export function getTokenTransferType(params: SendTokenParams): TransactionType {
+  const { tokenId, comment } = params
+  if (tokenId === CELO.id) {
+    if (!comment) return TransactionType.CeloNativeTransfer
+    else return TransactionType.CeloTokenTransferWithComment
+  } else if (isNativeToken(tokenId)) {
+    if (!comment) return TransactionType.StableTokenTransfer
+    else return TransactionType.StableTokenTransferWithComment
+  } else {
+    return TransactionType.OtherTokenTransfer
+  }
+}
+
+function getTokenTransferTx(
+  type: TransactionType,
+  token: Token,
   recipient: string,
   amountInWei: BigNumber,
   comment?: string
 ) {
-  if (currency === Currency.CELO) {
-    if (comment) {
-      const goldToken = getContract(CeloContract.GoldToken)
-      const tx = await goldToken.populateTransaction.transferWithComment(
-        recipient,
-        amountInWei,
-        comment
-      )
-      return { tx, type: TransactionType.CeloTokenTransfer }
-    } else {
-      return {
-        tx: {
-          to: recipient,
-          value: amountInWei,
-        },
-        type: TransactionType.CeloTokenTransfer,
-      }
-    }
-  } else if (currency === Currency.cUSD) {
-    const stableToken = getContract(CeloContract.StableToken)
-    if (comment) {
-      const tx = await stableToken.populateTransaction.transferWithComment(
-        recipient,
-        amountInWei,
-        comment
-      )
-      return { tx, type: TransactionType.StableTokenTransfer }
-    } else {
-      const tx = await stableToken.populateTransaction.transfer(recipient, amountInWei)
-      return { tx, type: TransactionType.StableTokenTransfer }
-    }
-  } else {
-    throw new Error(`Unsupported currency: ${currency}`)
+  if (type === TransactionType.CeloNativeTransfer) {
+    return createNativeCeloTransferTx(recipient, amountInWei)
   }
+  if (
+    type === TransactionType.CeloTokenTransfer ||
+    type === TransactionType.StableTokenTransfer ||
+    type === TransactionType.OtherTokenTransfer
+  ) {
+    return createTransferTx(token, recipient, amountInWei)
+  }
+  if (
+    type === TransactionType.CeloTokenTransferWithComment ||
+    type === TransactionType.StableTokenTransferWithComment
+  ) {
+    return createTransferWithCommentTx(token, recipient, amountInWei, comment)
+  }
+  throw new Error(`Invalid tx type: ${type}`)
+}
+
+function createNativeCeloTransferTx(recipient: string, amountInWei: BigNumber) {
+  // Using 'raw' tx instead of smart contract call to save on gas fees
+  return {
+    to: recipient,
+    value: amountInWei,
+  }
+}
+
+export function createTransferTx(token: Token, recipient: string, amountInWei: BigNumber) {
+  let contract
+  if (isNativeToken(token.id)) {
+    contract = getContractByAddress(token.address)
+  } else {
+    contract = getTokenContract(token.address)
+  }
+  if (!contract) throw new Error(`No contract found for token ${token.id}`)
+  return contract.populateTransaction.transfer(recipient, amountInWei)
+}
+
+function createTransferWithCommentTx(
+  token: Token,
+  recipient: string,
+  amountInWei: BigNumber,
+  comment?: string
+) {
+  if (!comment) throw new Error('Attempting to use transferWithComment but comment is empty')
+  const contract = getContractByAddress(token.address)
+  if (!contract) throw new Error(`No contract found for token ${token.id}`)
+  return contract.populateTransaction.transferWithComment(recipient, amountInWei, comment)
 }
 
 function getPlaceholderTx(
   params: SendTokenParams,
-  txReceipt: providers.TransactionReceipt,
-  type: TransactionType
+  token: Token,
+  type: TransactionType,
+  txReceipt: providers.TransactionReceipt
 ): TokenTransfer {
-  if (!params.feeEstimate) {
-    throw new Error('Params must have fee estimate to create placeholder tx')
+  if (
+    type !== TransactionType.StableTokenTransfer &&
+    type !== TransactionType.CeloTokenTransfer &&
+    type !== TransactionType.StableTokenTransferWithComment &&
+    type !== TransactionType.CeloTokenTransferWithComment &&
+    type !== TransactionType.CeloNativeTransfer &&
+    type !== TransactionType.OtherTokenTransfer
+  ) {
+    throw new Error('Invalid tx type for placeholder')
   }
 
-  const base = {
-    ...createPlaceholderForTx(txReceipt, params.amountInWei, params.feeEstimate),
+  // A small hack because the txs in the feed don't distinguish
+  // between transfers with comments and ones without
+  let adjustedType: TransactionType
+  if (type === TransactionType.StableTokenTransferWithComment)
+    adjustedType = TransactionType.StableTokenTransfer
+  else if (type === TransactionType.CeloTokenTransferWithComment)
+    adjustedType = TransactionType.CeloTokenTransfer
+  else adjustedType = type
+
+  return {
+    ...createPlaceholderForTx(txReceipt, params.amountInWei, params.feeEstimate!),
+    to: params.recipient,
     isOutgoing: true,
     comment: params.comment,
+    type: adjustedType,
+    tokenId: token.id,
   }
-
-  if (type === TransactionType.CeloTokenTransfer) {
-    return {
-      ...base,
-      type: TransactionType.CeloTokenTransfer,
-      to: params.recipient,
-      currency: Currency.CELO,
-    }
-  }
-
-  if (type === TransactionType.StableTokenTransfer) {
-    return {
-      ...base,
-      type: TransactionType.StableTokenTransfer,
-      to: params.recipient,
-      currency: Currency.cUSD,
-    }
-  }
-
-  throw new Error(`Unsupported placeholder type: ${type}`)
 }
 
 export const {

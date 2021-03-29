@@ -42,7 +42,7 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { numSignatures } = useSelector((state: RootState) => state.txFlow)
+  const numSignatures = useSelector((state: RootState) => state.txFlow.numSignatures)
 
   const sagaState = useSelector((s: RootState) => s.saga[sagaName])
   if (!sagaState) {

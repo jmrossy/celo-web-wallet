@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
 import { OnboardingFooter } from 'src/components/footer/OnboardingFooter'
-import Logo from 'src/components/icons/logoWithWallet.svg'
+import Logo from 'src/components/icons/logo-full.svg'
 import { Box } from 'src/components/layout/Box'
 import { Font } from 'src/styles/fonts'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'

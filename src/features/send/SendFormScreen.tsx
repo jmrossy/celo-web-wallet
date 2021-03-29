@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 import { Location } from 'history'
-import { useEffect } from 'react'
+import { ChangeEvent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
@@ -8,20 +8,18 @@ import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { AddressInput } from 'src/components/input/AddressInput'
-import { CurrencyRadioBox } from 'src/components/input/CurrencyRadioBox'
-import { NumberInput } from 'src/components/input/NumberInput'
+import { AmountAndCurrencyInput } from 'src/components/input/AmountAndCurrencyInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { Currency } from 'src/currency'
 import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
-import { getCurrencyBalance } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { cUSD, isNativeToken } from 'src/tokens'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -33,7 +31,7 @@ interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
 const initialValues: SendTokenForm = {
   recipient: '',
   amount: '',
-  currency: Currency.cUSD,
+  tokenId: cUSD.id,
   comment: '',
 }
 
@@ -61,6 +59,7 @@ export function SendFormScreen() {
     handleSubmit,
     setValues,
     resetValues,
+    resetErrors,
   } = useCustomForm<SendTokenForm>(getInitialValues(location, tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
@@ -75,10 +74,20 @@ export function SendFormScreen() {
   }
 
   const onUseMax = () => {
-    const currency = values.currency
-    const balance = getCurrencyBalance(balances, currency)
-    const maxAmount = fromWeiRounded(balance, currency, true)
+    const tokenId = values.tokenId
+    const token = balances.tokens[tokenId]
+    const maxAmount = fromWeiRounded(token.value, token, true)
     setValues({ ...values, amount: maxAmount })
+    resetErrors()
+  }
+
+  const onTokenSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target
+    const isNative = isNativeToken(value)
+    // Reset comment if token is not native
+    const comment = isNative ? values.comment : ''
+    setValues({ ...values, [name]: value, comment })
+    resetErrors()
   }
 
   return (
@@ -110,49 +119,23 @@ export function SendFormScreen() {
             </Box>
           </Box>
 
-          <Box direction="row" styles={style.inputRow} justify="between">
-            <Box direction="column" justify="end" align="start">
+          <div css={style.inputRow}>
+            <Box direction="row" justify="between" align="start">
               <label css={style.inputLabel}>Amount</label>
-              <div css={style.amountContainer}>
-                <NumberInput
-                  step="0.01"
-                  width="6.5em"
-                  margin="0 0.75em 0 0"
-                  name="amount"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.amount}
-                  placeholder="1.00"
-                  {...errors['amount']}
-                />
-                <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
-                  Max Amount
-                </TextButton>
-              </div>
+              <TextButton onClick={onUseMax} styles={style.maxAmountButton}>
+                Use Max
+              </TextButton>
             </Box>
-            <Box direction="column" align="start" margin="0 0 0 1.5em">
-              <label css={style.inputLabel}>Currency</label>
-              <Box direction="row" justify="between" align="start" styles={style.radioBox}>
-                <CurrencyRadioBox
-                  tabIndex={0}
-                  label="cUSD"
-                  value={Currency.cUSD}
-                  name="currency"
-                  checked={values.currency === Currency.cUSD}
-                  onChange={handleChange}
-                  containerCss={{ marginRight: '0.5em' }}
-                />
-                <CurrencyRadioBox
-                  tabIndex={1}
-                  label="CELO"
-                  value={Currency.CELO}
-                  name="currency"
-                  checked={values.currency === Currency.CELO}
-                  onChange={handleChange}
-                />
-              </Box>
-            </Box>
-          </Box>
+            <AmountAndCurrencyInput
+              tokenValue={values.tokenId}
+              onTokenSelect={onTokenSelect}
+              onTokenBlur={handleBlur}
+              amountValue={values.amount}
+              onAmountChange={handleChange}
+              onAmountBlur={handleBlur}
+              errors={errors}
+            />
+          </div>
 
           <Box direction="column" align="start" styles={style.inputRow}>
             <label css={style.inputLabel}>Comment (optional)</label>
@@ -164,9 +147,10 @@ export function SendFormScreen() {
               onBlur={handleBlur}
               minWidth="16em"
               maxWidth="24em"
-              minHeight="5em"
-              maxHeight="7em"
+              minHeight="4em"
+              maxHeight="6em"
               fillWidth={true}
+              disabled={!isNativeToken(values.tokenId)}
               {...errors['comment']}
             />
           </Box>
@@ -222,27 +206,8 @@ const style: Stylesheet = {
       marginLeft: '0.75em',
     },
   },
-  amountContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    [mq[480]]: {
-      flexDirection: 'row',
-    },
-  },
   maxAmountButton: {
-    margin: '0.6em 0 0 0.2em',
-    textAlign: 'left',
-    fontWeight: 300,
+    fontWeight: 400,
     fontSize: '0.9em',
-    [mq[480]]: {
-      margin: 0,
-    },
-    [mq[768]]: {
-      fontSize: '1em',
-    },
-  },
-  radioBox: {
-    height: '100%',
-    width: '100%',
   },
 }

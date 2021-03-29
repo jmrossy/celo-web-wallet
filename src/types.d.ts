@@ -21,3 +21,24 @@ declare module '*.json' {
   // eslint-disable-next-line import/no-default-export
   export default content
 }
+
+interface ResizeObserver {
+  disconnect(): void
+  observe(target: Element, options?: any): void
+  unobserve(target: Element): void
+}
+// eslint-disable-next-line no-var
+declare var ResizeObserver: {
+  new (callback: ResizeObserverCallback): ResizeObserver
+  prototype: ResizeObserver
+}
+interface ResizeObserverCallback {
+  (entries: ResizeObserverEntry[], observer: ResizeObserver): void
+}
+interface ResizeObserverEntry {
+  readonly target: Element
+  readonly contentRect: DOMRectReadOnly
+  readonly borderBoxSize: ReadonlyArray<ResizeObserverSize>
+  readonly contentBoxSize: ReadonlyArray<ResizeObserverSize>
+  readonly devicePixelContentBoxSize?: ReadonlyArray<ResizeObserverSize>
+}

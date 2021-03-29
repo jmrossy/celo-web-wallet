@@ -5,7 +5,6 @@ import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCKED_GOLD_TO_VOTE, MIN_VOTE_AMOUNT, NULL_ADDRESS } from 'src/consts'
-import { Currency } from 'src/currency'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -21,6 +20,7 @@ import { getStakingMaxAmount } from 'src/features/validators/utils'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { getVoterAccountAddress, getVoterBalances } from 'src/features/wallet/utils'
+import { CELO } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import {
   BigNumberMin,
@@ -55,12 +55,10 @@ export function validate(
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
   } else {
-    const adjustedBalances = { ...voterBalances }
     const maxAmount = getStakingMaxAmount(params.action, voterBalances, votes, params.groupAddress)
-    adjustedBalances.celo = maxAmount.toString()
     errors = {
       ...errors,
-      ...validateAmount(amountInWei, Currency.CELO, adjustedBalances, undefined, MIN_VOTE_AMOUNT),
+      ...validateAmount(amountInWei, CELO, null, maxAmount, MIN_VOTE_AMOUNT),
     }
   }
 
@@ -76,7 +74,7 @@ export function validate(
     errors = {
       ...errors,
       ...validateFeeEstimates(feeEstimates),
-      ...validateAmountWithFees('0', Currency.CELO, balances, feeEstimates),
+      ...validateAmountWithFees('0', CELO, balances, feeEstimates),
     }
   }
 
@@ -135,7 +133,7 @@ export function getStakeActionTxPlan(
 
   if (action === StakeActionType.Vote) {
     const maxAmount = getStakingMaxAmount(action, voterBalances, currentVotes, groupAddress)
-    const adjutedAmount = getAdjustedAmount(amountInWei, maxAmount, Currency.CELO)
+    const adjutedAmount = getAdjustedAmount(amountInWei, maxAmount, CELO)
     return [
       {
         type: TransactionType.ValidatorVoteCelo,
@@ -155,7 +153,7 @@ export function getStakeActionTxPlan(
     const amountPending = BigNumber.from(groupVotes.pending)
     const amountActive = BigNumber.from(groupVotes.active)
     const pendingValue = BigNumberMin(amountPending, amountRemaining)
-    const pendingAdjusted = getAdjustedAmount(amountRemaining, pendingValue, Currency.CELO)
+    const pendingAdjusted = getAdjustedAmount(amountRemaining, pendingValue, CELO)
     if (pendingValue.gt(0)) {
       txs.push({
         type: TransactionType.ValidatorRevokePendingCelo,
@@ -166,7 +164,7 @@ export function getStakeActionTxPlan(
       amountRemaining = amountRemaining.sub(pendingAdjusted)
     }
     if (amountRemaining.gt(0)) {
-      const activeAdjusted = getAdjustedAmount(amountRemaining, amountActive, Currency.CELO)
+      const activeAdjusted = getAdjustedAmount(amountRemaining, amountActive, CELO)
       txs.push({
         type: TransactionType.ValidatorRevokeActiveCelo,
         amountInWei: activeAdjusted.toString(),

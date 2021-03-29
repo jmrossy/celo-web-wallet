@@ -6,12 +6,11 @@ import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCK_AMOUNT } from 'src/consts'
-import { Currency } from 'src/currency'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
 import { LockActionType, LockTokenParams, PendingWithdrawal } from 'src/features/lock/types'
-import { getTotalUnlockedCelo } from 'src/features/lock/utils'
+import { getTotalPendingCelo, getTotalUnlockedCelo } from 'src/features/lock/utils'
 import { LockTokenTx, LockTokenType, TransactionType } from 'src/features/types'
 import { GroupVotes } from 'src/features/validators/types'
 import { getTotalNonvotingLocked } from 'src/features/validators/utils'
@@ -19,6 +18,7 @@ import { createAccountRegisterTx, fetchAccountStatus } from 'src/features/wallet
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { setAccountIsRegistered } from 'src/features/wallet/walletSlice'
+import { CELO } from 'src/tokens'
 import {
   areAmountsNearlyEqual,
   BigNumberMin,
@@ -41,54 +41,60 @@ export function validate(
   let errors: ErrorState = { isValid: true }
 
   if (!Object.values(LockActionType).includes(action)) {
-    errors = { ...errors, ...invalidInput('action', 'Invalid Action Type') }
+    return invalidInput('action', 'Invalid Action Type')
   }
 
   if (!amountInWei) {
-    errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
-  } else {
-    const { locked, pendingFree, pendingBlocked } = balances.lockedCelo
-    const adjustedBalances = { ...balances }
-    if (action === LockActionType.Lock) {
-      adjustedBalances.celo = getTotalUnlockedCelo(balances).toString()
-    } else if (action === LockActionType.Unlock) {
-      adjustedBalances.celo = locked
-    } else if (action === LockActionType.Withdraw) {
-      adjustedBalances.celo = pendingFree
-    }
+    return invalidInput('amount', 'Amount Missing')
+  }
+
+  const { locked, pendingFree, pendingBlocked } = balances.lockedCelo
+  let maxAmount = null
+  if (action === LockActionType.Lock) {
+    maxAmount = getTotalUnlockedCelo(balances).toString()
+  } else if (action === LockActionType.Unlock) {
+    maxAmount = locked
+  } else if (action === LockActionType.Withdraw) {
+    maxAmount = pendingFree
+  }
+  errors = {
+    ...errors,
+    ...validateAmount(amountInWei, CELO, null, maxAmount, MIN_LOCK_AMOUNT),
+  }
+
+  // Special case handling for withdraw which is confusing
+  if (action === LockActionType.Withdraw && BigNumber.from(pendingFree).lte(0)) {
     errors = {
       ...errors,
-      ...validateAmount(amountInWei, Currency.CELO, adjustedBalances, undefined, MIN_LOCK_AMOUNT),
+      ...invalidInput('amount', 'No pending available to withdraw'),
     }
+  }
 
-    // Special case handling for withdraw which is confusing
-    if (action === LockActionType.Withdraw && BigNumber.from(pendingFree).lte(0)) {
+  // Special case handling for locking whole balance
+  if (action === LockActionType.Lock && !errors.amount) {
+    const remainingAfterPending = BigNumber.from(amountInWei).sub(pendingFree).sub(pendingBlocked)
+    const celoBalance = balances.tokens.CELO.value
+    if (
+      remainingAfterPending.gt(0) &&
+      (remainingAfterPending.gte(celoBalance) ||
+        areAmountsNearlyEqual(remainingAfterPending, celoBalance, CELO))
+    ) {
       errors = {
         ...errors,
-        ...invalidInput('amount', 'No pending available to withdraw'),
-      }
-    }
-
-    // Special case handling for locking whole balance
-    if (action === LockActionType.Lock && !errors.amount) {
-      const remainingAfterPending = BigNumber.from(amountInWei).sub(pendingFree).sub(pendingBlocked)
-      if (
-        remainingAfterPending.gt(0) &&
-        (remainingAfterPending.gte(balances.celo) ||
-          areAmountsNearlyEqual(remainingAfterPending, balances.celo, Currency.CELO))
-      ) {
-        errors = {
-          ...errors,
-          ...invalidInput('amount', 'Locking whole balance is not allowed'),
-        }
+        ...invalidInput('amount', 'Locking whole balance is not allowed'),
       }
     }
 
     if (validateFee) {
+      let amountAffectingBalance = '0'
+      if (action === LockActionType.Lock) {
+        const netDiff = BigNumber.from(amountInWei).sub(getTotalPendingCelo(balances))
+        amountAffectingBalance = netDiff.gt(0) ? netDiff.toString() : '0'
+      }
       errors = {
         ...errors,
         ...validateFeeEstimates(feeEstimates),
-        ...validateAmountWithFees(amountInWei, Currency.CELO, adjustedBalances, feeEstimates),
+        ...validateAmountWithFees(amountAffectingBalance, CELO, balances, feeEstimates),
       }
     }
   }
@@ -196,7 +202,7 @@ export function getLockActionTxPlan(
 
   if (action === LockActionType.Unlock) {
     // If only all three cases where this simple :)
-    const adjutedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, Currency.CELO)
+    const adjutedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, CELO)
     return [{ type: TransactionType.UnlockCelo, amountInWei: adjutedAmount.toString() }]
   } else if (action === LockActionType.Lock) {
     const txs: LockTokenTxPlan = []
@@ -212,7 +218,7 @@ export function getLockActionTxPlan(
     for (const p of pwSorted) {
       if (amountRemaining.lt(MIN_LOCK_AMOUNT)) break
       const txAmount = BigNumberMin(amountRemaining, BigNumber.from(p.value))
-      const adjustedAmount = getAdjustedAmount(txAmount, p.value, Currency.CELO)
+      const adjustedAmount = getAdjustedAmount(txAmount, p.value, CELO)
       txs.push({
         type: TransactionType.RelockCelo,
         pendingWithdrawal: p,

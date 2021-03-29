@@ -25,7 +25,13 @@ export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
 
   return (
     <Box direction="column" styles={style.contentContainer}>
-      {!hideCloseButton && <CloseButton onClick={onClickClose} styles={style.closeButton} />}
+      {!hideCloseButton && (
+        <CloseButton
+          onClick={onClickClose}
+          styles={style.closeButton}
+          iconStyles={style.closeButtonIcon}
+        />
+      )}
       {props.children}
     </Box>
   )
@@ -55,5 +61,9 @@ const style: Stylesheet = {
       right: '2.5em',
       top: '2em',
     },
+  },
+  closeButtonIcon: {
+    height: '1.4em',
+    width: '1.4em',
   },
 }

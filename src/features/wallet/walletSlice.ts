@@ -6,6 +6,7 @@ import { SignerType } from 'src/blockchain/signer'
 import { SecretType } from 'src/features/pincode/types'
 import { Balances } from 'src/features/wallet/types'
 import { isValidDerivationPath } from 'src/features/wallet/utils'
+import { CELO, cEUR, cUSD, Token } from 'src/tokens'
 import { assert } from 'src/utils/validation'
 
 interface Wallet {
@@ -37,8 +38,20 @@ export const walletInitialState: Wallet = {
   type: null,
   derivationPath: null,
   balances: {
-    cUsd: '0',
-    celo: '0',
+    tokens: {
+      CELO: {
+        ...CELO,
+        value: '0',
+      },
+      cUSD: {
+        ...cUSD,
+        value: '0',
+      },
+      cEUR: {
+        ...cEUR,
+        value: '0',
+      },
+    },
     lockedCelo: {
       locked: '0',
       pendingBlocked: '0',
@@ -70,8 +83,8 @@ const walletSlice = createSlice({
       state.derivationPath = derivationPath
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {
-      const { cUsd, celo, lockedCelo, lastUpdated } = action.payload
-      assert(cUsd && celo && lockedCelo && lastUpdated, 'Invalid balance')
+      const { tokens, lockedCelo, lastUpdated } = action.payload
+      assert(tokens && lockedCelo && lastUpdated, 'Invalid balance')
       state.balances = action.payload
     },
     setAccountStatus: (state, action: PayloadAction<AccountStatus>) => {
@@ -94,6 +107,20 @@ const walletSlice = createSlice({
       )
       state.secretType = secretType
     },
+    addToken: (state, action: PayloadAction<Token>) => {
+      const newToken = action.payload
+      assert(newToken && newToken.id, 'No new token provided')
+      assert(!state.balances.tokens[newToken.id], 'Token already exists')
+      const newTokenWithValue = { ...newToken, value: '0' }
+      state.balances.tokens = { ...state.balances.tokens, [newToken.id]: newTokenWithValue }
+    },
+    removeToken: (state, action: PayloadAction<string>) => {
+      const tokenId = action.payload
+      assert(state.balances.tokens[tokenId], 'Token does not exist')
+      const newTokens = { ...state.balances.tokens }
+      delete newTokens[tokenId]
+      state.balances.tokens = newTokens
+    },
     resetWallet: () => walletInitialState,
   },
 })
@@ -106,6 +133,8 @@ export const {
   setVoterBalances,
   setWalletUnlocked,
   setSecretType,
+  addToken,
+  removeToken,
   resetWallet,
 } = walletSlice.actions
 const walletReducer = walletSlice.reducer

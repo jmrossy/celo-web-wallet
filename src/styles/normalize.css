@@ -75,6 +75,7 @@ pre {
 
 a {
   background-color: transparent;
+  outline: none; /* NOTE THIS IS A CUSTOM ADDITION */
 }
 
 /**

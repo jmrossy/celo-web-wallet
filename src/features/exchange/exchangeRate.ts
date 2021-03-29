@@ -1,43 +1,39 @@
+import { BigNumber, BigNumberish } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
-import { getContract } from 'src/blockchain/contracts'
-import { CeloContract } from 'src/config'
-import { EXCHANGE_RATE_STALE_TIME, WEI_PER_UNIT } from 'src/consts'
-import { setCeloExchangeRate, setUsdExchangeRate } from 'src/features/exchange/exchangeSlice'
-import { ExchangeRate } from 'src/features/exchange/types'
-import { fromWei } from 'src/utils/amount'
+import { getContractByAddress } from 'src/blockchain/contracts'
+import { EXCHANGE_RATE_STALE_TIME, MAX_EXCHANGE_SPREAD } from 'src/consts'
+import { resetExchangeRates, setExchangeRates } from 'src/features/exchange/exchangeSlice'
+import { ExchangeRate, ToCeloRates } from 'src/features/exchange/types'
+import { NativeTokens, StableTokenIds, Token } from 'src/tokens'
+import { fromFixidity } from 'src/utils/amount'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
 
 interface FetchExchangeRateParams {
-  sellGold?: boolean
-  sellAmount?: string
   force?: boolean // Fetch regardless of staleness
-  getUsdRate?: boolean
 }
 
-function* fetchExchangeRate({ sellGold, sellAmount, force, getUsdRate }: FetchExchangeRateParams) {
-  // Clear existing exchange rate to ensure UI don't allow proceeding with stale rate
+function* fetchExchangeRate({ force }: FetchExchangeRateParams) {
   if (force) {
-    yield* put(setCeloExchangeRate(null))
-    if (getUsdRate) {
-      yield* put(setUsdExchangeRate(null))
+    // Clear existing rates to ensure UI prevents proceeding with stale rates
+    yield* put(resetExchangeRates())
+  }
+
+  const toCeloRates = yield* select((state: RootState) => state.exchange.toCeloRates)
+
+  if (areRatesStale(toCeloRates)) {
+    const newToCeloRates: ToCeloRates = {}
+    for (const tokenId of StableTokenIds) {
+      const token = NativeTokens[tokenId]
+      const rate = yield* call(fetchCeloExchangeRate, token)
+      newToCeloRates[tokenId] = rate
     }
+    yield* put(setExchangeRates(newToCeloRates))
+    return newToCeloRates
+  } else {
+    return toCeloRates
   }
-
-  let { cUsdToCelo, cUsdToUsd } = yield* select((state: RootState) => state.exchange)
-
-  if (isRateStale(cUsdToCelo)) {
-    cUsdToCelo = yield* call(fetchCeloExchangeRate, sellGold, sellAmount)
-    yield* put(setCeloExchangeRate(cUsdToCelo))
-  }
-
-  if (getUsdRate && isRateStale(cUsdToUsd)) {
-    cUsdToUsd = yield* call(fetchUsdExchangeRate)
-    yield* put(setUsdExchangeRate(cUsdToUsd))
-  }
-
-  return { cUsdToCelo, cUsdToUsd }
 }
 
 export const {
@@ -47,37 +43,42 @@ export const {
   actions: fetchExchangeRateActions,
 } = createMonitoredSaga<FetchExchangeRateParams>(fetchExchangeRate, 'fetchExchangeRate')
 
-async function fetchCeloExchangeRate(
-  _sellGold?: boolean,
-  _sellAmount?: string
-): Promise<ExchangeRate> {
-  const sellGold = _sellGold || false
-  const sellAmount = _sellAmount || WEI_PER_UNIT
+async function fetchCeloExchangeRate(stableToken: Token): Promise<ExchangeRate> {
+  const exchangeAddress = stableToken.exchangeAddress
+  if (!exchangeAddress) throw new Error(`Token ${stableToken.id} has no known exchange address`)
+  const exchangeContract = getContractByAddress(exchangeAddress)
+  if (!exchangeContract) throw new Error(`No exchange contract found for ${stableToken.id}`)
 
-  const exchange = getContract(CeloContract.Exchange)
-  const buyAmount = await exchange.getBuyTokenAmount(sellAmount, sellGold)
+  const spreadP: Promise<BigNumberish> = exchangeContract.spread()
+  const bucketsP: Promise<[BigNumberish, BigNumberish]> = exchangeContract.getBuyAndSellBuckets(
+    false
+  )
+  const [spreadRaw, bucketsRaw] = await Promise.all([spreadP, bucketsP])
 
-  // Example:
-  // sellGold: false (i.e. buying gold with cUSD)
-  // sellAmount: 2 cUSD
-  // buyAmount: 0.2 CELO
-  // toCeloRate should be 0.1
-  const toCeloRate = sellGold
-    ? fromWei(sellAmount) / fromWei(buyAmount)
-    : fromWei(buyAmount) / fromWei(sellAmount)
+  const spread = fromFixidity(spreadRaw)
+  if (spread <= 0 || spread > MAX_EXCHANGE_SPREAD)
+    throw new Error(`Invalid exchange spread: ${spread}`)
 
-  return { rate: toCeloRate, lastUpdated: Date.now() }
+  const [celoBucketRaw, stableBucketRaw] = bucketsRaw
+  const celoBucket = BigNumber.from(celoBucketRaw)
+  const stableBucket = BigNumber.from(stableBucketRaw)
+  if (celoBucket.lte(0) || stableBucket.lte(0))
+    throw new Error(
+      `Invalid exchange buckets: ${celoBucket.toString()}, ${stableBucket.toString()}`
+    )
+
+  return {
+    celoBucket: celoBucket.toString(),
+    stableBucket: stableBucket.toString(),
+    spread: spread.toString(),
+    lastUpdated: Date.now(),
+  }
 }
 
-async function fetchUsdExchangeRate(): Promise<ExchangeRate> {
-  // TODO
-
-  // const usdRate = await exchange.getOracleExchangeRate(sellAmount, sellGold)
-  const cUsdToUsd = { rate: 0, lastUpdated: Date.now() }
-
-  return cUsdToUsd
-}
-
-function isRateStale(rate: ExchangeRate | null) {
-  return !rate || isStale(rate.lastUpdated, EXCHANGE_RATE_STALE_TIME) || rate.rate <= 0
+function areRatesStale(rates: ToCeloRates) {
+  return (
+    !rates ||
+    !Object.keys(rates).length ||
+    Object.values(rates).some((r) => isStale(r.lastUpdated, EXCHANGE_RATE_STALE_TIME))
+  )
 }

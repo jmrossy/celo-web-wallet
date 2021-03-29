@@ -9,12 +9,7 @@ import { TransactionFeed } from 'src/features/feed/TransactionFeed'
 import { HomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
-import {
-  isWindowSizeMobile,
-  isWindowSizeSmallMobile,
-  mq,
-  useWindowSize,
-} from 'src/styles/mediaQueries'
+import { isWindowSizeMobile, isWindowSizeSmallMobile, useWindowSize } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 const SCREENS_WITHOUT_FEED: Record<string, boolean> = {
@@ -128,7 +123,7 @@ function MobileHome(props: PropsWithChildren<any>) {
       <HomeScreenWarnings />
       <div>{props.children}</div>
       <NavButtonRow disabled={false} mobile={true} />
-      <TransactionFeed />
+      <TransactionFeed feedState="mobile" />
     </Box>
   )
 }
@@ -152,11 +147,11 @@ function MobileNotHome(props: PropsWithChildren<any>) {
 
   return (
     <Box direction="row" styles={style.contentContainer}>
-      <Box direction="column" align="center" styles={style.feedContainer}>
+      <Box direction="column" align="center" styles={style.feedContainerCollapsed}>
         <Button onClick={onButtonClick} margin="0.75em 0" size="icon" width="34px" height="34px">
           <img width="18px" height="18px" src={PlusIcon} alt="Plus" />
         </Button>
-        <TransactionFeed collapsed={true} />
+        <TransactionFeed feedState="collapsed" />
       </Box>
       <div css={style.childContent}>{props.children}</div>
     </Box>
@@ -180,14 +175,19 @@ const style: Stylesheet = {
     backgroundColor: '#FAFAFA',
   },
   feedContainer: {
+    width: '22em',
     borderRight: `1px solid ${Color.borderLight}`,
-    [mq[768]]: {
-      width: '22em',
-    },
+  },
+  feedContainerCollapsed: {
+    width: '4em',
+    borderRight: `1px solid ${Color.borderLight}`,
   },
   childContent: {
     overflow: 'auto',
     flex: 1,
+    '& > div': {
+      height: '100%',
+    },
   },
   childContentNoFeed: {
     overflow: 'auto',

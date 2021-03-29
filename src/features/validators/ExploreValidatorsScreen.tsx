@@ -169,7 +169,7 @@ function ExpandedRow({ row: group }: { row: ValidatorGroupTableRow }) {
     <div css={style.expandedGroupContainer}>
       <Box direction="row" align="center" justify="between" margin="0 0 0.75em 0">
         <CopiableAddress address={address} length="full" />
-        <Button size="s" styles={style.groupVoteButton} onClick={() => onClickVote(address)}>
+        <Button size="xs" margin="0 0 0 1.5em" onClick={() => onClickVote(address)}>
           Vote for Group
         </Button>
       </Box>
@@ -233,12 +233,6 @@ const style: Stylesheet = {
   groupMembersContainer: {
     borderLeft: '1px solid #D8DADB',
     paddingLeft: '1.5em',
-  },
-  groupVoteButton: {
-    width: '7em',
-    height: '1.75em',
-    fontSize: '0.9em',
-    marginLeft: '1.5em',
   },
   groupMembersTable: {
     width: '100%',

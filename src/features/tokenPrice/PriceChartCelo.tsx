@@ -4,40 +4,56 @@ import ReactFrappeChart from 'react-frappe-charts'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
-import { Currency } from 'src/currency'
+import { WEI_PER_UNIT } from 'src/consts'
+import { calcSimpleExchangeRate } from 'src/features/exchange/utils'
 import { fetchTokenPriceActions } from 'src/features/tokenPrice/fetchPrices'
-import { QuoteCurrency } from 'src/features/tokenPrice/types'
 import { findPriceForDay, tokenPriceHistoryToChartData } from 'src/features/tokenPrice/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Styles, Stylesheet } from 'src/styles/types'
+import { NativeTokenId } from 'src/tokens'
 
 interface PriceChartProps {
+  stableTokenId: NativeTokenId
   showHeaderPrice: boolean
   containerCss?: Styles
   height?: number | string
 }
 
-export function PriceChartCelo({ showHeaderPrice, containerCss, height }: PriceChartProps) {
+export function PriceChartCelo(props: PriceChartProps) {
+  const { stableTokenId, showHeaderPrice, containerCss, height } = props
+
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(
       fetchTokenPriceActions.trigger({
-        baseCurrency: Currency.CELO,
-        quoteCurrency: QuoteCurrency.USD,
+        baseCurrency: NativeTokenId.CELO,
+        quoteCurrency: stableTokenId,
       })
     )
   }, [])
 
+  const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)
   const allPrices = useSelector((s: RootState) => s.tokenPrice.prices)
-  const prices = allPrices[Currency.CELO][QuoteCurrency.USD]
-  const chartData = tokenPriceHistoryToChartData(prices)
-  const todayPrice = findPriceForDay(prices, new Date())
+  const celoPrices = allPrices[NativeTokenId.CELO]
+  const celoUsdPrices = celoPrices ? celoPrices[stableTokenId] : undefined
+  const chartData = tokenPriceHistoryToChartData(celoUsdPrices)
 
-  const exchangeRate = useSelector((s: RootState) => s.exchange.cUsdToCelo)
-  const celoToCusd = exchangeRate ? 1 / exchangeRate.rate : null
+  let headerRate: number | null = null
+  if (showHeaderPrice) {
+    const cUsdToCelo = toCeloRates[NativeTokenId.cUSD]
+    const celoToCUsdRate = cUsdToCelo
+      ? calcSimpleExchangeRate(
+          WEI_PER_UNIT,
+          cUsdToCelo.stableBucket,
+          cUsdToCelo.celoBucket,
+          cUsdToCelo.spread,
+          true
+        ).exchangeRateNum
+      : null
+    headerRate = celoToCUsdRate || findPriceForDay(celoUsdPrices, new Date())
+  }
 
-  const headerRate = celoToCusd ?? todayPrice
   const chartHeight = height || 250
 
   return (

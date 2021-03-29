@@ -4,7 +4,7 @@ import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
 
 interface ButtonProps {
-  size?: 's' | 'm' | 'l' | 'icon' // defaults to 'm'
+  size?: 'xs' | 's' | 'm' | 'l' | 'icon' // defaults to 'm'
   type?: 'submit' | 'reset' | 'button'
   color?: Color // defaults to primaryGreen
   margin?: string | number
@@ -32,7 +32,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
     disabled,
     styles,
   } = props
-  const { height, width } = getDimensions(size, widthOverride, heightOverride)
+  const dimensions = getDimensions(size, widthOverride, heightOverride)
   const icoLayout = getLayout(size)
 
   const baseBg = color || Color.primaryGreen
@@ -45,9 +45,8 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
       css={{
         ...defaultButtonStyles,
         ...icoLayout,
+        ...dimensions,
         margin,
-        height,
-        width,
         backgroundColor: baseBg,
         ':hover': {
           backgroundColor: hoverBg,
@@ -79,6 +78,8 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
 
 function getDimensions(size?: string, width?: number | string, height?: number | string) {
   switch (size) {
+    case 'xs':
+      return { height: height ?? '1.75em', width: width ?? '7em', fontSize: '0.9em' }
     case 's':
       return { height: height ?? '2.25em', width: width ?? '9em' }
     case 'm':
@@ -130,7 +131,7 @@ export const transparentButtonStyles: Styles = {
 
 export const defaultButtonStyles: Styles = {
   ...transparentButtonStyles,
-  borderRadius: 3,
+  borderRadius: 4,
   color: Color.primaryWhite,
   backgroundColor: Color.primaryGreen,
   fontWeight: 500,

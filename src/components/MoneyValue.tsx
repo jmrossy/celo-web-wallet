@@ -1,53 +1,65 @@
 import { BigNumberish } from 'ethers'
-import { Currency, getCurrencyProps } from 'src/currency'
+import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
+import { Box } from 'src/components/layout/Box'
 import { Styles } from 'src/styles/types'
+import { Token } from 'src/tokens'
 import { fromWeiRounded } from 'src/utils/amount'
 
 interface MoneyValueProps {
   amountInWei: BigNumberish
-  currency: Currency
+  token: Token
   roundDownIfSmall?: boolean
   baseFontSize?: number // in em units
   margin?: string | number
-  hideSymbol?: boolean
+  symbolType?: 'text' | 'icon' | 'none'
   sign?: string // e.g. plus or minus symbol
   symbolCss?: Styles
   amountCss?: Styles
   containerCss?: Styles
   fontWeight?: number
+  iconSize?: 's' | 'm' | 'l'
 }
 
 export function MoneyValue(props: MoneyValueProps) {
   const {
     amountInWei,
-    currency,
+    token,
     roundDownIfSmall,
     baseFontSize,
     margin,
-    hideSymbol,
+    symbolType,
     sign,
     symbolCss,
     amountCss,
     containerCss,
     fontWeight,
+    iconSize,
   } = props
 
-  const { symbol, color } = getCurrencyProps(currency)
-  const fontStyles = getFonts(baseFontSize, fontWeight)
+  const { symbol: tokenSymbol, color } = token
+  const fontStyles = getFonts(baseFontSize, fontWeight, symbolType)
 
-  const formattedAmount = fromWeiRounded(amountInWei, currency, roundDownIfSmall)
+  const formattedAmount = fromWeiRounded(amountInWei, token, roundDownIfSmall)
   const isZero = formattedAmount === '0'
 
   return (
-    <span css={{ margin: margin, ...containerCss }}>
+    <Box
+      direction="row"
+      align={symbolType === 'icon' ? 'center' : 'end'}
+      styles={containerCss}
+      margin={margin}
+    >
       {!!sign && !isZero && <span css={fontStyles.amount}>{sign}</span>}
-      {!hideSymbol && <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{symbol}</span>}
-      <span css={{ ...fontStyles.amount, ...amountCss }}>{' ' + formattedAmount}</span>
-    </span>
+      {(!symbolType || symbolType === 'text') && (
+        <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{tokenSymbol}</span>
+      )}
+      {symbolType === 'icon' && <TokenIcon token={token} size={iconSize ?? 's'} />}
+      <span css={{ ...fontStyles.amount, ...amountCss }}>{formattedAmount}</span>
+    </Box>
   )
 }
 
-const getFonts = (baseSize?: number, weight?: number) => {
+const getFonts = (baseSize?: number, weight?: number, symbol?: string) => {
   return {
     symbol: {
       fontSize: baseSize ? `${baseSize * 0.8}em` : '0.8em',
@@ -56,6 +68,8 @@ const getFonts = (baseSize?: number, weight?: number) => {
     amount: {
       fontSize: baseSize ? `${baseSize}em` : '1em',
       fontWeight: weight ?? 400,
+      paddingLeft: '0.3em',
+      paddingBottom: symbol === 'icon' ? '0.1em' : undefined,
     },
   }
 }

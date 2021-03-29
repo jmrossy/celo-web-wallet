@@ -119,7 +119,7 @@ const style: Stylesheet = {
     flexDirection: 'column',
     alignContent: 'center',
     justifyContent: 'center',
-    zIndex: 100,
+    zIndex: 1000,
   },
   modal: {
     minWidth: '20em',

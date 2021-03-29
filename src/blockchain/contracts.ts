@@ -1,6 +1,7 @@
 import { Contract } from 'ethers'
 import { ABI as AccountsAbi } from 'src/blockchain/ABIs/accounts'
 import { ABI as ElectionAbi } from 'src/blockchain/ABIs/election'
+import { ABI as Erc20Abi } from 'src/blockchain/ABIs/erc20'
 import { ABI as EscrowAbi } from 'src/blockchain/ABIs/escrow'
 import { ABI as ExchangeAbi } from 'src/blockchain/ABIs/exchange'
 import { ABI as GoldTokenAbi } from 'src/blockchain/ABIs/goldToken'
@@ -11,21 +12,28 @@ import { ABI as StableTokenAbi } from 'src/blockchain/ABIs/stableToken'
 import { ABI as ValidatorsAbi } from 'src/blockchain/ABIs/validators'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { Currency } from 'src/currency'
 import { areAddressesEqual } from 'src/utils/addresses'
 
 let contractCache: Partial<Record<CeloContract, Contract>> = {}
+let tokenContractCache: Partial<Record<string, Contract>> = {} // token address to contract
 
 export function getContract(c: CeloContract) {
   const cachedContract = contractCache[c]
-  if (cachedContract) {
-    return cachedContract
-  }
+  if (cachedContract) return cachedContract
   const signer = getSigner().signer
   const address = config.contractAddresses[c]
   const abi = getContractAbi(c)
   const contract = new Contract(address, abi, signer)
   contractCache[c] = contract
+  return contract
+}
+
+export function getTokenContract(tokenAddress: string) {
+  const cachedContract = tokenContractCache[tokenAddress]
+  if (cachedContract) return cachedContract
+  const signer = getSigner().signer
+  const contract = new Contract(tokenAddress, Erc20Abi, signer)
+  tokenContractCache[tokenAddress] = contract
   return contract
 }
 
@@ -38,6 +46,7 @@ function getContractAbi(c: CeloContract) {
     case CeloContract.Escrow:
       return EscrowAbi
     case CeloContract.Exchange:
+    case CeloContract.ExchangeEUR:
       return ExchangeAbi
     case CeloContract.GoldToken:
       return GoldTokenAbi
@@ -48,6 +57,7 @@ function getContractAbi(c: CeloContract) {
     case CeloContract.SortedOracles:
       return SortedOraclesAbi
     case CeloContract.StableToken:
+    case CeloContract.StableTokenEUR:
       return StableTokenAbi
     case CeloContract.Validators:
       return ValidatorsAbi
@@ -56,26 +66,26 @@ function getContractAbi(c: CeloContract) {
   }
 }
 
-export function getContractName(address: string): string | null {
-  if (!address) return null
+export function getContractByAddress(address: string): Contract | null {
+  const name = getContractName(address)
+  if (name) return getContract(name)
+  else return null
+}
 
-  for (const [name, cAddress] of Object.entries(config.contractAddresses)) {
+export function getContractName(address: string): CeloContract | null {
+  if (!address) return null
+  const contractNames = Object.keys(config.contractAddresses) as Array<CeloContract> // Object.keys loses types
+  for (const name of contractNames) {
+    const cAddress = config.contractAddresses[name]
     if (areAddressesEqual(address, cAddress)) {
       return name
     }
   }
-
-  return null
-}
-
-export function getCurrencyFromContract(address: string): Currency | null {
-  const name = getContractName(address)
-  if (name === CeloContract.StableToken) return Currency.cUSD
-  if (name === CeloContract.GoldToken) return Currency.CELO
   return null
 }
 
 // Necessary if the signer changes, as in after a logout
 export function clearContractCache() {
   contractCache = {}
+  tokenContractCache = {}
 }

@@ -1,5 +1,4 @@
 import { createSelector } from '@reduxjs/toolkit'
-import { BigNumber } from 'ethers'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
@@ -14,6 +13,7 @@ import {
   setBackupReminderDismissed,
   setHighValueWarningDismissed,
 } from 'src/features/settings/settingsSlice'
+import { areBalancesEmpty, hasMinTokenBalance } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 
 export function HomeScreenWarnings() {
@@ -45,10 +45,7 @@ export const selectHomeScreenWarnings = createSelector(
   (state: RootState) => state.wallet.balances,
   (state: RootState) => state.wallet.type,
   (settings, balances, type) => {
-    const cUsd = BigNumber.from(balances.cUsd)
-    const celo = BigNumber.from(balances.celo)
-
-    if (!settings.backupReminderDismissed && (cUsd.gt(0) || celo.gt(0)))
+    if (!settings.backupReminderDismissed && !areBalancesEmpty(balances))
       return {
         key: 'backup',
         message: <AccountKeyReminder />,
@@ -56,7 +53,7 @@ export const selectHomeScreenWarnings = createSelector(
 
     if (
       settings.backupReminderDismissed &&
-      (cUsd.gte(HIGH_VALUE_THRESHOLD) || celo.gte(HIGH_VALUE_THRESHOLD)) &&
+      hasMinTokenBalance(HIGH_VALUE_THRESHOLD, balances) &&
       !settings.highValueWarningDismissed &&
       !config.isElectron &&
       type == SignerType.Local

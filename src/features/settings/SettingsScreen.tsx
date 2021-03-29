@@ -8,6 +8,7 @@ import { HrDivider } from 'src/components/HrDivider'
 import ArrowBackIcon from 'src/components/icons/arrow_back.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
+import PlusIcon from 'src/components/icons/plus.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MAX_SEND_TOKEN_SIZE, MAX_SEND_TOKEN_SIZE_LEDGER } from 'src/consts'
@@ -21,6 +22,10 @@ export function SettingsScreen() {
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  const onClickAddToken = () => {
+    navigate('/balances')
+  }
 
   const onClickBack = () => {
     navigate(-1)
@@ -76,6 +81,31 @@ export function SettingsScreen() {
           styles={style.toggleSettingContainer}
         >
           <div>
+            <h3 css={style.h3}>Add New Tokens</h3>
+            <div css={style.description}>
+              Any ERC-20 compatible tokens on Celo can be added to this wallet. See the Balance
+              Details screen to add more.
+            </div>
+          </div>
+          <div css={style.switchContainer}>
+            <Button
+              size="icon"
+              color={Color.altGrey}
+              icon={PlusIcon}
+              onClick={onClickAddToken}
+              width="2.5em"
+              height="2.5em"
+            />
+          </div>
+        </Box>
+        <Box
+          direction="row"
+          align="center"
+          justify="between"
+          margin="2.5em 0 0 0"
+          styles={style.toggleSettingContainer}
+        >
+          <div>
             <h3 css={style.h3}>Transaction Size Limits</h3>
             <div css={style.description}>
               {`This wallet can prevent large payments / exchanges. The limits are ${tokenLimitLocal} tokens for local accounts or ${tokenLimitLedger} for Ledger.`}
@@ -93,7 +123,7 @@ export function SettingsScreen() {
           color={Color.altGrey}
           icon={ArrowBackIcon}
           onClick={onClickBack}
-          margin="3.5em 0 1em 0"
+          margin="3.5em 0 0 0"
           width="9em"
         >
           Back
@@ -131,7 +161,7 @@ const style: Stylesheet = {
     marginTop: '1em',
     width: '20em',
     padding: '1em',
-    borderRadius: 3,
+    borderRadius: 4,
     border: `1px solid ${Color.primaryWhite}`,
     ':hover': {
       borderColor: Color.altGrey,

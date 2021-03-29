@@ -14,7 +14,6 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { StackedBarChart } from 'src/components/StackedBarChart'
-import { Currency } from 'src/currency'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { getResultChartData, getSummaryChartData } from 'src/features/validators/barCharts'
@@ -33,6 +32,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
+import { CELO } from 'src/tokens'
 import { shortenAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -115,7 +115,7 @@ export function StakeFormScreen() {
         groupVotes,
         values.groupAddress
       )
-      autoSetAmount = fromWeiRounded(maxAmount, Currency.CELO, true)
+      autoSetAmount = fromWeiRounded(maxAmount, CELO, true)
     } else {
       autoSetAmount = '0'
     }
@@ -130,7 +130,7 @@ export function StakeFormScreen() {
       groupVotes,
       values.groupAddress
     )
-    setValues({ ...values, amount: fromWeiRounded(maxAmount, Currency.CELO, true) })
+    setValues({ ...values, amount: fromWeiRounded(maxAmount, CELO, true) })
     resetErrors()
   }
 
@@ -295,7 +295,7 @@ function getInitialValues(
   // Auto use pending when defaulting to activate
   const initialAmount =
     groupAddress && groupVotes[groupAddress] && initialAction === StakeActionType.Activate
-      ? fromWeiRounded(groupVotes[groupAddress].pending, Currency.CELO, true)
+      ? fromWeiRounded(groupVotes[groupAddress].pending, CELO, true)
       : initialValues.amount
 
   return {
@@ -351,6 +351,7 @@ const style: Stylesheet = {
   },
   currentSummaryContainer: {
     background: Color.fillLighter,
+    borderRadius: 6,
     padding: '1.2em',
   },
 }

@@ -338,7 +338,7 @@ export function ModalTestScreen() {
 
       {isLoading && (
         <Button
-          styles={{ position: 'absolute', bottom: 0, right: 0, zIndex: 102 }}
+          styles={{ position: 'absolute', bottom: 0, right: 0, zIndex: 1002 }}
           onClick={dismissLoading}
         >
           Dismiss Working

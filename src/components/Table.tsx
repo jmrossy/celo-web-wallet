@@ -15,7 +15,7 @@ type DataElement = { id: string } & Record<string, any>
 interface Props<T extends DataElement> {
   columns: TableColumn[]
   data: T[]
-  ExpandedRow: FunctionComponent<{ row: T }>
+  ExpandedRow?: FunctionComponent<{ row: T }>
   initialSortBy?: string // column id
   isLoading?: boolean
 }
@@ -85,9 +85,9 @@ export function Table<T extends DataElement>(props: Props<T>) {
                 <tr onClick={() => onRowClick(row.id)}>
                   {columns.map((column, j) => {
                     return (
-                      <td key={`table-cell-${i}-${j}`} css={style.td}>
+                      <td key={`table-cell-${i}-${j}`} css={ExpandedRow ? tdExandable : style.td}>
                         <>
-                          {j === 0 && (
+                          {j === 0 && ExpandedRow && (
                             <ChevronIcon
                               width="8px"
                               height="6px"
@@ -101,7 +101,7 @@ export function Table<T extends DataElement>(props: Props<T>) {
                     )
                   })}
                 </tr>
-                {isExpanded && (
+                {ExpandedRow && isExpanded && (
                   <tr>
                     <td colSpan={columns.length}>
                       <ExpandedRow row={row} />
@@ -124,7 +124,13 @@ export function Table<T extends DataElement>(props: Props<T>) {
 
 function sortDataBy<T extends DataElement>(data: T[], columnId: string, decending: boolean) {
   return [...data].sort((a, b) => {
-    const order = decending ? a[columnId] > b[columnId] : a[columnId] <= b[columnId]
+    let aVal = a[columnId]
+    let bVal = b[columnId]
+    if (typeof aVal === 'string') {
+      aVal = aVal.toLowerCase()
+      bVal = bVal.toLowerCase()
+    }
+    const order = decending ? aVal > bVal : aVal <= bVal
     return order ? -1 : 1
   })
 }
@@ -173,7 +179,6 @@ const style: Stylesheet = {
     ...Font.body2,
     ...thTextAlign,
     paddingBottom: '1.75em',
-    cursor: 'pointer',
   },
   rowChevron: {
     marginRight: 12,
@@ -204,4 +209,9 @@ const headerThSelected: Styles = {
   ...style.headerTh,
   opacity: 0.9,
   paddingRight: 0,
+}
+
+const tdExandable: Styles = {
+  ...style.td,
+  cursor: 'pointer',
 }

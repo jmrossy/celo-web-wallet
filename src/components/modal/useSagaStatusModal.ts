@@ -12,7 +12,8 @@ export function useSagaStatus(
   errorTitle: string,
   errorMsg?: string,
   onSuccess?: () => void,
-  resetSagaOnSuccess = true
+  resetSagaOnSuccess = true,
+  showModalOnError = true
 ) {
   const dispatch = useDispatch()
   const sagaState = useSelector((s: RootState) => s.saga[sagaName])
@@ -32,7 +33,7 @@ export function useSagaStatus(
     if (status === SagaStatus.Success) {
       if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
       if (onSuccess) onSuccess()
-    } else if (status === SagaStatus.Failure) {
+    } else if (status === SagaStatus.Failure && showModalOnError) {
       showErrorModal(
         errorTitle,
         errorMsg || 'Something went wrong, sorry! Please try again.',

@@ -1,29 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ExchangeRate } from 'src/features/exchange/types'
+import { ToCeloRates } from 'src/features/exchange/types'
 
 export interface ExchangeState {
-  cUsdToCelo: ExchangeRate | null
-  cUsdToUsd: ExchangeRate | null
+  toCeloRates: ToCeloRates
 }
 
 export const exchangeInitialState: ExchangeState = {
-  cUsdToCelo: null,
-  cUsdToUsd: null,
+  toCeloRates: {},
 }
 
 const exchangeSlice = createSlice({
   name: 'exchange',
   initialState: exchangeInitialState,
   reducers: {
-    setCeloExchangeRate: (state, action: PayloadAction<ExchangeRate | null>) => {
-      state.cUsdToCelo = action.payload
+    setExchangeRates: (state, action: PayloadAction<ToCeloRates>) => {
+      state.toCeloRates = action.payload
     },
-    setUsdExchangeRate: (state, action: PayloadAction<ExchangeRate | null>) => {
-      state.cUsdToUsd = action.payload
-    },
+    resetExchangeRates: () => exchangeInitialState,
   },
 })
 
-export const { setCeloExchangeRate, setUsdExchangeRate } = exchangeSlice.actions
+export const { setExchangeRates, resetExchangeRates } = exchangeSlice.actions
 
 export const exchangeReducer = exchangeSlice.reducer

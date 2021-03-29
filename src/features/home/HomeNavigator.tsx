@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux'
+import { shallowEqual, useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
@@ -10,10 +10,13 @@ import { isAccountUnlocked } from 'src/features/pincode/pincode'
 import { isWalletInStorage } from 'src/features/wallet/storage'
 
 export function HomeNavigator() {
-  const { address, type, isUnlocked } = useSelector((s: RootState) => s.wallet)
+  // Using individual selects here to avoid re-renders in this high-level component
+  const address = useSelector((s: RootState) => s.wallet.address, shallowEqual)
+  const type = useSelector((s: RootState) => s.wallet.type, shallowEqual)
+  const isUnlocked = useSelector((s: RootState) => s.wallet.isUnlocked, shallowEqual)
 
   // TODO necessary until auto-timeout unlock is fully implemented
-  useSelector((s: RootState) => s.saga.pincode.status)
+  useSelector((s: RootState) => s.saga.pincode.status, shallowEqual)
 
   // If pin has been entered already
   // NOTE: isAccountUnlocked is for security reasons (so they can't just change a persisted value in the local storage)
