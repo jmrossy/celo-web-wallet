@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { Button } from 'src/components/buttons/Button'
@@ -60,10 +60,6 @@ export function ChangePincodeForm() {
   const onClickCancel = () => {
     navigate(-1)
   }
-
-  useLayoutEffect(() => {
-    dispatch(pincodeActions.reset())
-  }, [])
 
   const { showModalAsync } = useModal()
   const onSuccess = async () => {
