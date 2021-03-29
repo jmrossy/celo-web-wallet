@@ -9,7 +9,6 @@ import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/feed/components/TransactionPropertyGroup'
-import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { TokenExchangeTx } from 'src/features/types'
 import { useTokens } from 'src/features/wallet/utils'
 import { Stylesheet } from 'src/styles/types'
@@ -21,7 +20,6 @@ interface Props {
 
 export function TokenExchangeReview({ tx }: Props) {
   const tokens = useTokens()
-  const { feeValue, feeCurrency } = getFeeFromConfirmedTx(tx)
   const rate = computeToCeloRate(tx)
 
   return (

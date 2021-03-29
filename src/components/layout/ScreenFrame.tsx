@@ -93,9 +93,9 @@ function DesktopHome(props: PropsWithChildren<DesktopHomeProps>) {
         <NavButtonRow disabled={props.isWalletEmpty} />
         <TransactionFeed />
       </Box>
-      <div css={style.childContent}>
+      <div css={style.childContentContainer}>
         {!props.hideWarnings && <HomeScreenWarnings />}
-        <div>{props.children}</div>
+        <div css={style.childContent}>{props.children}</div>
       </div>
     </Box>
   )
@@ -153,7 +153,7 @@ function MobileNotHome(props: PropsWithChildren<any>) {
         </Button>
         <TransactionFeed feedState="collapsed" />
       </Box>
-      <div css={style.childContent}>{props.children}</div>
+      <div css={style.childContentContainer}>{props.children}</div>
     </Box>
   )
 }
@@ -182,12 +182,12 @@ const style: Stylesheet = {
     width: '4em',
     borderRight: `1px solid ${Color.borderLight}`,
   },
-  childContent: {
+  childContentContainer: {
     overflow: 'auto',
     flex: 1,
-    '& > div': {
-      height: '100%',
-    },
+  },
+  childContent: {
+    height: '100%',
   },
   childContentNoFeed: {
     overflow: 'auto',

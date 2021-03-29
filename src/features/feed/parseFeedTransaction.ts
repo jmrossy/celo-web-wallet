@@ -602,7 +602,7 @@ function tokenSymbolToTokenId(
   symbol: string | null | undefined,
   tokens: Record<string, Token> | INativeTokens = NativeTokens
 ): string {
-  if (!symbol) return CELO.id
+  if (!symbol || symbol.toLowerCase() === 'cgld') return CELO.id
   for (const token of Object.values(tokens)) {
     if (symbol.toLowerCase() === token.id.toLowerCase()) return token.id
   }
