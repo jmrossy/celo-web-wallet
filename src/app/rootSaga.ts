@@ -106,6 +106,12 @@ import {
   importWalletSaga,
   importWalletSagaName,
 } from 'src/features/wallet/importWallet'
+import {
+  sendWalletConnectTxActions,
+  sendWalletConnectTxReducer,
+  sendWalletConnectTxSaga,
+  sendWalletConnectTxSagaName,
+} from 'src/features/walletConnect/walletConnect'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
@@ -204,6 +210,11 @@ export const monitoredSagas: {
     saga: governanceVoteSaga,
     reducer: governanceVoteReducer,
     actions: governanceVoteActions,
+  },
+  [sendWalletConnectTxSagaName]: {
+    saga: sendWalletConnectTxSaga,
+    reducer: sendWalletConnectTxReducer,
+    actions: sendWalletConnectTxActions,
   },
   [logoutSagaName]: {
     saga: logoutSaga,

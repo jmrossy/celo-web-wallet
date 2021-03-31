@@ -3,6 +3,7 @@ import { GovernanceVoteParams } from 'src/features/governance/types'
 import { LockTokenParams } from 'src/features/lock/types'
 import { SendTokenParams } from 'src/features/send/types'
 import { StakeTokenParams } from 'src/features/validators/types'
+import { WalletConnectParams } from 'src/features/walletConnect/types'
 
 // As new tx flows are added, an entry must be added here
 // This allows code reuse across the different flows
@@ -12,6 +13,7 @@ export enum TxFlowType {
   Lock,
   Stake,
   Governance,
+  WalletConnect,
 }
 
 export interface SendFlowTx {
@@ -39,9 +41,15 @@ export interface GovernanceFlowTx {
   params: GovernanceVoteParams
 }
 
+export interface WalletConnectFlowTx {
+  type: TxFlowType.WalletConnect
+  params: WalletConnectParams
+}
+
 export type TxFlowTransaction =
   | SendFlowTx
   | ExchangeFlowTx
   | LockFlowTx
   | StakeFlowTx
   | GovernanceFlowTx
+  | WalletConnectFlowTx

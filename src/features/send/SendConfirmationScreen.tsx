@@ -21,6 +21,7 @@ import {
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
+import { useTokens } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -32,8 +33,8 @@ export function SendConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const tokens = useTokens()
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
-  const tokens = useSelector((state: RootState) => state.wallet.balances.tokens)
 
   useEffect(() => {
     // Make sure we belong on this screen
