@@ -14,9 +14,12 @@ export function HomeNavigator() {
   const address = useSelector((s: RootState) => s.wallet.address, shallowEqual)
   const type = useSelector((s: RootState) => s.wallet.type, shallowEqual)
   const isUnlocked = useSelector((s: RootState) => s.wallet.isUnlocked, shallowEqual)
-
   // TODO necessary until auto-timeout unlock is fully implemented
   useSelector((s: RootState) => s.saga.pincode.status, shallowEqual)
+
+  // Force navigation to fail screen if providers are unable to connect
+  const isConnected = useSelector((s: RootState) => s.wallet.isConnected, shallowEqual)
+  if (isConnected === false) throw new Error('Unable to connect to network.')
 
   // If pin has been entered already
   // NOTE: isAccountUnlocked is for security reasons (so they can't just change a persisted value in the local storage)
