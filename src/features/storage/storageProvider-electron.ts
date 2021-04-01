@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { StorageProvider } from 'src/features/storage/types'
 import { logger } from 'src/utils/logger'
-import { sleep } from 'src/utils/sleep'
+import { sleep } from 'src/utils/promises'
 
 let defaultCwd: string
 

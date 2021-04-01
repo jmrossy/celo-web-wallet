@@ -1,7 +1,9 @@
 import { CeloProvider } from '@celo-tools/celo-ethers-wrapper'
 import { config } from 'src/config'
+import { setIsConnected } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
-import { sleep } from 'src/utils/sleep'
+import { promiseTimeout, sleep } from 'src/utils/promises'
+import { call, put } from 'typed-redux-saga'
 
 let provider: CeloProvider | undefined
 
@@ -9,7 +11,17 @@ export function isProviderSet() {
   return !!provider
 }
 
-export async function connectToProvider() {
+export function* initProvider() {
+  try {
+    yield* call(connectToProvider)
+    yield* put(setIsConnected(true))
+  } catch (error) {
+    logger.error('Unable to connect to provider', error)
+    yield* put(setIsConnected(false))
+  }
+}
+
+async function connectToProvider() {
   const { jsonRpcUrlPrimary, jsonRpcUrlSecondary } = config
 
   let connectionResult = await connectToJsonRpcProvider(jsonRpcUrlPrimary)
@@ -19,27 +31,33 @@ export async function connectToProvider() {
   }
 
   if (!connectionResult) {
-    // TODO need to force to fail screen here, errors get swallowed by saga
-    throw new Error('Provider failed to connect')
+    throw new Error('All json rpc providers failed to connect')
   }
 }
 
 async function connectToJsonRpcProvider(url: string) {
-  logger.info(`Connecting to json rpc provider: ${url}`)
-  provider = new CeloProvider(url)
-  for (let i = 0; i < 3; i++) {
-    const [latestBlock, network, ready] = await Promise.all([
-      provider.getBlockNumber(),
-      provider.getNetwork(),
-      provider.ready,
-    ])
-    if (latestBlock > 0 && network?.chainId === config.chainId && ready) {
-      logger.info('Provider is connected')
-      return true
+  try {
+    logger.info(`Connecting to json rpc provider: ${url}`)
+    provider = new CeloProvider(url)
+    for (let i = 0; i < 3; i++) {
+      const providerStateP = Promise.all([provider.getBlockNumber(), provider.getNetwork()])
+      const providerState = await promiseTimeout(providerStateP, 1000)
+      if (providerState) {
+        const [latestBlock, network] = providerState
+        if (latestBlock > 0 && network?.chainId === config.chainId) {
+          logger.info('Provider is connected')
+          return true
+        }
+      }
+      // Otherwise wait a bit and then try again
+      await sleep(1000)
     }
-    await sleep(1000)
+    throw new Error('Unable to sync after 3 attempts')
+  } catch (error) {
+    logger.error(`Failed to connect to json rpc provider: ${url}`, error)
+    clearProvider()
+    return false
   }
-  return false
 }
 
 export function getProvider() {

@@ -10,6 +10,7 @@ import { CELO, cEUR, cUSD, Token } from 'src/tokens'
 import { assert } from 'src/utils/validation'
 
 interface Wallet {
+  isConnected: boolean | null
   address: string | null
   type: SignerType | null
   derivationPath: string | null
@@ -34,6 +35,7 @@ interface AccountStatus {
 }
 
 export const walletInitialState: Wallet = {
+  isConnected: null,
   address: null,
   type: null,
   derivationPath: null,
@@ -73,6 +75,9 @@ const walletSlice = createSlice({
   name: 'wallet',
   initialState: walletInitialState,
   reducers: {
+    setIsConnected: (state, action: PayloadAction<boolean>) => {
+      state.isConnected = action.payload
+    },
     setAddress: (state, action: PayloadAction<SetWalletAction>) => {
       const { address, type, derivationPath } = action.payload
       assert(address && address.length === 42, `Invalid address ${address}`)
@@ -126,6 +131,7 @@ const walletSlice = createSlice({
 })
 
 export const {
+  setIsConnected,
   setAddress,
   updateBalances,
   setAccountStatus,

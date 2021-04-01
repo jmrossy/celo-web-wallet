@@ -9,7 +9,7 @@ import { getLedgerTransport } from 'src/features/ledger/ledgerTransport'
 import { getTokenData } from 'src/features/ledger/tokenData'
 import { areAddressesEqual, ensureLeading0x, trimLeading0x } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
-import { sleep } from 'src/utils/sleep'
+import { sleep } from 'src/utils/promises'
 
 // Based partly on https://github.com/ethers-io/ethers.js/blob/master/packages/hardware-wallets/src.ts/ledger.ts
 // But with customizations for the Celo network and for electron

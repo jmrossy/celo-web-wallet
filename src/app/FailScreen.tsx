@@ -20,39 +20,47 @@ export class ErrorBoundary extends Component<any, ErrorBoundaryState> {
 
   componentDidCatch(error: any, errorInfo: any) {
     this.setState({
-      error: error,
-      errorInfo: errorInfo,
+      error,
+      errorInfo,
     })
     logger.error('Error caught by error boundary', error, errorInfo)
   }
 
   render() {
-    if (this.state.errorInfo) {
-      return <FailScreen />
+    const errorInfo = this.state.error || this.state.errorInfo
+    if (errorInfo) {
+      const details = errorInfo.message || JSON.stringify(errorInfo)
+      return <FailScreen details={details.substr(0, 100)} />
     }
     return this.props.children
   }
 }
 
-export function FailScreen() {
+export function FailScreen({ details }: { details?: string }) {
   return (
     <OnboardingScreenFrame>
       <h1 css={Font.h1}>Something went wrong, sorry!</h1>
-      <img width="200em" src={SadFace} alt="Sad Face" css={style.img} />
+      <img width="180em" src={SadFace} alt="Sad Face" css={style.img} />
       <h3 css={style.h3}>
         Please refresh the page. If the problem persists, you can{' '}
         <TextLink link={config.discordUrl}>ask for help here</TextLink>.
       </h3>
+      {details && <p css={style.details}>{details}</p>}
     </OnboardingScreenFrame>
   )
 }
 
 const style: Stylesheet = {
   img: {
-    margin: '2.5em',
+    margin: '1.5em',
   },
   h3: {
     ...Font.h3,
+    textAlign: 'center',
+  },
+  details: {
+    ...Font.subtitle,
+    fontSize: '1.1em',
     textAlign: 'center',
   },
 }

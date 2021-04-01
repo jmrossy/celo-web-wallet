@@ -1,7 +1,7 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
 import { logoutActions, logoutReducer, logoutSaga, logoutSagaName } from 'src/app/logout/logout'
-import { connectToProvider } from 'src/blockchain/provider'
+import { initProvider } from 'src/blockchain/provider'
 import {
   fetchExchangeRateActions,
   fetchExchangeRateReducer,
@@ -115,7 +115,7 @@ import {
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
-  yield call(connectToProvider)
+  yield call(initProvider)
   yield call(importDefaultAccount)
 }
 
