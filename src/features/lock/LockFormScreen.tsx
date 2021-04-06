@@ -44,6 +44,7 @@ export function LockFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
+  const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
   const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
 
@@ -101,7 +102,10 @@ export function LockFormScreen() {
     resetErrors()
   }
 
-  const summaryData = useMemo(() => getSummaryChartData(balances), [balances])
+  const summaryData = useMemo(() => getSummaryChartData(balances, pendingWithdrawals), [
+    balances,
+    pendingWithdrawals,
+  ])
   const resultData = useMemo(() => getResultChartData(balances, amountFieldToWei(values)), [
     balances,
     values,

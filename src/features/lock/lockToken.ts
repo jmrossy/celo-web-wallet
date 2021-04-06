@@ -102,7 +102,10 @@ export function validate(
   // Ensure user isn't trying to unlock CELO used for staking
   if (action === LockActionType.Unlock) {
     const nonVotingLocked = getTotalNonvotingLocked(balances, groupVotes)
-    if (nonVotingLocked.lt(amountInWei)) {
+    if (
+      nonVotingLocked.lt(amountInWei) &&
+      !areAmountsNearlyEqual(nonVotingLocked, amountInWei, CELO)
+    ) {
       errors = {
         ...errors,
         ...invalidInput('stakedCelo', 'Locked funds in use for staking'),
@@ -214,7 +217,7 @@ export function getLockActionTxPlan(
     // Need relock from the pendings in reverse order
     // due to the way the storage is managed in the contract
     let amountRemaining = BigNumber.from(amountInWei)
-    const pwSorted = pendingWithdrawals.sort((a, b) => b.index - a.index)
+    const pwSorted = [...pendingWithdrawals].sort((a, b) => b.index - a.index)
     for (const p of pwSorted) {
       if (amountRemaining.lt(MIN_LOCK_AMOUNT)) break
       const txAmount = BigNumberMin(amountRemaining, BigNumber.from(p.value))

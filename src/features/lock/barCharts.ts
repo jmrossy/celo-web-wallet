@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import { LockActionType, LockTokenParams } from 'src/features/lock/types'
+import { LockActionType, LockTokenParams, PendingWithdrawal } from 'src/features/lock/types'
 import { getTotalCelo, getTotalPendingCelo, hasPendingCelo } from 'src/features/lock/utils'
 import { Balances } from 'src/features/wallet/types'
 import { Color } from 'src/styles/Color'
@@ -11,8 +11,7 @@ function fromWei(value: BigNumberish) {
   return parseFloat(fromWeiRounded(value, CELO, true))
 }
 
-export function getSummaryChartData(balances: Balances) {
-  const hasPending = hasPendingCelo(balances)
+export function getSummaryChartData(balances: Balances, pendingWithdrawals: PendingWithdrawal[]) {
   const total = getTotalCelo(balances)
 
   const unlocked = {
@@ -26,26 +25,41 @@ export function getSummaryChartData(balances: Balances) {
     color: Color.altGrey,
     labelColor: Color.chartGrey,
   }
-  const pending = hasPending
-    ? [
-        {
-          label: 'Pending (Free)',
-          value: fromWei(balances.lockedCelo.pendingFree),
-          color: Color.chartBlueGreen,
-        },
-        {
-          label: 'Pending (On Hold)',
-          value: fromWei(balances.lockedCelo.pendingBlocked),
+
+  const pending = []
+  if (hasPendingCelo(balances)) {
+    const pendingFree = BigNumber.from(balances.lockedCelo.pendingFree)
+    if (pendingFree.gt(0)) {
+      pending.push({
+        label: 'Ready to withdraw',
+        value: fromWei(pendingFree),
+        color: Color.accentBlue,
+      })
+    }
+    const now = Date.now()
+    const timeFormat = new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    })
+    pendingWithdrawals
+      .filter((p) => p.timestamp > now)
+      .forEach((p) =>
+        pending.push({
+          label: `Pending (${timeFormat.format(new Date(p.timestamp))})`,
+          value: fromWei(p.value),
           color: Color.accentBlue,
-        },
-      ]
-    : [
-        {
-          label: 'Pending',
-          value: 0,
-          color: Color.accentBlue,
-        },
-      ]
+        })
+      )
+  } else {
+    pending.push({
+      label: 'Pending',
+      value: 0,
+      color: Color.accentBlue,
+    })
+  }
 
   return {
     data: [unlocked, ...pending, locked],
