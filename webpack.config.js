@@ -90,6 +90,10 @@ const config = {
     },
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
     modules: [path.resolve('./node_modules'), path.resolve('./')],
+    fallback: {
+      crypto: require.resolve('crypto-browserify'),
+      stream: require.resolve('stream-browserify'),
+    },
   },
   plugins: [
     // Copy over static files
