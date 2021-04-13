@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { config } from 'src/config'
 import { useTokens } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -17,14 +16,7 @@ export function BalanceSummary() {
   if (windowWidth && windowWidth > 550) numItems = 3
   if (windowWidth && windowWidth > 1024) numItems = 4
 
-  let tokens = useTokens()
-  // TODO-cEUR remove when activated
-  if (config.chainId === 42220) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { cEUR, ...rest } = tokens
-    // @ts-ignore
-    tokens = rest
-  }
+  const tokens = useTokens()
 
   const { tokensToShow, hiddenTokens } = useMemo(() => {
     const sortedTokens = Object.values(tokens).sort((t1, t2) => {
