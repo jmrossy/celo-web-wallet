@@ -1,8 +1,11 @@
 import { CeloProvider } from '@celo-tools/celo-ethers-wrapper'
+import { providers } from 'ethers'
 import { config } from 'src/config'
+import { STALE_BLOCK_TIME } from 'src/consts'
 import { setIsConnected } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { promiseTimeout, sleep } from 'src/utils/promises'
+import { isStale } from 'src/utils/time'
 import { call, put } from 'typed-redux-saga'
 
 let provider: CeloProvider | undefined
@@ -40,14 +43,11 @@ async function connectToJsonRpcProvider(url: string) {
     logger.info(`Connecting to json rpc provider: ${url}`)
     provider = new CeloProvider(url)
     for (let i = 0; i < 3; i++) {
-      const providerStateP = Promise.all([provider.getBlockNumber(), provider.getNetwork()])
-      const providerState = await promiseTimeout(providerStateP, 1000)
-      if (providerState) {
-        const [latestBlock, network] = providerState
-        if (latestBlock > 0 && network?.chainId === config.chainId) {
-          logger.info('Provider is connected')
-          return true
-        }
+      const blockAndNetworkP = Promise.all([provider.getBlock('latest'), provider.getNetwork()])
+      const blockAndNetwork = await promiseTimeout(blockAndNetworkP, 1000)
+      if (blockAndNetwork && isProviderSynced(blockAndNetwork[0], blockAndNetwork[1])) {
+        logger.info('Provider is connected')
+        return true
       }
       // Otherwise wait a bit and then try again
       await sleep(1000)
@@ -58,6 +58,17 @@ async function connectToJsonRpcProvider(url: string) {
     clearProvider()
     return false
   }
+}
+
+function isProviderSynced(block?: providers.Block, network?: providers.Network) {
+  return (
+    block &&
+    block.number &&
+    block.timestamp &&
+    !isStale(block.timestamp * 1000, STALE_BLOCK_TIME) &&
+    network &&
+    network.chainId === config.chainId
+  )
 }
 
 export function getProvider() {

@@ -3,6 +3,7 @@ import { AVG_BLOCK_TIMES } from 'src/consts'
 import { logger } from 'src/utils/logger'
 
 export interface LatestBlockDetails {
+  nodeUrl: string
   number: number
   timestamp: number
 }
@@ -11,6 +12,7 @@ export async function getLatestBlockDetails(): Promise<LatestBlockDetails | null
   if (!isProviderSet()) return null
 
   const provider = getProvider()
+  const nodeUrl = provider.connection?.url
   const block = await provider.getBlock('latest')
   if (!block || !block.number) {
     logger.warn('Latest block is not valid')
@@ -18,6 +20,7 @@ export async function getLatestBlockDetails(): Promise<LatestBlockDetails | null
   }
 
   return {
+    nodeUrl,
     number: block.number,
     timestamp: block.timestamp,
   }
