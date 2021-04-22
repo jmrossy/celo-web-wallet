@@ -1,6 +1,6 @@
 import { logger } from 'ethers'
 import { config } from 'src/config'
-import { areAddressesEqual, ensureLeading0x } from 'src/utils/addresses'
+import { ensureLeading0x } from 'src/utils/addresses'
 
 // From https://github.com/celo-org/celo-monorepo/blob/master/packages%2Fsdk%2Fwallets%2Fwallet-ledger%2Fsrc%2Fdata.ts
 const ERC_20_TOKEN_DATA =
@@ -19,11 +19,7 @@ export interface TokenInfo {
 let tokenDataCache: Record<string, TokenInfo> | null = null
 
 export function getTokenData(tokenAddress?: string) {
-  if (
-    !tokenAddress ||
-    (!areAddressesEqual(tokenAddress, config.contractAddresses.StableToken) &&
-      !areAddressesEqual(tokenAddress, config.contractAddresses.GoldToken))
-  ) {
+  if (!tokenAddress) {
     return null
   }
 
@@ -65,7 +61,7 @@ export function getTokenData(tokenAddress?: string) {
   const tokenData = tokenDataCache[tokenAddress.toLowerCase()]
   if (!tokenData) {
     // Note, there's no data for Alfajores atm, only Mainnet
-    logger.warn(`No token data found for ${tokenAddress}`)
+    logger.debug(`No token data found for ${tokenAddress}`)
     return null
   }
   return tokenData
