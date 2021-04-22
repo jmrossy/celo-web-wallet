@@ -3,11 +3,10 @@ import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { SelectInput, SelectOption } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
-import { config } from 'src/config'
 import { useTokens } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { cEUR, isNativeToken } from 'src/tokens'
+import { isNativeToken } from 'src/tokens'
 import { ErrorState } from 'src/utils/validation'
 
 interface Props {
@@ -43,8 +42,6 @@ export const AmountAndCurrencyInput = (props: Props) => {
     () =>
       Object.values(tokens)
         .filter((t) => (nativeTokensOnly ? isNativeToken(t.id) : true))
-        // TODO-cEUR remove when activated
-        .filter((t) => t.id !== cEUR.id || config.chainId === 44787)
         .map((t) => ({
           display: t.symbol,
           value: t.id,

@@ -5,15 +5,13 @@ import { Box } from 'src/components/layout/Box'
 import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
+import { CONNECTION_CHECK_INTERVAL, STALE_BLOCK_TIME } from 'src/consts'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'
 import { isStale, useInterval } from 'src/utils/time'
-
-const CONNECTION_CHECK_INTERVAL = 15000
-const STALE_BLOCK_TIME = 20000
 
 export function ConnectionStatusLink() {
   const [latestBlock, setLatestBlock] = useState<LatestBlockDetails | null | undefined>(undefined)
@@ -78,11 +76,12 @@ export const ConnectionStatus = () => {
   }
 
   const { chainId, jsonRpcUrlPrimary } = config
+  const nodeUrl = latestBlock?.nodeUrl || jsonRpcUrlPrimary
 
   return (
     <Box direction="column" align="center" styles={style.container}>
       <p css={{ color: `${summaryColor} !important` }}>{summary}</p>
-      <p>Node: {jsonRpcUrlPrimary}</p>
+      <p>Node: {nodeUrl}</p>
       <p>Last Block Number: {block}</p>
       <p>Chain ID: {chainId}</p>
     </Box>

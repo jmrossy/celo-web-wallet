@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { persistReducer } from 'redux-persist'
+import { createMigrate, persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import { SignerType } from 'src/blockchain/signer'
@@ -145,12 +145,38 @@ export const {
 } = walletSlice.actions
 const walletReducer = walletSlice.reducer
 
+const migrations = {
+  // Typings don't work well for migrations:
+  // https://github.com/rt2zz/redux-persist/issues/1065
+  0: (state: any) => {
+    // Migration to fix symbol to label rename
+    const tokens: any = {}
+    for (const t of Object.keys(state.balances.tokens)) {
+      const previous = state.balances.tokens[t]
+      tokens[t] = {
+        ...previous,
+        symbol: previous.symbol || previous.label || '??',
+      }
+    }
+    return {
+      ...state,
+      balances: {
+        ...state.balances,
+        tokens,
+      },
+    }
+  },
+}
+
 const walletPersistConfig = {
   key: 'wallet',
   storage: storage,
   stateReconciler: autoMergeLevel2,
   whitelist: ['address', 'balances', 'type', 'derivationPath', 'secretType', 'account'], //we don't want to persist everything in the wallet store
+  version: 0, // -1 is default
+  migrate: createMigrate(migrations),
 }
+
 export const persistedWalletReducer = persistReducer<ReturnType<typeof walletReducer>>(
   walletPersistConfig,
   walletReducer
