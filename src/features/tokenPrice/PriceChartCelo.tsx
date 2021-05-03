@@ -64,7 +64,7 @@ export function PriceChartCelo(props: PriceChartProps) {
           {headerRate ? (
             <label css={style.text}>{`$${headerRate.toFixed(2)} (USD)`}</label>
           ) : (
-            <label css={style.text}>{`Unknown`}</label>
+            <label css={style.text}>Loading...</label>
           )}
         </Box>
       )}

@@ -2,6 +2,7 @@
     "compilerOptions": {
         "allowJs": true,
         "allowSyntheticDefaultImports": false,
+        "alwaysStrict": true,
         "baseUrl": ".",
         "incremental": true,
         "jsx": "preserve",

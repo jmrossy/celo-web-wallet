@@ -1,4 +1,5 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
+import { WEI_PER_UNIT } from 'src/consts'
 import { FeeEstimate } from 'src/features/fees/types'
 import { getTotalFee } from 'src/features/fees/utils'
 import { Balances } from 'src/features/wallet/types'
@@ -176,7 +177,16 @@ export function fromWeiRounded(
 
 export function toWei(value: BigNumberish | null | undefined): BigNumber {
   if (!value) return BigNumber.from(0)
-  return utils.parseEther('' + value)
+  const valueString = value.toString()
+  const components = valueString.split('.')
+  if (components.length === 1) {
+    return utils.parseEther(valueString)
+  } else if (components.length === 2) {
+    const trimmedFraction = components[1].substring(0, WEI_PER_UNIT.length - 1)
+    return utils.parseEther(`${components[0]}.${trimmedFraction}`)
+  } else {
+    throw new Error(`Cannot convert ${valueString} to wei`)
+  }
 }
 
 // Take an object with an amount field and convert it to amountInWei
