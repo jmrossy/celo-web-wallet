@@ -44,7 +44,7 @@ export function useModal() {
     } else {
       errorMsg = JSON.stringify(error)
     }
-    errorMsg = trimToLength(errorMsg, 100)
+    errorMsg = trimToLength(errorMsg, 80)
 
     const modalProps: ModalProps = {
       head,

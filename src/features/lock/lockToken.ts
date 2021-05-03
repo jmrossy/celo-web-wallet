@@ -230,7 +230,7 @@ export function getLockActionTxPlan(
       amountRemaining = amountRemaining.sub(adjustedAmount)
     }
     // If pending relocks didn't cover it
-    if (amountRemaining.gt(MIN_LOCK_AMOUNT)) {
+    if (amountRemaining.gte(MIN_LOCK_AMOUNT)) {
       txs.push({ type: TransactionType.LockCelo, amountInWei: amountRemaining.toString() })
     }
     return txs
