@@ -10,7 +10,8 @@ import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { isValidDerivationPath, isValidMnemonic } from 'src/features/wallet/utils'
-import { setAddress } from 'src/features/wallet/walletSlice'
+import { clearWalletCache, setAddress } from 'src/features/wallet/walletSlice'
+import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -57,8 +58,9 @@ export function* onWalletImport(newAddress: string, type: SignerType, derivation
   yield* put(setBackupReminderDismissed(true)) // Dismiss reminder about account key backup
   yield* put(fetchBalancesActions.trigger())
 
-  if (currentAddress !== newAddress) {
-    logger.debug('New address does not match current one in store, resetting feed')
+  if (currentAddress && !areAddressesEqual(currentAddress, newAddress)) {
+    logger.debug('New address does not match current one in store')
+    yield* put(clearWalletCache())
     yield* put(resetFeed())
   }
   yield* put(fetchFeedActions.trigger())

@@ -89,10 +89,6 @@ const walletSlice = createSlice({
       state.address = address
       state.type = type
       state.derivationPath = derivationPath
-      // Reset some account-specific state that may be stale leftover from last account
-      state.balances = walletInitialState.balances
-      state.account = walletInitialState.account
-      state.voterBalances = walletInitialState.voterBalances
     },
     setDerivationPath: (state, action: PayloadAction<string>) => {
       const derivationPath = action.payload
@@ -135,6 +131,12 @@ const walletSlice = createSlice({
       delete newTokens[tokenId]
       state.balances.tokens = newTokens
     },
+    clearWalletCache: (state) => {
+      // Reset some account-specific state that may be stale
+      state.balances = walletInitialState.balances
+      state.account = walletInitialState.account
+      state.voterBalances = walletInitialState.voterBalances
+    },
     resetWallet: () => walletInitialState,
   },
 })
@@ -151,6 +153,7 @@ export const {
   setSecretType,
   addToken,
   removeToken,
+  clearWalletCache,
   resetWallet,
 } = walletSlice.actions
 const walletReducer = walletSlice.reducer
