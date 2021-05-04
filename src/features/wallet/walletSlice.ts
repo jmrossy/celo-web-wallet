@@ -11,14 +11,14 @@ import { assert } from 'src/utils/validation'
 
 interface Wallet {
   isConnected: boolean | null
+  isUnlocked: boolean
   address: string | null
   type: SignerType | null
   derivationPath: string | null
+  secretType: SecretType | null
   balances: Balances
   account: AccountStatus
   voterBalances: Balances | null // if account is vote signer for another, balance of voter
-  secretType: SecretType | null
-  isUnlocked: boolean
 }
 
 interface SetWalletAction {
@@ -36,9 +36,11 @@ interface AccountStatus {
 
 export const walletInitialState: Wallet = {
   isConnected: null,
+  isUnlocked: false,
   address: null,
   type: null,
   derivationPath: null,
+  secretType: null,
   balances: {
     tokens: {
       CELO: {
@@ -67,8 +69,6 @@ export const walletInitialState: Wallet = {
     lastUpdated: null,
   },
   voterBalances: null,
-  secretType: null,
-  isUnlocked: false,
 }
 
 const walletSlice = createSlice({
@@ -85,6 +85,11 @@ const walletSlice = createSlice({
       assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
       state.address = address
       state.type = type
+      state.derivationPath = derivationPath
+    },
+    setDerivationPath: (state, action: PayloadAction<string>) => {
+      const derivationPath = action.payload
+      assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
       state.derivationPath = derivationPath
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {
@@ -133,6 +138,7 @@ const walletSlice = createSlice({
 export const {
   setIsConnected,
   setAddress,
+  setDerivationPath,
   updateBalances,
   setAccountStatus,
   setAccountIsRegistered,

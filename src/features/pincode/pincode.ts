@@ -1,11 +1,17 @@
 import { RootState } from 'src/app/rootReducer'
 import { isSignerSet } from 'src/blockchain/signer'
-import { ACCOUNT_UNLOCK_TIMEOUT } from 'src/consts'
+import { ACCOUNT_UNLOCK_TIMEOUT, CELO_DERIVATION_PATH } from 'src/consts'
+import { resetFeed } from 'src/features/feed/feedSlice'
 import { PincodeAction, SecretType } from 'src/features/pincode/types'
 import { isSecretTooSimple, secretTypeToLabel } from 'src/features/pincode/utils'
 import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage'
-import { setSecretType, setWalletUnlocked } from 'src/features/wallet/walletSlice'
+import {
+  resetWallet,
+  setDerivationPath,
+  setSecretType,
+  setWalletUnlocked,
+} from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -88,6 +94,8 @@ function* pincode(params: PincodeParams) {
     yield* call(setPin, value, type)
   } else if (action === PincodeAction.Unlock) {
     yield* call(unlockWallet, value, type)
+  } else if (action === PincodeAction.UnlockAndRecover) {
+    yield* call(unlockAndRecoverWallet, value, type)
   } else if (action === PincodeAction.Change) {
     if (!newValue) throw new Error('Missing new value')
     yield* call(changePin, value, newValue, type)
@@ -133,6 +141,20 @@ function* unlockWallet(pin: string, type: SecretType) {
     yield* call(importWallet, { mnemonic, derivationPath })
   }
   yield* put(setWalletUnlocked(true))
+}
+
+// In rare cases, redux-persist seems to loses some persisted state, possibly due to
+// bad migrations. But the key is safe. This handles that case.
+// Note, if ever there is crucial state stored in a slice other than walletSlice, this would
+// need to account for that.
+function* unlockAndRecoverWallet(pin: string, type: SecretType) {
+  yield* put(resetWallet())
+  yield* put(resetFeed())
+  yield* put(setSecretType(type))
+  // Note, this assumes the wallet was using the default Celo derivation path
+  // TODO consider adding derivation path field to enter pincode screen in this recovery case.
+  yield* put(setDerivationPath(CELO_DERIVATION_PATH + '/0'))
+  yield* call(unlockWallet, pin, type)
 }
 
 function* changePin(existingPin: string, newPin: string, type: SecretType) {

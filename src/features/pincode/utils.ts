@@ -40,6 +40,5 @@ export function secretTypeToLabel(type: SecretType | undefined) {
 
 export function useSecretType() {
   const currentSecretType = useSelector((s: RootState) => s.wallet.secretType)
-  // TODO change this default to 'password' when migration bit is removed from home screen
-  return currentSecretType ?? 'pincode'
+  return currentSecretType ?? 'password'
 }
