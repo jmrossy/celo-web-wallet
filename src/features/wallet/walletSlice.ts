@@ -78,6 +78,9 @@ const walletSlice = createSlice({
     setIsConnected: (state, action: PayloadAction<boolean>) => {
       state.isConnected = action.payload
     },
+    setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
+      state.isUnlocked = action.payload
+    },
     setAddress: (state, action: PayloadAction<SetWalletAction>) => {
       const { address, type, derivationPath } = action.payload
       assert(address && address.length === 42, `Invalid address ${address}`)
@@ -86,11 +89,23 @@ const walletSlice = createSlice({
       state.address = address
       state.type = type
       state.derivationPath = derivationPath
+      // Reset some account-specific state that may be stale leftover from last account
+      state.balances = walletInitialState.balances
+      state.account = walletInitialState.account
+      state.voterBalances = walletInitialState.voterBalances
     },
     setDerivationPath: (state, action: PayloadAction<string>) => {
       const derivationPath = action.payload
       assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
       state.derivationPath = derivationPath
+    },
+    setSecretType: (state, action: PayloadAction<SecretType>) => {
+      const secretType = action.payload
+      assert(
+        secretType === 'pincode' || secretType === 'password',
+        `Invalid secret type ${secretType}`
+      )
+      state.secretType = secretType
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {
       const { tokens, lockedCelo, lastUpdated } = action.payload
@@ -105,17 +120,6 @@ const walletSlice = createSlice({
     },
     setVoterBalances: (state, action: PayloadAction<Balances | null>) => {
       state.voterBalances = action.payload
-    },
-    setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
-      state.isUnlocked = action.payload
-    },
-    setSecretType: (state, action: PayloadAction<SecretType>) => {
-      const secretType = action.payload
-      assert(
-        secretType === 'pincode' || secretType === 'password',
-        `Invalid secret type ${secretType}`
-      )
-      state.secretType = secretType
     },
     addToken: (state, action: PayloadAction<Token>) => {
       const newToken = action.payload

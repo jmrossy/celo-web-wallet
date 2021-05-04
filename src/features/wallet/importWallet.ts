@@ -5,11 +5,13 @@ import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { CELO_DERIVATION_PATH } from 'src/consts'
+import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { isValidDerivationPath, isValidMnemonic } from 'src/features/wallet/utils'
 import { setAddress } from 'src/features/wallet/walletSlice'
+import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
@@ -50,13 +52,15 @@ export function* importWallet(params: ImportWalletParams) {
 export function* onWalletImport(newAddress: string, type: SignerType, derivationPath: string) {
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
-  if (currentAddress && currentAddress !== newAddress) {
-    throw new Error('New address does not match one in store. Please logout first.')
-  }
 
   yield* put(setAddress({ address: newAddress, type, derivationPath }))
   yield* put(setBackupReminderDismissed(true)) // Dismiss reminder about account key backup
   yield* put(fetchBalancesActions.trigger())
+
+  if (currentAddress !== newAddress) {
+    logger.debug('New address does not match current one in store, resetting feed')
+    yield* put(resetFeed())
+  }
   yield* put(fetchFeedActions.trigger())
 }
 
