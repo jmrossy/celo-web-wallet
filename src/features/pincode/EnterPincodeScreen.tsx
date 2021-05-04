@@ -1,5 +1,6 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLogoutModal } from 'src/app/logout/useLogoutModal'
+import { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
@@ -15,19 +16,19 @@ import {
 import { PincodeInput, PincodeInputType } from 'src/features/pincode/PincodeInput'
 import { PincodeAction } from 'src/features/pincode/types'
 import { secretTypeToLabel, useSecretType } from 'src/features/pincode/utils'
-import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
+import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
 const initialValues = { action: PincodeAction.Unlock, value: '' }
 
 export function EnterPincodeScreen() {
-  const address = useWalletAddress()
-  const secretType = useSecretType()
+  const address = useSelector((s: RootState) => s.wallet.address)
 
+  const secretType = useSecretType()
   const [label] = secretTypeToLabel(secretType)
   const inputType =
     secretType === 'pincode' ? PincodeInputType.CurrentPincode : PincodeInputType.CurrentPassword
@@ -35,7 +36,18 @@ export function EnterPincodeScreen() {
   const dispatch = useDispatch()
 
   const onSubmit = (values: PincodeParams) => {
-    dispatch(pincodeActions.trigger({ ...values, type: secretType }))
+    if (address) {
+      dispatch(pincodeActions.trigger({ ...values, type: secretType }))
+    } else {
+      logger.error('No address found, possible redux-persist bug. Initiating recovery.')
+      dispatch(
+        pincodeActions.trigger({
+          value: values.value,
+          action: PincodeAction.UnlockAndRecover,
+          type: secretType,
+        })
+      )
+    }
   }
 
   const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
@@ -60,7 +72,7 @@ export function EnterPincodeScreen() {
     <OnboardingScreenFrame>
       <h1 css={Font.h1Green}>Unlock Your Account</h1>
       <div css={style.description}>{`Enter your ${label} to unlock your account.`}</div>
-      <Address address={address} />
+      {address && <Address address={address} />}
       <Box direction="column" align="center" margin="1.75em 0 0 0">
         <form onSubmit={handleSubmit}>
           <PincodeInput
@@ -71,7 +83,7 @@ export function EnterPincodeScreen() {
             autoFocus={true}
             {...errors['value']}
           />
-          <Box direction="column" margin={'2em 0 0 0'}>
+          <Box direction="column" margin="2em 0 0 0">
             <Button type="submit" disabled={status === SagaStatus.Started} size="l">
               Unlock
             </Button>
