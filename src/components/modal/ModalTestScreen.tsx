@@ -228,7 +228,7 @@ export function ModalTestScreen() {
       <Box direction="column" justify="center" align="center">
         <h1 css={{ width: '100%', textAlign: 'center' }}>Tooltip Testing</h1>
 
-        <Box css={{ width: '100%' }} justify="center" align="center">
+        <Box styles={{ width: '100%' }} justify="center" align="center">
           <HelpIcon
             tooltip={{ content: 'This is a HelpIcon with a tooltip', variant: 'dark' }}
             margin="1em"
@@ -285,7 +285,7 @@ export function ModalTestScreen() {
           />
         </Box>
 
-        <Box css={{ width: '100%' }} justify="center" align="center">
+        <Box styles={{ width: '100%' }} justify="center" align="center">
           <Tooltip content="This is a button with a tooltip" margin="1em" position="top">
             <Button>Button with Tooltip</Button>
           </Tooltip>

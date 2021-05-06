@@ -4,6 +4,7 @@
  * the compilation times to grow 2-3x, only worsening as the project grows.
  * Made development in VSCode pretty painful. So I'm sacrificing css type safety
  * in favor of fast intellisense for now :(
+ * Related: https://github.com/emotion-js/emotion/issues/2257
  */
 export type Styles = any
 

@@ -6,6 +6,7 @@
         "baseUrl": ".",
         "incremental": true,
         "jsx": "preserve",
+        "jsxImportSource": "@emotion/react",
         "module": "es2020",
         "moduleResolution": "node",
         "noImplicitReturns": true,
