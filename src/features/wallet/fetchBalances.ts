@@ -14,7 +14,7 @@ import {
   updateBalances,
   walletInitialState,
 } from 'src/features/wallet/walletSlice'
-import { CELO, cEUR, isNativeToken, Token, TokenWithBalance } from 'src/tokens'
+import { CELO, isNativeToken, Token, TokenWithBalance } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
@@ -68,8 +68,6 @@ async function fetchTokenBalances(
     if (t.id === CELO.id) {
       fetchPromises.push(fetchCeloBalance(address))
     } else {
-      // TODO-cEUR remove when activated
-      if (t.id === cEUR.id && config.chainId === 42220) continue
       fetchPromises.push(fetchTokenBalance(address, t))
     }
   }

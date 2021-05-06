@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { persistReducer } from 'redux-persist'
+import { createMigrate, persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import { SignerType } from 'src/blockchain/signer'
@@ -11,14 +11,14 @@ import { assert } from 'src/utils/validation'
 
 interface Wallet {
   isConnected: boolean | null
+  isUnlocked: boolean
   address: string | null
   type: SignerType | null
   derivationPath: string | null
+  secretType: SecretType | null
   balances: Balances
   account: AccountStatus
   voterBalances: Balances | null // if account is vote signer for another, balance of voter
-  secretType: SecretType | null
-  isUnlocked: boolean
 }
 
 interface SetWalletAction {
@@ -36,9 +36,11 @@ interface AccountStatus {
 
 export const walletInitialState: Wallet = {
   isConnected: null,
+  isUnlocked: false,
   address: null,
   type: null,
   derivationPath: null,
+  secretType: null,
   balances: {
     tokens: {
       CELO: {
@@ -67,8 +69,6 @@ export const walletInitialState: Wallet = {
     lastUpdated: null,
   },
   voterBalances: null,
-  secretType: null,
-  isUnlocked: false,
 }
 
 const walletSlice = createSlice({
@@ -78,6 +78,9 @@ const walletSlice = createSlice({
     setIsConnected: (state, action: PayloadAction<boolean>) => {
       state.isConnected = action.payload
     },
+    setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
+      state.isUnlocked = action.payload
+    },
     setAddress: (state, action: PayloadAction<SetWalletAction>) => {
       const { address, type, derivationPath } = action.payload
       assert(address && address.length === 42, `Invalid address ${address}`)
@@ -86,6 +89,19 @@ const walletSlice = createSlice({
       state.address = address
       state.type = type
       state.derivationPath = derivationPath
+    },
+    setDerivationPath: (state, action: PayloadAction<string>) => {
+      const derivationPath = action.payload
+      assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
+      state.derivationPath = derivationPath
+    },
+    setSecretType: (state, action: PayloadAction<SecretType>) => {
+      const secretType = action.payload
+      assert(
+        secretType === 'pincode' || secretType === 'password',
+        `Invalid secret type ${secretType}`
+      )
+      state.secretType = secretType
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {
       const { tokens, lockedCelo, lastUpdated } = action.payload
@@ -101,17 +117,6 @@ const walletSlice = createSlice({
     setVoterBalances: (state, action: PayloadAction<Balances | null>) => {
       state.voterBalances = action.payload
     },
-    setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
-      state.isUnlocked = action.payload
-    },
-    setSecretType: (state, action: PayloadAction<SecretType>) => {
-      const secretType = action.payload
-      assert(
-        secretType === 'pincode' || secretType === 'password',
-        `Invalid secret type ${secretType}`
-      )
-      state.secretType = secretType
-    },
     addToken: (state, action: PayloadAction<Token>) => {
       const newToken = action.payload
       assert(newToken && newToken.id, 'No new token provided')
@@ -126,6 +131,12 @@ const walletSlice = createSlice({
       delete newTokens[tokenId]
       state.balances.tokens = newTokens
     },
+    clearWalletCache: (state) => {
+      // Reset some account-specific state that may be stale
+      state.balances = walletInitialState.balances
+      state.account = walletInitialState.account
+      state.voterBalances = walletInitialState.voterBalances
+    },
     resetWallet: () => walletInitialState,
   },
 })
@@ -133,6 +144,7 @@ const walletSlice = createSlice({
 export const {
   setIsConnected,
   setAddress,
+  setDerivationPath,
   updateBalances,
   setAccountStatus,
   setAccountIsRegistered,
@@ -141,16 +153,43 @@ export const {
   setSecretType,
   addToken,
   removeToken,
+  clearWalletCache,
   resetWallet,
 } = walletSlice.actions
 const walletReducer = walletSlice.reducer
+
+const migrations = {
+  // Typings don't work well for migrations:
+  // https://github.com/rt2zz/redux-persist/issues/1065
+  0: (state: any) => {
+    // Migration to fix symbol to label rename
+    const tokens: any = {}
+    for (const t of Object.keys(state.balances.tokens)) {
+      const previous = state.balances.tokens[t]
+      tokens[t] = {
+        ...previous,
+        symbol: previous.symbol || previous.label || '??',
+      }
+    }
+    return {
+      ...state,
+      balances: {
+        ...state.balances,
+        tokens,
+      },
+    }
+  },
+}
 
 const walletPersistConfig = {
   key: 'wallet',
   storage: storage,
   stateReconciler: autoMergeLevel2,
   whitelist: ['address', 'balances', 'type', 'derivationPath', 'secretType', 'account'], //we don't want to persist everything in the wallet store
+  version: 0, // -1 is default
+  migrate: createMigrate(migrations),
 }
+
 export const persistedWalletReducer = persistReducer<ReturnType<typeof walletReducer>>(
   walletPersistConfig,
   walletReducer

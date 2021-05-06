@@ -138,7 +138,7 @@ function sortAndFilter(
   maxOptions?: number,
   allowRawOption?: boolean
 ) {
-  const filtered = options
+  const filtered = [...options]
     .sort((a, b) => (a.display < b.display ? -1 : 1))
     .filter((o) => o.display.toLowerCase().includes(input.toLowerCase()))
   if (input && allowRawOption) {
