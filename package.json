@@ -35,7 +35,7 @@
     "@ledgerhq/hw-transport-node-hid-noevents": "^5.50.0",
     "@ledgerhq/hw-transport-u2f": "5.36.0-deprecated",
     "@ledgerhq/hw-transport-webusb": "^5.50.0",
-    "@metamask/jazzicon": "^2.0.0",
+    "@metamask/jazzicon": "https://github.com/jmrossy/jazzicon#7a8df28",
     "@reduxjs/toolkit": "^1.5.1",
     "@walletconnect/client": "2.0.0-beta.0",
     "buffer": "^6.0.3",

@@ -2,6 +2,7 @@ const webpack = require('webpack')
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 const packageJson = require('./package.json')
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 const isProduction = process.env.NODE_ENV === 'production'
@@ -91,6 +92,7 @@ const config = {
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
     modules: [path.resolve('./node_modules'), path.resolve('./')],
   },
+  // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
   plugins: [
     // Copy over static files
     new CopyPlugin(
@@ -117,7 +119,8 @@ const config = {
       __DEBUG__: isDevelopment,
       __IS_ELECTRON__: targetElectron,
     }),
-    // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
+    // Bundle analyzer, don't leave enabled
+    // new BundleAnalyzerPlugin(),
   ],
   devServer: {
     historyApiFallback: true,
