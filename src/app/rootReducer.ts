@@ -9,6 +9,7 @@ import { tokenPriceReducer } from 'src/features/tokenPrice/tokenPriceSlice'
 import { txFlowReducer } from 'src/features/txFlow/txFlowSlice'
 import { persistedValidatorsReducer } from 'src/features/validators/validatorsSlice'
 import { persistedWalletReducer } from 'src/features/wallet/walletSlice'
+import { walletConnectReducer } from 'src/features/walletConnect/walletConnectSlice'
 import { monitoredSagaReducers } from './rootSaga'
 
 export const rootReducer = combineReducers({
@@ -21,6 +22,7 @@ export const rootReducer = combineReducers({
   validators: persistedValidatorsReducer,
   governance: governanceReducer,
   settings: persistedSettingsReducer,
+  walletConnect: walletConnectReducer,
   txFlow: txFlowReducer,
   saga: monitoredSagaReducers,
 })

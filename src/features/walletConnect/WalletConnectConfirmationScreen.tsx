@@ -14,11 +14,7 @@ import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
 import { TransactionType } from 'src/features/types'
-import {
-  createWalletConnectTxRequest,
-  sendWalletConnectTxActions,
-  sendWalletConnectTxSagaName,
-} from 'src/features/walletConnect/walletConnect'
+import { createWalletConnectTxRequest } from 'src/features/walletConnect/walletConnect'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -55,18 +51,18 @@ export function WalletConnectConfirmationScreen() {
   const { feeAmount, feeCurrency, feeEstimates } = useFee('0')
 
   const onCancel = () => {
-    dispatch(sendWalletConnectTxActions.reset())
+    // dispatch(walletConnectRequestActions.reset())
     dispatch(txFlowCanceled())
     navigate('/')
   }
 
   const onSend = () => {
     if (!tx || !feeEstimates) return
-    dispatch(sendWalletConnectTxActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
+    // dispatch(walletConnectRequestActions.trigger({ ...params, feeEstimate: feeEstimates[0] }))
   }
 
   const { isWorking } = useTxFlowStatusModals({
-    sagaName: sendWalletConnectTxSagaName,
+    sagaName: 'TODO',
     signaturesNeeded: 1,
     loadingTitle: 'Sending Transaction...',
     successTitle: 'Transaction Sent!',

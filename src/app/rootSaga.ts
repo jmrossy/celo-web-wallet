@@ -106,12 +106,7 @@ import {
   importWalletSaga,
   importWalletSagaName,
 } from 'src/features/wallet/importWallet'
-import {
-  sendWalletConnectTxActions,
-  sendWalletConnectTxReducer,
-  sendWalletConnectTxSaga,
-  sendWalletConnectTxSagaName,
-} from 'src/features/walletConnect/walletConnect'
+import { watchWalletConnect } from 'src/features/walletConnect/walletConnect'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
@@ -211,11 +206,6 @@ export const monitoredSagas: {
     reducer: governanceVoteReducer,
     actions: governanceVoteActions,
   },
-  [sendWalletConnectTxSagaName]: {
-    saga: sendWalletConnectTxSaga,
-    reducer: sendWalletConnectTxReducer,
-    actions: sendWalletConnectTxActions,
-  },
   [logoutSagaName]: {
     saga: logoutSaga,
     reducer: logoutReducer,
@@ -242,4 +232,5 @@ export function* rootSaga() {
   for (const m of Object.values(monitoredSagas)) {
     yield spawn(m.saga)
   }
+  yield spawn(watchWalletConnect)
 }

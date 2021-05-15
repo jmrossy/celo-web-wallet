@@ -36,8 +36,9 @@
     "@ledgerhq/hw-transport-u2f": "5.36.0-deprecated",
     "@ledgerhq/hw-transport-webusb": "^5.50.0",
     "@metamask/jazzicon": "https://github.com/jmrossy/jazzicon#7a8df28",
+    "@pedrouid/environment": "^1.0.1",
     "@reduxjs/toolkit": "^1.5.1",
-    "@walletconnect/client": "2.0.0-beta.0",
+    "@walletconnect/client": "2.0.0-beta.1",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "electron-updater": "^4.3.8",
@@ -96,5 +97,8 @@
     "webpack": "^5.36.2",
     "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2"
+  },
+  "resolutions": {
+    "pbkdf2": "^3.1.2"
   }
 }

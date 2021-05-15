@@ -32,6 +32,7 @@ import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmati
 import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
 import { BalanceDetailsScreen } from 'src/features/wallet/BalanceDetailsScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
+import { WalletConnectConfirmationScreen } from 'src/features/walletConnect/WalletConnectConfirmationScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
 function Router(props: PropsWithChildren<any>) {
@@ -72,6 +73,7 @@ export const App = () => {
               <Route path="stake-review" element={<StakeConfirmationScreen />} />
               <Route path="governance" element={<GovernanceFormScreen />} />
               <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
+              <Route path="walletConnect-review" element={<WalletConnectConfirmationScreen />} />
               <Route path="balances" element={<BalanceDetailsScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
               <Route path="settings" element={<SettingsScreen />} />

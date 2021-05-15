@@ -32,6 +32,7 @@ interface Config {
   jsonRpcUrlSecondary?: string
   gatewayFeeRecipient?: string
   blockscoutUrl: string
+  walletConnectRelay: string
   discordUrl: string
   desktopUrls: {
     windows: string
@@ -61,6 +62,7 @@ const configMainnet: Config = {
   jsonRpcUrlSecondary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
+  walletConnectRelay: 'wss://walletconnect.celo.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
   desktopUrls,
   chainId: 42220,
@@ -81,8 +83,8 @@ const configMainnet: Config = {
     [CeloContract.StableTokenEUR]: '0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73',
     [CeloContract.Validators]: '0xaEb865bCa93DdC8F47b8e29F40C5399cE34d0C58',
   },
-  // defaultAccount:
-  //   'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
+  defaultAccount:
+    'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -92,6 +94,7 @@ const configAlfajores: Config = {
   version,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
+  walletConnectRelay: 'wss://walletconnect.celo-networks-dev.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
   desktopUrls,
   chainId: 44787,
