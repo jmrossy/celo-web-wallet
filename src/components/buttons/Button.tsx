@@ -16,6 +16,7 @@ interface ButtonProps {
   icon?: string
   iconPosition?: 'start' | 'end' //defaults to start
   iconStyles?: Styles
+  title?: string
 }
 
 export function Button(props: PropsWithChildren<ButtonProps>) {
@@ -31,6 +32,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
     iconPosition,
     disabled,
     styles,
+    title,
   } = props
   const dimensions = getDimensions(size, widthOverride, heightOverride)
   const icoLayout = getLayout(size)
@@ -60,6 +62,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
       onClick={onClick}
       type={type}
       disabled={disabled ?? false}
+      title={title}
     >
       {icon ? (
         <Box align="center" justify="center">

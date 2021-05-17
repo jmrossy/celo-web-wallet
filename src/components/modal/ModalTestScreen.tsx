@@ -29,7 +29,7 @@ export function ModalTestScreen() {
   const {
     showModal,
     showModalAsync,
-    showWorkingModal,
+    showLoadingModal,
     showSuccessModal,
     showErrorModal,
     showModalWithContent,
@@ -121,7 +121,7 @@ export function ModalTestScreen() {
 
   const working = () => {
     setLoading(true)
-    showWorkingModal('Please wait...', 'Modal will disappear shortly')
+    showLoadingModal('Please wait...', 'Modal will disappear shortly')
     setTimeout(() => {
       closeModal()
       setLoading(false)
@@ -137,7 +137,7 @@ export function ModalTestScreen() {
   }
 
   const backToBack = () => {
-    showWorkingModal('Loading...', 'A dismissable modal will appear in a moment')
+    showLoadingModal('Loading...', 'A dismissable modal will appear in a moment')
     setTimeout(() => {
       showSuccessModal('Nice Job!')
     }, 2000)

@@ -34,7 +34,7 @@ export const ModalProvider = ({ children }: any) => {
   const closeRef = useRef<(action?: ModalAction | null) => void>(closeFallback)
 
   const showModal = (props: ModalProps, content: any = null) => {
-    const isDismissable = !props.isLoading && Boolean(props.onClose)
+    const isDismissable = props.type !== 'loading' && Boolean(props.onClose)
     setContent(content)
     closeRef.current = () => {
       setModal(null)
@@ -52,7 +52,7 @@ export const ModalProvider = ({ children }: any) => {
   }
 
   const showModalAsync = async (props: ModalProps, content: any = null) => {
-    const isDismissable = !props.isLoading && Boolean(props.onClose)
+    const isDismissable = props.type !== 'loading' && Boolean(props.onClose)
     setContent(content)
 
     const modalPromise = new Promise<ModalAction | null>((resolve) => {

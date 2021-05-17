@@ -4,6 +4,7 @@ import { Button } from 'src/components/buttons/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { TextInput } from 'src/components/input/TextInput'
 import { Box } from 'src/components/layout/Box'
+import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
 import {
@@ -15,6 +16,7 @@ import {
 import { validateWalletConnectForm } from 'src/features/walletConnect/walletConnect'
 import {
   approveWcSession,
+  disconnectWcClient,
   initializeWcClient,
   rejectWcSession,
   resetWcClient,
@@ -47,7 +49,9 @@ function WalletConnectModal({ close }: Props) {
       {status === WalletConnectStatus.Disconnected && <ConnectionForm />}
       {status === WalletConnectStatus.Initializing && <LoadingIndicator />}
       {status === WalletConnectStatus.SessionPending && <ReviewSession session={session} />}
-      {status >= WalletConnectStatus.SessionActive && <ViewSession session={session} />}
+      {status >= WalletConnectStatus.SessionActive && (
+        <ViewSession session={session} close={close} />
+      )}
       {status === WalletConnectStatus.Error && <ReviewError message={error} close={close} />}
     </>
   )
@@ -78,13 +82,13 @@ function ConnectionForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Box direction="column" align="center" margin="1.5em 0 0 0">
+      <Box direction="column" align="center">
         <div css={style.modalText}>
           Copy the WalletConnect session info and paste it here to connect.
         </div>
-        <Box direction="row" align="center">
+        <Box direction="row" align="center" margin="1.5em 0 0 0">
           <TextInput
-            width="20em"
+            width="16em"
             name="uri"
             onChange={handleChange}
             onBlur={handleBlur}
@@ -95,15 +99,18 @@ function ConnectionForm() {
           {isClipboardReadSupported() && (
             <Button
               size="icon"
+              height={42} // should match input height + padding
+              width={42}
               type="button"
               margin="0 0 0 0.5em"
               onClick={onClickPaste}
               icon={PasteIcon}
               iconStyles={style.pasteIcon}
+              title="Paste"
             />
           )}
         </Box>
-        <Button type="submit" margin="1.75em 0 0.25em 0">
+        <Button type="submit" margin="1.8em 0 0.25em 0">
           Connect
         </Button>
       </Box>
@@ -147,13 +154,30 @@ function ReviewSession({ session }: { session: WalletConnectSession | null }) {
   )
 }
 
-function ViewSession({ session }: { session: WalletConnectSession | null }) {
+function ViewSession({ session, close }: { session: WalletConnectSession | null } & Props) {
   if (!session || session.type !== SessionType.Settled) {
     throw new Error('Invalid WalletConnect session to view')
   }
+
+  const dispatch = useDispatch()
+  const onClickOkay = () => {
+    close()
+  }
+  const onClickDisconnect = () => {
+    dispatch(disconnectWcClient())
+  }
+
   return (
     <Box direction="column" align="center" margin="2em 0 0 0">
       <div>{JSON.stringify(session)}</div>
+      <Box direction="row">
+        <Button size="s" margin="0 2em 0 " onClick={onClickDisconnect} color={Color.altGrey}>
+          Disconnect
+        </Button>
+        <Button size="s" onClick={onClickOkay}>
+          Okay
+        </Button>
+      </Box>
     </Box>
   )
 }
@@ -186,14 +210,11 @@ function ReviewError({ message, close }: { message: string | null } & Props) {
 
 const style: Stylesheet = {
   modalText: {
-    fontSize: '1.1em',
-    textAlign: 'center',
+    ...modalStyles.h3,
     maxWidth: '18em',
-    lineHeight: '1.5em',
-    marginBottom: '1em',
   },
   pasteIcon: {
-    height: '1.25em',
+    height: 24,
   },
   spinner: {
     marginTop: '2.5em',

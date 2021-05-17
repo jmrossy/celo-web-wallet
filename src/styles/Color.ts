@@ -15,13 +15,13 @@ export enum Color {
 
   borderInactive = '#DDDDDD',
   borderActive = 'rgba(46, 51, 56, 0.8)',
-  borderLight = '#F5F5F5',
+  borderLight = '#F3F3F3',
   borderMedium = '#EDEEEF',
   borderError = '#E53935',
 
   fillMedium = '#EBEDEF',
   fillLight = '#F4F5F6',
-  fillLighter = '#F9FAFB',
+  fillLighter = '#F6F7F9',
   fillError = '#FFCDD2',
 
   chartBlueGreen = '#3E7688',

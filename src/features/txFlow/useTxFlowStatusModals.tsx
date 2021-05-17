@@ -54,7 +54,7 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
   }
   const { status: sagaStatus, error: sagaError } = sagaState
 
-  const { showSuccessModal, showErrorModal, showWorkingModal, showModalWithContent } = useModal()
+  const { showLoadingModal, showSuccessModal, showErrorModal, showModalWithContent } = useModal()
 
   const onNeedSignature = (index: number) => {
     const modalText = reqSignatureMsg ?? ['Confirm the transaction on your Ledger']
@@ -90,7 +90,7 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
   useEffect(() => {
     if (sagaStatus === SagaStatus.Started) {
       if (isSignerLedger() && numSignatures < signaturesNeeded) onNeedSignature(numSignatures)
-      else showWorkingModal(loadingTitle)
+      else showLoadingModal(loadingTitle)
     } else if (sagaStatus === SagaStatus.Success) {
       onSuccess()
     } else if (sagaStatus === SagaStatus.Failure) {

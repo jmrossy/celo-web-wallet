@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Fade } from 'src/components/animation/Fade'
 import { Button } from 'src/components/buttons/Button'
+import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import {
   SessionType,
   WalletConnectSession,
   WalletConnectStatus,
 } from 'src/features/walletConnect/types'
-import { rejectWcRequest } from 'src/features/walletConnect/walletConnectSlice'
+import { disconnectWcClient, rejectWcRequest } from 'src/features/walletConnect/walletConnectSlice'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 
@@ -33,22 +34,29 @@ export function WalletConnectStatusBox() {
     dispatch(rejectWcRequest())
   }
 
+  const onClickDisconnect = () => {
+    dispatch(disconnectWcClient())
+  }
+
   return (
     <div css={style.container}>
       <Fade show={isActive}>
-        <Box direction="column" styles={style.content}>
-          <h3>{header}</h3>
-          <div>{description}</div>
-          {isReqPending && (
-            <Box>
-              <Button color={Color.altGrey} size="xs" onClick={onClickDeny}>
-                Deny
-              </Button>
-              <Button size="xs" onClick={onClickReview}>
-                Review
-              </Button>
-            </Box>
-          )}
+        <Box align="center">
+          <Box direction="column" styles={style.content}>
+            <h3>{header}</h3>
+            <div>{description}</div>
+            {isReqPending && (
+              <Box>
+                <Button color={Color.altGrey} size="xs" onClick={onClickDeny}>
+                  Deny
+                </Button>
+                <Button size="xs" onClick={onClickReview}>
+                  Review
+                </Button>
+              </Box>
+            )}
+          </Box>
+          <CloseButton onClick={onClickDisconnect} title="Disconnect" />
         </Box>
       </Fade>
     </div>

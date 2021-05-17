@@ -110,7 +110,13 @@ export function SendFormScreen() {
                 {...errors['recipient']}
               />
               {isClipboardReadSupported() ? (
-                <Button size="icon" type="button" margin="0 0 0 0.5em" onClick={onPasteAddress}>
+                <Button
+                  size="icon"
+                  type="button"
+                  margin="0 0 0 0.5em"
+                  onClick={onPasteAddress}
+                  title="Paste"
+                >
                   <img src={PasteIcon} alt="Paste Address" css={style.copyIcon} />
                 </Button>
               ) : (

@@ -5,6 +5,7 @@ import {
   ModalOkAction,
   ModalProps,
   ModalSize,
+  SuccessModalContent,
 } from 'src/components/modal/modal'
 import { ModalContext } from 'src/components/modal/modalContext'
 import { trimToLength } from 'src/utils/string'
@@ -12,25 +13,24 @@ import { trimToLength } from 'src/utils/string'
 export function useModal() {
   const context = useContext(ModalContext)
 
-  const showWorkingModal = (head: string, subHead: string | undefined | null = undefined) => {
+  const showLoadingModal = (head: string, subHead?: string | null) => {
     const modalProps: ModalProps = {
-      isLoading: true,
+      type: 'loading',
       head: head,
       subHead: subHead ?? undefined,
     }
     context.showModal(modalProps)
   }
 
-  const showSuccessModal = (head: string, subHead: string | undefined | null = undefined) => {
+  const showSuccessModal = (head: string, subHead?: string | null) => {
     const modalProps: ModalProps = {
-      isSuccess: true,
-      head: head,
+      head,
       subHead: subHead ?? undefined,
-      actions: ModalOkAction,
       onClose: context.closeModal,
+      actions: ModalOkAction,
       onActionClick: context.closeModal,
     }
-    context.showModal(modalProps)
+    context.showModal(modalProps, <SuccessModalContent />)
   }
 
   const showErrorModal = (head: string, subHead?: string | undefined, error?: unknown) => {
@@ -81,7 +81,7 @@ export function useModal() {
     body: string,
     actions: ModalAction | ModalAction[] | undefined | null = undefined,
     subHead: string | undefined | null = undefined,
-    size: ModalSize | null = undefined,
+    size: ModalSize | undefined | null = undefined,
     onActionClick: ModalActionCallback | undefined | null = undefined,
     dismissable = true
   ) => {
@@ -103,7 +103,7 @@ export function useModal() {
     body: string,
     actions: ModalAction | ModalAction[] | undefined | null = undefined,
     subHead: string | undefined | null = undefined,
-    size: ModalSize | null = undefined,
+    size: ModalSize | undefined | null = undefined,
     onActionClick: ModalActionCallback | undefined | null = undefined,
     dismissable = true
   ) => {
@@ -123,7 +123,7 @@ export function useModal() {
   return {
     showModal,
     showModalAsync,
-    showWorkingModal,
+    showLoadingModal,
     showSuccessModal,
     showErrorModal,
     showModalWithContent,

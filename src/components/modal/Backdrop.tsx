@@ -4,7 +4,7 @@ import { Stylesheet } from 'src/styles/types'
 interface BackdropProps {
   opacity?: number
   color?: string | Color
-  onClick: () => void
+  onClick?: () => void
 }
 
 export const Backdrop = (props: BackdropProps) => {
