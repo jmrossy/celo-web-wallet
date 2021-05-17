@@ -69,6 +69,7 @@ const walletConnectSlice = createSlice({
         state.session = {
           type: SessionType.Settled,
           data: action.payload,
+          startTime: Date.now(),
         }
       })
       .addCase(requestFromWc, (state, action) => {

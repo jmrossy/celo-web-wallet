@@ -10,13 +10,11 @@ import { useModal } from 'src/components/modal/useModal'
 export function useFundWalletModal() {
   const { showModalWithContent } = useModal()
   return (address: string) => {
-    showModalWithContent(
-      'Where to buy Celo',
-      <FundWalletModal address={address} />,
-      null,
-      null,
-      'Celo currencies can be earned or purchased from these online exchanges.'
-    )
+    showModalWithContent({
+      head: 'Where to buy Celo',
+      content: <FundWalletModal address={address} />,
+      subHead: 'Celo currencies can be earned or purchased from these online exchanges.',
+    })
   }
 }
 

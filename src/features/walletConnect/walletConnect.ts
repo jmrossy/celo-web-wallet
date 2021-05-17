@@ -10,6 +10,7 @@ import { config } from 'src/config'
 import 'src/features/ledger/buffer' // Must be the first import // TODO remove
 import {
   SessionType,
+  WalletConnectMethods,
   WalletConnectRequestParams,
   WalletConnectSession,
   WalletConnectUriForm,
@@ -45,16 +46,6 @@ import {
   take,
 } from 'typed-redux-saga'
 
-export enum WalletConnectMethods {
-  accounts = 'eth_accounts',
-  signTransaction = 'eth_signTransaction',
-  sendTransaction = 'eth_sendTransaction',
-  personalSign = 'personal_sign',
-  signTypedData = 'eth_signTypedData',
-  decrypt = 'personal_decrypt',
-  computeSharedSecret = 'personal_computeSharedSecret',
-}
-
 const APP_METADATA = {
   name: 'CeloWallet.app',
   description: 'Celo Wallet for Web and Desktop', // TODO differentiate based on env?
@@ -67,7 +58,7 @@ const APP_METADATA = {
 const SUPPORTED_CHAINS = ['celo:44787', 'celo:42220', 'celo:62320']
 
 const SESSION_INIT_TIMEOUT = 15000 // 15 seconds
-const SESSION_PROPOSAL_TIMEOUT = 120000 // 2 minutes
+const SESSION_PROPOSAL_TIMEOUT = 180000 // 3 minutes
 const SESSION_REQUEST_TIMEOUT = 300000 // 5 minutes
 
 export function validateWalletConnectForm(values: WalletConnectUriForm): ErrorState {
@@ -91,7 +82,7 @@ export function* watchWalletConnect() {
     const sessionTask = yield* spawn(runWalletConnectSession, uri)
     yield* take(disconnectWcClient.type) // todo timeout in case disconnect action never sent?
     yield* cancel(sessionTask)
-    logger.debug('WalletConnect session finished')
+    logger.debug('WalletConnect session finishing')
   }
 }
 
@@ -347,6 +338,13 @@ function* closeClient(client: WalletConnectClient, channel: EventChannel<Payload
 
 async function disconnectClient(client: WalletConnectClient, session: WalletConnectSession | null) {
   logger.debug('Disconnecting WalletConnect Client')
+
+  // Remove any listeners that may remain
+  // client.relayer.provider.events.removeAllListeners()
+  client.session.events.removeAllListeners()
+  client.pairing.events.removeAllListeners()
+
+  // Disconnect the active session if there is one
   const reason = getError(WalletConnectErrors.USER_DISCONNECTED)
   if (session && session.type === SessionType.Settled) {
     try {
@@ -357,26 +355,44 @@ async function disconnectClient(client: WalletConnectClient, session: WalletConn
     } catch (error) {
       logger.error('Error disconnecting WalletConnect client', error)
     }
-  } else {
-    logger.warn('WalletConnect client cannot disconnect without a settled session')
-  }
-  // To be thorough, also clean up the pending topics, may revisit later
-  for (const topic of client.session.pending.topics) {
-    try {
-      await client.session.pending.delete(topic, reason)
-    } catch (error) {
-      logger.warn('Error deleting WalletConnect session', error)
-    }
   }
 
-  // To be thorough, also clean up the pairings, may revisit later
-  for (const topic of client.pairing.topics) {
-    try {
-      await client.pairing.delete({ topic, reason })
-    } catch (error) {
-      logger.warn('Error deleting WalletConnect session', error)
-    }
-  }
+  // // To be thorough, also clean up the sessions and pairings, may revisit later
+  // for (const topic of client.session.topics) {
+  //   try {
+  //     await client.session.delete({ topic, reason })
+  //   } catch (error) {
+  //     logger.warn('Error deleting WalletConnect session', error)
+  //   }
+  // }
+  // for (const topic of client.session.pending.topics) {
+  //   try {
+  //     await client.session.pending.delete(topic, reason)
+  //   } catch (error) {
+  //     logger.warn('Error deleting WalletConnect session', error)
+  //   }
+  // }
+  // for (const topic of client.pairing.topics) {
+  //   try {
+  //     await client.pairing.delete({ topic, reason })
+  //   } catch (error) {
+  //     logger.warn('Error deleting WalletConnect session', error)
+  //   }
+  // }
+  // for (const topic of client.pairing.pending.topics) {
+  //   try {
+  //     await client.pairing.pending.delete(topic, reason)
+  //   } catch (error) {
+  //     logger.warn('Error deleting WalletConnect session', error)
+  //   }
+  // }
+
+  // Finally, disconnect from the relayer to kill the websocket connection
+  // try {
+  //   await client.relayer.provider.disconnect()
+  // } catch (error) {
+  //   logger.warn('Error disconnection form WalletConnect relayer', error)
+  // }
 
   logger.debug('WalletConnect client disconnected')
 }

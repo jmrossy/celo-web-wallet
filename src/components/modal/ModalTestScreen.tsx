@@ -59,13 +59,12 @@ export function ModalTestScreen() {
 
   const withContent = () => {
     const content = <img src={Elipse} />
-    showModalWithContent(
-      'Modal with Content',
+    showModalWithContent({
+      head: 'Modal with Content',
       content,
-      ModalOkAction,
-      null,
-      'This modal has an image for content'
-    )
+      actions: ModalOkAction,
+      subHead: 'This modal has an image for content',
+    })
   }
 
   const withActions = async () => {
@@ -144,14 +143,11 @@ export function ModalTestScreen() {
   }
 
   const ledgerSignature = () => {
-    showModalWithContent(
-      'Signature Required (1/2)',
-      <SignatureRequiredModal text={['test modal']} />,
-      null,
-      null,
-      null,
-      false
-    )
+    showModalWithContent({
+      head: 'Signature Required (1/2)',
+      content: <SignatureRequiredModal text={['test modal']} />,
+      dismissable: false,
+    })
   }
 
   return (

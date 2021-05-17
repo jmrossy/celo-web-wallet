@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, ReactElement } from 'react'
 import { Button } from 'src/components/buttons/Button'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { CheckmarkInElipseIcon } from 'src/components/icons/Checkmark'
@@ -23,6 +23,7 @@ export type ModalType = 'default' | 'loading'
 export interface ModalProps {
   severity?: ModalSeverity //default to "default"
   head: string
+  headIcon?: ReactElement
   subHead?: string
   body?: string
   actions?: ModalAction | ModalAction[]
@@ -39,7 +40,7 @@ export const ModalOkAction: ModalAction = {
 }
 
 export function Modal(props: PropsWithChildren<ModalProps>) {
-  const { head, subHead, body, onClose, actions, onActionClick, type, children } = props
+  const { head, headIcon, subHead, body, onClose, actions, onActionClick, type, children } = props
 
   const allActions = actions ? (Array.isArray(actions) ? actions : [actions]) : []
 
@@ -58,16 +59,13 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
       <Backdrop onClick={backdropClick} />
       <div css={style.modalContainer} onClick={backdropClick}>
         <div id="modal" css={[style.modal, propsToModalStyle(props)]}>
-          <div css={style.headContainer}>
+          <Box align="center" justify="between" styles={style.headContainer}>
+            <div css={style.headIcon}>{headIcon}</div>
             <h1 css={style.head}>{head}</h1>
-            {onClose && (
-              <CloseButton
-                onClick={onClose}
-                styles={style.closeButton}
-                iconStyles={style.closeIcon}
-              />
-            )}
-          </div>
+            <div css={style.closeButton}>
+              {onClose && <CloseButton onClick={onClose} iconStyles={style.closeIcon} />}
+            </div>
+          </Box>
           <Box direction="column" justify="between" styles={style.modalContent}>
             <Box direction="column" align="center">
               {subHead && <h2 css={[style.subHead, propsToSubHeadStyle(props)]}>{subHead}</h2>}
@@ -138,9 +136,9 @@ const style: Stylesheet = {
   modal: {
     position: 'relative',
     minWidth: '20em',
-    maxWidth: 'min(70vw, 30em)',
+    maxWidth: 'min(90vw, 30em)',
     minHeight: '13em',
-    maxHeight: 'min(60vh, 23em)',
+    maxHeight: 'min(75vh, 26em)',
     border: `1px solid ${Color.borderLight}`,
     backgroundColor: Color.primaryWhite,
     borderRadius: 6,
@@ -163,7 +161,7 @@ const style: Stylesheet = {
   headContainer: {
     position: 'relative',
     width: '100%',
-    padding: '1em 0',
+    padding: '0.9em 0',
     backgroundColor: Color.fillLighter,
   },
   head: {
@@ -172,9 +170,17 @@ const style: Stylesheet = {
     fontWeight: 500,
     textAlign: 'center',
   },
-  loadingHead: {
-    position: 'absolute',
-    top: '1em',
+  headIcon: {
+    paddingLeft: '1.4em',
+    width: '1.2em',
+    overflow: 'visible',
+  },
+  closeButton: {
+    paddingRight: '1em',
+  },
+  closeIcon: {
+    height: '1.2em',
+    width: '1.2em',
   },
   subHead: {
     margin: '0.1em 0 0 0',
@@ -188,14 +194,9 @@ const style: Stylesheet = {
     textAlign: 'center',
     lineHeight: '1.6em',
   },
-  closeButton: {
+  loadingHead: {
     position: 'absolute',
-    top: '0.85em',
-    right: '0.8em',
-  },
-  closeIcon: {
-    height: '1.2em',
-    width: '1.2em',
+    top: '1em',
   },
   loadingContainer: {
     position: 'absolute',

@@ -60,19 +60,22 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
     const modalText = reqSignatureMsg ?? ['Confirm the transaction on your Ledger']
     let modalTitle = 'Signature Required'
     if (signaturesNeeded > 1) modalTitle += ` (${index + 1}/${signaturesNeeded})`
-    showModalWithContent(
-      modalTitle,
-      <SignatureRequiredModal text={modalText} signWarningLabel={reqSignatureWarningLabel} />,
-      null,
-      null,
-      null,
-      false
-    )
+    showModalWithContent({
+      head: modalTitle,
+      content: (
+        <SignatureRequiredModal text={modalText} signWarningLabel={reqSignatureWarningLabel} />
+      ),
+      dismissable: false,
+    })
   }
 
   const onSuccess = () => {
     if (customSuccessModal) {
-      showModalWithContent(customSuccessModal.title, customSuccessModal.content, ModalOkAction)
+      showModalWithContent({
+        head: customSuccessModal.title,
+        content: customSuccessModal.content,
+        actions: ModalOkAction,
+      })
     } else {
       showSuccessModal(successTitle, successMsg)
     }

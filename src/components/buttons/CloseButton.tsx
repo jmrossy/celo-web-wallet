@@ -7,11 +7,12 @@ interface ButtonProps {
   onClick: () => void
   styles?: Styles
   iconStyles?: Styles
+  margin?: string | number
   title?: string
 }
 
 export function CloseButton(props: PropsWithChildren<ButtonProps>) {
-  const { onClick, styles, iconStyles, title } = props
+  const { onClick, styles, iconStyles, margin, title } = props
 
   return (
     <Button
@@ -19,6 +20,7 @@ export function CloseButton(props: PropsWithChildren<ButtonProps>) {
       icon={CloseIcon}
       styles={{ ...defaultStyle, ...styles }}
       iconStyles={iconStyles}
+      margin={margin}
       onClick={onClick}
       title={title || 'Close'}
     />

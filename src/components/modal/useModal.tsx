@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { ReactElement, useContext } from 'react'
 import {
   ModalAction,
   ModalActionCallback,
@@ -9,6 +9,16 @@ import {
 } from 'src/components/modal/modal'
 import { ModalContext } from 'src/components/modal/modalContext'
 import { trimToLength } from 'src/utils/string'
+
+export interface ModalWithContentProps {
+  head: string
+  headIcon?: ReactElement | null
+  subHead?: string | null
+  content: any
+  actions?: ModalAction | ModalAction[] | null
+  onActionClick?: ModalActionCallback | null
+  dismissable?: boolean | null
+}
 
 export function useModal() {
   const context = useContext(ModalContext)
@@ -58,24 +68,19 @@ export function useModal() {
     context.showModal(modalProps)
   }
 
-  const showModalWithContent = (
-    head: string,
-    content: any,
-    actions: ModalAction | ModalAction[] | undefined | null = undefined,
-    onActionClick: ModalActionCallback | undefined | null = undefined,
-    subHead: string | undefined | null = undefined,
-    dismissable = true
-  ) => {
+  const showModalWithContent = (props: ModalWithContentProps) => {
     const modalProps: ModalProps = {
-      head,
-      subHead: subHead ?? undefined,
-      onClose: dismissable ? context.closeModal : undefined,
-      actions: actions ?? undefined,
-      onActionClick: onActionClick,
+      head: props.head,
+      headIcon: props.headIcon ?? undefined,
+      subHead: props.subHead ?? undefined,
+      onClose: props.dismissable === false ? undefined : context.closeModal,
+      actions: props.actions ?? undefined,
+      onActionClick: props.onActionClick,
     }
-    context.showModal(modalProps, content)
+    context.showModal(modalProps, props.content)
   }
 
+  // TODO refactor params to object bag
   const showModalAsync = (
     head: string,
     body: string,

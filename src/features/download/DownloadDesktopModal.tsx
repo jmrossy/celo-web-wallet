@@ -17,10 +17,10 @@ interface ButtonProps {
 export function useDownloadDesktopModal(limitFeatureVersion = true) {
   const { showModalWithContent } = useModal()
   return () => {
-    showModalWithContent(
-      'Celo Wallet for Desktop',
-      <DownloadDesktopModal limitFeatureVersion={limitFeatureVersion} />
-    )
+    showModalWithContent({
+      head: 'Celo Wallet for Desktop',
+      content: <DownloadDesktopModal limitFeatureVersion={limitFeatureVersion} />,
+    })
   }
 }
 
@@ -28,7 +28,7 @@ export function DownloadDesktopButton({ children, styles }: PropsWithChildren<Bu
   const { showModalWithContent } = useModal()
 
   const onClick = () => {
-    showModalWithContent('Celo Wallet for Desktop', <DownloadDesktopModal />)
+    showModalWithContent({ head: 'Celo Wallet for Desktop', content: <DownloadDesktopModal /> })
   }
   return (
     <TextButton onClick={onClick} styles={styles}>

@@ -50,7 +50,7 @@ export function BalanceDetailsScreen() {
   const { showModalWithContent, closeModal } = useModal()
 
   const onClickAdd = () => {
-    showModalWithContent('Add New Token', <AddTokenModal close={closeModal} />)
+    showModalWithContent({ head: 'Add New Token', content: <AddTokenModal close={closeModal} /> })
   }
 
   return (

@@ -28,9 +28,20 @@ export interface PendingSession {
 export interface SettledSession {
   type: SessionType.Settled
   data: SessionTypes.Settled
+  startTime: number
 }
 
 export type WalletConnectSession = PendingSession | SettledSession
+
+export enum WalletConnectMethods {
+  accounts = 'eth_accounts',
+  signTransaction = 'eth_signTransaction',
+  sendTransaction = 'eth_sendTransaction',
+  personalSign = 'personal_sign',
+  signTypedData = 'eth_signTypedData',
+  decrypt = 'personal_decrypt',
+  computeSharedSecret = 'personal_computeSharedSecret',
+}
 
 export interface WalletConnectTxData {
   to: string

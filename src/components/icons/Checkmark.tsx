@@ -13,7 +13,10 @@ export const CheckmarkIcon = memo(_CheckmarkIcon)
 
 function _CheckmarkInElipseIcon() {
   return (
-    <div css={{ position: 'relative' }}>
+    // TODO remove the negative margin here
+    // Requires trimming whitespace around elipse svg which will mess up the loading
+    // indicator animation
+    <div css={{ position: 'relative', marginBottom: '-0.6em' }}>
       <img src={Celo_Elipse} alt="checkmark in elipse" css={{ height: '8em' }} />
       <div css={{ position: 'absolute', top: '35%', left: '29%', width: '2.7em' }}>
         <CheckmarkIcon fill="#FFFFFF" />

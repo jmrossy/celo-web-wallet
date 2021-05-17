@@ -34,7 +34,7 @@ export function HelpIcon(props: IconProps) {
 
   if (modal) {
     const onClick = () => {
-      showModalWithContent(modal.head, modal.content, ModalOkAction)
+      showModalWithContent({ head: modal.head, content: modal.content, actions: ModalOkAction })
     }
     return (
       <button onClick={onClick} css={[style.button, { margin }]} type="button">

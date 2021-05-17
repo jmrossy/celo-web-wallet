@@ -11,7 +11,11 @@ export function AboutWalletLink({ styles }: { styles: Styles }) {
   const { showModalWithContent } = useModal()
 
   const onClick = () => {
-    showModalWithContent('About This Wallet', <AboutWalletModal />, ModalOkAction)
+    showModalWithContent({
+      head: 'About This Wallet',
+      content: <AboutWalletModal />,
+      actions: ModalOkAction,
+    })
   }
 
   return (

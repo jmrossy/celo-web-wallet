@@ -56,6 +56,12 @@ export const Font: Stylesheet = {
     fontWeight: 400,
     fontSize: '1.1em',
   },
+  simpleLink: {
+    cursor: 'pointer',
+    ':hover': {
+      textDecoration: 'underline',
+    },
+  },
   linkLight: {
     textDecoration: 'underline',
     color: Color.textGrey,

@@ -40,7 +40,11 @@ export function ConnectionStatusLink() {
 
   const { showModalWithContent } = useModal()
   const onConnectionClick = () => {
-    showModalWithContent('Connection Status', <ConnectionStatus />, ModalOkAction)
+    showModalWithContent({
+      head: 'Connection Status',
+      content: <ConnectionStatus />,
+      actions: ModalOkAction,
+    })
   }
 
   return (

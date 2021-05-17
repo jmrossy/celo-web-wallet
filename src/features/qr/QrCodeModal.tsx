@@ -8,16 +8,16 @@ export function useAddressQrCodeModal() {
   const { showModalWithContent } = useModal()
   return (address: string) => {
     const data = encodeAddressForQr(address)
-    showModalWithContent(
-      'Your Wallet Address',
-      <AddressQrCodeModal address={address} data={data} />
-    )
+    showModalWithContent({
+      head: 'Your Wallet Address',
+      content: <AddressQrCodeModal address={address} data={data} />,
+    })
   }
 }
 
 function AddressQrCodeModal({ address, data }: { address: string; data: string }) {
   return (
-    <Box direction="column" align="center" margin="1em 0 0 0">
+    <Box direction="column" align="center">
       <div css={{ marginBottom: '1em', paddingLeft: '1em' }}>
         <Address address={address} hideIdenticon={true} buttonType="copy" />
       </div>
