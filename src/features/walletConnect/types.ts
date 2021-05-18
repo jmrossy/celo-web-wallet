@@ -13,20 +13,21 @@ export enum WalletConnectStatus {
   SessionActive = 3,
   RequestPending = 4,
   RequestActive = 5,
+  RequestFailed = 6,
 }
 
-export enum SessionType {
+export enum SessionStatus {
   Pending,
   Settled,
 }
 
 export interface PendingSession {
-  type: SessionType.Pending
+  status: SessionStatus.Pending
   data: SessionTypes.Proposal
 }
 
 export interface SettledSession {
-  type: SessionType.Settled
+  status: SessionStatus.Settled
   data: SessionTypes.Settled
   startTime: number
 }
@@ -39,7 +40,7 @@ export enum WalletConnectMethods {
   sendTransaction = 'eth_sendTransaction',
   personalSign = 'personal_sign',
   signTypedData = 'eth_signTypedData',
-  decrypt = 'personal_decrypt',
+  personalDecrypt = 'personal_decrypt',
   computeSharedSecret = 'personal_computeSharedSecret',
 }
 

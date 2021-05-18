@@ -1,7 +1,7 @@
 import { createAction, createSlice } from '@reduxjs/toolkit'
 import { SessionTypes } from '@walletconnect/types'
 import {
-  SessionType,
+  SessionStatus,
   WalletConnectSession,
   WalletConnectStatus,
 } from 'src/features/walletConnect/types'
@@ -17,12 +17,13 @@ export const updateWcSession = createAction<SessionTypes.UpdateParams>(
 export const deleteWcSession = createAction<SessionTypes.DeleteParams>(
   'walletConnect/deleteSession'
 )
+export const failWcSession = createAction<string>('walletConnect/fail')
 export const requestFromWc = createAction<SessionTypes.RequestEvent>('walletConnect/requestEvent')
 export const approveWcRequest = createAction('walletConnect/approveRequest')
 export const rejectWcRequest = createAction('walletConnect/rejectRequest')
 export const completeWcRequest = createAction('walletConnect/completeRequest')
+export const failWcRequest = createAction<string>('walletConnect/failRequest')
 export const disconnectWcClient = createAction('walletConnect/disconnect')
-export const failWcSession = createAction<string>('walletConnect/fail')
 export const resetWcClient = createAction('walletConnect/reset')
 
 // interface PeerMetadata {
@@ -60,17 +61,21 @@ const walletConnectSlice = createSlice({
       .addCase(proposeWcSession, (state, action) => {
         state.status = WalletConnectStatus.SessionPending
         state.session = {
-          type: SessionType.Pending,
+          status: SessionStatus.Pending,
           data: action.payload,
         }
       })
       .addCase(createWcSession, (state, action) => {
         state.status = WalletConnectStatus.SessionActive
         state.session = {
-          type: SessionType.Settled,
+          status: SessionStatus.Settled,
           data: action.payload,
           startTime: Date.now(),
         }
+      })
+      .addCase(failWcSession, (state, action) => {
+        state.status = WalletConnectStatus.Error
+        state.error = action.payload
       })
       .addCase(requestFromWc, (state, action) => {
         state.status = WalletConnectStatus.RequestPending
@@ -79,11 +84,15 @@ const walletConnectSlice = createSlice({
       .addCase(approveWcRequest, (state) => {
         state.status = WalletConnectStatus.RequestActive
       })
-      .addCase(completeWcRequest, (state) => {
+      .addCase(rejectWcRequest, (state) => {
         state.status = WalletConnectStatus.SessionActive
       })
-      .addCase(failWcSession, (state, action) => {
-        state.status = WalletConnectStatus.Error
+      .addCase(completeWcRequest, (state) => {
+        state.status = WalletConnectStatus.SessionActive
+        state.request = null
+      })
+      .addCase(failWcRequest, (state, action) => {
+        state.status = WalletConnectStatus.RequestFailed
         state.error = action.payload
       })
       .addCase(disconnectWcClient, (state) => {

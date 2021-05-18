@@ -1,5 +1,5 @@
 import {
-  SessionType,
+  SessionStatus,
   WalletConnectMethods,
   WalletConnectSession,
 } from 'src/features/walletConnect/types'
@@ -7,26 +7,27 @@ import { trimToLength } from 'src/utils/string'
 
 export function getPeerName(session: WalletConnectSession | null, trim = false) {
   let name = 'Unknown DApp'
-  if (session?.type === SessionType.Pending) name = session.data.proposer?.metadata?.name || name
-  if (session?.type === SessionType.Settled) name = session.data.peer?.metadata?.name || name
+  if (session?.status === SessionStatus.Pending)
+    name = session.data.proposer?.metadata?.name || name
+  if (session?.status === SessionStatus.Settled) name = session.data.peer?.metadata?.name || name
   return trim ? trimToLength(name, 10) : name
 }
 
 export function getPeerUrl(session: WalletConnectSession | null) {
-  if (session?.type === SessionType.Pending) return session.data.proposer?.metadata?.url
-  if (session?.type === SessionType.Settled) return session.data.peer?.metadata?.url
+  if (session?.status === SessionStatus.Pending) return session.data.proposer?.metadata?.url
+  if (session?.status === SessionStatus.Settled) return session.data.peer?.metadata?.url
   return null
 }
 
 export function getStartTime(session: WalletConnectSession | null) {
-  if (session?.type === SessionType.Settled) return new Date(session.startTime).toLocaleString()
+  if (session?.status === SessionStatus.Settled) return new Date(session.startTime).toLocaleString()
   return 'Not yet started'
 }
 
 export function getExpiryTime(session: WalletConnectSession | null) {
   let time
-  if (session?.type === SessionType.Pending) time = session.data.ttl
-  if (session?.type === SessionType.Settled) time = session.data.expiry
+  if (session?.status === SessionStatus.Pending) time = session.data.ttl
+  if (session?.status === SessionStatus.Settled) time = session.data.expiry
   return time ? new Date(time).toLocaleString() : 'Unknown time'
 }
 
@@ -34,25 +35,25 @@ export function getPermissionList(session: WalletConnectSession | null) {
   const rpcMethods = session?.data?.permissions?.jsonrpc?.methods
   if (!rpcMethods || !Array.isArray(rpcMethods)) return 'Session permissions unknown'
   if (rpcMethods.length === 0) return 'No permissions requested'
-  return rpcMethods.map(rpcMethodToLable).join(', ')
+  return rpcMethods.map(rpcMethodToLabel).join(', ')
 }
 
-function rpcMethodToLable(method: string) {
+export function rpcMethodToLabel(method: string) {
   switch (method) {
     case WalletConnectMethods.accounts:
-      return 'View accounts'
+      return 'view accounts'
     case WalletConnectMethods.computeSharedSecret:
-      return 'Compute secret'
-    case WalletConnectMethods.decrypt:
-      return 'Decrypt data'
+      return 'compute secrets'
+    case WalletConnectMethods.personalDecrypt:
+      return 'decrypt data'
     case WalletConnectMethods.personalSign:
-      return 'Sign data'
+      return 'sign data'
     case WalletConnectMethods.sendTransaction:
-      return 'Send transaction'
+      return 'send a transaction'
     case WalletConnectMethods.signTransaction:
-      return 'Sign transaction'
+      return 'sign a transaction'
     case WalletConnectMethods.signTypedData:
-      return 'Sign typed data'
+      return 'sign typed data'
     default:
       return method
   }

@@ -8,7 +8,7 @@ import {
   SuccessModalContent,
 } from 'src/components/modal/modal'
 import { ModalContext } from 'src/components/modal/modalContext'
-import { trimToLength } from 'src/utils/string'
+import { errorToString } from 'src/utils/validation'
 
 export interface ModalWithContentProps {
   head: string
@@ -44,18 +44,7 @@ export function useModal() {
   }
 
   const showErrorModal = (head: string, subHead?: string | undefined, error?: unknown) => {
-    let errorMsg: string
-    if (!error) {
-      errorMsg = 'Unknown Error'
-    } else if (typeof error === 'string') {
-      errorMsg = error
-    } else if (typeof error === 'number') {
-      errorMsg = `Error code: ${error}`
-    } else {
-      errorMsg = JSON.stringify(error)
-    }
-    errorMsg = trimToLength(errorMsg, 80)
-
+    const errorMsg = errorToString(error, 80)
     const modalProps: ModalProps = {
       head,
       subHead: subHead,

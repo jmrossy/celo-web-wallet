@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
 import { RootState } from 'src/app/rootReducer'
 import { Fade } from 'src/components/animation/Fade'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
@@ -33,6 +32,9 @@ export function WalletConnectStatusBox() {
   } else if (status === WalletConnectStatus.RequestActive) {
     header = 'Action In Progress'
     description = 'Working on request...'
+  } else if (status === WalletConnectStatus.RequestFailed) {
+    header = 'Action Failed'
+    description = 'Click here for details'
   } else if (status === WalletConnectStatus.Error) {
     header = 'WalletConnect Error'
     description = 'Click here for details'
@@ -41,20 +43,18 @@ export function WalletConnectStatusBox() {
     description = 'WalletConnect is closing'
   }
 
+  const dispatch = useDispatch()
   const showWalletConnectModal = useWalletConnectModal()
+
   const onClickText = () => {
     showWalletConnectModal()
   }
-
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
   const onClickReview = () => {
-    navigate('walletConnect-review')
+    showWalletConnectModal()
   }
   const onClickDeny = () => {
     dispatch(rejectWcRequest())
   }
-
   const onClickDisconnect = () => {
     dispatch(disconnectWcClient())
   }

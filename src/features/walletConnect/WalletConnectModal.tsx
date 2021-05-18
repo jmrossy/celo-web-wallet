@@ -1,3 +1,4 @@
+import { SessionTypes } from '@walletconnect/types'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
@@ -10,7 +11,7 @@ import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
 import {
-  SessionType,
+  SessionStatus,
   WalletConnectSession,
   WalletConnectStatus,
   WalletConnectUriForm,
@@ -21,12 +22,16 @@ import {
   getPeerUrl,
   getPermissionList,
   getStartTime,
+  rpcMethodToLabel,
 } from 'src/features/walletConnect/utils'
 import { validateWalletConnectForm } from 'src/features/walletConnect/walletConnect'
 import {
+  approveWcRequest,
   approveWcSession,
+  completeWcRequest,
   disconnectWcClient,
   initializeWcClient,
+  rejectWcRequest,
   rejectWcSession,
   resetWcClient,
 } from 'src/features/walletConnect/walletConnectSlice'
@@ -58,17 +63,25 @@ interface Props {
 }
 
 function WalletConnectModal({ close }: Props) {
-  const { status, session, error } = useSelector((s: RootState) => s.walletConnect)
+  const { status, session, request, error } = useSelector((s: RootState) => s.walletConnect)
 
+  // TODO requestSucceeded state
   return (
     <>
       {status === WalletConnectStatus.Disconnected && <ConnectionForm />}
-      {status === WalletConnectStatus.Initializing && <LoadingIndicator />}
+      {status === WalletConnectStatus.Initializing && <LoadingIndicator text="Connecting..." />}
       {status === WalletConnectStatus.SessionPending && <ReviewSession session={session} />}
-      {status >= WalletConnectStatus.SessionActive && (
+      {status === WalletConnectStatus.SessionActive && (
         <ViewSession session={session} close={close} />
       )}
-      {status === WalletConnectStatus.Error && <ReviewError message={error} close={close} />}
+      {status === WalletConnectStatus.RequestPending && (
+        <ReviewRequest session={session} request={request} />
+      )}
+      {status === WalletConnectStatus.RequestActive && <LoadingIndicator text="Working..." />}
+      {status === WalletConnectStatus.RequestFailed && (
+        <RequestError message={error} close={close} />
+      )}
+      {status === WalletConnectStatus.Error && <SessionError message={error} close={close} />}
     </>
   )
 }
@@ -136,10 +149,10 @@ function ConnectionForm() {
   )
 }
 
-function LoadingIndicator() {
+function LoadingIndicator({ text }: { text: string }) {
   return (
     <Box direction="column" align="center" margin="1.5em">
-      <h3 css={style.h3}>Connecting...</h3>
+      <h3 css={style.h3}>{text}</h3>
       <div css={style.spinnerContainer}>
         <Spinner />
       </div>
@@ -148,7 +161,7 @@ function LoadingIndicator() {
 }
 
 function ReviewSession({ session }: { session: WalletConnectSession | null }) {
-  if (!session || session.type !== SessionType.Pending) {
+  if (!session || session.status !== SessionStatus.Pending) {
     throw new Error('Invalid WalletConnect session for review')
   }
 
@@ -186,7 +199,7 @@ function ReviewSession({ session }: { session: WalletConnectSession | null }) {
 }
 
 function ViewSession({ session, close }: { session: WalletConnectSession | null } & Props) {
-  if (!session || session.type !== SessionType.Settled) {
+  if (!session || session.status !== SessionStatus.Settled) {
     throw new Error('Invalid WalletConnect session to view')
   }
 
@@ -231,7 +244,71 @@ function ViewSession({ session, close }: { session: WalletConnectSession | null 
   )
 }
 
-function ReviewError({ message, close }: { message: string | null } & Props) {
+function ReviewRequest({
+  session,
+  request,
+}: {
+  session: WalletConnectSession | null
+  request: SessionTypes.RequestEvent | null
+}) {
+  if (session?.status !== SessionStatus.Settled || !request?.request) {
+    throw new Error('Invalid WalletConnect request for review')
+  }
+
+  const dispatch = useDispatch()
+  const onClickApprove = () => {
+    dispatch(approveWcRequest())
+  }
+  const onClickReject = () => {
+    dispatch(rejectWcRequest())
+  }
+
+  const peerName = getPeerName(session)
+  const peerUrl = getPeerUrl(session)
+  const requestMethod = rpcMethodToLabel(request.request.method)
+  // TODO parse and present this better
+  const requestData = JSON.stringify(request.request.params)
+
+  return (
+    <Box direction="column" align="center">
+      <h3 css={style.h3}>{`${peerName} would like to ${requestMethod}`}</h3>
+      <label css={style.label}>Request data:</label>
+      <div css={style.detailsSmall}>{requestData}</div>
+      {peerUrl && (
+        <TextLink link={peerUrl} styles={style.dappUrl}>
+          {trimToLength(peerUrl, 70)}
+        </TextLink>
+      )}
+      <Box direction="row" margin="2em 0 0.25em 0">
+        <Button size="s" margin="0 1.5em 0 0" onClick={onClickReject} color={Color.altGrey}>
+          Reject
+        </Button>
+        <Button size="s" onClick={onClickApprove}>
+          Approve
+        </Button>
+      </Box>
+    </Box>
+  )
+}
+
+function RequestError({ message, close }: { message: string | null } & Props) {
+  const dispatch = useDispatch()
+  const onClickDismiss = () => {
+    dispatch(completeWcRequest())
+    close()
+  }
+  return (
+    <Box direction="column" align="center">
+      <h3 css={style.h3}>There was a problem with a WalletConnect request event</h3>
+      <p css={style.error}>{message ?? 'Unknown error'}</p>
+      <Button size="s" margin="2em 0 0.5em 0" onClick={onClickDismiss} color={Color.altGrey}>
+        Dismiss
+      </Button>
+    </Box>
+  )
+}
+
+function SessionError({ message, close }: { message: string | null } & Props) {
   const dispatch = useDispatch()
   const onClickDismiss = () => {
     dispatch(resetWcClient())
@@ -240,7 +317,6 @@ function ReviewError({ message, close }: { message: string | null } & Props) {
   const onClickNewSession = () => {
     dispatch(resetWcClient())
   }
-
   return (
     <Box direction="column" align="center">
       <h3 css={style.h3}>Looks like something went wrong</h3>
@@ -277,6 +353,12 @@ const style: Stylesheet = {
   details: {
     ...modalStyles.p,
     maxWidth: '22em',
+    margin: '0.5em 0 0 0',
+  },
+  detailsSmall: {
+    ...modalStyles.p,
+    maxWidth: '26em',
+    fontSize: '0.8em',
     margin: '0.5em 0 0 0',
   },
   dappUrl: {

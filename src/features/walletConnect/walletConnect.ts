@@ -9,19 +9,23 @@ import { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
 import 'src/features/ledger/buffer' // Must be the first import // TODO remove
 import {
-  SessionType,
+  SessionStatus,
   WalletConnectMethods,
   WalletConnectRequestParams,
   WalletConnectSession,
   WalletConnectUriForm,
 } from 'src/features/walletConnect/types'
-import { handleWalletConnectRequest } from 'src/features/walletConnect/walletConnectReqHandler'
+import {
+  handleWalletConnectRequest,
+  validateRequestEvent,
+} from 'src/features/walletConnect/walletConnectReqHandler'
 import {
   approveWcRequest,
   approveWcSession,
   createWcSession,
   deleteWcSession,
   disconnectWcClient,
+  failWcRequest,
   failWcSession,
   initializeWcClient,
   proposeWcSession,
@@ -32,7 +36,7 @@ import {
 } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
 import { withTimeout } from 'src/utils/timeout'
-import { ErrorState, invalidInput } from 'src/utils/validation'
+import { ErrorState, errorToString, invalidInput } from 'src/utils/validation'
 import {
   call,
   cancel,
@@ -116,22 +120,23 @@ function* runWalletConnectSession(uri: string) {
     // Watch for events
     while (true) {
       const event = yield* take(channel)
-      console.log('event from channel', event)
       if (!event || !event.type) {
         logger.error(`Invalid WC event from channel: ${JSON.stringify(event)}`)
         continue
       }
       const { type, payload } = event
+      logger.debug('Event from WalletConnect channel', type)
       if (type === proposeWcSession.type) {
         logger.warn('Ignoring new session proposal while one is active')
       }
       if (type === requestFromWc.type) {
-        yield* fork(handleRequestEvent, payload, client)
+        const requestEvent = payload as SessionTypes.RequestEvent // Event channels loses type
+        yield* fork(handleRequestEvent, requestEvent, client)
       }
     }
   } catch (error) {
     // Note, saga-quirk: errors from fork calls won't be caught here
-    yield* put(failWcSession(error.message))
+    yield* put(failWcSession(errorToString(error)))
     logger.error('Error during WalletConnect session', error)
   } finally {
     if (yield* cancelled()) {
@@ -233,13 +238,6 @@ function* handleSessionProposal(proposal: SessionTypes.Proposal, client: WalletC
   }
 }
 
-function* waitForSessionCreated(channel: EventChannel<PayloadAction<any>>) {
-  while (true) {
-    const event = yield* take(channel)
-    if (event?.type === createWcSession.type) return event.payload as SessionTypes.Settled
-  }
-}
-
 async function validateProposal(proposal: SessionTypes.Proposal, client: WalletConnectClient) {
   if (!proposal) {
     logger.warn('Rejecting WalletConnect session: no proposal')
@@ -268,7 +266,14 @@ async function validateProposal(proposal: SessionTypes.Proposal, client: WalletC
   return true
 }
 
-async function approveClientSession(
+function* waitForSessionCreated(channel: EventChannel<PayloadAction<any>>) {
+  while (true) {
+    const event = yield* take(channel)
+    if (event?.type === createWcSession.type) return event.payload as SessionTypes.Settled
+  }
+}
+
+function approveClientSession(
   client: WalletConnectClient,
   proposal: SessionTypes.Proposal,
   account: string | null
@@ -283,16 +288,16 @@ async function approveClientSession(
     },
     metadata: APP_METADATA,
   }
-  await client.approve({ proposal, response })
+  return client.approve({ proposal, response })
 }
 
-async function rejectClientSession(
+function rejectClientSession(
   client: WalletConnectClient,
   proposal: SessionTypes.Proposal,
   reason: string
 ) {
   logger.warn(`Rejecting WalletConnect session: ${reason}`)
-  await client.reject({
+  return client.reject({
     proposal,
     reason: getError(WalletConnectErrors.NOT_APPROVED),
   })
@@ -303,23 +308,28 @@ function* handleSessionCreated(session: SessionTypes.Created) {
   yield* put(createWcSession(session))
 }
 
-function* handleRequestEvent(requestEvent: SessionTypes.RequestEvent, client: WalletConnectClient) {
+function* handleRequestEvent(event: SessionTypes.RequestEvent, client: WalletConnectClient) {
   logger.debug('WalletConnect session request received')
 
-  yield* put(requestFromWc(requestEvent))
+  try {
+    const isValid = yield* call(validateRequestEvent, event, client)
+    if (!isValid) return // silently reject invalid requests
 
-  const { approve, reject, timeout } = yield* race({
-    approve: take(approveWcRequest.type),
-    reject: take(rejectWcRequest.type),
-    timeout: delay(SESSION_REQUEST_TIMEOUT),
-  })
-  if (approve) {
-    // Actually handle the request and form response
-    yield* call(handleWalletConnectRequest, client, true)
-  } else if (reject || timeout) {
-    yield* call(handleWalletConnectRequest, client, false) // todo user feedback?
-  } else {
-    throw new Error('Unexpected result in handleSessionProposal')
+    yield* put(requestFromWc(event))
+
+    const { approve } = yield* race({
+      approve: take(approveWcRequest.type),
+      reject: take(rejectWcRequest.type),
+      timeout: delay(SESSION_REQUEST_TIMEOUT),
+    })
+    if (approve) {
+      yield* call(handleWalletConnectRequest, event, client, true)
+    } else {
+      yield* call(handleWalletConnectRequest, event, client, false)
+    }
+  } catch (error) {
+    logger.error('Error handling request event', error)
+    yield* put(failWcRequest(errorToString(error)))
   }
 }
 
@@ -346,7 +356,7 @@ async function disconnectClient(client: WalletConnectClient, session: WalletConn
 
   // Disconnect the active session if there is one
   const reason = getError(WalletConnectErrors.USER_DISCONNECTED)
-  if (session && session.type === SessionType.Settled) {
+  if (session && session.status === SessionStatus.Settled) {
     try {
       await client.disconnect({
         topic: session.data.topic,
