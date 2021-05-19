@@ -43,7 +43,7 @@ export function validate(params: PincodeParams): ErrorState {
     if (isPin && value.length !== PIN_LENGTH) {
       errors = { ...errors, ...invalidInput('value', 'Pincode must be 6 digits') }
     } else if (isSecretTooSimple(value, type)) {
-      errors = { ...errors, ...invalidInput('value', 'Value is too simple') }
+      errors = { ...errors, ...invalidInput('value', 'Value is too simple or too complex') }
     }
     if (!valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
@@ -59,7 +59,7 @@ export function validate(params: PincodeParams): ErrorState {
       if (isPin && newValue.length !== PIN_LENGTH) {
         errors = { ...errors, ...invalidInput('newValue', 'New Pincode must be 6 numbers') }
       } else if (isSecretTooSimple(newValue, type)) {
-        errors = { ...errors, ...invalidInput('newValue', 'New value is too simple') }
+        errors = { ...errors, ...invalidInput('newValue', 'New value is too simple or too complex') }
       } else if (newValue === value) {
         errors = { ...errors, ...invalidInput('newValue', 'New value is unchanged') }
       }
