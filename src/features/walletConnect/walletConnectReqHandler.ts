@@ -108,7 +108,11 @@ async function signTransaction(event: SessionTypes.RequestEvent, client: WalletC
   const tx = event.request.params
   const formattedTx = translateTxFields(tx)
   const signer = getSigner().signer
-  const result = await signer.signTransaction(formattedTx)
+  const sigHex = await signer.signTransaction(formattedTx)
+  const result = {
+    tx,
+    raw: sigHex,
+  }
   return respond(event, client, result)
 }
 
@@ -126,15 +130,22 @@ function respond(
   error?: WcErrorType
 ) {
   logger.debug('Responding to WalletConnect client')
-  return client.respond({
+  const base = {
     topic: event.topic,
     response: {
       id: event.request.id,
       jsonrpc: event.request.jsonrpc,
-      result: result ?? undefined,
-      error: error ? error.format() : undefined,
     },
-  })
+  }
+  let response
+  if (result) {
+    response = { ...base, response: { ...base.response, result } }
+  } else if (error) {
+    response = { ...base, response: { ...base.response, error: error.format() } }
+  } else {
+    throw new Error('Cannot respond without result or error')
+  }
+  return client.respond(response)
 }
 
 function isValidTx(tx: CeloTransactionRequest & { gas?: BigNumberish }) {

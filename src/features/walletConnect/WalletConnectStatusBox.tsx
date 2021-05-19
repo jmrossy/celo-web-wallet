@@ -72,7 +72,7 @@ export function WalletConnectStatusBox() {
             </div>
             {isReqPending && (
               <Box margin="1em 0 0 0">
-                <Button color={Color.altGrey} size="xs" onClick={onClickDeny} margin="0 1.5em 0 0">
+                <Button color={Color.altGrey} size="xs" onClick={onClickDeny} margin="0 1.2em 0 0">
                   Deny
                 </Button>
                 <Button size="xs" onClick={onClickReview}>
