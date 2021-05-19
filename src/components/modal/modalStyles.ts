@@ -9,6 +9,7 @@ export const modalStyles: Stylesheet = {
     textAlign: 'center',
     maxWidth: '24em',
     lineHeight: '1.6em',
+    margin: 0,
   },
   p: {
     ...Font.body2,

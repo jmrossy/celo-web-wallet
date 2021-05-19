@@ -336,7 +336,6 @@ function SessionError({ message, close }: { message: string | null } & Props) {
 const style: Stylesheet = {
   h3: {
     ...modalStyles.h3,
-    margin: 0,
     maxWidth: '18em',
   },
   uriInput: {

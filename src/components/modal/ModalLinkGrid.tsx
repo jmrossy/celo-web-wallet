@@ -13,7 +13,7 @@ export function ModalLinkGrid({ links }: ModalLinkGridProps) {
       direction="row"
       align="center"
       justify="center"
-      margin="1.2em 0 1em 0"
+      margin="1em 0 0 0"
       styles={style.container}
       wrap
     >
