@@ -4,7 +4,7 @@ import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
-import { ERROR as WalletConnectErrors, getError } from '@walletconnect/utils'
+import { ERROR as WcError } from '@walletconnect/utils'
 import { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
 import 'src/features/ledger/buffer' // Must be the first import // TODO remove
@@ -241,7 +241,7 @@ function* handleSessionProposal(proposal: SessionTypes.Proposal, client: WalletC
 async function validateProposal(proposal: SessionTypes.Proposal, client: WalletConnectClient) {
   if (!proposal) {
     logger.warn('Rejecting WalletConnect session: no proposal')
-    await client.reject({ proposal, reason: getError(WalletConnectErrors.MISSING_OR_INVALID) })
+    await client.reject({ proposal, reason: WcError.MISSING_OR_INVALID.format() })
     return false
   }
 
@@ -249,7 +249,7 @@ async function validateProposal(proposal: SessionTypes.Proposal, client: WalletC
     proposal.permissions.blockchain.chains.find((chainId) => !SUPPORTED_CHAINS.includes(chainId))
   ) {
     logger.warn('Rejecting WalletConnect session: unsupported chain')
-    await client.reject({ proposal, reason: getError(WalletConnectErrors.UNSUPPORTED_CHAINS) })
+    await client.reject({ proposal, reason: WcError.UNSUPPORTED_CHAINS.format() })
     return false
   }
 
@@ -258,7 +258,7 @@ async function validateProposal(proposal: SessionTypes.Proposal, client: WalletC
     logger.warn('Rejecting WalletConnect session: unsupported method')
     await client.reject({
       proposal,
-      reason: getError(WalletConnectErrors.UNSUPPORTED_JSONRPC),
+      reason: WcError.UNSUPPORTED_JSONRPC.format(),
     })
     return false
   }
@@ -299,7 +299,7 @@ function rejectClientSession(
   logger.warn(`Rejecting WalletConnect session: ${reason}`)
   return client.reject({
     proposal,
-    reason: getError(WalletConnectErrors.NOT_APPROVED),
+    reason: WcError.NOT_APPROVED.format(),
   })
 }
 
@@ -355,7 +355,7 @@ async function disconnectClient(client: WalletConnectClient, session: WalletConn
   client.pairing.events.removeAllListeners()
 
   // Disconnect the active session if there is one
-  const reason = getError(WalletConnectErrors.USER_DISCONNECTED)
+  const reason = WcError.USER_DISCONNECTED.format()
   if (session && session.status === SessionStatus.Settled) {
     try {
       await client.disconnect({

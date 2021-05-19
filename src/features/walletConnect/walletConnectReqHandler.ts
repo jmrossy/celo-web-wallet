@@ -2,7 +2,7 @@ import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
 import WalletConnectClient from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
-import { ERROR as WalletConnectErrors, ErrorType, getError } from '@walletconnect/utils'
+import { ERROR as WcError, Error as WcErrorType } from '@walletconnect/utils'
 import { utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getSigner } from 'src/blockchain/signer'
@@ -22,27 +22,27 @@ export async function validateRequestEvent(
   }
 
   if (event.chainId !== `celo:${config.chainId}`) {
-    await denyRequest(event, client, WalletConnectErrors.UNSUPPORTED_CHAINS)
+    await denyRequest(event, client, WcError.UNSUPPORTED_CHAINS)
     return false
   }
 
   const requestMethod = event.request.method
   const supportedMethods = Object.values(WalletConnectMethods) as string[]
   if (!requestMethod || !supportedMethods.includes(requestMethod)) {
-    await denyRequest(event, client, WalletConnectErrors.UNSUPPORTED_JSONRPC)
+    await denyRequest(event, client, WcError.UNSUPPORTED_JSONRPC)
     return false
   }
 
   if (requestMethod === WalletConnectMethods.signTransaction) {
     const tx = event.request.params
     if (!isValidTx(tx)) {
-      await denyRequest(event, client, WalletConnectErrors.MISSING_OR_INVALID)
+      await denyRequest(event, client, WcError.MISSING_OR_INVALID)
       return false
     }
   } else if (requestMethod === WalletConnectMethods.personalSign) {
     const message = event.request.params
     if (!message) {
-      await denyRequest(event, client, WalletConnectErrors.MISSING_OR_INVALID)
+      await denyRequest(event, client, WcError.MISSING_OR_INVALID)
       return false
     }
   }
@@ -58,7 +58,7 @@ export function* handleWalletConnectRequest(
   logger.debug('WalletConnect action request received')
 
   if (!approved) {
-    yield* call(denyRequest, event, client, WalletConnectErrors.NOT_APPROVED)
+    yield* call(denyRequest, event, client, WcError.NOT_APPROVED)
     yield* put(completeWcRequest())
     return
   }
@@ -68,20 +68,20 @@ export function* handleWalletConnectRequest(
     yield* call(getAccounts, event, client)
   } else if (method === WalletConnectMethods.computeSharedSecret) {
     // TODO
-    yield* call(denyRequest, event, client, WalletConnectErrors.UNSUPPORTED_JSONRPC)
+    yield* call(denyRequest, event, client, WcError.UNSUPPORTED_JSONRPC)
   } else if (method === WalletConnectMethods.personalDecrypt) {
     // TODO
-    yield* call(denyRequest, event, client, WalletConnectErrors.UNSUPPORTED_JSONRPC)
+    yield* call(denyRequest, event, client, WcError.UNSUPPORTED_JSONRPC)
   } else if (method === WalletConnectMethods.personalSign) {
     yield* call(signMessage, event, client)
   } else if (method === WalletConnectMethods.sendTransaction) {
     // TODO
-    yield* call(denyRequest, event, client, WalletConnectErrors.UNSUPPORTED_JSONRPC)
+    yield* call(denyRequest, event, client, WcError.UNSUPPORTED_JSONRPC)
   } else if (method === WalletConnectMethods.signTransaction) {
     yield* call(signTransaction, event, client)
   } else if (method === WalletConnectMethods.signTypedData) {
     // TODO
-    yield* call(denyRequest, event, client, WalletConnectErrors.UNSUPPORTED_JSONRPC)
+    yield* call(denyRequest, event, client, WcError.UNSUPPORTED_JSONRPC)
   }
 
   yield* put(completeWcRequest())
@@ -90,7 +90,7 @@ export function* handleWalletConnectRequest(
 function denyRequest(
   event: SessionTypes.RequestEvent,
   client: WalletConnectClient,
-  error: ErrorType
+  error: WcErrorType
 ) {
   logger.debug('Denying WalletConnect request event', event.request.method, error)
   return respond(event, client, undefined, error)
@@ -123,7 +123,7 @@ function respond(
   event: SessionTypes.RequestEvent,
   client: WalletConnectClient,
   result?: any,
-  error?: ErrorType
+  error?: WcErrorType
 ) {
   logger.debug('Responding to WalletConnect client')
   return client.respond({
@@ -132,7 +132,7 @@ function respond(
       id: event.request.id,
       jsonrpc: event.request.jsonrpc,
       result: result ?? undefined,
-      error: error ? getError(error) : undefined,
+      error: error ? error.format() : undefined,
     },
   })
 }
