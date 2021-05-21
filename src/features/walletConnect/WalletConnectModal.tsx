@@ -23,8 +23,8 @@ import {
   getPermissionList,
   getStartTime,
   rpcMethodToLabel,
+  validateWalletConnectForm,
 } from 'src/features/walletConnect/utils'
-import { validateWalletConnectForm } from 'src/features/walletConnect/walletConnect'
 import {
   approveWcRequest,
   approveWcSession,
@@ -97,14 +97,8 @@ function ConnectionForm() {
     dispatch(initializeWcClient(values.uri))
   }
 
-  const {
-    values,
-    errors,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    setValues,
-  } = useCustomForm<WalletConnectUriForm>(initialValues, onSubmit, validateWalletConnectForm)
+  const { values, errors, handleChange, handleBlur, handleSubmit, setValues } =
+    useCustomForm<WalletConnectUriForm>(initialValues, onSubmit, validateWalletConnectForm)
 
   const onClickPaste = async () => {
     const value = await tryClipboardGet()

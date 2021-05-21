@@ -1,5 +1,5 @@
 import { createAction, createSlice } from '@reduxjs/toolkit'
-import { SessionTypes } from '@walletconnect/types'
+import type { SessionTypes } from '@walletconnect/types'
 import {
   SessionStatus,
   WalletConnectSession,

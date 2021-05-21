@@ -63,18 +63,9 @@ function ClickLines({ x }: { x: string }) {
 }
 
 const clickAnim = keyframes`
-  0% {
-    opacity: 0.05;
-    transform: translate(0, 0);
-  }
-  50% {
-    opacity: 0.5;
-    transform: translate(0, -4px);
-  }
-  100% {
-    opacity: 0.7;
-    transform: translate(0, -4px);
-  }
+  0% { opacity: 0.05; transform: translate(0, 0); }
+  50% { opacity: 0.5; transform: translate(0, -4px); }
+  100% { opacity: 0.7; transform: translate(0, -4px); }
 `
 
 const clickStyle = css({

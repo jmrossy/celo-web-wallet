@@ -1,4 +1,3 @@
-import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { EventChannel, eventChannel } from '@redux-saga/core'
 import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
@@ -7,13 +6,11 @@ import { SessionTypes } from '@walletconnect/types'
 import { ERROR as WcError } from '@walletconnect/utils'
 import { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
-import 'src/features/ledger/buffer' // Must be the first import // TODO remove
+import 'src/features/ledger/buffer'
 import {
   SessionStatus,
   WalletConnectMethods,
-  WalletConnectRequestParams,
   WalletConnectSession,
-  WalletConnectUriForm,
 } from 'src/features/walletConnect/types'
 import {
   handleWalletConnectRequest,
@@ -27,7 +24,6 @@ import {
   disconnectWcClient,
   failWcRequest,
   failWcSession,
-  initializeWcClient,
   proposeWcSession,
   rejectWcRequest,
   rejectWcSession,
@@ -36,19 +32,8 @@ import {
 } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
 import { withTimeout } from 'src/utils/timeout'
-import { ErrorState, errorToString, invalidInput } from 'src/utils/validation'
-import {
-  call,
-  cancel,
-  cancelled,
-  delay,
-  fork,
-  put,
-  race,
-  select,
-  spawn,
-  take,
-} from 'typed-redux-saga'
+import { errorToString } from 'src/utils/validation'
+import { call, cancelled, delay, fork, put, race, select, take } from 'typed-redux-saga'
 
 const APP_METADATA = {
   name: 'CeloWallet.app',
@@ -65,34 +50,9 @@ const SESSION_INIT_TIMEOUT = 15000 // 15 seconds
 const SESSION_PROPOSAL_TIMEOUT = 180000 // 3 minutes
 const SESSION_REQUEST_TIMEOUT = 300000 // 5 minutes
 
-export function validateWalletConnectForm(values: WalletConnectUriForm): ErrorState {
-  const { uri } = values
-  if (!uri || !uri.length) {
-    return invalidInput('uri', 'URI is required')
-  }
-  if (uri.length < 30 || !uri.startsWith('wc:')) {
-    return invalidInput('uri', 'Invalid WalletConnect URI')
-  }
-  return { isValid: true }
-}
-
-// This watches for init action dispatches and forks off a saga
-// to run the session
-export function* watchWalletConnect() {
-  while (true) {
-    const initAction = (yield* take(initializeWcClient.type)) as PayloadAction<string>
-    const uri = initAction.payload
-    logger.debug('Starting new WalletConnect session')
-    const sessionTask = yield* spawn(runWalletConnectSession, uri)
-    yield* take(disconnectWcClient.type) // todo timeout in case disconnect action never sent?
-    yield* cancel(sessionTask)
-    logger.debug('WalletConnect session finishing')
-  }
-}
-
 // This is what actually interacts with the WC client
 // It initializes it, pairs it, and handles events
-function* runWalletConnectSession(uri: string) {
+export function* runWalletConnectSession(uri: string) {
   // Initialize the client
   const { client, channel } = yield* withTimeout(
     rawCall(initClient, uri),
@@ -405,12 +365,4 @@ async function disconnectClient(client: WalletConnectClient, session: WalletConn
   // }
 
   logger.debug('WalletConnect client disconnected')
-}
-
-export async function createWalletConnectTxRequest(params: WalletConnectRequestParams) {
-  // TODO
-  return {
-    to: params.data.to,
-    value: '0',
-  } as CeloTransactionRequest
 }

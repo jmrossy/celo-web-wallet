@@ -20,6 +20,8 @@ const config = {
   optimization: {
     splitChunks: {
       minChunks: 3, // Prevents the ledger dyanmic bundle from getting split up into separate vendors + local
+      minSize: 90000, // Prevent a fourth bundle with walletconnect + ledger common libs
+      enforceSizeThreshold: 100000,
     },
   },
   externals: {
@@ -93,8 +95,10 @@ const config = {
     modules: [path.resolve('./node_modules'), path.resolve('./')],
     fallback: {
       // TODO remove when iso-crypto bundling is improved
-      crypto: require.resolve('crypto-browserify'),
-      stream: require.resolve('stream-browserify'),
+      // crypto: require.resolve('crypto-browserify'),
+      // stream: require.resolve('stream-browserify'),
+      crypto: false,
+      stream: false,
     },
   },
   // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.

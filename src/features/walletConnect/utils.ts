@@ -2,8 +2,21 @@ import {
   SessionStatus,
   WalletConnectMethods,
   WalletConnectSession,
+  WalletConnectUriForm,
 } from 'src/features/walletConnect/types'
 import { trimToLength } from 'src/utils/string'
+import { ErrorState, invalidInput } from 'src/utils/validation'
+
+export function validateWalletConnectForm(values: WalletConnectUriForm): ErrorState {
+  const { uri } = values
+  if (!uri || !uri.length) {
+    return invalidInput('uri', 'URI is required')
+  }
+  if (uri.length < 30 || !uri.startsWith('wc:')) {
+    return invalidInput('uri', 'Invalid WalletConnect URI')
+  }
+  return { isValid: true }
+}
 
 export function getPeerName(session: WalletConnectSession | null, trim = false) {
   let name = 'Unknown DApp'

@@ -106,7 +106,7 @@ import {
   importWalletSaga,
   importWalletSagaName,
 } from 'src/features/wallet/importWallet'
-import { watchWalletConnect } from 'src/features/walletConnect/walletConnect'
+import { watchWalletConnect } from 'src/features/walletConnect/init'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {

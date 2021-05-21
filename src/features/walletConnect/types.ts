@@ -1,4 +1,4 @@
-import { SessionTypes } from '@walletconnect/types'
+import type { SessionTypes } from '@walletconnect/types'
 import { FeeEstimate } from 'src/features/fees/types'
 
 export interface WalletConnectUriForm {
