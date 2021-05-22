@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
+import { CheckmarkInElipseIcon } from 'src/components/icons/Checkmark'
 import WalletConnectIcon from 'src/components/icons/logos/wallet_connect.svg'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { TextInput } from 'src/components/input/TextInput'
@@ -28,8 +29,8 @@ import {
 import {
   approveWcRequest,
   approveWcSession,
-  completeWcRequest,
   disconnectWcClient,
+  dismissWcRequest,
   initializeWcClient,
   rejectWcRequest,
   rejectWcSession,
@@ -47,7 +48,7 @@ export function useWalletConnectModal() {
   const { showModalWithContent, closeModal } = useModal()
   return () => {
     showModalWithContent({
-      head: 'WalletConnect',
+      head: 'WalletConnect (Beta)',
       content: <WalletConnectModal close={closeModal} />,
       headIcon: <Icon />,
     })
@@ -78,9 +79,8 @@ function WalletConnectModal({ close }: Props) {
         <ReviewRequest session={session} request={request} />
       )}
       {status === WalletConnectStatus.RequestActive && <LoadingIndicator text="Working..." />}
-      {status === WalletConnectStatus.RequestFailed && (
-        <RequestError message={error} close={close} />
-      )}
+      {status === WalletConnectStatus.RequestComplete && <RequestComplete />}
+      {status === WalletConnectStatus.RequestFailed && <RequestError message={error} />}
       {status === WalletConnectStatus.Error && <SessionError message={error} close={close} />}
     </>
   )
@@ -163,7 +163,7 @@ function ReviewSession({ session }: { session: WalletConnectSession | null }) {
   const onClickApprove = () => {
     dispatch(approveWcSession())
   }
-  const onClickReject = () => {
+  const onClickDeny = () => {
     dispatch(rejectWcSession())
   }
 
@@ -181,8 +181,8 @@ function ReviewSession({ session }: { session: WalletConnectSession | null }) {
         </TextLink>
       )}
       <Box direction="row" margin="2em 0 0.25em 0">
-        <Button size="s" margin="0 1.5em 0 0" onClick={onClickReject} color={Color.altGrey}>
-          Reject
+        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDeny} color={Color.altGrey}>
+          Deny
         </Button>
         <Button size="s" onClick={onClickApprove}>
           Approve
@@ -212,7 +212,7 @@ function ViewSession({ session, close }: { session: WalletConnectSession | null 
 
   return (
     <Box direction="column" align="center">
-      <h3 css={style.h3}>{`Connected to ${peerName}!`}</h3>
+      <h3 css={style.h3}>{`Connected to ${peerName}`}</h3>
       <Box align="center">
         <div css={[style.details, { marginRight: '1em' }]}>Connected since:</div>
         <div css={style.details}>{start}</div>
@@ -253,7 +253,7 @@ function ReviewRequest({
   const onClickApprove = () => {
     dispatch(approveWcRequest())
   }
-  const onClickReject = () => {
+  const onClickDeny = () => {
     dispatch(rejectWcRequest())
   }
 
@@ -274,8 +274,8 @@ function ReviewRequest({
         </TextLink>
       )}
       <Box direction="row" margin="2em 0 0.25em 0">
-        <Button size="s" margin="0 1.5em 0 0" onClick={onClickReject} color={Color.altGrey}>
-          Reject
+        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDeny} color={Color.altGrey}>
+          Deny
         </Button>
         <Button size="s" onClick={onClickApprove}>
           Approve
@@ -284,12 +284,21 @@ function ReviewRequest({
     </Box>
   )
 }
+function RequestComplete() {
+  return (
+    <Box direction="column" align="center">
+      <h3 css={style.h3}>Request Complete!</h3>
+      <div css={{ marginTop: '1em' }}>
+        <CheckmarkInElipseIcon />
+      </div>
+    </Box>
+  )
+}
 
-function RequestError({ message, close }: { message: string | null } & Props) {
+function RequestError({ message }: { message: string | null }) {
   const dispatch = useDispatch()
   const onClickDismiss = () => {
-    dispatch(completeWcRequest())
-    close()
+    dispatch(dismissWcRequest())
   }
   return (
     <Box direction="column" align="center">
@@ -316,7 +325,7 @@ function SessionError({ message, close }: { message: string | null } & Props) {
       <h3 css={style.h3}>Looks like something went wrong</h3>
       <p css={style.error}>{message ?? 'Unknown error'}</p>
       <Box direction="row" margin="2em 0 0.5em 0">
-        <Button size="s" margin="0 2em 0 0" onClick={onClickDismiss} color={Color.altGrey}>
+        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDismiss} color={Color.altGrey}>
           Dismiss
         </Button>
         <Button size="s" onClick={onClickNewSession}>

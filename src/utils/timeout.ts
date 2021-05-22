@@ -1,4 +1,5 @@
 import { CallEffect } from '@redux-saga/core/effects'
+import { useCallback, useEffect, useRef } from 'react'
 import { delay, race } from 'typed-redux-saga'
 
 // Using requires 'raw' call effects because of issue:
@@ -12,4 +13,55 @@ export function* withTimeout<T>(effect: CallEffect<T>, ms: number, errorMsg: str
     throw new Error(errorMsg)
   }
   return result
+}
+
+// https://usehooks-typescript.com/react-hook/use-interval
+export function useInterval(callback: () => void, delay: number | null) {
+  const savedCallback = useRef<() => void | null>()
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback
+  })
+
+  // Set up the interval.
+  useEffect(() => {
+    const tick = () => {
+      if (typeof savedCallback?.current !== 'undefined') {
+        savedCallback?.current()
+      }
+    }
+
+    if (delay !== null) {
+      const id = setInterval(tick, delay)
+      return () => clearInterval(id)
+    }
+
+    return undefined
+  }, [delay])
+}
+
+// https://medium.com/javascript-in-plain-english/usetimeout-react-hook-3cc58b94af1f
+export const useTimeout = (
+  callback: () => void,
+  delay = 0 // in ms (default: immediately put into JS Event Queue)
+): (() => void) => {
+  const timeoutIdRef = useRef<NodeJS.Timeout>()
+
+  const cancel = useCallback(() => {
+    const timeoutId = timeoutIdRef.current
+    if (timeoutId) {
+      timeoutIdRef.current = undefined
+      clearTimeout(timeoutId)
+    }
+  }, [timeoutIdRef])
+
+  useEffect(() => {
+    if (delay >= 0) {
+      timeoutIdRef.current = setTimeout(callback, delay)
+    }
+    return cancel
+  }, [callback, delay, cancel])
+
+  return cancel
 }

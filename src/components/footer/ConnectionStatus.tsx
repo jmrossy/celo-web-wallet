@@ -11,7 +11,8 @@ import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'
-import { isStale, useInterval } from 'src/utils/time'
+import { isStale } from 'src/utils/time'
+import { useInterval } from 'src/utils/timeout'
 
 export function ConnectionStatusLink() {
   const [latestBlock, setLatestBlock] = useState<LatestBlockDetails | null | undefined>(undefined)

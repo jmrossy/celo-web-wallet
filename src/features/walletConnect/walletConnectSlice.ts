@@ -23,6 +23,7 @@ export const approveWcRequest = createAction('walletConnect/approveRequest')
 export const rejectWcRequest = createAction('walletConnect/rejectRequest')
 export const completeWcRequest = createAction('walletConnect/completeRequest')
 export const failWcRequest = createAction<string>('walletConnect/failRequest')
+export const dismissWcRequest = createAction('walletConnect/dismissRequest')
 export const disconnectWcClient = createAction('walletConnect/disconnect')
 export const resetWcClient = createAction('walletConnect/reset')
 
@@ -84,16 +85,17 @@ const walletConnectSlice = createSlice({
       .addCase(approveWcRequest, (state) => {
         state.status = WalletConnectStatus.RequestActive
       })
-      .addCase(rejectWcRequest, (state) => {
-        state.status = WalletConnectStatus.SessionActive
-      })
       .addCase(completeWcRequest, (state) => {
-        state.status = WalletConnectStatus.SessionActive
-        state.request = null
+        state.status = WalletConnectStatus.RequestComplete
       })
       .addCase(failWcRequest, (state, action) => {
         state.status = WalletConnectStatus.RequestFailed
         state.error = action.payload
+      })
+      .addCase(dismissWcRequest, (state) => {
+        state.status = WalletConnectStatus.SessionActive
+        state.request = null
+        state.error = null
       })
       .addCase(disconnectWcClient, (state) => {
         if (state.status !== WalletConnectStatus.Error) {

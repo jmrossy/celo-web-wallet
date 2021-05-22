@@ -8,9 +8,11 @@ import { RootState } from 'src/app/rootReducer'
 import { getSigner } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { WalletConnectMethods } from 'src/features/walletConnect/types'
-import { completeWcRequest } from 'src/features/walletConnect/walletConnectSlice'
+import { completeWcRequest, dismissWcRequest } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
-import { call, put, select } from 'typed-redux-saga'
+import { call, delay, put, select } from 'typed-redux-saga'
+
+const DELAY_BEFORE_DISSMISS = 2500 // 2.5 seconds
 
 export async function validateRequestEvent(
   event: SessionTypes.RequestEvent,
@@ -59,7 +61,7 @@ export function* handleWalletConnectRequest(
 
   if (!approved) {
     yield* call(denyRequest, event, client, WcError.NOT_APPROVED)
-    yield* put(completeWcRequest())
+    yield* put(dismissWcRequest())
     return
   }
 
@@ -85,6 +87,8 @@ export function* handleWalletConnectRequest(
   }
 
   yield* put(completeWcRequest())
+  yield* delay(DELAY_BEFORE_DISSMISS)
+  yield* put(dismissWcRequest())
 }
 
 function denyRequest(

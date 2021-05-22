@@ -13,7 +13,8 @@ export enum WalletConnectStatus {
   SessionActive = 3,
   RequestPending = 4,
   RequestActive = 5,
-  RequestFailed = 6,
+  RequestComplete = 6,
+  RequestFailed = 7,
 }
 
 export enum SessionStatus {

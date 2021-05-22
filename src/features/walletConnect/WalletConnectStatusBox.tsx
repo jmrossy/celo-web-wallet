@@ -32,6 +32,9 @@ export function WalletConnectStatusBox() {
   } else if (status === WalletConnectStatus.RequestActive) {
     header = 'Action In Progress'
     description = 'Working on request...'
+  } else if (status === WalletConnectStatus.RequestComplete) {
+    header = 'Action Complete'
+    description = 'Request has finished'
   } else if (status === WalletConnectStatus.RequestFailed) {
     header = 'Action Failed'
     description = 'Click here for details'
