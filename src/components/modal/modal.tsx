@@ -69,7 +69,9 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
           <Box direction="column" justify="between" styles={style.modalContent}>
             <Box direction="column" align="center">
               {subHead && <h2 css={[style.subHead, propsToSubHeadStyle(props)]}>{subHead}</h2>}
-              {!children && body && <div css={style.bodyText}>{body}</div>}
+              {!children && body && (
+                <div css={[style.bodyText, propsToBodyStyle(props)]}>{body}</div>
+              )}
               {children}
             </Box>
             {onActionClick && allActions && allActions.length > 0 && (
@@ -191,7 +193,6 @@ const style: Stylesheet = {
     maxWidth: '25em',
   },
   bodyText: {
-    margin: '1.8em 0 0 0',
     textAlign: 'center',
     lineHeight: '1.6em',
   },
@@ -210,6 +211,10 @@ const style: Stylesheet = {
 
 const propsToSubHeadStyle = (props: ModalProps): Styles => {
   return props.severity?.toLowerCase() === 'error' ? { color: Color.textError } : {}
+}
+
+const propsToBodyStyle = (props: ModalProps): Styles => {
+  return props.subHead ? { margin: '1.4em 0 0 0' } : { margin: '0.2em 0 0 0' }
 }
 
 const propsToModalStyle = (props: ModalProps): Styles => {

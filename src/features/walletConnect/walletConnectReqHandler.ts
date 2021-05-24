@@ -45,7 +45,10 @@ export async function validateRequestEvent(
       await denyRequest(event, client, WcError.MISSING_OR_INVALID)
       return false
     }
-  } else if (requestMethod === WalletConnectMethods.personalSign) {
+  } else if (
+    requestMethod === WalletConnectMethods.sign ||
+    requestMethod === WalletConnectMethods.personalSign
+  ) {
     const message = event.request.params
     if (!message) {
       await denyRequest(event, client, WcError.MISSING_OR_INVALID)
@@ -81,7 +84,7 @@ export function* handleWalletConnectRequest(
   } else if (method === WalletConnectMethods.personalDecrypt) {
     // TODO
     yield* call(denyRequest, event, client, WcError.UNSUPPORTED_JSONRPC)
-  } else if (method === WalletConnectMethods.personalSign) {
+  } else if (method === WalletConnectMethods.sign || method === WalletConnectMethods.personalSign) {
     yield* call(signMessage, event, client)
   } else if (method === WalletConnectMethods.sendTransaction) {
     yield* call(signAndSendTransaction, event, client)

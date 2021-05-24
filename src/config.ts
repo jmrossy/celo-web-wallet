@@ -47,8 +47,7 @@ interface Config {
 const desktopUrls = {
   windows:
     'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.1.5/Celo-Wallet-1.1.5-win.exe',
-  mac:
-    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.1.5/Celo-Wallet-1.1.5-mac.dmg',
+  mac: 'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.1.5/Celo-Wallet-1.1.5-mac.dmg',
   linux:
     'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.1.5/Celo-Wallet-1.1.5-linux-x86_64.AppImage',
 }
@@ -83,8 +82,8 @@ const configMainnet: Config = {
     [CeloContract.StableTokenEUR]: '0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73',
     [CeloContract.Validators]: '0xaEb865bCa93DdC8F47b8e29F40C5399cE34d0C58',
   },
-  defaultAccount:
-    'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
+  // defaultAccount:
+  //   'dirt detail century filter bid truly jazz benefit alpha palm vote segment loan three coil art task battle pen tornado fever hover buyer lyrics',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -67,6 +67,7 @@ export function rpcMethodToLabel(method: string) {
     case WalletConnectMethods.personalDecrypt:
       return 'decrypt data'
     case WalletConnectMethods.personalSign:
+    case WalletConnectMethods.sign:
       return 'sign data'
     case WalletConnectMethods.sendTransaction:
       return 'send a transaction'

@@ -7,6 +7,7 @@ import { ModalAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
+import { PasswordStrengthBar } from 'src/features/pincode/PasswordStrengthBar'
 import {
   pincodeActions,
   PincodeParams,
@@ -111,10 +112,11 @@ export function SetPincodeForm() {
               {...errors['valueConfirm']}
             />
           </div>
+          <PasswordStrengthBar type={secretType} value={values.value} />
           <Button
             size="l"
             type="submit"
-            margin="2.5em 0 0 0"
+            margin="1.5em 0 0 0"
             disabled={status === SagaStatus.Started}
           >
             {`Set ${labelC}`}

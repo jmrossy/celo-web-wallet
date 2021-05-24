@@ -30,12 +30,8 @@ export function PincodeInput(props: Props) {
   // Wrap the provided onChange to validate input
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event?.target?.value
-    if (value) {
-      if (inputMode === 'numeric') {
-        value = value.substring(0, 6).replace(/[^0-9]/g, '')
-      } else {
-        value = value.replace(/[\s]/g, '')
-      }
+    if (value && inputMode === 'numeric') {
+      value = value.substring(0, 6).replace(/[^0-9]/g, '')
       event.target.value = value
     }
     onChange(event)

@@ -50,7 +50,6 @@ function AboutWalletModal() {
 
 const style: Stylesheet = {
   container: {
-    marginTop: '1em',
     maxWidth: '26em',
   },
   text: {

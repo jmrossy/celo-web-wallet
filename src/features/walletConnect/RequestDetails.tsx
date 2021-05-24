@@ -36,7 +36,7 @@ export function RequestDetails({
   if (method === WalletConnectMethods.personalDecrypt) {
     return <div css={modalStyles.p}>Method not yet supported.</div>
   }
-  if (method === WalletConnectMethods.personalSign) {
+  if (method === WalletConnectMethods.sign || method === WalletConnectMethods.personalSign) {
     return <SignRequest data={params} />
   }
   if (

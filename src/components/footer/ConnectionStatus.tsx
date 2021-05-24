@@ -127,11 +127,14 @@ function getStatusFromBlock(latestBlock: LatestBlockDetails | null | undefined):
 
 const style: Stylesheet = {
   container: {
-    paddingTop: '2em',
+    paddingTop: '0.5em',
     '& p': {
       ...Font.body,
       textAlign: 'center',
       margin: '0 1em 1em 1em',
+    },
+    '& p:last-child': {
+      marginBottom: '0.2em',
     },
   },
   connectionLink: {

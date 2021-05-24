@@ -39,8 +39,9 @@ export enum WalletConnectMethods {
   accounts = 'eth_accounts',
   signTransaction = 'eth_signTransaction',
   sendTransaction = 'eth_sendTransaction',
-  personalSign = 'personal_sign',
+  sign = 'eth_sign',
   signTypedData = 'eth_signTypedData',
+  personalSign = 'personal_sign',
   personalDecrypt = 'personal_decrypt',
   computeSharedSecret = 'personal_computeSharedSecret',
 }
