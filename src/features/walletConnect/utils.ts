@@ -1,9 +1,16 @@
+import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
+import { BigNumberish } from 'ethers'
+import { getContractName } from 'src/blockchain/contracts'
+import { findTokenByAddress } from 'src/erc20'
 import {
   SessionStatus,
   WalletConnectMethods,
   WalletConnectSession,
   WalletConnectUriForm,
 } from 'src/features/walletConnect/types'
+import { CELO, NativeTokens, UnknownToken } from 'src/tokens'
+import { areAddressesEqual } from 'src/utils/addresses'
+import { logger } from 'src/utils/logger'
 import { trimToLength } from 'src/utils/string'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
@@ -68,6 +75,39 @@ export function rpcMethodToLabel(method: string) {
     case WalletConnectMethods.signTypedData:
       return 'sign typed data'
     default:
+      logger.warn('Unknown walletconnect rpc method', method)
       return method
   }
+}
+
+// Search through all known addresses to identify a contract
+// TODO expand list via sourcify or other repos of contract info
+export function identifyContractByAddress(address: string) {
+  // Check if it's a known core contract
+  const coreContractName = getContractName(address)
+  if (coreContractName) return coreContractName
+
+  // Check if it's a known token
+  const token = findTokenByAddress(address)
+  if (token) return token.name
+
+  return null
+}
+
+export function identifyFeeToken(feeCurrency: string | null | undefined) {
+  if (!feeCurrency) return CELO
+  return (
+    Object.values(NativeTokens).find((t) => areAddressesEqual(t.address, feeCurrency)) ||
+    UnknownToken
+  )
+}
+
+// Ethers uses slightly different tx field names than web3 / celo sdk
+export function translateTxFields(tx: CeloTransactionRequest & { gas?: BigNumberish }) {
+  if (tx.gasLimit && !tx.gas) {
+    return tx
+  } else if (tx.gas) {
+    const { gas, ...rest } = tx
+    return { ...rest, gasLimit: gas }
+  } else throw new Error('Gas field missing in tx fields')
 }

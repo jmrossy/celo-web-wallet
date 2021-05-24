@@ -1,4 +1,5 @@
-import { SessionTypes } from '@walletconnect/types'
+import type { SessionTypes } from '@walletconnect/types'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
@@ -11,6 +12,7 @@ import { Box } from 'src/components/layout/Box'
 import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
+import { RequestDetails } from 'src/features/walletConnect/RequestDetails'
 import {
   SessionStatus,
   WalletConnectSession,
@@ -66,7 +68,6 @@ interface Props {
 function WalletConnectModal({ close }: Props) {
   const { status, session, request, error } = useSelector((s: RootState) => s.walletConnect)
 
-  // TODO requestSucceeded state
   return (
     <>
       {status === WalletConnectStatus.Disconnected && <ConnectionForm />}
@@ -76,11 +77,13 @@ function WalletConnectModal({ close }: Props) {
         <ViewSession session={session} close={close} />
       )}
       {status === WalletConnectStatus.RequestPending && (
-        <ReviewRequest session={session} request={request} />
+        <ReviewRequest session={session} request={request} close={close} />
       )}
       {status === WalletConnectStatus.RequestActive && <LoadingIndicator text="Working..." />}
-      {status === WalletConnectStatus.RequestComplete && <RequestComplete />}
-      {status === WalletConnectStatus.RequestFailed && <RequestError message={error} />}
+      {status === WalletConnectStatus.RequestComplete && <RequestComplete close={close} />}
+      {status === WalletConnectStatus.RequestFailed && (
+        <RequestError message={error} close={close} />
+      )}
       {status === WalletConnectStatus.Error && <SessionError message={error} close={close} />}
     </>
   )
@@ -241,10 +244,11 @@ function ViewSession({ session, close }: { session: WalletConnectSession | null 
 function ReviewRequest({
   session,
   request,
+  close,
 }: {
   session: WalletConnectSession | null
   request: SessionTypes.RequestEvent | null
-}) {
+} & Props) {
   if (session?.status !== SessionStatus.Settled || !request?.request) {
     throw new Error('Invalid WalletConnect request for review')
   }
@@ -255,19 +259,17 @@ function ReviewRequest({
   }
   const onClickDeny = () => {
     dispatch(rejectWcRequest())
+    close()
   }
 
   const peerName = getPeerName(session)
   const peerUrl = getPeerUrl(session)
   const requestMethod = rpcMethodToLabel(request.request.method)
-  // TODO parse and present this better
-  const requestData = JSON.stringify(request.request.params)
 
   return (
     <Box direction="column" align="center">
       <h3 css={style.h3}>{`${peerName} would like to ${requestMethod}`}</h3>
-      <label css={style.label}>Request data:</label>
-      <div css={style.detailsSmall}>{requestData}</div>
+      <RequestDetails requestEvent={request} />
       {peerUrl && (
         <TextLink link={peerUrl} styles={style.dappUrl}>
           {trimToLength(peerUrl, 70)}
@@ -284,7 +286,11 @@ function ReviewRequest({
     </Box>
   )
 }
-function RequestComplete() {
+function RequestComplete({ close }: Props) {
+  useEffect(() => {
+    return close
+  }, [])
+
   return (
     <Box direction="column" align="center">
       <h3 css={style.h3}>Request Complete!</h3>
@@ -295,10 +301,11 @@ function RequestComplete() {
   )
 }
 
-function RequestError({ message }: { message: string | null }) {
+function RequestError({ message, close }: { message: string | null } & Props) {
   const dispatch = useDispatch()
   const onClickDismiss = () => {
     dispatch(dismissWcRequest())
+    close()
   }
   return (
     <Box direction="column" align="center">
@@ -355,12 +362,6 @@ const style: Stylesheet = {
   details: {
     ...modalStyles.p,
     maxWidth: '22em',
-    margin: '0.5em 0 0 0',
-  },
-  detailsSmall: {
-    ...modalStyles.p,
-    maxWidth: '26em',
-    fontSize: '0.8em',
     margin: '0.5em 0 0 0',
   },
   dappUrl: {

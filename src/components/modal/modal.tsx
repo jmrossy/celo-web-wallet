@@ -138,7 +138,7 @@ const style: Stylesheet = {
     minWidth: '20em',
     maxWidth: 'min(90vw, 30em)',
     minHeight: '13em',
-    maxHeight: 'min(75vh, 26em)',
+    maxHeight: 'min(75vh, 27em)',
     border: `1px solid ${Color.borderLight}`,
     backgroundColor: Color.primaryWhite,
     borderRadius: 6,
@@ -157,6 +157,7 @@ const style: Stylesheet = {
     width: '100%',
     height: '100%',
     padding: '1.4em',
+    overflowY: 'auto',
   },
   headContainer: {
     position: 'relative',

@@ -1,13 +1,14 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
-import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
 import WalletConnectClient from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
 import { ERROR as WcError, Error as WcErrorType } from '@walletconnect/utils'
-import { utils } from 'ethers'
+import { BigNumber, BigNumberish, utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getSigner } from 'src/blockchain/signer'
+import { sendSignedTransaction } from 'src/blockchain/transaction'
 import { config } from 'src/config'
 import { WalletConnectMethods } from 'src/features/walletConnect/types'
+import { translateTxFields } from 'src/features/walletConnect/utils'
 import { completeWcRequest, dismissWcRequest } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
 import { call, delay, put, select } from 'typed-redux-saga'
@@ -35,7 +36,10 @@ export async function validateRequestEvent(
     return false
   }
 
-  if (requestMethod === WalletConnectMethods.signTransaction) {
+  if (
+    requestMethod === WalletConnectMethods.signTransaction ||
+    requestMethod === WalletConnectMethods.sendTransaction
+  ) {
     const tx = event.request.params
     if (!isValidTx(tx)) {
       await denyRequest(event, client, WcError.MISSING_OR_INVALID)
@@ -47,6 +51,9 @@ export async function validateRequestEvent(
       await denyRequest(event, client, WcError.MISSING_OR_INVALID)
       return false
     }
+  } else {
+    await denyRequest(event, client, WcError.UNSUPPORTED_JSONRPC)
+    return false
   }
 
   return true
@@ -77,8 +84,7 @@ export function* handleWalletConnectRequest(
   } else if (method === WalletConnectMethods.personalSign) {
     yield* call(signMessage, event, client)
   } else if (method === WalletConnectMethods.sendTransaction) {
-    // TODO
-    yield* call(denyRequest, event, client, WcError.UNSUPPORTED_JSONRPC)
+    yield* call(signAndSendTransaction, event, client)
   } else if (method === WalletConnectMethods.signTransaction) {
     yield* call(signTransaction, event, client)
   } else if (method === WalletConnectMethods.signTypedData) {
@@ -112,12 +118,29 @@ async function signTransaction(event: SessionTypes.RequestEvent, client: WalletC
   const tx = event.request.params
   const formattedTx = translateTxFields(tx)
   const signer = getSigner().signer
-  const sigHex = await signer.signTransaction(formattedTx)
+  const signedTx = await signer.signTransaction(formattedTx)
   const result = {
     tx,
-    raw: sigHex,
+    raw: signedTx,
   }
   return respond(event, client, result)
+}
+
+// TODO: This assumes the request has a fully formed tx
+// It would be useful to have the wallet handle gas concerns
+// So the DApp can just worry about the data
+async function signAndSendTransaction(
+  event: SessionTypes.RequestEvent,
+  client: WalletConnectClient
+) {
+  logger.debug('WalletConnect request: send transaction')
+
+  const tx = event.request.params
+  const formattedTx = translateTxFields(tx)
+  const signer = getSigner().signer
+  const signedTx = await signer.signTransaction(formattedTx)
+  const txReceipt = await sendSignedTransaction(signedTx)
+  return respond(event, client, txReceipt.transactionHash)
 }
 
 async function signMessage(event: SessionTypes.RequestEvent, client: WalletConnectClient) {
@@ -166,14 +189,4 @@ function isValidTx(tx: CeloTransactionRequest & { gas?: BigNumberish }) {
     logger.error('Error validating WalletConnect tx request', error, tx)
     return false
   }
-}
-
-// Ethers uses slightly different tx field names than web3 / celo sdk
-function translateTxFields(tx: CeloTransactionRequest & { gas?: BigNumberish }) {
-  if (tx.gasLimit && !tx.gas) {
-    return tx
-  } else if (tx.gas) {
-    const { gas, ...rest } = tx
-    return { ...rest, gasLimit: gas }
-  } else throw new Error('Gas field missing')
 }

@@ -1,6 +1,7 @@
 import { config } from 'src/config'
 import { Color } from 'src/styles/Color'
 import { Token } from 'src/tokens'
+import { areAddressesEqual } from 'src/utils/addresses'
 
 /**
  * For now, lists of known supported ERC-20 comaptible tokens
@@ -110,4 +111,10 @@ const KNOWN_ERC20_TOKENS: Token[] = [
 
 export function getKnownErc20Tokens() {
   return KNOWN_ERC20_TOKENS.filter((t) => t.chainId === config.chainId)
+}
+
+export function findTokenByAddress(address: string) {
+  return KNOWN_ERC20_TOKENS.find(
+    (t) => t.chainId === config.chainId && areAddressesEqual(t.address, address)
+  )
 }

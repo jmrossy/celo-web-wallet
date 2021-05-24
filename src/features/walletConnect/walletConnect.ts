@@ -277,15 +277,15 @@ function* handleRequestEvent(event: SessionTypes.RequestEvent, client: WalletCon
 
     yield* put(requestFromWc(event))
 
-    const { approve } = yield* race({
+    const { approve, timeout } = yield* race({
       approve: take(approveWcRequest.type),
       reject: take(rejectWcRequest.type),
       timeout: delay(SESSION_REQUEST_TIMEOUT),
     })
-    if (approve) {
-      yield* call(handleWalletConnectRequest, event, client, true)
-    } else {
-      yield* call(handleWalletConnectRequest, event, client, false)
+
+    yield* call(handleWalletConnectRequest, event, client, !!approve)
+    if (timeout) {
+      yield* put(failWcRequest('Request timed out, please try again'))
     }
   } catch (error) {
     logger.error('Error handling request event', error)
