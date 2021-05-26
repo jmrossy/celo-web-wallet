@@ -10,8 +10,8 @@ let deeplinkUrl
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1300,
-    height: 800,
+    width: 1250,
+    height: 760,
     title: 'Celo Wallet',
     webPreferences: {
       preload: false,
@@ -112,9 +112,9 @@ function setupDeepLinking() {
     }
   })
 
-  // if (process.platform == 'win32' || process.platform === 'linux') {
+  // Note, this line only works for windows (and maybe linux)
+  // Mac initial deep links are caught by open-url above
   deeplinkUrl = process.argv.find((arg) => arg && arg.startsWith(`${URL_SCHEME}://`))
-  // }
 }
 
 // Only allow a single running instance
@@ -127,7 +127,7 @@ if (!lockAquired) {
   // Called when Electron finished initialization and is ready to create windows
   // Some APIs can only be used after this event occurs
   app.whenReady().then(() => {
-    // setCspHeader() TODO
+    // setCspHeader() TODO re-enable when devtools disabled
     setPermissionsHandler()
     createWindow()
 
