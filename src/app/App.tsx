@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
+import { getDeepLink } from 'src/app/deepLink'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
 import { useSplashScreen } from 'src/app/splash'
@@ -51,6 +52,8 @@ export const App = () => {
   if (showSplash) return null
 
   if (!isBrowserSupported) return <BadBrowserScreen />
+
+  const deepLink = getDeepLink()
 
   return (
     <ErrorBoundary>

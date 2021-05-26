@@ -1,12 +1,15 @@
-const path = require('path')
 const { app, BrowserWindow, ipcMain, session, shell } = require('electron')
 const { autoUpdater } = require('electron-updater')
 
+const URL_SCHEME = 'celowallet'
 const ALLOWED_PERMISSIONS = ['clipboard-read', 'notifications', 'fullscreen', 'openExternal']
+
+let mainWindow
+let deeplinkUrl
 
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1300,
     height: 800,
     title: 'Celo Wallet',
@@ -27,7 +30,7 @@ function createWindow() {
   mainWindow.removeMenu()
 
   // Open links in separate browser window
-  mainWindow.webContents.on('new-window', function (e, url) {
+  mainWindow.webContents.on('new-window', (e, url) => {
     e.preventDefault()
     shell.openExternal(url)
   })
@@ -36,14 +39,18 @@ function createWindow() {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools. Note this seems to be broken by CSP header below, disable header as needed during dev
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools() // TODO disable
 
+  // Set up auto-updater
   mainWindow.once('ready-to-show', () => {
     autoUpdater.checkForUpdatesAndNotify()
   })
-
   autoUpdater.on('update-downloaded', () => {
     mainWindow.webContents.send('update_downloaded')
+  })
+
+  mainWindow.on('closed', () => {
+    mainWindow = null
   })
 }
 
@@ -73,34 +80,80 @@ function setPermissionsHandler() {
   })
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  setCspHeader()
-  setPermissionsHandler()
-  createWindow()
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+function setupDeepLinking() {
+  // Declare app as owner of url scheme
+  // Must match scheme in electron-builder.yml
+  app.setAsDefaultProtocolClient(URL_SCHEME)
+
+  app.on('will-finish-launching', () => {
+    // Set up URL scheme handler for Mac
+    app.on('open-url', (event, url) => {
+      event.preventDefault()
+      console.info('URL Opened', url)
+      deeplinkUrl = url
+      if (mainWindow && deeplinkUrl) {
+        mainWindow.webContents.send('new-app-deeplink', deeplinkUrl)
+      }
+    })
   })
-})
 
-app.on('window-all-closed', function () {
-  app.quit()
-})
+  // open-url only works on Mac
+  // For windows and linux, listen for new instances and check argv
+  app.on('second-instance', (e, argv) => {
+    if (process.platform == 'win32' || process.platform === 'linux') {
+      console.info('second instance opened')
+      deeplinkUrl = argv.find((arg) => arg && arg.startsWith(`${URL_SCHEME}://`))
+      console.info('url found:', deeplinkUrl)
+    }
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+      if (deeplinkUrl) mainWindow.webContents.send('new-app-deeplink', deeplinkUrl)
+    }
+  })
 
-// Set up IPC to pass data path into renderer process
-// Tries prevents need to enable remote module
-const appMetadata = {
-  defaultCwd: app.getPath('userData'),
-  appVersion: app.getVersion(),
+  // if (process.platform == 'win32' || process.platform === 'linux') {
+  deeplinkUrl = process.argv.find((arg) => arg && arg.startsWith(`${URL_SCHEME}://`))
+  // }
 }
-ipcMain.on('get-app-metadata', (event) => {
-  event.returnValue = appMetadata
-})
 
-ipcMain.on('restart_app', () => {
-  autoUpdater.quitAndInstall()
-})
+// Only allow a single running instance
+// This facilitates deep-linking
+const lockAquired = app.requestSingleInstanceLock()
+if (!lockAquired) {
+  app.quit()
+} else {
+  setupDeepLinking()
+  // Called when Electron finished initialization and is ready to create windows
+  // Some APIs can only be used after this event occurs
+  app.whenReady().then(() => {
+    // setCspHeader() TODO
+    setPermissionsHandler()
+    createWindow()
+
+    app.on('activate', function () {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
+  })
+
+  // Shutdown app when all browser windows are closed
+  app.on('window-all-closed', function () {
+    app.quit()
+  })
+
+  // Set up IPC to pass data path into renderer process
+  // Tries prevents need to enable remote module
+  const appMetadata = {
+    defaultCwd: app.getPath('userData'),
+    appVersion: app.getVersion(),
+  }
+  ipcMain.on('get-app-metadata', (event) => {
+    event.returnValue = appMetadata
+  })
+  ipcMain.on('get-app-deeplink', (event) => {
+    event.returnValue = deeplinkUrl || null
+  })
+  ipcMain.on('restart_app', () => {
+    autoUpdater.quitAndInstall()
+  })
+}
