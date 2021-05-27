@@ -34,11 +34,12 @@ export function HomeNavigator() {
     )
   }
 
-  // Else, if wallet exists in storage but is not unlocked yet
+  // If wallet exists in storage but is not unlocked yet
   if (isWalletInStorage()) {
     return <EnterPincodeScreen />
   }
 
+  // If a wallet has been found in redux store and it's of type Ledger
   if (address && type === SignerType.Ledger) {
     return <LedgerUnlockScreen />
   }

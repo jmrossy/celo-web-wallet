@@ -1,7 +1,6 @@
 import { PropsWithChildren } from 'react'
 import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
-import { getDeepLink } from 'src/app/deepLink'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
 import { useSplashScreen } from 'src/app/splash'
@@ -36,7 +35,7 @@ import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
 function Router(props: PropsWithChildren<any>) {
-  // The BrowserRouter works everywhere except windows so using hash for electron
+  // The BrowserRouter works everywhere except Windows OS so using hash for electron
   return config.isElectron ? (
     <HashRouter>{props.children}</HashRouter>
   ) : (
@@ -52,8 +51,6 @@ export const App = () => {
   if (showSplash) return null
 
   if (!isBrowserSupported) return <BadBrowserScreen />
-
-  const deepLink = getDeepLink()
 
   return (
     <ErrorBoundary>

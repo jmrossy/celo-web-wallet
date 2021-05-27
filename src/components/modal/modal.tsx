@@ -82,7 +82,7 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
                       key={action.key}
                       onClick={() => onActionClick(action)}
                       color={action.color || Color.primaryGreen}
-                      margin="0 1rem"
+                      margin="0 0.75em"
                       size="s"
                     >
                       {action.label}
