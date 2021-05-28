@@ -1,6 +1,8 @@
+import { shallowEqual, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import { isSignerSet } from 'src/blockchain/signer'
-import { ACCOUNT_UNLOCK_TIMEOUT, CELO_DERIVATION_PATH } from 'src/consts'
+import { isSignerSet, SignerType } from 'src/blockchain/signer'
+import { config } from 'src/config'
+import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { PincodeAction, SecretType } from 'src/features/pincode/types'
 import {
@@ -77,7 +79,28 @@ export function validate(params: PincodeParams): ErrorState {
 let accountUnlockedTime: number
 
 export function isAccountUnlocked() {
-  return accountUnlockedTime && Date.now() - accountUnlockedTime < ACCOUNT_UNLOCK_TIMEOUT
+  // TODO implement account timeout feature
+  return !!accountUnlockedTime
+  // return accountUnlockedTime && Date.now() - accountUnlockedTime < ACCOUNT_UNLOCK_TIMEOUT
+}
+
+export function useAccountLockStatus() {
+  // Using individual selects here to avoid re-renders this high-level
+  // components that use this hook
+  const address = useSelector((s: RootState) => s.wallet.address, shallowEqual)
+  const type = useSelector((s: RootState) => s.wallet.type, shallowEqual)
+  const _isUnlocked = useSelector((s: RootState) => s.wallet.isUnlocked, shallowEqual)
+  // TODO necessary to watch for state changes until auto-timeout unlock is fully implemented
+  useSelector((s: RootState) => s.saga.pincode.status, shallowEqual)
+
+  // Call to isAccountUnlocked() is for security reasons (so user can't change a persisted value in local storage)
+  // and _isUnlocked is for flow reasons - so the UI reacts to changes after authenticating
+  const isUnlocked =
+    address &&
+    ((_isUnlocked && (isAccountUnlocked() || type === SignerType.Ledger)) ||
+      !!config.defaultAccount)
+
+  return { address, type, isUnlocked }
 }
 
 function updateUnlockedTime() {

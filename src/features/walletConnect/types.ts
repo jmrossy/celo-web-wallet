@@ -6,15 +6,15 @@ export interface WalletConnectUriForm {
 }
 
 export enum WalletConnectStatus {
-  Error = -1,
-  Disconnected = 0,
-  Initializing = 1,
-  SessionPending = 2,
-  SessionActive = 3,
-  RequestPending = 4,
-  RequestActive = 5,
-  RequestComplete = 6,
-  RequestFailed = 7,
+  Disconnected,
+  Initializing,
+  SessionPending,
+  SessionActive,
+  RequestPending,
+  RequestActive,
+  RequestComplete,
+  RequestFailed,
+  Error,
 }
 
 export enum SessionStatus {

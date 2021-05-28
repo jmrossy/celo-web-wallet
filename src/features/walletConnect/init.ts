@@ -1,11 +1,12 @@
 import { PayloadAction } from '@reduxjs/toolkit'
+import { RootState } from 'src/app/rootReducer'
 import {
   disconnectWcClient,
   failWcSession,
   initializeWcClient,
 } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
-import { call, cancel, put, spawn, take } from 'typed-redux-saga'
+import { call, cancel, put, select, spawn, take } from 'typed-redux-saga'
 
 let runWalletConnectSessionFn: any
 
@@ -15,6 +16,12 @@ export function* watchWalletConnect() {
   while (true) {
     const initAction = (yield* take(initializeWcClient.type)) as PayloadAction<string>
     logger.debug('Starting new WalletConnect session')
+
+    const address = yield* select((state: RootState) => state.wallet.address)
+    if (!address) {
+      yield* put(failWcSession('Must setup account first'))
+      continue
+    }
 
     const sessionRunner = yield* call(dynamicImportWalletConnect)
     if (!sessionRunner) {
