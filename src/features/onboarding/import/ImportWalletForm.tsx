@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import { ButtonToggle } from 'src/components/buttons/ButtonToggle'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
@@ -60,15 +60,8 @@ export function ImportWalletForm() {
 
   const validateForm = (values: ImportWalletForm) => validate(toImportWalletParams(values))
 
-  const {
-    values,
-    errors,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    setValues,
-    resetValues,
-  } = useCustomForm<ImportWalletForm>(initialValues, onSubmit, validateForm)
+  const { values, errors, handleChange, handleBlur, handleSubmit, setValues, resetValues } =
+    useCustomForm<ImportWalletForm>(initialValues, onSubmit, validateForm)
 
   const onToggleMode = (index: number) => {
     resetValues(initialValues)

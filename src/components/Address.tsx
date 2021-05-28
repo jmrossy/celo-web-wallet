@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { defaultButtonStyles } from 'src/components/buttons/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
 import QrCodeIcon from 'src/components/icons/qr_code.svg'

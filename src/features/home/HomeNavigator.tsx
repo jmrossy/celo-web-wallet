@@ -1,5 +1,5 @@
 import { shallowEqual, useSelector } from 'react-redux'
-import { Navigate, Outlet } from 'react-router'
+import { Navigate, Outlet } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { ScreenFrame } from 'src/components/layout/ScreenFrame'

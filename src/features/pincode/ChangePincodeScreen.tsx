@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { ChangePincodeForm } from 'src/features/pincode/ChangePincodeForm'
 import { isAccountUnlocked } from 'src/features/pincode/pincode'

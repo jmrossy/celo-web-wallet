@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers'
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
@@ -86,14 +86,8 @@ export function GovernanceFormScreen() {
   const validateForm = (values: GovernanceVoteParams) =>
     validate(values, balances, voterBalances, proposals)
 
-  const {
-    values,
-    errors,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    resetValues,
-  } = useCustomForm<GovernanceVoteParams>(getInitialValues(tx), onSubmit, validateForm)
+  const { values, errors, handleChange, handleBlur, handleSubmit, resetValues } =
+    useCustomForm<GovernanceVoteParams>(getInitialValues(tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {

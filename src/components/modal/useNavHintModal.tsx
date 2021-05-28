@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { ModalAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { Color } from 'src/styles/Color'

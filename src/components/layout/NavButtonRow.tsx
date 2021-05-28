@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import CubeIcon from 'src/components/icons/cube.svg'

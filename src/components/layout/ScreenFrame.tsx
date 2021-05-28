@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import PlusIcon from 'src/components/icons/plus.svg'
 import { Box } from 'src/components/layout/Box'
@@ -8,7 +8,6 @@ import { NavButtonRow } from 'src/components/layout/NavButtonRow'
 import { TransactionFeed } from 'src/features/feed/TransactionFeed'
 import { HomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
 import { useAreBalancesEmpty } from 'src/features/wallet/utils'
-import { WalletConnectStatusBox } from 'src/features/walletConnect/WalletConnectStatusBox'
 import { Color } from 'src/styles/Color'
 import { isWindowSizeMobile, isWindowSizeSmallMobile, useWindowSize } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -43,7 +42,6 @@ export function ScreenFrame(props: PropsWithChildren<any>) {
       {frameState === FrameState.MobileNotHomeNoFeed && (
         <MobileNotHomeNoFeed>{props.children}</MobileNotHomeNoFeed>
       )}
-      <WalletConnectStatusBox />
     </HeaderFooterFrame>
   )
 }
