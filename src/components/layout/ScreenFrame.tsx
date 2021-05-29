@@ -13,9 +13,9 @@ import { isWindowSizeMobile, isWindowSizeSmallMobile, useWindowSize } from 'src/
 import { Stylesheet } from 'src/styles/types'
 
 const SCREENS_WITHOUT_FEED: Record<string, boolean> = {
-  '/wallet': true,
-  '/accounts': true,
-  '/settings': true,
+  wallet: true,
+  accounts: true,
+  settings: true,
 }
 
 export function ScreenFrame(props: PropsWithChildren<any>) {
@@ -67,7 +67,8 @@ function useFrameState() {
 
   const path = location.pathname
   const isHomeScreen = path === '/'
-  const hideFeed = SCREENS_WITHOUT_FEED[path] || (isMobile && isWalletEmpty) || isSmallMobile
+  const pathSeg = path.split('/')[1] // get first path segment, i.e. accounts for /accounts/add
+  const hideFeed = SCREENS_WITHOUT_FEED[pathSeg] || (isMobile && isWalletEmpty) || isSmallMobile
 
   if (!isMobile && isHomeScreen && !isWalletEmpty) return FrameState.DesktopHome
   if (!isMobile && isHomeScreen && isWalletEmpty) return FrameState.DesktopHomeEmpty

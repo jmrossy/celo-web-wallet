@@ -1,26 +1,22 @@
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { SignerType } from 'src/blockchain/signer'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
-import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Table, TableColumn } from 'src/components/Table'
-import {
-  AccountModalScreen,
-  useManageAccountModal,
-} from 'src/features/wallet/management/ManageAccountModal'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { formatNumberWithCommas } from 'src/utils/amount'
 
 export function ManageAccountsScreen() {
+  const navigate = useNavigate()
   const address = useWalletAddress()
-  const showAccountsModal = useManageAccountModal()
 
   const onClickAdd = () => {
-    showAccountsModal(AccountModalScreen.AddAccount)
+    navigate('/accounts/add')
   }
 
   const data = useMemo(() => {
@@ -28,20 +24,18 @@ export function ManageAccountsScreen() {
   }, [address])
 
   return (
-    <ScreenContentFrame showBackButton={true}>
-      <div css={style.content}>
-        <h2 css={style.header}>Manage Your Accounts</h2>
-        <Table<AccountTableRow>
-          columns={tableColumns}
-          data={data}
-          isLoading={false}
-          initialSortBy="value"
-        />
-        <DashedBorderButton onClick={onClickAdd} margin="0.5em 0 0 0">
-          + Add new account
-        </DashedBorderButton>
-      </div>
-    </ScreenContentFrame>
+    <>
+      <h2 css={Font.h2Center}>Manage Your Accounts</h2>
+      <Table<AccountTableRow>
+        columns={tableColumns}
+        data={data}
+        isLoading={false}
+        initialSortBy="value"
+      />
+      <DashedBorderButton onClick={onClickAdd} margin="0.5em 0 0 0">
+        + Add new account
+      </DashedBorderButton>
+    </>
   )
 }
 
@@ -94,14 +88,6 @@ function renderAddress(row: AccountTableRow) {
 }
 
 const style: Stylesheet = {
-  content: {
-    minWidth: 'calc(min(60vw, 40rem))',
-  },
-  header: {
-    ...Font.h2,
-    margin: '0 0 1.75em 0',
-    textAlign: 'center',
-  },
   identicon: {
     marginRight: '0.75em',
   },

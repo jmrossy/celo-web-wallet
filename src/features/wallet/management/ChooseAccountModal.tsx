@@ -1,5 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
@@ -18,48 +17,28 @@ export enum AccountModalScreen {
   ImportLedger,
 }
 
-export function useManageAccountModal() {
+export function useChooseAccountModal() {
   const { showModalWithContent, closeModal } = useModal()
-  return (initialScreen?: AccountModalScreen) => {
+  return () => {
     showModalWithContent({
       head: 'Your Accounts',
       headColor: Color.primaryGreen,
-      content: <ManageAccountModal close={closeModal} initialScreen={initialScreen} />,
+      content: <ChooseAccountModal close={closeModal} />,
     })
   }
 }
 
 interface ModalProps {
   close: () => void
-  initialScreen?: AccountModalScreen
 }
 
-interface ScreenProps {
-  setScreen: Dispatch<SetStateAction<AccountModalScreen>>
-  close: () => void
-}
-
-export function ManageAccountModal({ close, initialScreen }: ModalProps) {
-  const [screen, setScreen] = useState(initialScreen ?? AccountModalScreen.ViewAccounts)
-
-  return (
-    <div>
-      {screen === AccountModalScreen.ViewAccounts && (
-        <ViewAccounts setScreen={setScreen} close={close} />
-      )}
-      {screen === AccountModalScreen.AddAccount && (
-        <AddAccount setScreen={setScreen} close={close} />
-      )}
-    </div>
-  )
-}
-
-function ViewAccounts({ setScreen, close }: ScreenProps) {
+export function ChooseAccountModal({ close }: ModalProps) {
   const address = useWalletAddress()
   const navigate = useNavigate()
 
   const onClickAdd = () => {
-    setScreen(AccountModalScreen.AddAccount)
+    navigate('/accounts/add')
+    close()
   }
 
   const onClickManage = () => {
@@ -80,10 +59,6 @@ function ViewAccounts({ setScreen, close }: ScreenProps) {
       </Box>
     </Box>
   )
-}
-
-function AddAccount({ setScreen, close }: ScreenProps) {
-  return <div>TODO</div>
 }
 
 const style: Stylesheet = {

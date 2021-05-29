@@ -33,6 +33,8 @@ import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmati
 import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
 import { BalanceDetailsScreen } from 'src/features/wallet/balances/BalanceDetailsScreen'
 import { ViewWalletScreen } from 'src/features/wallet/details/ViewWalletScreen'
+import { AccountsNavigator } from 'src/features/wallet/management/AccountsNavigator'
+import { AddAccountScreen } from 'src/features/wallet/management/AddAccountScreen'
 import { ManageAccountsScreen } from 'src/features/wallet/management/ManageAccountsScreen'
 import { WalletConnectStatusBox } from 'src/features/walletConnect/WalletConnectStatusBox'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
@@ -83,8 +85,11 @@ export const App = () => {
               <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
               <Route path="balances" element={<BalanceDetailsScreen />} />
               <Route path="wallet" element={<ViewWalletScreen />} />
-              <Route path="accounts" element={<ManageAccountsScreen />} />
               <Route path="settings" element={<SettingsScreen />} />
+              <Route path="accounts" element={<AccountsNavigator />}>
+                <Route path="/" element={<ManageAccountsScreen />} />
+                <Route path="add" element={<AddAccountScreen />} />
+              </Route>
             </Route>
 
             <Route path="/setup" element={<OnboardingNavigator />}>

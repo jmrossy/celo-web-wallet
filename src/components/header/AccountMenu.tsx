@@ -18,7 +18,7 @@ import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
-import { useManageAccountModal } from 'src/features/wallet/management/ManageAccountModal'
+import { useChooseAccountModal } from 'src/features/wallet/management/ChooseAccountModal'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
@@ -28,7 +28,7 @@ import { logger } from 'src/utils/logger'
 
 const MenuItems = [
   { id: 'account', label: 'Account Details', icon: IdCardIcon },
-  { id: 'manage', label: 'Manage Accounts', icon: QrCodeIcon },
+  { id: 'manage', label: 'Manage Accounts', icon: QrCodeIcon }, // TODO icon here
   { id: 'fund', label: 'Fund Wallet', icon: CoinSwapIcon },
   { id: 'help', label: 'Help', icon: HelpIcon },
   { id: 'settings', label: 'Settings', icon: SettingsIcon, iconWidth: '1.8em' },
@@ -47,7 +47,7 @@ export const AccountMenu = () => {
   const address = useWalletAddress()
   const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
   const showFundModal = useFundWalletModal()
-  const showAccountsModal = useManageAccountModal()
+  const showAccountsModal = useChooseAccountModal()
 
   const navigate = useNavigate()
   const onItemClick = (key: string) => async () => {
