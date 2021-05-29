@@ -32,7 +32,7 @@ export function* watchWalletConnect() {
     const uri = initAction.payload
     const sessionTask = yield* spawn(sessionRunner, uri)
 
-    yield* take(disconnectWcClient.type) // todo timeout in case disconnect action never sent?
+    yield* take(disconnectWcClient.type)
     yield* cancel(sessionTask)
     logger.debug('WalletConnect session finishing')
   }

@@ -1,5 +1,4 @@
 import type { SessionTypes } from '@walletconnect/types'
-import { FeeEstimate } from 'src/features/fees/types'
 
 export interface WalletConnectUriForm {
   uri: string
@@ -44,18 +43,4 @@ export enum WalletConnectMethods {
   personalSign = 'personal_sign',
   personalDecrypt = 'personal_decrypt',
   computeSharedSecret = 'personal_computeSharedSecret',
-}
-
-export interface WalletConnectTxData {
-  to: string
-}
-
-// export interface WalletConnectInitParams {
-//   uri: string
-// }
-
-export interface WalletConnectRequestParams {
-  //TODO
-  data: WalletConnectTxData
-  feeEstimate?: FeeEstimate
 }

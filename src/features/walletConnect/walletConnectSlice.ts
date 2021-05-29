@@ -27,14 +27,9 @@ export const dismissWcRequest = createAction('walletConnect/dismissRequest')
 export const disconnectWcClient = createAction('walletConnect/disconnect')
 export const resetWcClient = createAction('walletConnect/reset')
 
-// interface PeerMetadata {
-//   name: string
-// }
-
 interface walletConnectState {
   status: WalletConnectStatus
   uri: string | null
-  // peerMetadata: PeerMetadata | null
   session: WalletConnectSession | null
   request: SessionTypes.RequestEvent | null
   error: string | null
@@ -43,7 +38,6 @@ interface walletConnectState {
 const walletConnectsInitialState: walletConnectState = {
   status: WalletConnectStatus.Disconnected,
   uri: null,
-  // peerMetadata: null,
   session: null,
   request: null,
   error: null,
@@ -112,11 +106,5 @@ const walletConnectSlice = createSlice({
       .addCase(resetWcClient, () => walletConnectsInitialState)
   },
 })
-
-// export const {
-//   pairWalletConnect,
-//   closeWalletConnect,
-//   sessionRequestReceived,
-// } = walletConnectSlice.actions
 
 export const walletConnectReducer = walletConnectSlice.reducer

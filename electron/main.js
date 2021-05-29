@@ -39,7 +39,7 @@ function createWindow() {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools. Note this seems to be broken by CSP header below, disable header as needed during dev
-  mainWindow.webContents.openDevTools() // TODO disable
+  // mainWindow.webContents.openDevTools()
 
   // Set up auto-updater
   mainWindow.once('ready-to-show', () => {
@@ -127,7 +127,7 @@ if (!lockAquired) {
   // Called when Electron finished initialization and is ready to create windows
   // Some APIs can only be used after this event occurs
   app.whenReady().then(() => {
-    // setCspHeader() TODO re-enable when devtools disabled
+    setCspHeader()
     setPermissionsHandler()
     createWindow()
 

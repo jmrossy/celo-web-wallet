@@ -37,13 +37,12 @@ import { call, cancelled, delay, fork, put, race, select, take } from 'typed-red
 
 const APP_METADATA = {
   name: 'CeloWallet.app',
-  description: 'Celo Wallet for Web and Desktop', // TODO differentiate based on env?
+  description: `Celo Wallet for ${config.isElectron ? 'Desktop' : 'Web'}`,
   url: 'https://celowallet.app',
   icons: ['https://celowallet.app/static/icon.png'],
 }
 
 // alfajores, mainnet, baklava
-// TODO reject requests for chains other than one currently configured
 const SUPPORTED_CHAINS = ['celo:44787', 'celo:42220', 'celo:62320']
 
 const SESSION_INIT_TIMEOUT = 15000 // 15 seconds
