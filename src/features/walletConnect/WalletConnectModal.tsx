@@ -275,7 +275,7 @@ function ReviewRequest({
           {trimToLength(peerUrl, 70)}
         </TextLink>
       )}
-      <Box direction="row" margin="2em 0 0.25em 0">
+      <Box direction="row" margin="1.5em 0 0.25em 0">
         <Button size="s" margin="0 1.5em 0 0" onClick={onClickDeny} color={Color.altGrey}>
           Deny
         </Button>

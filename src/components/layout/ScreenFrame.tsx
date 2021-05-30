@@ -190,7 +190,6 @@ const style: Stylesheet = {
     height: '100%',
   },
   childContentNoFeed: {
-    overflow: 'auto',
     flex: 1,
     backgroundColor: Color.primaryWhite,
     borderRight: `1px solid ${Color.borderLight}`,

@@ -15,7 +15,7 @@ export function NotFoundScreen() {
 
   return (
     <OnboardingScreenFrame>
-      <h1 css={Font.h1}>This page could not be found, sorry!</h1>
+      <h1 css={style.h1}>This page could not be found, sorry!</h1>
       <img width="200em" src={NotFoundIcon} alt="Not Found" css={style.img} />
       <h3 css={style.h3}>
         Please check the URL or go{' '}
@@ -29,11 +29,15 @@ export function NotFoundScreen() {
 }
 
 const style: Stylesheet = {
-  img: {
-    margin: '2.5em',
+  h1: {
+    ...Font.h1,
+    textAlign: 'center',
   },
   h3: {
     ...Font.h3,
     textAlign: 'center',
+  },
+  img: {
+    margin: '2.5em',
   },
 }

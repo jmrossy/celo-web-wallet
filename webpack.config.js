@@ -105,14 +105,14 @@ const config = {
               { from: './package-electron.json', to: 'package.json' },
               { from: './src/index.html', to: 'index.html' },
               { from: './electron/main.js', to: 'main.js' },
-              { from: './static/*', to: 'static/[name].[ext]' },
+              { from: './static/*', to: 'static/[name][ext]' },
             ],
           }
         : {
             patterns: [
               { from: './src/index.html', to: 'index.html' },
-              { from: './netlify/*', to: '[name].[ext]' },
-              { from: './static/*', to: 'static/[name].[ext]' },
+              { from: './netlify/*', to: '[name][ext]' },
+              { from: './static/*', to: 'static/[name][ext]' },
             ],
           }
     ),
