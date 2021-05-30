@@ -30,7 +30,7 @@ export function createSaga<SagaParams = void>(saga: (...args: any[]) => any, nam
   }
 }
 
-const DEFAULT_TIMEOUT = 60 * 1000 // 1 minute
+const DEFAULT_TIMEOUT = 90 * 1000 // 1.5 minutes
 
 export enum SagaStatus {
   Started = 'SagaStarted',
