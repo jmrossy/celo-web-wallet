@@ -5,6 +5,7 @@ import { Dispatch } from 'redux'
 import { validateWalletConnectForm } from 'src/features/walletConnect/utils'
 import { initializeWcClient } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
+import { trimSlashes } from 'src/utils/string'
 
 export function useDeepLinkHandler() {
   const dispatch = useDispatch()
@@ -28,12 +29,12 @@ function handleDeepLink(link: string, dispatch: Dispatch) {
   }
 
   const url = new URL(link)
-  const params = new URLSearchParams(url.search)
+  const path = trimSlashes(url.pathname)
 
   // WalletConnect URI
-  if (params.has('wc-uri')) {
+  if (path === 'wc' && url.searchParams.has('uri')) {
     logger.info('WalletConnect URI found in URL')
-    const uri = decodeURIComponent(params.get('wc-uri') || '')
+    const uri = decodeURIComponent(url.searchParams.get('uri') || '')
     const validation = validateWalletConnectForm({ uri })
     if (validation.isValid) dispatch(initializeWcClient(uri))
   }
