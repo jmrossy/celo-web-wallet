@@ -83,10 +83,10 @@ export function getTokenBalance(balances: Balances, token: Token) {
 
 export function isValidMnemonic(mnemonic: string) {
   if (!mnemonic) return false
-  const trimmed = mnemonic.trim()
-  const split = trimmed.split(' ')
+  const formatted = normalizeMnemonic(mnemonic)
+  const split = formatted.split(' ')
   return (
-    utils.isValidMnemonic(trimmed) &&
+    utils.isValidMnemonic(formatted) &&
     split.length >= MNEMONIC_LENGTH_MIN &&
     split.length <= MNEMONIC_LENGTH_MAX
   )
@@ -97,4 +97,12 @@ export function isValidDerivationPath(derivationPath: string) {
   const split = derivationPath.trim().split('/')
   // TODO validate each path segment individually here
   return split[0] === 'm' && split.length === 6
+}
+
+// Format the mnemonic to handle extra whitespace
+// May need more additions here as other languages are supported
+export function normalizeMnemonic(mnemonic: string) {
+  if (!mnemonic) return ''
+  // Trim and replace all whitespaces with a single space
+  return mnemonic.trim().replace(/\s+/g, ' ')
 }
