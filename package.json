@@ -34,6 +34,7 @@
     "@ledgerhq/hw-app-eth": "^5.51.1",
     "@ledgerhq/hw-transport-node-hid-noevents": "^5.51.1",
     "@ledgerhq/hw-transport-u2f": "5.36.0-deprecated",
+    "@ledgerhq/hw-transport-webhid": "^5.51.1",
     "@ledgerhq/hw-transport-webusb": "^5.51.1",
     "@metamask/jazzicon": "https://github.com/jmrossy/jazzicon#7a8df28",
     "@pedrouid/environment": "^1.0.1",
