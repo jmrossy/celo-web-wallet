@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import { mq } from 'src/styles/mediaQueries'

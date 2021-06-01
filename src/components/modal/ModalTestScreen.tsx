@@ -29,7 +29,7 @@ export function ModalTestScreen() {
   const {
     showModal,
     showModalAsync,
-    showWorkingModal,
+    showLoadingModal,
     showSuccessModal,
     showErrorModal,
     showModalWithContent,
@@ -59,13 +59,12 @@ export function ModalTestScreen() {
 
   const withContent = () => {
     const content = <img src={Elipse} />
-    showModalWithContent(
-      'Modal with Content',
+    showModalWithContent({
+      head: 'Modal with Content',
       content,
-      ModalOkAction,
-      null,
-      'This modal has an image for content'
-    )
+      actions: ModalOkAction,
+      subHead: 'This modal has an image for content',
+    })
   }
 
   const withActions = async () => {
@@ -121,7 +120,7 @@ export function ModalTestScreen() {
 
   const working = () => {
     setLoading(true)
-    showWorkingModal('Please wait...', 'Modal will disappear shortly')
+    showLoadingModal('Please wait...', 'Modal will disappear shortly')
     setTimeout(() => {
       closeModal()
       setLoading(false)
@@ -137,21 +136,18 @@ export function ModalTestScreen() {
   }
 
   const backToBack = () => {
-    showWorkingModal('Loading...', 'A dismissable modal will appear in a moment')
+    showLoadingModal('Loading...', 'A dismissable modal will appear in a moment')
     setTimeout(() => {
       showSuccessModal('Nice Job!')
     }, 2000)
   }
 
   const ledgerSignature = () => {
-    showModalWithContent(
-      'Signature Required (1/2)',
-      <SignatureRequiredModal text={['test modal']} />,
-      null,
-      null,
-      null,
-      false
-    )
+    showModalWithContent({
+      head: 'Signature Required (1/2)',
+      content: <SignatureRequiredModal text={['test modal']} />,
+      dismissable: false,
+    })
   }
 
   return (
@@ -228,7 +224,7 @@ export function ModalTestScreen() {
       <Box direction="column" justify="center" align="center">
         <h1 css={{ width: '100%', textAlign: 'center' }}>Tooltip Testing</h1>
 
-        <Box css={{ width: '100%' }} justify="center" align="center">
+        <Box styles={{ width: '100%' }} justify="center" align="center">
           <HelpIcon
             tooltip={{ content: 'This is a HelpIcon with a tooltip', variant: 'dark' }}
             margin="1em"
@@ -285,7 +281,7 @@ export function ModalTestScreen() {
           />
         </Box>
 
-        <Box css={{ width: '100%' }} justify="center" align="center">
+        <Box styles={{ width: '100%' }} justify="center" align="center">
           <Tooltip content="This is a button with a tooltip" margin="1em" position="top">
             <Button>Button with Tooltip</Button>
           </Tooltip>

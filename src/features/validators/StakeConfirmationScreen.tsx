@@ -90,12 +90,10 @@ export function StakeConfirmationScreen() {
         : undefined,
   })
 
-  const resultData = useMemo(() => getResultChartData(voterBalances, groups, groupVotes, params), [
-    voterBalances,
-    groups,
-    groupVotes,
-    params,
-  ])
+  const resultData = useMemo(
+    () => getResultChartData(voterBalances, groups, groupVotes, params),
+    [voterBalances, groups, groupVotes, params]
+  )
 
   return (
     <ScreenContentFrame>
@@ -236,7 +234,6 @@ const style: Stylesheet = {
   successModal: {
     fontSize: '1.1em',
     textAlign: 'center',
-    marginTop: '1em',
     maxWidth: '20em',
     div: {
       marginTop: '1em',

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'

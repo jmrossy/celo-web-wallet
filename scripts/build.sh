@@ -42,19 +42,27 @@ export BUNDLE_HASH=`shasum -b -a 256 dist/bundle.js | awk '{ print $1 }' | xxd -
 echo "Bundle hash ${BUNDLE_HASH}"
 export LEDGER_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-ledger.js | awk '{ print $1 }' | xxd -r -p | base64`
 echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
+export WC_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-walletconnect.js | awk '{ print $1 }' | xxd -r -p | base64`
+echo "WalletConnect bundle hash ${WC_BUNDLE_HASH}"
 
-echo "Updating index.html"
+echo "Updating index.html bundle hash"
 xplat_sed "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
 
 if [ "$ELECTRON" = false ]; then
-  echo "Removing CSP header in index.html" # It gets set via netlify header instead which is preferable
-  xplat_sed "s|<meta http-equiv.*>||g" dist/index.html 
+  echo "Prepping index.html for web" 
+  # remove CSP header tag, it gets set via netlify header instead which is preferable
+  xplat_sed "s|<meta http-equiv.*>||g" dist/index.html
 
   echo "Updating Readme"
   xplat_sed "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
   xplat_sed "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
+  xplat_sed "s|bundle-walletconnect.js -> sha256-.*\`|bundle-walletconnect.js -> sha256-${WC_BUNDLE_HASH}\`|g" README.md
 else
+  echo "Prepping index.html for electron" 
+  # Trim title down 
   xplat_sed "s/ | Use Celo on the web or on your desktop//g" dist/index.html 
+  # Replace absolute path with relative, absolute doesn't work
+  xplat_sed "s|/bundle.js|bundle.js|g" dist/index.html
 fi
 
 echo "Done building app for ${NETWORK}"

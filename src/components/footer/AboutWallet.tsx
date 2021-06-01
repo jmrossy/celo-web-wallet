@@ -11,7 +11,11 @@ export function AboutWalletLink({ styles }: { styles: Styles }) {
   const { showModalWithContent } = useModal()
 
   const onClick = () => {
-    showModalWithContent('About This Wallet', <AboutWalletModal />, ModalOkAction)
+    showModalWithContent({
+      head: 'About This Wallet',
+      content: <AboutWalletModal />,
+      actions: ModalOkAction,
+    })
   }
 
   return (
@@ -46,7 +50,6 @@ function AboutWalletModal() {
 
 const style: Stylesheet = {
   container: {
-    marginTop: '1em',
     maxWidth: '26em',
   },
   text: {

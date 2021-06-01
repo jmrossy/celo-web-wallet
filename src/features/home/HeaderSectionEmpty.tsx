@@ -33,14 +33,9 @@ export function HeaderSectionEmpty() {
         </Box>
         <p css={style.tip}>All new wallets start empty. Add funds to start using Celo.</p>
         <p css={style.tip}>
-          You can{' '}
-          <TextButton css={style.tipButton} onClick={onClickBuyCelo}>
-            buy currency
-          </TextButton>{' '}
-          from an exchange or ask a friend on Celo to send a payment to{' '}
-          <TextButton css={style.tipButton} onClick={onQrButtonClick}>
-            your address.
-          </TextButton>{' '}
+          You can <TextButton onClick={onClickBuyCelo}>buy currency</TextButton> from an exchange or
+          ask a friend on Celo to send a payment to{' '}
+          <TextButton onClick={onQrButtonClick}>your address.</TextButton>{' '}
         </p>
         <div css={style.callToActionContainer}>
           <Button size="s" margin="0.5em 1em 0 0" width="9em" onClick={onClickBuyCelo}>
@@ -69,9 +64,6 @@ const style: Stylesheet = {
   tip: {
     ...Font.body,
     margin: '1em 0 0 0',
-  },
-  tipButton: {
-    fontWeight: 300,
   },
   callToActionContainer: {
     marginTop: '1.5em',

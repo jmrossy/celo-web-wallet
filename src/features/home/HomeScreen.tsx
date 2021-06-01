@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { HrDivider } from 'src/components/HrDivider'
 import Chart from 'src/components/icons/chart.svg'

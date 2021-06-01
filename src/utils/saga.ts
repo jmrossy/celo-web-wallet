@@ -1,5 +1,5 @@
 import { createAction, createReducer, PayloadActionCreator } from '@reduxjs/toolkit'
-import { call, delay, put, race, take } from 'redux-saga/effects'
+import { call, delay, Effect, put, race, take } from 'redux-saga/effects'
 import { logger } from './logger'
 
 /**
@@ -13,7 +13,7 @@ export function createSaga<SagaParams = void>(saga: (...args: any[]) => any, nam
   const wrappedSaga = function* () {
     while (true) {
       try {
-        const trigger = yield take(triggerAction.type)
+        const trigger: Effect = yield take(triggerAction.type)
         logger.debug(`${name} triggered`)
         yield call(saga, trigger.payload)
       } catch (error) {
@@ -30,7 +30,7 @@ export function createSaga<SagaParams = void>(saga: (...args: any[]) => any, nam
   }
 }
 
-const DEFAULT_TIMEOUT = 60 * 1000 // 1 minute
+const DEFAULT_TIMEOUT = 90 * 1000 // 1.5 minutes
 
 export enum SagaStatus {
   Started = 'SagaStarted',
@@ -92,7 +92,7 @@ export function createMonitoredSaga<SagaParams = void>(
   const wrappedSaga = function* () {
     while (true) {
       try {
-        const trigger = yield take(triggerAction.type)
+        const trigger: Effect = yield take(triggerAction.type)
         logger.debug(`${name} triggered`)
         yield put(statusAction(SagaStatus.Started))
         const { result, cancel, timeout } = yield race({

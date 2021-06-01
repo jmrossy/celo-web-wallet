@@ -68,13 +68,12 @@ export const AccountMenu = () => {
         await onLogout()
         break
       case 'help':
-        showModalWithContent(
-          'Need some help?',
-          <HelpModal />,
-          null,
-          null,
-          'See the Frequently Asked Questions (FAQ) on Github or join Discord to chat with the Celo community.'
-        )
+        showModalWithContent({
+          head: 'Need some help?',
+          content: <HelpModal />,
+          subHead:
+            'See the Frequently Asked Questions (FAQ) on Github or join Discord to chat with the Celo community.',
+        })
         break
       default:
         logger.info('Unknown Menu Item Clicked: ', key)

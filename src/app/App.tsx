@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
+import { useDeepLinkHandler } from 'src/app/deepLink'
 import { ErrorBoundary } from 'src/app/FailScreen'
 import { NotFoundScreen } from 'src/app/NotFoundScreen'
 import { useSplashScreen } from 'src/app/splash'
@@ -32,15 +33,21 @@ import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmati
 import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
 import { BalanceDetailsScreen } from 'src/features/wallet/BalanceDetailsScreen'
 import { ViewWalletScreen } from 'src/features/wallet/ViewWalletScreen'
+import { WalletConnectStatusBox } from 'src/features/walletConnect/WalletConnectStatusBox'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
 function Router(props: PropsWithChildren<any>) {
-  // The BrowserRouter works everywhere except windows so using hash for electron
+  // The BrowserRouter works everywhere except Windows OS so using hash for electron
   return config.isElectron ? (
     <HashRouter>{props.children}</HashRouter>
   ) : (
     <BrowserRouter>{props.children}</BrowserRouter>
   )
+}
+
+function DeepLinkHandler() {
+  useDeepLinkHandler()
+  return null
 }
 
 export const App = () => {
@@ -56,6 +63,7 @@ export const App = () => {
     <ErrorBoundary>
       <Router>
         <ModalProvider>
+          <DeepLinkHandler />
           <UpdateBanner />
           <Routes>
             <Route path="/" element={<HomeNavigator />}>
@@ -95,6 +103,7 @@ export const App = () => {
 
             <Route path="*" element={<NotFoundScreen />} />
           </Routes>
+          <WalletConnectStatusBox />
         </ModalProvider>
       </Router>
     </ErrorBoundary>

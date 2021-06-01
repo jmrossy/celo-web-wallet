@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import ArrowBackIcon from 'src/components/icons/arrow_back.svg'
 import { Box } from 'src/components/layout/Box'

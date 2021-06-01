@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'

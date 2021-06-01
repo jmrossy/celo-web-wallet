@@ -2,6 +2,7 @@ const webpack = require('webpack')
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 const packageJson = require('./package.json')
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 const isProduction = process.env.NODE_ENV === 'production'
@@ -19,6 +20,8 @@ const config = {
   optimization: {
     splitChunks: {
       minChunks: 3, // Prevents the ledger dyanmic bundle from getting split up into separate vendors + local
+      minSize: 90000, // Prevent a fourth bundle with walletconnect + ledger common libs
+      enforceSizeThreshold: 100000,
     },
   },
   externals: {
@@ -87,10 +90,12 @@ const config = {
         ? 'src/features/ledger/ledgerTransport-electron.ts'
         : 'src/features/ledger/ledgerTransport.ts',
       'src/app/update$': targetElectron ? 'src/app/update-electron.ts' : 'src/app/update.ts',
+      'src/app/deepLink$': targetElectron ? 'src/app/deepLink-electron.ts' : 'src/app/deepLink.ts',
     },
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
     modules: [path.resolve('./node_modules'), path.resolve('./')],
   },
+  // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
   plugins: [
     // Copy over static files
     new CopyPlugin(
@@ -100,14 +105,14 @@ const config = {
               { from: './package-electron.json', to: 'package.json' },
               { from: './src/index.html', to: 'index.html' },
               { from: './electron/main.js', to: 'main.js' },
-              { from: './static/*', to: 'static/[name].[ext]' },
+              { from: './static/*', to: 'static/[name][ext]' },
             ],
           }
         : {
             patterns: [
               { from: './src/index.html', to: 'index.html' },
-              { from: './netlify/*', to: '[name].[ext]' },
-              { from: './static/*', to: 'static/[name].[ext]' },
+              { from: './netlify/*', to: '[name][ext]' },
+              { from: './static/*', to: 'static/[name][ext]' },
             ],
           }
     ),
@@ -117,7 +122,8 @@ const config = {
       __DEBUG__: isDevelopment,
       __IS_ELECTRON__: targetElectron,
     }),
-    // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
+    // Bundle analyzer, don't leave enabled
+    // new BundleAnalyzerPlugin(),
   ],
   devServer: {
     historyApiFallback: true,

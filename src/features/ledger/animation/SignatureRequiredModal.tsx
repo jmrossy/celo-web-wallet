@@ -12,7 +12,7 @@ interface Props {
 
 export function SignatureRequiredModal({ text, signWarningLabel }: Props) {
   return (
-    <Box direction="column" align="center" margin="0.5em 0 1.3em 0">
+    <Box direction="column" align="center" margin="0 0 1.3em 0">
       {text.map((line, i) => (
         <p key={`sig-requred-modal-body-${i}`} css={style.p}>
           {line}

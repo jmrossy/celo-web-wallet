@@ -2,7 +2,7 @@ import { BigNumber, utils } from 'ethers'
 import { Location } from 'history'
 import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
@@ -140,11 +140,10 @@ export function StakeFormScreen() {
 
   const selectOptions = useMemo(() => getSelectOptions(groups), [groups])
 
-  const summaryData = useMemo(() => getSummaryChartData(voterBalances, groups, groupVotes), [
-    voterBalances,
-    groups,
-    groupVotes,
-  ])
+  const summaryData = useMemo(
+    () => getSummaryChartData(voterBalances, groups, groupVotes),
+    [voterBalances, groups, groupVotes]
+  )
   const resultData = useMemo(
     () => getResultChartData(voterBalances, groups, groupVotes, amountFieldToWei(values)),
     [voterBalances, groups, groupVotes, values]

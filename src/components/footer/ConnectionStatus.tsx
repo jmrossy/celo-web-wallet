@@ -11,7 +11,8 @@ import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'
-import { isStale, useInterval } from 'src/utils/time'
+import { isStale } from 'src/utils/time'
+import { useInterval } from 'src/utils/timeout'
 
 export function ConnectionStatusLink() {
   const [latestBlock, setLatestBlock] = useState<LatestBlockDetails | null | undefined>(undefined)
@@ -40,7 +41,11 @@ export function ConnectionStatusLink() {
 
   const { showModalWithContent } = useModal()
   const onConnectionClick = () => {
-    showModalWithContent('Connection Status', <ConnectionStatus />, ModalOkAction)
+    showModalWithContent({
+      head: 'Connection Status',
+      content: <ConnectionStatus />,
+      actions: ModalOkAction,
+    })
   }
 
   return (
@@ -122,11 +127,14 @@ function getStatusFromBlock(latestBlock: LatestBlockDetails | null | undefined):
 
 const style: Stylesheet = {
   container: {
-    paddingTop: '2em',
+    paddingTop: '0.5em',
     '& p': {
       ...Font.body,
       textAlign: 'center',
       margin: '0 1em 1em 1em',
+    },
+    '& p:last-child': {
+      marginBottom: '0.2em',
     },
   },
   connectionLink: {

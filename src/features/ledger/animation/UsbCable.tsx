@@ -50,25 +50,10 @@ export function UsbCable(props: Props) {
 }
 
 const plugAnim = keyframes`
-  0% {
-      transform: translate(0px, 0px);
-      opacity: 0;
-  }
-
-  60% {
-      transform: translate(0px, 0px);
-      opacity: 1;
-  }
-
-  85% {
-      transform: translate(-50px, 0px);
-      opacity: 1;
-  }
-
-  100% {
-      transform: translate(-50px, 0px);
-      opacity: 0;
-  }
+  0% { transform: translate(0px, 0px); opacity: 0; }
+  60% { transform: translate(0px, 0px); opacity: 1; }
+  85% { transform: translate(-50px, 0px); opacity: 1; }
+  100% { transform: translate(-50px, 0px); opacity: 0; }
 `
 
 const style = css({

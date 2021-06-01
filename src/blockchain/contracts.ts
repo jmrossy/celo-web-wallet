@@ -28,6 +28,7 @@ export function getContract(c: CeloContract) {
   return contract
 }
 
+// Search for token contract by address
 export function getTokenContract(tokenAddress: string) {
   const cachedContract = tokenContractCache[tokenAddress]
   if (cachedContract) return cachedContract
@@ -66,12 +67,14 @@ function getContractAbi(c: CeloContract) {
   }
 }
 
+// Search for core contract by address
 export function getContractByAddress(address: string): Contract | null {
   const name = getContractName(address)
   if (name) return getContract(name)
   else return null
 }
 
+// Search for core contract name by address
 export function getContractName(address: string): CeloContract | null {
   if (!address) return null
   const contractNames = Object.keys(config.contractAddresses) as Array<CeloContract> // Object.keys loses types

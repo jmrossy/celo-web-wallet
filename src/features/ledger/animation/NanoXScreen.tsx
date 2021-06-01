@@ -50,18 +50,10 @@ export function NanoXScreen(props: Props) {
 }
 
 const coinFadeAnim = keyframes`
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0; } 
+  90% { opacity: 1; }
+  100% { opacity: 0; }
 `
 
 const coinStyle = css({

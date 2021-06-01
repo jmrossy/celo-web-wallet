@@ -1,51 +1,50 @@
-import { useContext } from 'react'
+import { ReactElement, useContext } from 'react'
 import {
   ModalAction,
   ModalActionCallback,
   ModalOkAction,
   ModalProps,
   ModalSize,
+  SuccessModalContent,
 } from 'src/components/modal/modal'
 import { ModalContext } from 'src/components/modal/modalContext'
-import { trimToLength } from 'src/utils/string'
+import { errorToString } from 'src/utils/validation'
+
+export interface ModalWithContentProps {
+  head: string
+  headIcon?: ReactElement | null
+  subHead?: string | null
+  content: any
+  actions?: ModalAction | ModalAction[] | null
+  onActionClick?: ModalActionCallback | null
+  dismissable?: boolean | null
+}
 
 export function useModal() {
   const context = useContext(ModalContext)
 
-  const showWorkingModal = (head: string, subHead: string | undefined | null = undefined) => {
+  const showLoadingModal = (head: string, subHead?: string | null) => {
     const modalProps: ModalProps = {
-      isLoading: true,
+      type: 'loading',
       head: head,
       subHead: subHead ?? undefined,
     }
     context.showModal(modalProps)
   }
 
-  const showSuccessModal = (head: string, subHead: string | undefined | null = undefined) => {
+  const showSuccessModal = (head: string, subHead?: string | null) => {
     const modalProps: ModalProps = {
-      isSuccess: true,
-      head: head,
+      head,
       subHead: subHead ?? undefined,
-      actions: ModalOkAction,
       onClose: context.closeModal,
+      actions: ModalOkAction,
       onActionClick: context.closeModal,
     }
-    context.showModal(modalProps)
+    context.showModal(modalProps, <SuccessModalContent />)
   }
 
   const showErrorModal = (head: string, subHead?: string | undefined, error?: unknown) => {
-    let errorMsg: string
-    if (!error) {
-      errorMsg = 'Unknown Error'
-    } else if (typeof error === 'string') {
-      errorMsg = error
-    } else if (typeof error === 'number') {
-      errorMsg = `Error code: ${error}`
-    } else {
-      errorMsg = JSON.stringify(error)
-    }
-    errorMsg = trimToLength(errorMsg, 80)
-
+    const errorMsg = errorToString(error, 80)
     const modalProps: ModalProps = {
       head,
       subHead: subHead,
@@ -58,30 +57,25 @@ export function useModal() {
     context.showModal(modalProps)
   }
 
-  const showModalWithContent = (
-    head: string,
-    content: any,
-    actions: ModalAction | ModalAction[] | undefined | null = undefined,
-    onActionClick: ModalActionCallback | undefined | null = undefined,
-    subHead: string | undefined | null = undefined,
-    dismissable = true
-  ) => {
+  const showModalWithContent = (props: ModalWithContentProps) => {
     const modalProps: ModalProps = {
-      head,
-      subHead: subHead ?? undefined,
-      onClose: dismissable ? context.closeModal : undefined,
-      actions: actions ?? undefined,
-      onActionClick: onActionClick,
+      head: props.head,
+      headIcon: props.headIcon ?? undefined,
+      subHead: props.subHead ?? undefined,
+      onClose: props.dismissable === false ? undefined : context.closeModal,
+      actions: props.actions ?? undefined,
+      onActionClick: props.onActionClick,
     }
-    context.showModal(modalProps, content)
+    context.showModal(modalProps, props.content)
   }
 
+  // TODO refactor params to object bag
   const showModalAsync = (
     head: string,
     body: string,
     actions: ModalAction | ModalAction[] | undefined | null = undefined,
     subHead: string | undefined | null = undefined,
-    size: ModalSize | null = undefined,
+    size: ModalSize | undefined | null = undefined,
     onActionClick: ModalActionCallback | undefined | null = undefined,
     dismissable = true
   ) => {
@@ -103,7 +97,7 @@ export function useModal() {
     body: string,
     actions: ModalAction | ModalAction[] | undefined | null = undefined,
     subHead: string | undefined | null = undefined,
-    size: ModalSize | null = undefined,
+    size: ModalSize | undefined | null = undefined,
     onActionClick: ModalActionCallback | undefined | null = undefined,
     dismissable = true
   ) => {
@@ -123,7 +117,7 @@ export function useModal() {
   return {
     showModal,
     showModalAsync,
-    showWorkingModal,
+    showLoadingModal,
     showSuccessModal,
     showErrorModal,
     showModalWithContent,

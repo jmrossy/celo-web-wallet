@@ -1,9 +1,15 @@
+import { shallowEqual, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import { isSignerSet } from 'src/blockchain/signer'
-import { ACCOUNT_UNLOCK_TIMEOUT, CELO_DERIVATION_PATH } from 'src/consts'
+import { isSignerSet, SignerType } from 'src/blockchain/signer'
+import { config } from 'src/config'
+import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { PincodeAction, SecretType } from 'src/features/pincode/types'
-import { isSecretTooSimple, secretTypeToLabel } from 'src/features/pincode/utils'
+import {
+  secretTypeToLabel,
+  validatePasswordValue,
+  validatePinValue,
+} from 'src/features/pincode/utils'
 import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage'
 import {
@@ -16,8 +22,6 @@ import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
-
-const PIN_LENGTH = 6
 
 export interface PincodeParams {
   action: PincodeAction
@@ -34,16 +38,14 @@ export function validate(params: PincodeParams): ErrorState {
   let errors: ErrorState = { isValid: true }
 
   if (!value) {
-    return { ...errors, ...invalidInput('value', 'Value is required') }
-  } else if (value.length < PIN_LENGTH) {
-    return { ...errors, ...invalidInput('value', 'Value is too short') }
+    return invalidInput('value', 'Value is required')
   }
 
   if (action === PincodeAction.Set) {
-    if (isPin && value.length !== PIN_LENGTH) {
-      errors = { ...errors, ...invalidInput('value', 'Pincode must be 6 digits') }
-    } else if (isSecretTooSimple(value, type)) {
-      errors = { ...errors, ...invalidInput('value', 'Value is too simple') }
+    if (isPin) {
+      errors = { ...errors, ...validatePinValue(value, 'value') }
+    } else {
+      errors = { ...errors, ...validatePasswordValue(value, 'value') }
     }
     if (!valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
@@ -54,20 +56,20 @@ export function validate(params: PincodeParams): ErrorState {
 
   if (action === PincodeAction.Change) {
     if (!newValue) {
-      errors = { ...errors, ...invalidInput('newValue', 'New value is required') }
+      return invalidInput('newValue', 'New value is required')
+    }
+    if (newValue === value) {
+      errors = { ...errors, ...invalidInput('newValue', 'New value is unchanged') }
+    }
+    if (isPin) {
+      errors = { ...errors, ...validatePinValue(value, 'newValue') }
     } else {
-      if (isPin && newValue.length !== PIN_LENGTH) {
-        errors = { ...errors, ...invalidInput('newValue', 'New Pincode must be 6 numbers') }
-      } else if (isSecretTooSimple(newValue, type)) {
-        errors = { ...errors, ...invalidInput('newValue', 'New value is too simple') }
-      } else if (newValue === value) {
-        errors = { ...errors, ...invalidInput('newValue', 'New value is unchanged') }
-      }
-      if (!valueConfirm) {
-        errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
-      } else if (newValue !== valueConfirm) {
-        errors = { ...errors, ...invalidInput('valueConfirm', "New values don't match") }
-      }
+      errors = { ...errors, ...validatePasswordValue(value, 'newValue') }
+    }
+    if (!valueConfirm) {
+      errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
+    } else if (newValue !== valueConfirm) {
+      errors = { ...errors, ...invalidInput('valueConfirm', "New values don't match") }
     }
   }
 
@@ -77,7 +79,28 @@ export function validate(params: PincodeParams): ErrorState {
 let accountUnlockedTime: number
 
 export function isAccountUnlocked() {
-  return accountUnlockedTime && Date.now() - accountUnlockedTime < ACCOUNT_UNLOCK_TIMEOUT
+  // TODO implement account timeout feature
+  return !!accountUnlockedTime
+  // return accountUnlockedTime && Date.now() - accountUnlockedTime < ACCOUNT_UNLOCK_TIMEOUT
+}
+
+export function useAccountLockStatus() {
+  // Using individual selects here to avoid re-renders this high-level
+  // components that use this hook
+  const address = useSelector((s: RootState) => s.wallet.address, shallowEqual)
+  const type = useSelector((s: RootState) => s.wallet.type, shallowEqual)
+  const _isUnlocked = useSelector((s: RootState) => s.wallet.isUnlocked, shallowEqual)
+  // TODO necessary to watch for state changes until auto-timeout unlock is fully implemented
+  useSelector((s: RootState) => s.saga.pincode.status, shallowEqual)
+
+  // Call to isAccountUnlocked() is for security reasons (so user can't change a persisted value in local storage)
+  // and _isUnlocked is for flow reasons - so the UI reacts to changes after authenticating
+  const isUnlocked =
+    address &&
+    ((_isUnlocked && (isAccountUnlocked() || type === SignerType.Ledger)) ||
+      !!config.defaultAccount)
+
+  return { address, type, isUnlocked }
 }
 
 function updateUnlockedTime() {

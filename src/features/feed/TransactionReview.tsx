@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { ClickToCopy } from 'src/components/buttons/ClickToCopy'
 import { CloseButton } from 'src/components/buttons/CloseButton'
@@ -17,6 +17,7 @@ import { CeloTransaction, TransactionType } from 'src/features/types'
 import { useTokens } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { Tokens } from 'src/tokens'
 
@@ -121,13 +122,14 @@ function TransactionNotFound() {
 }
 
 function TransactionAdvancedDetails({ tx }: { tx: CeloTransaction }) {
+  const isMobile = useIsMobile()
   return (
     <div css={style.advancedContentContainer}>
       <TransactionProperty label="Advanced Details">
         <Box margin="1em 0 0 0">
           <div css={style.advancedLabel}>Transaction Hash:</div>
           <div>
-            <ClickToCopy text={tx.hash} maxLength={36} />
+            <ClickToCopy text={tx.hash} maxLength={isMobile ? 8 : 30} />
           </div>
         </Box>
         <Box margin="1em 0 0 0">
@@ -151,7 +153,7 @@ const style: Stylesheet = {
   },
   headerContainer: {
     background: Color.accentBlue,
-    padding: '1rem 2rem',
+    padding: '1em 2em',
   },
   h2: {
     ...Font.h2,
@@ -171,10 +173,16 @@ const style: Stylesheet = {
     },
   },
   contentContainer: {
-    padding: '2rem',
+    padding: '1em',
+    [mq[1200]]: {
+      padding: '2em',
+    },
   },
   advancedContentContainer: {
-    padding: '0 2rem 2rem 2rem',
+    padding: '0 1em 1em 1em',
+    [mq[1200]]: {
+      padding: '0 2em 2em 2em',
+    },
     maxWidth: '60em',
   },
   advancedLabel: {
@@ -182,6 +190,6 @@ const style: Stylesheet = {
   },
   txNotFound: {
     ...Font.h3,
-    padding: '2rem',
+    padding: '2em',
   },
 }

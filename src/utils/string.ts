@@ -16,3 +16,8 @@ export function trimToLength(value: string, maxLength: number) {
   const trimmed = value.trim()
   return trimmed.length > maxLength ? trimmed.substring(0, maxLength) + '...' : trimmed
 }
+
+// Remove slashes (/) from the beggining and end of the string
+export function trimSlashes(value: string) {
+  return value.replace(/^\/+|\/+$/g, '')
+}

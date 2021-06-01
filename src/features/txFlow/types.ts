@@ -12,6 +12,7 @@ export enum TxFlowType {
   Lock,
   Stake,
   Governance,
+  WalletConnect,
 }
 
 export interface SendFlowTx {

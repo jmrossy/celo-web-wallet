@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import PlusIcon from 'src/components/icons/plus.svg'
 import { Box } from 'src/components/layout/Box'
@@ -190,7 +190,6 @@ const style: Stylesheet = {
     height: '100%',
   },
   childContentNoFeed: {
-    overflow: 'auto',
     flex: 1,
     backgroundColor: Color.primaryWhite,
     borderRight: `1px solid ${Color.borderLight}`,

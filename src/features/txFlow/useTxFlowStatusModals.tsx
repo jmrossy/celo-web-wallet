@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { isSignerLedger } from 'src/blockchain/signer'
@@ -54,25 +54,28 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
   }
   const { status: sagaStatus, error: sagaError } = sagaState
 
-  const { showSuccessModal, showErrorModal, showWorkingModal, showModalWithContent } = useModal()
+  const { showLoadingModal, showSuccessModal, showErrorModal, showModalWithContent } = useModal()
 
   const onNeedSignature = (index: number) => {
     const modalText = reqSignatureMsg ?? ['Confirm the transaction on your Ledger']
     let modalTitle = 'Signature Required'
     if (signaturesNeeded > 1) modalTitle += ` (${index + 1}/${signaturesNeeded})`
-    showModalWithContent(
-      modalTitle,
-      <SignatureRequiredModal text={modalText} signWarningLabel={reqSignatureWarningLabel} />,
-      null,
-      null,
-      null,
-      false
-    )
+    showModalWithContent({
+      head: modalTitle,
+      content: (
+        <SignatureRequiredModal text={modalText} signWarningLabel={reqSignatureWarningLabel} />
+      ),
+      dismissable: false,
+    })
   }
 
   const onSuccess = () => {
     if (customSuccessModal) {
-      showModalWithContent(customSuccessModal.title, customSuccessModal.content, ModalOkAction)
+      showModalWithContent({
+        head: customSuccessModal.title,
+        content: customSuccessModal.content,
+        actions: ModalOkAction,
+      })
     } else {
       showSuccessModal(successTitle, successMsg)
     }
@@ -90,7 +93,7 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
   useEffect(() => {
     if (sagaStatus === SagaStatus.Started) {
       if (isSignerLedger() && numSignatures < signaturesNeeded) onNeedSignature(numSignatures)
-      else showWorkingModal(loadingTitle)
+      else showLoadingModal(loadingTitle)
     } else if (sagaStatus === SagaStatus.Success) {
       onSuccess()
     } else if (sagaStatus === SagaStatus.Failure) {

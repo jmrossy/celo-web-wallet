@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'

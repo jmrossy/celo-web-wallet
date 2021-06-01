@@ -9,7 +9,7 @@ export const useResizeObserver = () => {
   const disconnect = useCallback(() => observer.current?.disconnect(), [])
 
   const observe = useCallback(() => {
-    observer.current = new ResizeObserver((entries) => {
+    observer.current = new ResizeObserver((entries: ResizeObserverEntry[]) => {
       setObserverEntry(entries[0])
     })
     if (nodeRef) observer.current.observe(nodeRef)

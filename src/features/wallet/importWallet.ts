@@ -9,7 +9,11 @@ import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
-import { isValidDerivationPath, isValidMnemonic } from 'src/features/wallet/utils'
+import {
+  isValidDerivationPath,
+  isValidMnemonic,
+  normalizeMnemonic,
+} from 'src/features/wallet/utils'
 import { clearWalletCache, setAddress } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
@@ -40,10 +44,11 @@ export function* importWallet(params: ImportWalletParams) {
   validateOrThrow(() => validate(params), 'Invalid import values')
 
   const { mnemonic, derivationPath: _derivationPath } = params
+  const formattedMnemonic = normalizeMnemonic(mnemonic)
   const derivationPath = _derivationPath ?? CELO_DERIVATION_PATH + '/0'
 
   const provider = getProvider()
-  const wallet = Wallet.fromMnemonic(mnemonic.trim(), derivationPath)
+  const wallet = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
   const celoWallet = new CeloWallet(wallet, provider)
   setSigner({ signer: celoWallet, type: SignerType.Local })
 

@@ -10,7 +10,7 @@ export function useLogoutModal() {
     'Do not logout before copying your Account Key (mnemonic phrase) to a safe place. Your account will be completely removed from this device.'
   const onLogout = async () => {
     const answer = await showModalAsync(
-      'WARNING',
+      'LOGOUT WARNING',
       warning,
       [
         { key: 'cancel', label: 'Cancel', color: Color.altGrey },
