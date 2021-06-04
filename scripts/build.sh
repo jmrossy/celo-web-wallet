@@ -65,4 +65,9 @@ else
   xplat_sed "s|/bundle.js|bundle.js|g" dist/index.html
 fi
 
+if [ "$NETWORK" == "Alfajores" ]; then
+  # Adjust CSP header for alfajores to allow for the config urls there
+  xplat_sed "s|wss://walletconnect.celo.org|wss://walletconnect.celo-networks-dev.org https://*.celo-testnet.org|g" dist/_headers
+fi
+
 echo "Done building app for ${NETWORK}"
