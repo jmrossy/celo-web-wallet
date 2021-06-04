@@ -34,6 +34,6 @@ export function useNavHintModal(
       if (onClose) onClose()
       closeModal()
     }
-    showModal(head, body, [navAction, dismissAction], undefined, 's', onActionClick)
+    showModal({ head, body, actions: [navAction, dismissAction], onActionClick, size: 's' })
   }, [showShow])
 }

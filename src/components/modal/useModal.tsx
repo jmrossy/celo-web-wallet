@@ -10,14 +10,22 @@ import {
 import { ModalContext } from 'src/components/modal/modalContext'
 import { errorToString } from 'src/utils/validation'
 
-export interface ModalWithContentProps {
+interface ModalBase {
   head: string
   headIcon?: ReactElement | null
   subHead?: string | null
-  content: any
   actions?: ModalAction | ModalAction[] | null
   onActionClick?: ModalActionCallback | null
+  size?: ModalSize | null
   dismissable?: boolean | null
+}
+
+interface ModalWithContentProps extends ModalBase {
+  content: any
+}
+
+interface StandardModalProps extends ModalBase {
+  body: string
 }
 
 export function useModal() {
@@ -69,46 +77,31 @@ export function useModal() {
     context.showModal(modalProps, props.content)
   }
 
-  // TODO refactor params to object bag
-  const showModalAsync = (
-    head: string,
-    body: string,
-    actions: ModalAction | ModalAction[] | undefined | null = undefined,
-    subHead: string | undefined | null = undefined,
-    size: ModalSize | undefined | null = undefined,
-    onActionClick: ModalActionCallback | undefined | null = undefined,
-    dismissable = true
-  ) => {
+  const showModalAsync = (props: StandardModalProps) => {
     const modalProps: ModalProps = {
-      head,
-      body,
-      actions: actions ?? ModalOkAction, //default to an ok button
-      subHead: subHead ?? undefined,
-      size: size ?? undefined,
-      onActionClick: actions ? onActionClick : context.closeModal, //default to close for the Ok button
-      onClose: dismissable ? context.closeModal : undefined,
+      head: props.head,
+      headIcon: props.headIcon ?? undefined,
+      subHead: props.subHead ?? undefined,
+      body: props.body,
+      onClose: props.dismissable === false ? undefined : context.closeModal,
+      actions: props.actions ?? ModalOkAction, //default to an ok button,
+      onActionClick: props.actions ? props.onActionClick : context.closeModal, //default to close for the Ok button,
+      size: props.size ?? undefined,
     }
 
     return context.showModalAsync(modalProps)
   }
 
-  const showModal = (
-    head: string,
-    body: string,
-    actions: ModalAction | ModalAction[] | undefined | null = undefined,
-    subHead: string | undefined | null = undefined,
-    size: ModalSize | undefined | null = undefined,
-    onActionClick: ModalActionCallback | undefined | null = undefined,
-    dismissable = true
-  ) => {
+  const showModal = (props: StandardModalProps) => {
     const modalProps: ModalProps = {
-      head,
-      body,
-      actions: actions ?? ModalOkAction, //default to an ok button
-      subHead: subHead ?? undefined,
-      size: size ?? undefined,
-      onActionClick: actions ? onActionClick : context.closeModal, //default to close for the Ok button
-      onClose: dismissable ? context.closeModal : undefined,
+      head: props.head,
+      headIcon: props.headIcon ?? undefined,
+      subHead: props.subHead ?? undefined,
+      body: props.body,
+      onClose: props.dismissable === false ? undefined : context.closeModal,
+      actions: props.actions ?? ModalOkAction, //default to an ok button,
+      onActionClick: props.actions ? props.onActionClick : context.closeModal, //default to close for the Ok button,
+      size: props.size ?? undefined,
     }
 
     context.showModal(modalProps)

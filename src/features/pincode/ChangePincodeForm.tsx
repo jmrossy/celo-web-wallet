@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
-import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import {
@@ -63,13 +62,11 @@ export function ChangePincodeForm() {
 
   const { showModalAsync } = useModal()
   const onSuccess = async () => {
-    await showModalAsync(
-      `${currentLabelC} Changed`,
-      `Your ${currentLabel} has been successfully changed! Keep this password safe, it's the only way to unlock your account.`,
-      ModalOkAction,
-      undefined,
-      's'
-    )
+    await showModalAsync({
+      head: `${currentLabelC} Changed`,
+      body: `Your ${currentLabel} has been successfully changed! Keep this password safe, it's the only way to unlock your account.`,
+      size: 's',
+    })
     navigate(-1)
   }
 

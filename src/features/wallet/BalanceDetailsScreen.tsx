@@ -119,18 +119,18 @@ function renderAddressAndRemoveButton(row: BalanceTableRow) {
       { key: 'cancel', label: 'Cancel', color: Color.altGrey },
       { key: 'remove', label: 'Remove', color: Color.primaryGreen },
     ]
-    const actionClick = (action: ModalAction) => {
+    const onActionClick = (action: ModalAction) => {
       if (action.key === 'remove') dispatch(removeToken(id))
       closeModal()
     }
-    showModal(
-      'Remove Token',
-      'Note, this will not affect your balance. It will only hide this token from your wallet.',
+    showModal({
+      head: 'Remove Token',
+      subHead: `Would you like to remove ${label}?`,
+      body: 'Note, this will not affect your balance. It will only hide this token from your wallet.',
       actions,
-      `Would you like to remove ${label}?`,
-      's',
-      actionClick
-    )
+      onActionClick,
+      size: 's',
+    })
   }
 
   return (
