@@ -40,7 +40,7 @@
     "@metamask/jazzicon": "https://github.com/jmrossy/jazzicon#7a8df28",
     "@pedrouid/environment": "^1.0.1",
     "@reduxjs/toolkit": "^1.5.1",
-    "@walletconnect/client": "2.0.0-beta.9",
+    "@walletconnect/client": "2.0.0-beta.10",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "electron-updater": "^4.3.9",
