@@ -1,6 +1,6 @@
-import { logger } from 'ethers'
 import { config } from 'src/config'
 import { ensureLeading0x } from 'src/utils/addresses'
+import { logger } from 'src/utils/logger'
 
 // From https://github.com/celo-org/celo-monorepo/blob/master/packages%2Fsdk%2Fwallets%2Fwallet-ledger%2Fsrc%2Fdata.ts
 const ERC_20_TOKEN_DATA =

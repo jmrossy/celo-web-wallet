@@ -1,4 +1,4 @@
-import { logger, utils } from 'ethers'
+import { utils } from 'ethers'
 import { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { signTransaction } from 'src/blockchain/transaction'
@@ -7,6 +7,7 @@ import { ACCOUNT_STATUS_STALE_TIME } from 'src/consts'
 import { FeeEstimate } from 'src/features/fees/types'
 import { setAccountStatus } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
+import { logger } from 'src/utils/logger'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
 

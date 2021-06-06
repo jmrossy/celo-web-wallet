@@ -42,15 +42,13 @@ export function HomeScreen() {
   const { secretType, type } = useSelector((s: RootState) => s.wallet)
   useEffect(() => {
     if (secretType === 'password' || config.defaultAccount || type === 'ledger') return
-    showModalAsync(
-      'Please Change Your Pin',
-      'For better security, pincodes are being replaced with passwords. Please change your pin to a new password now. Sorry for the inconvenience!',
-      { key: 'change', label: 'Change Pin' },
-      null,
-      's',
-      null,
-      false
-    )
+    showModalAsync({
+      head: 'Please Change Your Pin',
+      body: 'For better security, pincodes are being replaced with passwords. Please change your pin to a new password now. Sorry for the inconvenience!',
+      actions: { key: 'change', label: 'Change Pin' },
+      size: 's',
+      dismissable: false,
+    })
       .then(() => {
         navigate('/change-pin')
         closeModal()
