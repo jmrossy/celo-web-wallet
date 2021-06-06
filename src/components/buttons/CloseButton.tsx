@@ -9,16 +9,18 @@ interface ButtonProps {
   iconStyles?: Styles
   margin?: string | number
   title?: string
+  color?: 'light' | 'dark'
 }
 
 export function CloseButton(props: PropsWithChildren<ButtonProps>) {
-  const { onClick, styles, iconStyles, margin, title } = props
+  const { onClick, styles, iconStyles, margin, title, color } = props
+  const primaryStyle = color === 'light' ? defaultStyleLight : defaultStyle
 
   return (
     <Button
       size="icon"
       icon={CloseIcon}
-      styles={{ ...defaultStyle, ...styles }}
+      styles={{ ...primaryStyle, ...styles }}
       iconStyles={iconStyles}
       margin={margin}
       onClick={onClick}
@@ -33,6 +35,18 @@ const defaultStyle: Styles = {
   ':hover': {
     backgroundColor: 'transparent',
     filter: 'brightness(2.5)',
+  },
+  ':active': {
+    backgroundColor: 'transparent',
+  },
+}
+
+const defaultStyleLight: Styles = {
+  backgroundColor: 'transparent',
+  filter: 'brightness(6)',
+  ':hover': {
+    filter: 'brightness(5)',
+    backgroundColor: 'transparent',
   },
   ':active': {
     backgroundColor: 'transparent',

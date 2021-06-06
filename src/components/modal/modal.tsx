@@ -24,6 +24,7 @@ export interface ModalProps {
   severity?: ModalSeverity //default to "default"
   head: string
   headIcon?: ReactElement
+  headColor?: string
   subHead?: string
   body?: string
   actions?: ModalAction | ModalAction[]
@@ -40,7 +41,18 @@ export const ModalOkAction: ModalAction = {
 }
 
 export function Modal(props: PropsWithChildren<ModalProps>) {
-  const { head, headIcon, subHead, body, onClose, actions, onActionClick, type, children } = props
+  const {
+    head,
+    headIcon,
+    headColor,
+    subHead,
+    body,
+    onClose,
+    actions,
+    onActionClick,
+    type,
+    children,
+  } = props
 
   const allActions = actions ? (Array.isArray(actions) ? actions : [actions]) : []
 
@@ -59,11 +71,21 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
       <Backdrop onClick={backdropClick} />
       <div css={style.modalContainer} onClick={backdropClick}>
         <div id="modal" css={[style.modal, propsToModalStyle(props)]}>
-          <Box align="center" justify="between" styles={style.headContainer}>
+          <Box
+            align="center"
+            justify="between"
+            styles={{ ...style.headContainer, backgroundColor: headColor ?? Color.fillLighter }}
+          >
             <div css={style.headIcon}>{headIcon}</div>
-            <h1 css={style.head}>{head}</h1>
+            <h1 css={[style.head, headColor && { color: '#FFF' }]}>{head}</h1>
             <div css={style.closeButton}>
-              {onClose && <CloseButton onClick={onClose} iconStyles={style.closeIcon} />}
+              {onClose && (
+                <CloseButton
+                  onClick={onClose}
+                  iconStyles={style.closeIcon}
+                  color={headColor ? 'light' : 'dark'}
+                />
+              )}
             </div>
           </Box>
           <Box direction="column" justify="between" styles={style.modalContent}>
@@ -141,7 +163,6 @@ const style: Stylesheet = {
     maxWidth: 'min(90vw, 30em)',
     minHeight: '13em',
     maxHeight: 'min(75vh, 27em)',
-    border: `1px solid ${Color.borderLight}`,
     backgroundColor: Color.primaryWhite,
     borderRadius: 6,
     display: 'flex',
@@ -164,8 +185,7 @@ const style: Stylesheet = {
   headContainer: {
     position: 'relative',
     width: '100%',
-    padding: '0.9em 0',
-    backgroundColor: Color.fillLighter,
+    padding: '0.75em 0',
   },
   head: {
     margin: 0,

@@ -13,6 +13,7 @@ import { errorToString } from 'src/utils/validation'
 interface ModalBase {
   head: string
   headIcon?: ReactElement | null
+  headColor?: string | null
   subHead?: string | null
   actions?: ModalAction | ModalAction[] | null
   onActionClick?: ModalActionCallback | null
@@ -69,6 +70,7 @@ export function useModal() {
     const modalProps: ModalProps = {
       head: props.head,
       headIcon: props.headIcon ?? undefined,
+      headColor: props.headColor ?? undefined,
       subHead: props.subHead ?? undefined,
       onClose: props.dismissable === false ? undefined : context.closeModal,
       actions: props.actions ?? undefined,
@@ -81,6 +83,7 @@ export function useModal() {
     const modalProps: ModalProps = {
       head: props.head,
       headIcon: props.headIcon ?? undefined,
+      headColor: props.headColor ?? undefined,
       subHead: props.subHead ?? undefined,
       body: props.body,
       onClose: props.dismissable === false ? undefined : context.closeModal,
@@ -96,6 +99,7 @@ export function useModal() {
     const modalProps: ModalProps = {
       head: props.head,
       headIcon: props.headIcon ?? undefined,
+      headColor: props.headColor ?? undefined,
       subHead: props.subHead ?? undefined,
       body: props.body,
       onClose: props.dismissable === false ? undefined : context.closeModal,
