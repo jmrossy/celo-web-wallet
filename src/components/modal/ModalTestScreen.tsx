@@ -42,19 +42,21 @@ export function ModalTestScreen() {
   }
 
   const standard = () => {
-    showModal('Modal Head', 'This is your standard, run-of-the-mill modal')
+    showModal({
+      head: 'Modal Head',
+      subHead: 'This is your standard, run-of-the-mill modal',
+      body: 'Nothing to see here',
+    })
   }
 
   const notDismissable = () => {
-    showModal(
-      'Modal Head',
-      'This modal cannot be dismissed by clicking on the background (and no x)',
-      ModalOkAction,
-      'Modal Subhead',
-      null,
-      null,
-      false
-    )
+    showModal({
+      head: 'Modal Head',
+      subHead: 'Subhead',
+      body: 'This modal cannot be dismissed by clicking on the background (and no x)',
+      actions: ModalOkAction,
+      dismissable: false,
+    })
   }
 
   const withContent = () => {
@@ -73,14 +75,14 @@ export function ModalTestScreen() {
       { key: 'retry', label: 'Retry', color: Color.primaryGreen },
       { key: 'undo', label: 'Undo', color: Color.accentBlue },
     ]
-    await showModal(
-      'Modal with Actions',
-      'This modal has multiple actions, and stays active unless you click close (check console for clicked actions)',
+    await showModal({
+      head: 'Modal with Actions',
+      subHead: 'Subhead',
+      body: 'This modal has multiple actions, and stays active unless you click close (check console for clicked actions)',
       actions,
-      'This is a subhead',
-      's',
-      actionClick
-    )
+      onActionClick: actionClick,
+      size: 's',
+    })
   }
 
   const withError = () => {
@@ -92,14 +94,14 @@ export function ModalTestScreen() {
   }
 
   const withSize = (size: ModalSize) => () => {
-    const content =
+    const body =
       size === 's'
         ? "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." //'This is a message that will be scrunched up into a small modal and wrapped around to show the max width.'
         : size === 'm'
         ? "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." //This is a medium-sized message that will be inbetween a small and a large size message.  It will wrap since the width of the modal is restricted by the size property'
         : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
 
-    showModal(`Size ${size} Modal`, content, ModalOkAction, undefined, size)
+    showModal({ head: `Size ${size} Modal`, body, size })
   }
 
   const withResultCapture = async () => {
@@ -109,13 +111,13 @@ export function ModalTestScreen() {
       ModalOkAction,
     ]
 
-    const result = await showModalAsync(
-      'Result Capture',
-      'The showModal method is async, so you can await it, and capture the result if you wish',
-      actions
-    )
+    const result = await showModalAsync({
+      head: 'Result Capture',
+      body: 'The showModal method is async, so you can await it, and capture the result if you wish',
+      actions,
+    })
 
-    showModal('Your Choice', `You chose ${result?.label} in the previous modal`)
+    showModal({ head: 'Your Choice', body: `You chose ${result?.label} in the previous modal` })
   }
 
   const working = () => {

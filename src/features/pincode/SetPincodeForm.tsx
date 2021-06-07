@@ -53,14 +53,13 @@ export function SetPincodeForm() {
       }
       closeModal()
     }
-    showModal(
-      'Keep This Password Safe',
-      "This password is the only way to unlock your account. It cannot be recovered if it's lost. Please keep it in a safe place!",
-      [backAction, confirmAction],
-      undefined,
-      's',
-      onActionClick
-    )
+    showModal({
+      head: 'Keep This Password Safe',
+      body: "This password is the only way to unlock your account. It cannot be recovered if it's lost. Please keep it in a safe place!",
+      actions: [backAction, confirmAction],
+      onActionClick,
+      size: 's',
+    })
   }
 
   const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
