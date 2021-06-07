@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: 14.x
 
       - name: Adjust yarn timeout
         run: yarn config set network-timeout 600000 -g
@@ -50,6 +50,9 @@ jobs:
 
       - name: Build on Windows
         run: yarn electron-builder --win --publish never
+        env:
+          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
         if: runner.os == 'Windows'
 
       - name: Install deps for Linux
