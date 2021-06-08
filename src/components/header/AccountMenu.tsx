@@ -18,7 +18,7 @@ import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
-import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
+import { useManageAccountModal } from 'src/features/wallet/ManageAccountModal'
 import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
@@ -27,8 +27,8 @@ import { shortenAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
 const MenuItems = [
-  { id: 'qr', label: 'Qr Code', icon: QrCodeIcon },
   { id: 'account', label: 'Account Details', icon: IdCardIcon },
+  { id: 'manage', label: 'Manage Accounts', icon: QrCodeIcon },
   { id: 'fund', label: 'Fund Wallet', icon: CoinSwapIcon },
   { id: 'help', label: 'Help', icon: HelpIcon },
   { id: 'settings', label: 'Settings', icon: SettingsIcon, iconWidth: '1.8em' },
@@ -46,17 +46,17 @@ export const AccountMenu = () => {
 
   const address = useWalletAddress()
   const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
-  const showQrModal = useAddressQrCodeModal()
   const showFundModal = useFundWalletModal()
+  const showAccountsModal = useManageAccountModal()
 
   const navigate = useNavigate()
   const onItemClick = (key: string) => async () => {
     switch (key) {
-      case 'qr':
-        showQrModal(address)
-        break
       case 'account':
         navigate('/wallet')
+        break
+      case 'manage':
+        showAccountsModal()
         break
       case 'settings':
         navigate('/settings')
@@ -168,7 +168,7 @@ const style: Stylesheet = {
     display: 'flex',
     flexDirection: 'column',
     position: 'absolute',
-    top: '4.5em',
+    top: '4em',
     right: '1em',
     minWidth: '15em',
     border: `1px solid ${Color.borderLight}`,

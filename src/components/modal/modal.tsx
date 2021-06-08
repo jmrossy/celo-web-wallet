@@ -74,7 +74,7 @@ export function Modal(props: PropsWithChildren<ModalProps>) {
           <Box
             align="center"
             justify="between"
-            styles={{ ...style.headContainer, backgroundColor: headColor ?? Color.fillLighter }}
+            styles={{ ...style.headContainer, backgroundColor: headColor ?? Color.fillLight }}
           >
             <div css={style.headIcon}>{headIcon}</div>
             <h1 css={[style.head, headColor && { color: '#FFF' }]}>{head}</h1>

@@ -23,8 +23,15 @@ export function TransparentIconButton(props: TransparentIconButtonProps) {
   )
 }
 
-const defaultStyle: Styles = {
+const base: Styles = {
   ...transparentButtonStyles,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
+
+const defaultStyle: Styles = {
+  ...base,
   opacity: 0.9,
   ':hover': {
     filter: 'brightness(2.5)',
@@ -35,7 +42,7 @@ const defaultStyle: Styles = {
 }
 
 const defaultStyleLight: Styles = {
-  ...transparentButtonStyles,
+  ...base,
   filter: 'brightness(6)',
   ':hover': {
     filter: 'brightness(5)',
