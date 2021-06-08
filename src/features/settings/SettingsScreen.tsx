@@ -4,7 +4,6 @@ import { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { SwitchButton } from 'src/components/buttons/SwitchButton'
 import { HrDivider } from 'src/components/HrDivider'
-import ArrowBackIcon from 'src/components/icons/arrow_back.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
 import PlusIcon from 'src/components/icons/plus.svg'
@@ -44,7 +43,7 @@ export function SettingsScreen() {
   const tokenLimitLedger = fromWei(MAX_SEND_TOKEN_SIZE_LEDGER)
 
   return (
-    <ScreenContentFrame onClose={onClickBack}>
+    <ScreenContentFrame onClose={onClickBack} showBackButton={true}>
       <Box direction="column" align="center">
         <h2 css={style.sectionHeader}>Account Settings</h2>
         <Box direction="row" align="center" justify="center" wrap={true} margin="0.5em 0 0 0">
@@ -93,8 +92,8 @@ export function SettingsScreen() {
           <div css={style.switchContainer}>
             <Button
               size="icon"
-              color={Color.altGrey}
               icon={PlusIcon}
+              iconStyles={{ width: '1em' }}
               onClick={onClickAddToken}
               width="2.5em"
               height="2.5em"
@@ -122,15 +121,6 @@ export function SettingsScreen() {
             />
           </div>
         </Box>
-        <Button
-          color={Color.altGrey}
-          icon={ArrowBackIcon}
-          onClick={onClickBack}
-          margin="3.5em 0 0 0"
-          width="9em"
-        >
-          Back
-        </Button>
       </Box>
     </ScreenContentFrame>
   )
@@ -139,7 +129,6 @@ export function SettingsScreen() {
 const style: Stylesheet = {
   sectionHeader: {
     ...Font.h2,
-    color: Color.textGrey,
     margin: 0,
   },
   warningLabel: {

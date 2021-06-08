@@ -54,8 +54,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
           backgroundColor: hoverBg,
         },
         ':active': {
-          // TODO make this dynamic like the other colors
-          backgroundColor: activeBg, //'#0fb972',
+          backgroundColor: activeBg,
         },
         ...styles,
       }}

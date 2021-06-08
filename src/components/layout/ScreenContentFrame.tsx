@@ -1,19 +1,21 @@
 import { PropsWithChildren } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { BackButton } from 'src/components/buttons/BackButton'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import { mq } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import { Styles, Stylesheet } from 'src/styles/types'
 
 interface FrameProps {
   onClose?: () => void
   hideCloseButton?: boolean
+  showBackButton?: boolean
 }
 
 export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
   const navigate = useNavigate()
 
-  const { onClose, hideCloseButton } = props
+  const { onClose, hideCloseButton, showBackButton } = props
 
   const onClickClose = () => {
     if (onClose) {
@@ -25,11 +27,12 @@ export function ScreenContentFrame(props: PropsWithChildren<FrameProps>) {
 
   return (
     <Box direction="column" styles={style.contentContainer}>
+      {showBackButton && <BackButton styles={backButtonStyle} iconStyles={style.navButtonIcon} />}
       {!hideCloseButton && (
         <CloseButton
           onClick={onClickClose}
-          styles={style.closeButton}
-          iconStyles={style.closeButtonIcon}
+          styles={closeButtonStyle}
+          iconStyles={style.navButtonIcon}
         />
       )}
       {props.children}
@@ -49,21 +52,44 @@ const style: Stylesheet = {
       padding: '2.5em 3em 2.5em 3em',
     },
   },
-  closeButton: {
+  navButton: {
     position: 'absolute',
-    right: '1.4em',
     top: '1.2em',
     [mq[768]]: {
-      right: '1.5em',
-      top: '1.5em',
+      top: '1.6em',
     },
     [mq[1200]]: {
-      right: '2.5em',
-      top: '2em',
+      top: '2.6em',
     },
   },
-  closeButtonIcon: {
+  navButtonIcon: {
     height: '1.4em',
     width: '1.4em',
+  },
+}
+
+const closeButtonStyle: Styles = {
+  ...style.navButton,
+  right: '1.4em',
+  [mq[768]]: {
+    ...style.navButton[mq[768]],
+    right: '2em',
+  },
+  [mq[1200]]: {
+    ...style.navButton[mq[1200]],
+    right: '3em',
+  },
+}
+
+const backButtonStyle: Styles = {
+  ...style.navButton,
+  left: '1.4em',
+  [mq[768]]: {
+    ...style.navButton[mq[768]],
+    left: '2em',
+  },
+  [mq[1200]]: {
+    ...style.navButton[mq[1200]],
+    left: '3em',
   },
 }
