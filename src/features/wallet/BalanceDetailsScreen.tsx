@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
-import { defaultButtonStyles } from 'src/components/buttons/Button'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
+import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -63,9 +63,9 @@ export function BalanceDetailsScreen() {
           isLoading={status === SagaStatus.Started}
           initialSortBy="balance"
         />
-        <button css={style.addButton} onClick={onClickAdd}>
+        <DashedBorderButton onClick={onClickAdd} margin="0.5em 0 0 0">
           + Add a new currency/token
-        </button>
+        </DashedBorderButton>
       </div>
     </ScreenContentFrame>
   )
@@ -191,21 +191,6 @@ const style: Stylesheet = {
   },
   addressContainer: {
     position: 'relative',
-  },
-  addButton: {
-    ...defaultButtonStyles,
-    width: '100%',
-    padding: '0.5em 1em',
-    marginTop: '0.5em',
-    borderRadius: 6,
-    color: `${Color.primaryBlack}cc`,
-    backgroundColor: Color.fillLighter,
-    ':hover': {
-      backgroundColor: Color.fillLight,
-    },
-    ':active': {
-      backgroundColor: Color.fillMedium,
-    },
   },
   removeButtonContainer: {
     position: 'absolute',

@@ -9,18 +9,7 @@ import { useWalletAddress } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 
-export function useManageAccountModal() {
-  const { showModalWithContent, closeModal } = useModal()
-  return () => {
-    showModalWithContent({
-      head: 'Your Accounts',
-      headColor: Color.primaryGreen,
-      content: <ManageAccountModal close={closeModal} />,
-    })
-  }
-}
-
-enum Screen {
+export enum AccountModalScreen {
   ViewAccounts,
   AddAccount,
   CreateLocal,
@@ -29,23 +18,38 @@ enum Screen {
   ImportLedger,
 }
 
+export function useManageAccountModal() {
+  const { showModalWithContent, closeModal } = useModal()
+  return (initialScreen?: AccountModalScreen) => {
+    showModalWithContent({
+      head: 'Your Accounts',
+      headColor: Color.primaryGreen,
+      content: <ManageAccountModal close={closeModal} initialScreen={initialScreen} />,
+    })
+  }
+}
+
 interface ModalProps {
   close: () => void
-  initialScreen?: Screen
+  initialScreen?: AccountModalScreen
 }
 
 interface ScreenProps {
-  setScreen: Dispatch<SetStateAction<Screen>>
+  setScreen: Dispatch<SetStateAction<AccountModalScreen>>
   close: () => void
 }
 
 export function ManageAccountModal({ close, initialScreen }: ModalProps) {
-  const [screen, setScreen] = useState(initialScreen ?? Screen.ViewAccounts)
+  const [screen, setScreen] = useState(initialScreen ?? AccountModalScreen.ViewAccounts)
 
   return (
     <div>
-      {screen === Screen.ViewAccounts && <ViewAccounts setScreen={setScreen} close={close} />}
-      {screen === Screen.AddAccount && <AddAccount setScreen={setScreen} close={close} />}
+      {screen === AccountModalScreen.ViewAccounts && (
+        <ViewAccounts setScreen={setScreen} close={close} />
+      )}
+      {screen === AccountModalScreen.AddAccount && (
+        <AddAccount setScreen={setScreen} close={close} />
+      )}
     </div>
   )
 }
@@ -55,7 +59,7 @@ function ViewAccounts({ setScreen, close }: ScreenProps) {
   const navigate = useNavigate()
 
   const onClickAdd = () => {
-    setScreen(Screen.AddAccount)
+    setScreen(AccountModalScreen.AddAccount)
   }
 
   const onClickManage = () => {

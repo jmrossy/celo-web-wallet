@@ -162,7 +162,7 @@ const style: Stylesheet = {
   headerTh: {
     ...Font.body2,
     ...Font.bold,
-    opacity: 0.7,
+    opacity: 0.9,
     ...thTextAlign,
     padding: '0 20px 17px 20px',
     borderBottom: '1px solid #D8DADB',
@@ -207,7 +207,7 @@ const tableLoading: Styles = {
 
 const headerThSelected: Styles = {
   ...style.headerTh,
-  opacity: 0.9,
+  opacity: 1,
   paddingRight: 0,
 }
 

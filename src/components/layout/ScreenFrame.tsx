@@ -14,6 +14,7 @@ import { Stylesheet } from 'src/styles/types'
 
 const SCREENS_WITHOUT_FEED: Record<string, boolean> = {
   '/wallet': true,
+  '/accounts': true,
   '/settings': true,
 }
 

@@ -31,10 +31,6 @@ export function SettingsScreen() {
     navigate('/balances')
   }
 
-  const onClickBack = () => {
-    navigate(-1)
-  }
-
   const onTxLimitToggle = (value: boolean) => {
     dispatch(setTxSizeLimitEnabled(value))
   }
@@ -43,7 +39,7 @@ export function SettingsScreen() {
   const tokenLimitLedger = fromWei(MAX_SEND_TOKEN_SIZE_LEDGER)
 
   return (
-    <ScreenContentFrame onClose={onClickBack} showBackButton={true}>
+    <ScreenContentFrame showBackButton={true}>
       <Box direction="column" align="center">
         <h2 css={style.sectionHeader}>Account Settings</h2>
         <Box direction="row" align="center" justify="center" wrap={true} margin="0.5em 0 0 0">
