@@ -13,8 +13,11 @@ import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Table, TableColumn } from 'src/components/Table'
 import { config } from 'src/config'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
-import { AddTokenModal } from 'src/features/wallet/AddTokenModal'
-import { fetchBalancesActions, fetchBalancesSagaName } from 'src/features/wallet/fetchBalances'
+import { AddTokenModal } from 'src/features/wallet/balances/AddTokenModal'
+import {
+  fetchBalancesActions,
+  fetchBalancesSagaName,
+} from 'src/features/wallet/balances/fetchBalances'
 import { Balances, BalanceTableRow } from 'src/features/wallet/types'
 import { removeToken } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'

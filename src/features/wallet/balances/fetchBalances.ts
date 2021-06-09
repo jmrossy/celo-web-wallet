@@ -19,7 +19,7 @@ import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
-import { Balances, TokenBalances } from './types'
+import { Balances, TokenBalances } from '../types'
 
 // Fetch wallet balances and other frequently used data like votes
 // Essentially, fetch all the data that forms need to validate inputs

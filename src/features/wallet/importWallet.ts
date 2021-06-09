@@ -8,7 +8,7 @@ import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
-import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
+import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import {
   isValidDerivationPath,
   isValidMnemonic,

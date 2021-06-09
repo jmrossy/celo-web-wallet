@@ -12,7 +12,7 @@ import {
   BlockscoutTxBase,
 } from 'src/features/feed/types'
 import { TransactionMap } from 'src/features/types'
-import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
+import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { NativeTokens, StableTokenIds, Token } from 'src/tokens'
 import { normalizeAddress } from 'src/utils/addresses'

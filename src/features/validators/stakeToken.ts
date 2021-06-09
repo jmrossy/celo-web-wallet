@@ -17,7 +17,10 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { getStakingMaxAmount } from 'src/features/validators/utils'
-import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import {
+  fetchBalancesActions,
+  fetchBalancesIfStale,
+} from 'src/features/wallet/balances/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { getVoterAccountAddress, getVoterBalances } from 'src/features/wallet/utils'
 import { CELO } from 'src/tokens'
@@ -282,7 +285,8 @@ async function findLesserAndGreaterAfterVote(
 
 async function getElegibleGroupVotes() {
   const election = getContract(CeloContract.Election)
-  const currentVotes: EligibleGroupsVotesRaw = await election.getTotalVotesForEligibleValidatorGroups()
+  const currentVotes: EligibleGroupsVotesRaw =
+    await election.getTotalVotesForEligibleValidatorGroups()
   const eligibleGroups = currentVotes[0]
   const groupVotes = currentVotes[1]
   const result = []

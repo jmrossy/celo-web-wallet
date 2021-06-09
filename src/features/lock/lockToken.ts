@@ -15,7 +15,10 @@ import { LockTokenTx, LockTokenType, TransactionType } from 'src/features/types'
 import { GroupVotes } from 'src/features/validators/types'
 import { getTotalNonvotingLocked } from 'src/features/validators/utils'
 import { createAccountRegisterTx, fetchAccountStatus } from 'src/features/wallet/accountsContract'
-import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import {
+  fetchBalancesActions,
+  fetchBalancesIfStale,
+} from 'src/features/wallet/balances/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { setAccountIsRegistered } from 'src/features/wallet/walletSlice'
 import { CELO } from 'src/tokens'

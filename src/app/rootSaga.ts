@@ -86,19 +86,19 @@ import {
   addTokenReducer,
   addTokenSaga,
   addTokenSagaName,
-} from 'src/features/wallet/addToken'
+} from 'src/features/wallet/balances/addToken'
+import {
+  fetchBalancesActions,
+  fetchBalancesReducer,
+  fetchBalancesSaga,
+  fetchBalancesSagaName,
+} from 'src/features/wallet/balances/fetchBalances'
 import {
   createWalletActions,
   createWalletReducer,
   createWalletSaga,
   createWalletSagaName,
 } from 'src/features/wallet/createWallet'
-import {
-  fetchBalancesActions,
-  fetchBalancesReducer,
-  fetchBalancesSaga,
-  fetchBalancesSagaName,
-} from 'src/features/wallet/fetchBalances'
 import {
   importDefaultAccount,
   importWalletActions,

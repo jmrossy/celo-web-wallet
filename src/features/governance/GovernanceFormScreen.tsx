@@ -14,7 +14,7 @@ import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
 import {
   fetchProposalsActions,
-  fetchProposalsSagaName,
+  fetchProposalsSagaName
 } from 'src/features/governance/fetchProposals'
 import { validate } from 'src/features/governance/governanceVote'
 import {
@@ -22,12 +22,12 @@ import {
   Proposal,
   ProposalStage,
   VoteValue,
-  voteValueToLabel,
+  voteValueToLabel
 } from 'src/features/governance/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
+import { VotingForBanner } from 'src/features/wallet/details/VotingForBanner'
 import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
-import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'

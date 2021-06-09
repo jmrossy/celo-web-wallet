@@ -5,8 +5,8 @@ import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { ImportWalletForm } from 'src/features/onboarding/import/ImportWalletForm'
 import { pincodeActions } from 'src/features/pincode/pincode'
 import { PincodeAction } from 'src/features/pincode/types'
+import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { createWalletActions } from 'src/features/wallet/createWallet'
-import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
 import { saveWallet } from 'src/features/wallet/storage'
 
 export function DevTools() {

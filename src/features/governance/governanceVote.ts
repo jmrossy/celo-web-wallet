@@ -16,7 +16,10 @@ import {
 } from 'src/features/governance/types'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { GovernanceVoteTx, TransactionType } from 'src/features/types'
-import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import {
+  fetchBalancesActions,
+  fetchBalancesIfStale,
+} from 'src/features/wallet/balances/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { getVoterBalances } from 'src/features/wallet/utils'
 import { CELO } from 'src/tokens'

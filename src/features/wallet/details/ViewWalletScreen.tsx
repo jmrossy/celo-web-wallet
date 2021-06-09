@@ -1,6 +1,6 @@
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { WalletDetails } from 'src/features/wallet/WalletDetails'
+import { WalletDetails } from 'src/features/wallet/details/WalletDetails'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 
