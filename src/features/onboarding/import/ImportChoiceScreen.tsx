@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
-import KeyIcon from 'src/components/icons/key.svg'
-import LedgerIcon from 'src/components/icons/logos/ledger.svg'
+import { KeyIcon } from 'src/components/icons/Key'
+import { LedgerIcon } from 'src/components/icons/logos/Ledger'
 import { Box } from 'src/components/layout/Box'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
@@ -37,10 +37,10 @@ export function ImportChoiceScreen() {
         />
       </Box>
       <div css={style.buttonContainer}>
-        <Button onClick={onClickAccountKey} size="l" margin="1em 1.5em" icon={KeyIcon}>
+        <Button onClick={onClickAccountKey} size="l" margin="1em 1.5em" icon={<KeyIcon />}>
           Use Account Key
         </Button>
-        <Button onClick={onClickLedger} size="l" margin="1em 1.5em" icon={LedgerIcon}>
+        <Button onClick={onClickLedger} size="l" margin="1em 1.5em" icon={<LedgerIcon />}>
           Use Ledger
         </Button>
       </div>

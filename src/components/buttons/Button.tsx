@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, ReactElement } from 'react'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
@@ -13,7 +13,7 @@ interface ButtonProps {
   styles?: Styles
   width?: number | string
   height?: number | string
-  icon?: string
+  icon?: string | ReactElement
   iconPosition?: 'start' | 'end' //defaults to start
   iconStyles?: Styles
   title?: string
@@ -65,17 +65,35 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
     >
       {icon ? (
         <Box align="center" justify="center">
-          {(!iconPosition || iconPosition === 'start') && (
-            <img src={icon} css={getIconStyle(props)} />
-          )}
+          {(!iconPosition || iconPosition === 'start') && renderIcon(props)}
           {props.children}
-          {iconPosition === 'end' && <img src={icon} css={getIconStyle(props)} />}
+          {iconPosition === 'end' && renderIcon(props)}
         </Box>
       ) : (
         <>{props.children}</>
       )}
     </button>
   )
+}
+
+function renderIcon(props: PropsWithChildren<ButtonProps>) {
+  if (!props.icon) return null
+
+  let margin
+  if (props.children) {
+    margin = props.iconPosition === 'end' ? { marginLeft: 8 } : { marginRight: 8 }
+  }
+  const styles = { ...margin, ...props.iconStyles }
+
+  if (typeof props.icon === 'string') {
+    return <img src={props.icon} css={styles} />
+  } else {
+    return (
+      <Box align="center" justify="center" styles={styles}>
+        {props.icon}
+      </Box>
+    )
+  }
 }
 
 function getDimensions(size?: string, width?: number | string, height?: number | string) {
@@ -115,24 +133,18 @@ function getStateColors(baseColor: string) {
   }
 }
 
-function getIconStyle(props: PropsWithChildren<ButtonProps>) {
-  let styles = {}
-  if (props.children) {
-    styles = props.iconPosition === 'end' ? { marginLeft: 8 } : { marginRight: 8 }
-  }
-  return { ...styles, ...props.iconStyles }
-}
-
 export const transparentButtonStyles: Styles = {
   padding: 0,
   border: 'none',
   outline: 'none',
   background: 'none',
   cursor: 'pointer',
+  textRendering: 'geometricprecision',
 }
 
 export const defaultButtonStyles: Styles = {
   ...transparentButtonStyles,
+  textRendering: 'initial',
   borderRadius: 4,
   color: Color.primaryWhite,
   backgroundColor: Color.primaryGreen,

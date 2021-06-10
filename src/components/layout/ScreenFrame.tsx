@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
-import PlusIcon from 'src/components/icons/plus.svg'
+import { PlusIcon } from 'src/components/icons/Plus'
 import { Box } from 'src/components/layout/Box'
 import { HeaderFooterFrame } from 'src/components/layout/HeaderFooterFrame'
 import { NavButtonRow } from 'src/components/layout/NavButtonRow'
@@ -150,9 +150,14 @@ function MobileNotHome(props: PropsWithChildren<any>) {
   return (
     <Box direction="row" styles={style.contentContainer}>
       <Box direction="column" align="center" styles={style.feedContainerCollapsed}>
-        <Button onClick={onButtonClick} margin="0.75em 0" size="icon" width="34px" height="34px">
-          <img width="18px" height="18px" src={PlusIcon} alt="Plus" />
-        </Button>
+        <Button
+          onClick={onButtonClick}
+          margin="0.75em 0"
+          size="icon"
+          width="34px"
+          height="34px"
+          icon={<PlusIcon width="18px" height="18px" />}
+        />
         <TransactionFeed feedState="collapsed" />
       </Box>
       <div css={style.childContentContainer}>{props.children}</div>

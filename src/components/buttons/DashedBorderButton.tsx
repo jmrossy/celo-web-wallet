@@ -31,7 +31,7 @@ const defaultStyle: Styles = {
   padding: '0.7em 1em',
   fontSize: '0.95em',
   borderRadius: 4,
-  color: `${Color.primaryBlack}cc`,
+  color: Color.primaryBlack,
   ':hover': {
     backgroundColor: Color.fillLighter,
   },

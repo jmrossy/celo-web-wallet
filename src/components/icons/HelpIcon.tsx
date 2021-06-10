@@ -48,7 +48,7 @@ export function HelpIcon(props: IconProps) {
 
 export function BasicHelpIconModal(props: PropsWithChildren<any>) {
   return (
-    <Box direction="column" align="center" margin="0.5em 0 0 0" styles={style.helpModalContainer}>
+    <Box direction="column" align="center" styles={style.helpModalContainer}>
       {props.children}
     </Box>
   )

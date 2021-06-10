@@ -1,42 +1,98 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, Fragment, ReactElement } from 'react'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Styles, Stylesheet } from 'src/styles/types'
+import { chunk } from 'src/utils/string'
 
-export interface RadioBoxRowProps {
+interface RadioBoxProps<L extends string | ReactElement> {
   name: string
   value: string
-  labels: Array<{ value: string; label: string }>
+  labels: Array<{ value: string; label: L }>
   startTabIndex?: number
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
   margin?: string | number
   containerStyles?: Styles
 }
 
-export function RadioBoxRow(props: RadioBoxRowProps) {
+export function RadioBoxRow(props: RadioBoxProps<string>) {
   const { name, value, labels, onChange, startTabIndex, margin, containerStyles } = props
 
   return (
     <Box direction="row" align="center" justify="center" margin={margin} styles={containerStyles}>
       {labels.map((l, i) => (
-        <label css={style.container} tabIndex={(startTabIndex ?? 0) + i} key={`radio-box-row-${i}`}>
-          <Box direction="row" align="center" justify="center">
-            <input
-              name={name}
-              type="radio"
-              value={l.value}
-              css={style.input}
-              checked={l.value === value}
-              onChange={onChange}
-            />
-            <div css={l.value === value ? checkmarkChecked : style.checkmark}>
-              <div css={style.dot}></div>
-            </div>
-            <div css={style.label}>{l.label}</div>
-          </Box>
-        </label>
+        <Fragment key={`radio-box-row-${i}`}>
+          <RadioBoxItem
+            name={name}
+            value={l.value}
+            isChecked={l.value === value}
+            label={l.label}
+            tabIndex={(startTabIndex ?? 0) + i}
+            onChange={onChange}
+          />
+        </Fragment>
       ))}
     </Box>
+  )
+}
+
+// Displays radio options in rows of 2 options each
+export function RadioBoxGrid(props: RadioBoxProps<ReactElement>) {
+  const { name, value, labels, onChange, startTabIndex, margin, containerStyles } = props
+  const labelPairs = chunk(labels, 2)
+  return (
+    <div css={{ margin, ...containerStyles }}>
+      {labelPairs.map((l, i) => (
+        <Box align="center" justify="center" margin="3em 0" key={`radio-box-grid-${i}`}>
+          <RadioBoxItem
+            name={name}
+            value={l[0].value}
+            isChecked={l[0].value === value}
+            label={l[0].label}
+            tabIndex={(startTabIndex ?? 0) + 2 * i}
+            onChange={onChange}
+          />
+          <RadioBoxItem
+            name={name}
+            value={l[1].value}
+            isChecked={l[1].value === value}
+            label={l[1].label}
+            tabIndex={(startTabIndex ?? 0) + 2 * i + 1}
+            onChange={onChange}
+          />
+        </Box>
+      ))}
+    </div>
+  )
+}
+
+interface RadioItemProps<L extends string | ReactElement> {
+  name: string
+  value: string
+  isChecked: boolean
+  label: L
+  tabIndex?: number
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
+}
+
+function RadioBoxItem(props: RadioItemProps<string | ReactElement>) {
+  const { name, value, label, onChange, isChecked, tabIndex } = props
+  return (
+    <label css={style.container} tabIndex={tabIndex}>
+      <Box align="center" justify="center">
+        <input
+          name={name}
+          type="radio"
+          value={value}
+          css={style.input}
+          checked={isChecked}
+          onChange={onChange}
+        />
+        <div css={isChecked ? checkmarkChecked : style.checkmark}>
+          <div css={style.dot}></div>
+        </div>
+        <div css={typeof label === 'string' ? style.label : style.labelElement}>{label}</div>
+      </Box>
+    </label>
   )
 }
 
@@ -86,6 +142,9 @@ const style: Stylesheet = {
   },
   label: {
     padding: '0.1em 0 0.1em 0.5em',
+  },
+  labelElement: {
+    padding: '0 0 0 1em',
   },
 }
 

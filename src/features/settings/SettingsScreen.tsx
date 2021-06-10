@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { RootState } from 'src/app/rootReducer'
-import { Button } from 'src/components/buttons/Button'
+import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { SwitchButton } from 'src/components/buttons/SwitchButton'
 import { HrDivider } from 'src/components/HrDivider'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
-import PlusIcon from 'src/components/icons/plus.svg'
+import { PlusIcon } from 'src/components/icons/Plus'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MAX_SEND_TOKEN_SIZE, MAX_SEND_TOKEN_SIZE_LEDGER } from 'src/consts'
@@ -21,6 +21,10 @@ export function SettingsScreen() {
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  const onClickViewWallet = () => {
+    navigate('/wallet')
+  }
 
   const onClickChangePassword = () => {
     dispatch(pincodeActions.reset())
@@ -43,20 +47,18 @@ export function SettingsScreen() {
       <Box direction="column" align="center">
         <h2 css={style.sectionHeader}>Account Settings</h2>
         <Box direction="row" align="center" justify="center" wrap={true} margin="0.5em 0 0 0">
-          <div css={style.pageLinkBox}>
-            <Link to="/wallet">
-              <Box direction="row" align="center">
-                <img src={IdCardIcon} alt="wallet details" css={style.pageLinkIcon} />
-                <div>
-                  <h3 css={style.h3}>Account Details</h3>
-                  <div css={style.description}>
-                    See your acount information like your address and Account Key.
-                  </div>
+          <button css={style.pageLinkBox} onClick={onClickViewWallet}>
+            <Box direction="row" align="center">
+              <img src={IdCardIcon} alt="wallet details" css={style.pageLinkIcon} />
+              <div>
+                <h3 css={style.h3}>Account Details</h3>
+                <div css={style.description}>
+                  See your acount information like your address and Account Key.
                 </div>
-              </Box>
-            </Link>
-          </div>
-          <div css={style.pageLinkBox} onClick={onClickChangePassword}>
+              </div>
+            </Box>
+          </button>
+          <button css={style.pageLinkBox} onClick={onClickChangePassword}>
             <Box direction="row" align="center">
               <img src={LockIcon} alt="change pin" css={style.pageLinkIcon} />
               <div>
@@ -66,7 +68,7 @@ export function SettingsScreen() {
                 </div>
               </div>
             </Box>
-          </div>
+          </button>
         </Box>
         <HrDivider styles={style.divider} />
         <h2 css={style.sectionHeader}>Advanced Settings</h2>
@@ -88,8 +90,7 @@ export function SettingsScreen() {
           <div css={style.switchContainer}>
             <Button
               size="icon"
-              icon={PlusIcon}
-              iconStyles={{ width: '1em' }}
+              icon={<PlusIcon width="1em" height="1em" />}
               onClick={onClickAddToken}
               width="2.5em"
               height="2.5em"
@@ -146,18 +147,16 @@ const style: Stylesheet = {
     margin: '2em 0',
   },
   pageLinkBox: {
-    cursor: 'pointer',
+    ...transparentButtonStyles,
+    textAlign: 'left',
+    fontWeight: 400,
     marginTop: '1em',
     width: '20em',
-    padding: '1em',
+    padding: '1.1em 0.8em',
     borderRadius: 4,
     border: `1px solid ${Color.primaryWhite}`,
     ':hover': {
       borderColor: Color.altGrey,
-    },
-    a: {
-      color: Color.primaryBlack,
-      textDecoration: 'none',
     },
   },
   pageLinkIcon: {

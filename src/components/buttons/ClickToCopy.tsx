@@ -36,5 +36,4 @@ const defaultStyle: Styles = {
   ':hover': {
     opacity: 0.8,
   },
-  textRendering: 'geometricprecision',
 }
