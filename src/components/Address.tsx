@@ -20,10 +20,11 @@ interface Props {
   address: string
   hideIdenticon?: boolean
   buttonType?: ButtonType
+  isTransparent?: boolean
 }
 
 export function Address(props: Props) {
-  const { address, hideIdenticon, buttonType } = props
+  const { address, hideIdenticon, buttonType, isTransparent } = props
 
   if (!utils.isAddress(address)) {
     throw new Error('Invalid address')
@@ -38,12 +39,13 @@ export function Address(props: Props) {
 
   const addressSections = chunk<string>(utils.getAddress(address).substring(2).toUpperCase(), 4)
 
-  const addressContainerStyle = getAddressContainerStyle(hideIdenticon, buttonType)
+  const iconContainerStyle = getIconContainerStyle(isTransparent)
+  const addressContainerStyle = getAddressContainerStyle(hideIdenticon, buttonType, isTransparent)
 
   return (
     <Box direction="row" align="center">
       {!hideIdenticon && (
-        <div css={style.iconContainer}>
+        <div css={iconContainerStyle}>
           <Identicon address={address} size={46} />
         </div>
       )}
@@ -103,7 +105,11 @@ export function useCopyAddress(address: string) {
   }
 }
 
-function getAddressContainerStyle(hideIdenticon?: boolean, buttonType?: ButtonType) {
+function getAddressContainerStyle(
+  hideIdenticon?: boolean,
+  buttonType?: ButtonType,
+  isTransparent?: boolean
+) {
   const addressContainerStyle = { ...style.addressContainer }
   if (hideIdenticon) {
     addressContainerStyle.paddingLeft = 8
@@ -120,15 +126,24 @@ function getAddressContainerStyle(hideIdenticon?: boolean, buttonType?: ButtonTy
     addressContainerStyle.paddingTop = 12
     addressContainerStyle.paddingBottom = 12
   }
+  if (isTransparent) {
+    addressContainerStyle.backgroundColor = 'none'
+  }
   return addressContainerStyle
+}
+
+function getIconContainerStyle(isTransparent?: boolean) {
+  return isTransparent ? style.iconContainer : { ...style.iconContainer, ...style.iconShadow }
 }
 
 const style: Stylesheet = {
   iconContainer: {
     zIndex: 10,
+    borderRadius: 23,
+  },
+  iconShadow: {
     backgroundColor: '#FFFFFF',
     boxShadow: '2px 0px 0px 2px #FFFFFF',
-    borderRadius: 23,
   },
   addressContainer: {
     zIndex: 5,

@@ -93,7 +93,7 @@ export function AddAccountScreen() {
       <form onSubmit={handleSubmit}>
         <Box direction="column" align="center">
           <Box align="center">
-            <div>
+            <div css={style.nameLabelContainer}>
               <label htmlFor="name" css={Font.body}>
                 New Account Name
               </label>
@@ -105,8 +105,7 @@ export function AddAccountScreen() {
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Savings account"
-              width="14em"
-              margin="0 0 0 2em"
+              width="12em"
               {...errors['name']}
             />
           </Box>
@@ -116,7 +115,9 @@ export function AddAccountScreen() {
             labels={radioBoxLabels}
             onChange={handleChange}
           />
-          <Button type="submit">Continue</Button>
+          <Button type="submit" margin="0.5em 0 0 0">
+            Continue
+          </Button>
         </Box>
       </form>
     </>
@@ -150,6 +151,12 @@ function validate(values: AddAcountForm): ErrorState {
 }
 
 const style: Stylesheet = {
+  nameLabelContainer: {
+    margin: '0 2em 0 1.1em',
+    div: {
+      marginTop: '0.25em',
+    },
+  },
   subtitle: {
     ...Font.subtitle,
     fontSize: '0.95em',
@@ -157,7 +164,8 @@ const style: Stylesheet = {
     maxWidth: '12.5em',
   },
   optionIcon: {
-    width: '2.5em',
-    marginLeft: '1em',
+    width: '1.7em',
+    height: 'auto',
+    marginLeft: '0.8em',
   },
 }
