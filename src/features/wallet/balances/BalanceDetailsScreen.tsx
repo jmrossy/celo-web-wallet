@@ -1,13 +1,15 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'src/app/rootReducer'
+import { Address } from 'src/components/Address'
+import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { CloseButton } from 'src/components/buttons/CloseButton'
-import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { ModalAction } from 'src/components/modal/modal'
+import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Table, TableColumn } from 'src/components/Table'
@@ -25,6 +27,7 @@ import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { isNativeToken, LockedCELO } from 'src/tokens'
+import { shortenAddress } from 'src/utils/addresses'
 import { fromWeiRounded } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 
@@ -85,7 +88,7 @@ const tableColumns: TableColumn[] = [
     id: 'balance',
   },
   {
-    header: 'Contract Address',
+    header: 'Contract',
     id: 'address',
     renderer: renderAddressAndRemoveButton,
   },
@@ -115,7 +118,15 @@ function renderAddressAndRemoveButton(row: BalanceTableRow) {
   const isNative = isNativeToken(id) || id === LockedCELO.id
 
   const dispatch = useDispatch()
-  const { showModal, closeModal } = useModal()
+  const { showModal, showModalWithContent, closeModal } = useModal()
+
+  const onClickAddress = () => {
+    const name = row.token.name || row.token.symbol
+    showModalWithContent({
+      head: `${name} Token`,
+      content: <TokenAddressDetails row={row} />,
+    })
+  }
 
   const onClickRemove = () => {
     const actions = [
@@ -138,7 +149,9 @@ function renderAddressAndRemoveButton(row: BalanceTableRow) {
 
   return (
     <div css={style.addressContainer}>
-      <CopiableAddress address={address} length="short" />
+      <button css={transparentButtonStyles} onClick={onClickAddress}>
+        {shortenAddress(address, true, true)}
+      </button>
       {!isNative && (
         <div css={style.removeButtonContainer}>
           <CloseButton
@@ -149,6 +162,17 @@ function renderAddressAndRemoveButton(row: BalanceTableRow) {
         </div>
       )}
     </div>
+  )
+}
+
+function TokenAddressDetails({ row }: { row: BalanceTableRow }) {
+  return (
+    <Box direction="column" align="center" margin="0 0 0.5em 0">
+      <p css={style.tokenModalWarning}>
+        This is the contract address, not your account! Do not send funds to this address!
+      </p>
+      <Address address={row.address} buttonType="copy" />
+    </Box>
   )
 }
 
@@ -204,5 +228,11 @@ const style: Stylesheet = {
   removeButton: {
     height: '1em',
     width: '1em',
+  },
+  tokenModalWarning: {
+    ...modalStyles.p,
+    ...Font.bold,
+    margin: '0 0 1.5em 0',
+    maxWidth: '20em',
   },
 }

@@ -45,7 +45,7 @@ export const AccountMenu = () => {
   const onLogout = useLogoutModal()
 
   const address = useWalletAddress()
-  const addressStub = '0x' + shortenAddress(address).substring(2).toUpperCase()
+  const addressStub = shortenAddress(address, false, true)
   const showFundModal = useFundWalletModal()
   const showAccountsModal = useChooseAccountModal()
 
