@@ -9,6 +9,7 @@ import { TextInput } from 'src/components/input/TextInput'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { ErrorState, invalidInput } from 'src/utils/validation'
@@ -97,7 +98,7 @@ export function AddAccountScreen() {
               <label htmlFor="name" css={Font.body}>
                 New Account Name
               </label>
-              <div css={Font.subtitle}>To help you stay oraganized</div>
+              <div css={Font.subtitle}>To help you stay organized</div>
             </div>
             <TextInput
               name="name"
@@ -105,7 +106,7 @@ export function AddAccountScreen() {
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Savings account"
-              width="12em"
+              width="11em"
               {...errors['name']}
             />
           </Box>
@@ -114,6 +115,7 @@ export function AddAccountScreen() {
             value={values.action}
             labels={radioBoxLabels}
             onChange={handleChange}
+            margin="3em 0"
           />
           <Button type="submit" margin="0.5em 0 0 0">
             Continue
@@ -152,7 +154,10 @@ function validate(values: AddAcountForm): ErrorState {
 
 const style: Stylesheet = {
   nameLabelContainer: {
-    margin: '0 2em 0 1.1em',
+    margin: '0 1em',
+    [mq[480]]: {
+      margin: '0 2em 0 1em',
+    },
     div: {
       marginTop: '0.25em',
     },

@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useLogoutModal } from 'src/app/logout/useLogoutModal'
 import { useFundWalletModal } from 'src/components/FundWalletModal'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
+import AvatarSwapIcon from 'src/components/icons/avatar_swap.svg'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import CoinSwapIcon from 'src/components/icons/coin_swap.svg'
 import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import Discord from 'src/components/icons/logos/discord.svg'
 import Github from 'src/components/icons/logos/github.svg'
-import QrCodeIcon from 'src/components/icons/qr_code_big.svg'
 import SettingsIcon from 'src/components/icons/settings.svg'
 import SignPostIcon from 'src/components/icons/sign_post.svg'
 import { Identicon } from 'src/components/Identicon'
@@ -27,8 +27,8 @@ import { shortenAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
 const MenuItems = [
+  { id: 'switch', label: 'Switch Account', icon: AvatarSwapIcon },
   { id: 'account', label: 'Account Details', icon: IdCardIcon },
-  { id: 'manage', label: 'Manage Accounts', icon: QrCodeIcon }, // TODO icon here
   { id: 'fund', label: 'Fund Wallet', icon: CoinSwapIcon },
   { id: 'help', label: 'Help', icon: HelpIcon },
   { id: 'settings', label: 'Settings', icon: SettingsIcon, iconWidth: '1.8em' },
@@ -55,7 +55,7 @@ export const AccountMenu = () => {
       case 'account':
         navigate('/wallet')
         break
-      case 'manage':
+      case 'switch':
         showAccountsModal()
         break
       case 'settings':

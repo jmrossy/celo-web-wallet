@@ -2,7 +2,6 @@ import { ChangeEvent, Fragment, ReactElement } from 'react'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Styles, Stylesheet } from 'src/styles/types'
-import { chunk } from 'src/utils/string'
 
 interface RadioBoxProps<L extends string | ReactElement> {
   name: string
@@ -14,6 +13,7 @@ interface RadioBoxProps<L extends string | ReactElement> {
   containerStyles?: Styles
 }
 
+// A row of radio options
 export function RadioBoxRow(props: RadioBoxProps<string>) {
   const { name, value, labels, onChange, startTabIndex, margin, containerStyles } = props
 
@@ -28,6 +28,7 @@ export function RadioBoxRow(props: RadioBoxProps<string>) {
             label={l.label}
             tabIndex={(startTabIndex ?? 0) + i}
             onChange={onChange}
+            isInGrid={false}
           />
         </Fragment>
       ))}
@@ -35,31 +36,28 @@ export function RadioBoxRow(props: RadioBoxProps<string>) {
   )
 }
 
-// Displays radio options in rows of 2 options each
+// A responsive radio options grid in rows of 2 options each
 export function RadioBoxGrid(props: RadioBoxProps<ReactElement>) {
   const { name, value, labels, onChange, startTabIndex, margin, containerStyles } = props
-  const labelPairs = chunk(labels, 2)
+  const grid = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(16em, 1fr))',
+    gap: '2.5em 0em',
+    width: '100%',
+  }
   return (
-    <div css={{ margin, ...containerStyles }}>
-      {labelPairs.map((l, i) => (
-        <Box align="center" justify="center" margin="3em 0" key={`radio-box-grid-${i}`}>
-          <RadioBoxItem
-            name={name}
-            value={l[0].value}
-            isChecked={l[0].value === value}
-            label={l[0].label}
-            tabIndex={(startTabIndex ?? 0) + 2 * i}
-            onChange={onChange}
-          />
-          <RadioBoxItem
-            name={name}
-            value={l[1].value}
-            isChecked={l[1].value === value}
-            label={l[1].label}
-            tabIndex={(startTabIndex ?? 0) + 2 * i + 1}
-            onChange={onChange}
-          />
-        </Box>
+    <div css={{ ...grid, margin, ...containerStyles }}>
+      {labels.map((l, i) => (
+        <RadioBoxItem
+          name={name}
+          value={l.value}
+          isChecked={l.value === value}
+          label={l.label}
+          tabIndex={(startTabIndex ?? 0) + 2 * i}
+          onChange={onChange}
+          isInGrid={true}
+          key={`radio-box-grid-${i}`}
+        />
       ))}
     </div>
   )
@@ -72,12 +70,13 @@ interface RadioItemProps<L extends string | ReactElement> {
   label: L
   tabIndex?: number
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
+  isInGrid: boolean
 }
 
 function RadioBoxItem(props: RadioItemProps<string | ReactElement>) {
-  const { name, value, label, onChange, isChecked, tabIndex } = props
+  const { name, value, label, onChange, isChecked, tabIndex, isInGrid } = props
   return (
-    <label css={style.container} tabIndex={tabIndex}>
+    <label css={isInGrid ? style.container : containerWithBorder} tabIndex={tabIndex}>
       <Box align="center" justify="center">
         <input
           name={name}
@@ -104,7 +103,6 @@ const style: Stylesheet = {
     cursor: 'pointer',
     userSelect: 'none',
     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-    borderRight: `1px solid ${Color.borderInactive}`,
     ':last-child': {
       borderRight: 'none',
     },
@@ -146,6 +144,11 @@ const style: Stylesheet = {
   labelElement: {
     padding: '0 0 0 1em',
   },
+}
+
+const containerWithBorder: Styles = {
+  ...style.container,
+  borderRight: `1px solid ${Color.borderInactive}`,
 }
 
 const checkmarkChecked: Styles = {

@@ -78,18 +78,18 @@ export function ChooseAccountModal({ close }: ModalProps) {
         <Button
           size="s"
           width="10em"
-          onClick={onClickAdd}
-          icon={<PlusIcon width="0.9em" height="0.9em" />}
-        >
-          Add
-        </Button>
-        <Button
-          size="s"
-          width="10em"
           onClick={onClickManage}
           icon={<PencilIcon width="0.9em" height="0.9em" />}
         >
           Manage
+        </Button>
+        <Button
+          size="s"
+          width="10em"
+          onClick={onClickAdd}
+          icon={<PlusIcon width="0.9em" height="0.9em" />}
+        >
+          Add
         </Button>
       </Box>
     </Box>
