@@ -4,7 +4,7 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
 import { ERROR as WcError } from '@walletconnect/utils'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
 import 'src/features/ledger/buffer'
 import {

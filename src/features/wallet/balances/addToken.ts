@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getTokenContract } from 'src/blockchain/contracts'
 import { config } from 'src/config'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'

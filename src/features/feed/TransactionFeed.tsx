@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { FixedSizeList } from 'react-window'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import Nurture from 'src/components/icons/nurture.svg'
 import { Box } from 'src/components/layout/Box'
 import {

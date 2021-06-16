@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers'
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
@@ -14,7 +14,7 @@ import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
 import {
   fetchProposalsActions,
-  fetchProposalsSagaName
+  fetchProposalsSagaName,
 } from 'src/features/governance/fetchProposals'
 import { validate } from 'src/features/governance/governanceVote'
 import {
@@ -22,7 +22,7 @@ import {
   Proposal,
   ProposalStage,
   VoteValue,
-  voteValueToLabel
+  voteValueToLabel,
 } from 'src/features/governance/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'

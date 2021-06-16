@@ -1,7 +1,7 @@
 import type { SessionTypes } from '@walletconnect/types'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { CheckmarkInElipseIcon } from 'src/components/icons/Checkmark'

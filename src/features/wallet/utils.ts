@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { BigNumber, utils } from 'ethers'
 import { useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { MNEMONIC_LENGTH_MAX, MNEMONIC_LENGTH_MIN, NULL_ADDRESS } from 'src/consts'
 import { Balances } from 'src/features/wallet/types'
 import { Token } from 'src/tokens'

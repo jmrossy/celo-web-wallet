@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, Contract } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { config } from 'src/config'

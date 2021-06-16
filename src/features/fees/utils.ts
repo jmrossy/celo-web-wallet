@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers'
 import { useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
 import { FeeEstimate } from 'src/features/fees/types'
 import { CeloTransaction } from 'src/features/types'

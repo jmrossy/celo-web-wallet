@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { CloseButton } from 'src/components/buttons/CloseButton'

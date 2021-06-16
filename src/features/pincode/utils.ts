@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { SecretType } from 'src/features/pincode/types'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 

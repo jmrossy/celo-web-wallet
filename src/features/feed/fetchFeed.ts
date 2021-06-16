@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'

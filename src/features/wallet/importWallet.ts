@@ -1,6 +1,6 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
 import { Wallet } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'

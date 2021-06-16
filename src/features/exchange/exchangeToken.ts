@@ -1,5 +1,5 @@
 import { BigNumber, Contract, providers } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContractByAddress } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'

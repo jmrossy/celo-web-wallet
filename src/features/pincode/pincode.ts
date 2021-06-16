@@ -1,5 +1,5 @@
 import { shallowEqual, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { isSignerSet, SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { CELO_DERIVATION_PATH } from 'src/consts'

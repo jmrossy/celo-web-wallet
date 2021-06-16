@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { SwitchButton } from 'src/components/buttons/SwitchButton'
 import { HrDivider } from 'src/components/HrDivider'

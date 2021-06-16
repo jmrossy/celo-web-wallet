@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Fade } from 'src/components/animation/Fade'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import CloseIcon from 'src/components/icons/close.svg'

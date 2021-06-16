@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { HelpText } from 'src/components/input/HelpText'
 import { SelectInput } from 'src/components/input/SelectInput'

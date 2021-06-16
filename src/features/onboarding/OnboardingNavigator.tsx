@@ -1,6 +1,6 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
 import { isWalletInStorage } from 'src/features/wallet/storage'
 

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useLogoutModal } from 'src/app/logout/useLogoutModal'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'

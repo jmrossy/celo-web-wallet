@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { HrDivider } from 'src/components/HrDivider'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'

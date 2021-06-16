@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
 

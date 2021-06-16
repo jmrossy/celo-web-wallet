@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { logoutActions } from 'src/app/logout/logout'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { useModal } from 'src/components/modal/useModal'
 import { Color } from 'src/styles/Color'
@@ -16,7 +16,7 @@ export function useLogoutModal() {
   const body =
     signerType === SignerType.Ledger
       ? 'Your account information will be completely removed from this device.'
-      : 'Do not logout before copying your Account Key (mnemonic phrase) to a safe place. Your account will be completely removed from this device.'
+      : 'Do not logout before copying your Account Key (seed phrase) to a safe place. Your account will be completely removed from this device.'
 
   const onLogout = async () => {
     const answer = await showModalAsync({

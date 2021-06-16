@@ -35,6 +35,10 @@ import { BalanceDetailsScreen } from 'src/features/wallet/balances/BalanceDetail
 import { ViewWalletScreen } from 'src/features/wallet/details/ViewWalletScreen'
 import { AccountsNavigator } from 'src/features/wallet/management/AccountsNavigator'
 import { AddAccountScreen } from 'src/features/wallet/management/AddAccountScreen'
+import { AddCreateScreen } from 'src/features/wallet/management/AddCreateScreen'
+import { AddDeriveScreen } from 'src/features/wallet/management/AddDeriveScreen'
+import { AddImportScreen } from 'src/features/wallet/management/AddImportScreen'
+import { AddLedgerScreen } from 'src/features/wallet/management/AddLedgerScreen'
 import { ManageAccountsScreen } from 'src/features/wallet/management/ManageAccountsScreen'
 import { WalletConnectStatusBox } from 'src/features/walletConnect/WalletConnectStatusBox'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
@@ -89,6 +93,10 @@ export const App = () => {
               <Route path="accounts" element={<AccountsNavigator />}>
                 <Route path="/" element={<ManageAccountsScreen />} />
                 <Route path="add" element={<AddAccountScreen />} />
+                <Route path="create" element={<AddCreateScreen />} />
+                <Route path="derive" element={<AddDeriveScreen />} />
+                <Route path="import" element={<AddImportScreen />} />
+                <Route path="ledger" element={<AddLedgerScreen />} />
               </Route>
             </Route>
 

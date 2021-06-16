@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContractByAddress } from 'src/blockchain/contracts'
 import { EXCHANGE_RATE_STALE_TIME, MAX_EXCHANGE_SPREAD } from 'src/consts'
 import { resetExchangeRates, setExchangeRates } from 'src/features/exchange/exchangeSlice'
@@ -50,9 +50,8 @@ async function fetchCeloExchangeRate(stableToken: Token): Promise<ExchangeRate> 
   if (!exchangeContract) throw new Error(`No exchange contract found for ${stableToken.id}`)
 
   const spreadP: Promise<BigNumberish> = exchangeContract.spread()
-  const bucketsP: Promise<[BigNumberish, BigNumberish]> = exchangeContract.getBuyAndSellBuckets(
-    false
-  )
+  const bucketsP: Promise<[BigNumberish, BigNumberish]> =
+    exchangeContract.getBuyAndSellBuckets(false)
   const [spreadRaw, bucketsRaw] = await Promise.all([spreadP, bucketsP])
 
   const spread = fromFixidity(spreadRaw)

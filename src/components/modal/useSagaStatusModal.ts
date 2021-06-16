@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { useModal } from 'src/components/modal/useModal'
 import { SagaStatus } from 'src/utils/saga'

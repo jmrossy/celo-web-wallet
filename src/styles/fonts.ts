@@ -53,6 +53,13 @@ export const Font: Stylesheet = {
     fontSize: '1.2em',
     fontWeight: 400,
   },
+  h4Center: {
+    fontSize: '1.1em',
+    fontWeight: 400,
+    color: Color.primaryBlack,
+    textAlign: 'center',
+    margin: '0 0 0.5em 0',
+  },
   label: {
     fontSize: '1em',
     fontWeight: 500,

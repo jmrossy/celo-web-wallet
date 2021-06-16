@@ -1,4 +1,5 @@
 import { ReactElement, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import DerivationIcon from 'src/components/icons/derivation_path.svg'
 import { KeyIcon } from 'src/components/icons/Key'
@@ -15,7 +16,7 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
 enum NewAccountAction {
-  Add = 'add',
+  Create = 'create',
   Derive = 'derive',
   Import = 'import',
   Ledger = 'ledger',
@@ -28,12 +29,22 @@ interface AddAcountForm {
 
 const initialValues: AddAcountForm = {
   name: '',
-  action: NewAccountAction.Add,
+  action: NewAccountAction.Create,
 }
 
 export function AddAccountScreen() {
+  const navigate = useNavigate()
   const onSubmit = (values: AddAcountForm) => {
-    alert(JSON.stringify(values))
+    const { name, action } = values
+    if (action === NewAccountAction.Create) {
+      navigate('/accounts/create', { state: { name } })
+    } else if (action === NewAccountAction.Derive) {
+      navigate('/accounts/derive', { state: { name } })
+    } else if (action === NewAccountAction.Import) {
+      navigate('/accounts/import', { state: { name } })
+    } else if (action === NewAccountAction.Ledger) {
+      navigate('/accounts/ledger', { state: { name } })
+    }
   }
 
   const { values, errors, handleChange, handleBlur, handleSubmit } = useCustomForm<AddAcountForm>(
@@ -45,7 +56,7 @@ export function AddAccountScreen() {
   const radioBoxLabels = useMemo(
     () => [
       {
-        value: NewAccountAction.Add,
+        value: NewAccountAction.Create,
         label: (
           <RadioBoxOption
             title="Create New Account Key"

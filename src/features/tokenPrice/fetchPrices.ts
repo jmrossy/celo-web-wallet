@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getLatestBlockDetails, getNumBlocksPerInterval } from 'src/blockchain/blocks'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'

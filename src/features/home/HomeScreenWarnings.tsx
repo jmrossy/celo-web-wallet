@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { TextButton } from 'src/components/buttons/TextButton'
 import WarningIcon from 'src/components/icons/warning.svg'
@@ -72,7 +72,7 @@ function AccountKeyReminder() {
   return (
     <div>
       Reminder: Copy your <TextButton onClick={() => navigate('/wallet')}>Account Key</TextButton>{' '}
-      (mnemonic) to a safe place. Your key is the only way to recover your account.
+      (seed phrase) to a safe place. Your key is the only way to recover your account.
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { batchCall } from 'src/blockchain/batchCall'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
