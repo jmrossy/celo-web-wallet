@@ -13,7 +13,6 @@ import {
 } from 'src/features/onboarding/import/DerivationPathForm'
 import { isValidDerivationPath } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
@@ -89,5 +88,3 @@ function validate(values: DerivationPathFormValues): ErrorState {
 
   return { isValid: true }
 }
-
-const style: Stylesheet = {}

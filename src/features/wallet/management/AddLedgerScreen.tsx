@@ -1,12 +1,14 @@
+import { Box } from 'src/components/layout/Box'
+import { LedgerImportForm } from 'src/features/onboarding/import/LedgerImportForm'
 import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
 
 export function AddLedgerScreen() {
   return (
     <>
       <h2 css={Font.h2Center}>Import Another Ledger Account</h2>
+      <Box direction="column" align="center">
+        <LedgerImportForm />
+      </Box>
     </>
   )
 }
-
-const style: Stylesheet = {}
