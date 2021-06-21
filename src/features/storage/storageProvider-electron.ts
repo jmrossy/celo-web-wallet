@@ -29,6 +29,7 @@ function hasItem(path: string) {
 
 function getItem(path: string) {
   const fullPath = getAppCwdPath(path)
+  if (!hasItem(path)) return null
   return fs.readFileSync(fullPath, 'utf8')
 }
 
@@ -36,6 +37,7 @@ function setItem(path: string, data: string, allowOverwrite = false) {
   if (!data) throw new Error('No data provided to store')
   if (hasItem(path) && !allowOverwrite) throw new Error('Attempting to overwrite existing item')
   const fullPath = getAppCwdPath(path)
+  // TODO do tmp file + swap here
   fs.writeFileSync(fullPath, data, { encoding: 'utf8' })
   if (!hasItem(path)) throw new Error('Setting item seems to have failed')
 }

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { ChangePincodeForm } from 'src/features/pincode/ChangePincodeForm'
 import { isAccountUnlocked } from 'src/features/pincode/pincode'
-import { isWalletInStorage } from 'src/features/wallet/storage'
+import { isWalletInStorage } from 'src/features/wallet/storage_v1'
 import { Font } from 'src/styles/fonts'
 
 export function ChangePincodeScreen() {

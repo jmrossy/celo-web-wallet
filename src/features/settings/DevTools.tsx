@@ -7,7 +7,7 @@ import { pincodeActions } from 'src/features/pincode/pincode'
 import { PincodeAction } from 'src/features/pincode/types'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { createWalletActions } from 'src/features/wallet/createWallet'
-import { saveWallet } from 'src/features/wallet/storage'
+import { saveWallet } from 'src/features/wallet/storage_v1'
 
 export function DevTools() {
   const dispatch = useDispatch()

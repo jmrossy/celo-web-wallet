@@ -2,7 +2,7 @@ import { shallowEqual, useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
-import { isWalletInStorage } from 'src/features/wallet/storage'
+import { isWalletInStorage } from 'src/features/wallet/storage_v1'
 
 export function OnboardingNavigator() {
   // If wallet exists in storage don't allow user back into onboarding flow

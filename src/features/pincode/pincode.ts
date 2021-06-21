@@ -11,7 +11,7 @@ import {
   validatePinValue,
 } from 'src/features/pincode/utils'
 import { importWallet } from 'src/features/wallet/importWallet'
-import { loadWallet, saveWallet } from 'src/features/wallet/storage'
+import { loadWallet, saveWallet } from 'src/features/wallet/storage_v1'
 import {
   resetWallet,
   setDerivationPath,

@@ -27,7 +27,7 @@ import {
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { VotingForBanner } from 'src/features/wallet/details/VotingForBanner'
-import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
+import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'

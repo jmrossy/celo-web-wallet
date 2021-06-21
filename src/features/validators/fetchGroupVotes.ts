@@ -6,12 +6,12 @@ import { CeloContract } from 'src/config'
 import { VALIDATOR_ACTIVATABLE_STALE_TIME } from 'src/consts'
 import { GroupVotes } from 'src/features/validators/types'
 import { updateGroupVotes, updateHasActivatable } from 'src/features/validators/validatorsSlice'
-import { getVoterAccountAddress } from 'src/features/wallet/utils'
+import { selectVoterAccountAddress } from 'src/features/wallet/hooks'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
 
 export function* fetchStakingBalances() {
-  const voterAccountAddress = yield* call(getVoterAccountAddress)
+  const voterAccountAddress = yield* call(selectVoterAccountAddress)
 
   const validatorGroupVotes = yield* call(fetchGroupVotes, voterAccountAddress)
   yield* put(updateGroupVotes(validatorGroupVotes))

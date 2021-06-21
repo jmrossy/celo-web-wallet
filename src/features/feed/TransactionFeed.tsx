@@ -12,7 +12,7 @@ import {
   FEED_ITEM_HEIGHT_NORMAL,
 } from 'src/features/feed/FeedItem'
 import { openTransaction } from 'src/features/feed/feedSlice'
-import { useAreBalancesEmpty, useTokens } from 'src/features/wallet/utils'
+import { useAreBalancesEmpty, useTokens } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'

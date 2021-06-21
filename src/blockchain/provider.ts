@@ -2,11 +2,9 @@ import { CeloProvider } from '@celo-tools/celo-ethers-wrapper'
 import { providers } from 'ethers'
 import { config } from 'src/config'
 import { STALE_BLOCK_TIME } from 'src/consts'
-import { setIsConnected } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { promiseTimeout, sleep } from 'src/utils/promises'
 import { isStale } from 'src/utils/time'
-import { call, put } from 'typed-redux-saga'
 
 let provider: CeloProvider | undefined
 
@@ -14,17 +12,7 @@ export function isProviderSet() {
   return !!provider
 }
 
-export function* initProvider() {
-  try {
-    yield* call(connectToProvider)
-    yield* put(setIsConnected(true))
-  } catch (error) {
-    logger.error('Unable to connect to provider', error)
-    yield* put(setIsConnected(false))
-  }
-}
-
-async function connectToProvider() {
+export async function connectToProvider() {
   const { jsonRpcUrlPrimary, jsonRpcUrlSecondary } = config
 
   let connectionResult = await connectToJsonRpcProvider(jsonRpcUrlPrimary)

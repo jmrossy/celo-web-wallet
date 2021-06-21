@@ -20,8 +20,8 @@ import {
   fetchBalancesActions,
   fetchBalancesIfStale,
 } from 'src/features/wallet/balances/fetchBalances'
+import { selectVoterBalances } from 'src/features/wallet/hooks'
 import { Balances } from 'src/features/wallet/types'
-import { getVoterBalances } from 'src/features/wallet/utils'
 import { CELO } from 'src/tokens'
 import { validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
@@ -70,7 +70,7 @@ export function validate(
 
 function* governanceVote(params: GovernanceVoteParams) {
   yield* call(fetchBalancesIfStale)
-  const { balances, voterBalances } = yield* call(getVoterBalances)
+  const { balances, voterBalances } = yield* call(selectVoterBalances)
   const proposals = yield* select((state: RootState) => state.governance.proposals)
 
   validateOrThrow(

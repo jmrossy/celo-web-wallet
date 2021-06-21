@@ -2,21 +2,21 @@ const SALT = '68d0ad14364deb3d417cd644e84dd1f5659d70287f2d2c94be5ce6eaf21a014f' 
 const IV_LENGTH = 12 // Size of initialization vector for encryption
 const NUM_DERIVATION_ITERATIONS = 250000
 
-export async function encryptMnemonic(mnemonic: string, pincode: string) {
-  if (!mnemonic || !pincode) throw new Error('Invalid arguments for encryption')
+export async function encryptMnemonic(mnemonic: string, password: string) {
+  if (!mnemonic || !password) throw new Error('Invalid arguments for encryption')
   if (!crypto || !crypto.subtle) throw new Error('Crypto libs not available')
 
-  const keyMaterial = await getKeyMaterialFromPincode(pincode)
+  const keyMaterial = await getKeyMaterialFromPassword(password)
   const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
   return encrypt(encryptionKey, mnemonic)
 }
 
-export async function decryptMnemonic(ciphertext: string, pincode: string) {
-  if (!ciphertext || !pincode) {
+export async function decryptMnemonic(ciphertext: string, password: string) {
+  if (!ciphertext || !password) {
     throw new Error('Invalid arguments for decryption')
   }
 
-  const keyMaterial = await getKeyMaterialFromPincode(pincode)
+  const keyMaterial = await getKeyMaterialFromPassword(password)
   const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
   return decrypt(encryptionKey, ciphertext)
 }
@@ -31,8 +31,8 @@ function decodeText(data: ArrayBuffer) {
   return dec.decode(data)
 }
 
-function getKeyMaterialFromPincode(pincode: string) {
-  return crypto.subtle.importKey('raw', encodeText(pincode), 'PBKDF2', false, [
+function getKeyMaterialFromPassword(password: string) {
+  return crypto.subtle.importKey('raw', encodeText(password), 'PBKDF2', false, [
     'deriveBits',
     'deriveKey',
   ])

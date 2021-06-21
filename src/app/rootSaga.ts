@@ -1,7 +1,7 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
 import { logoutActions, logoutReducer, logoutSaga, logoutSagaName } from 'src/app/logout/logout'
-import { initProvider } from 'src/blockchain/provider'
+import { initProvider } from 'src/blockchain/init'
 import {
   fetchExchangeRateActions,
   fetchExchangeRateReducer,

@@ -6,7 +6,7 @@ import { ScreenFrame } from 'src/components/layout/ScreenFrame'
 import { LedgerUnlockScreen } from 'src/features/ledger/LedgerUnlockScreen'
 import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
 import { useAccountLockStatus } from 'src/features/pincode/pincode'
-import { isWalletInStorage } from 'src/features/wallet/storage'
+import { isWalletInStorage } from 'src/features/wallet/storage_v1'
 
 export function HomeNavigator() {
   const { address, type, isUnlocked } = useAccountLockStatus()

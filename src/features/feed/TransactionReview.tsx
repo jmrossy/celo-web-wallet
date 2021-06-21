@@ -14,7 +14,7 @@ import { TransactionProperty } from 'src/features/feed/components/TransactionPro
 import { openTransaction } from 'src/features/feed/feedSlice'
 import { getTransactionDescription } from 'src/features/feed/transactionDescription'
 import { CeloTransaction, TransactionType } from 'src/features/types'
-import { useTokens } from 'src/features/wallet/utils'
+import { useTokens } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'

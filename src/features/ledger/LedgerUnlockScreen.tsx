@@ -10,7 +10,7 @@ import {
 } from 'src/features/ledger/importWallet'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
-import { useWalletAddress } from 'src/features/wallet/utils'
+import { useWalletAddress } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'

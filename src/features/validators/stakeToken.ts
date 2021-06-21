@@ -21,8 +21,8 @@ import {
   fetchBalancesActions,
   fetchBalancesIfStale,
 } from 'src/features/wallet/balances/fetchBalances'
+import { selectVoterAccountAddress, selectVoterBalances } from 'src/features/wallet/hooks'
 import { Balances } from 'src/features/wallet/types'
-import { getVoterAccountAddress, getVoterBalances } from 'src/features/wallet/utils'
 import { CELO } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import {
@@ -88,8 +88,8 @@ function* stakeToken(params: StakeTokenParams) {
   const { action, amountInWei, feeEstimates } = params
 
   yield* call(fetchBalancesIfStale)
-  const { balances, voterBalances } = yield* call(getVoterBalances)
-  const voterAddress = yield* call(getVoterAccountAddress)
+  const { balances, voterBalances } = yield* call(selectVoterBalances)
+  const voterAddress = yield* call(selectVoterAccountAddress)
   const { validatorGroups, groupVotes } = yield* select((state: RootState) => state.validators)
 
   validateOrThrow(
