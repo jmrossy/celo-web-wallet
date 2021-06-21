@@ -9,7 +9,7 @@ import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
-export function WalletDetails() {
+export function AccountDetails() {
   const address = useWalletAddress()
   const isWalletReady = address && isSignerSet()
 

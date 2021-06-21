@@ -7,7 +7,7 @@ import { BALANCE_STALE_TIME } from 'src/consts'
 import { fetchLockedCeloStatus, fetchTotalLocked } from 'src/features/lock/fetchLockedStatus'
 import { LockedCeloBalances } from 'src/features/lock/types'
 import { fetchStakingBalances } from 'src/features/validators/fetchGroupVotes'
-import { fetchAccountStatus } from 'src/features/wallet/accountsContract'
+import { fetchAccountStatus } from 'src/features/wallet/accounts/accountsContract'
 import { areBalancesEmpty } from 'src/features/wallet/utils'
 import {
   setVoterBalances,

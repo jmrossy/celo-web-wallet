@@ -8,8 +8,8 @@ import { Spinner } from 'src/components/Spinner'
 import { config } from 'src/config'
 import { WebWalletWarning } from 'src/features/download/WebWalletWarning'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
+import { AccountDetails } from 'src/features/wallet/accounts/AccountDetails'
 import { createWalletActions, createWalletSagaName } from 'src/features/wallet/createWallet'
-import { WalletDetails } from 'src/features/wallet/details/WalletDetails'
 import { resetWallet } from 'src/features/wallet/walletSlice'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -63,7 +63,7 @@ export function NewWalletScreen() {
         <>
           <div css={style.container}>
             <div css={isLoading ? style.contentLoading : null}>
-              <WalletDetails />
+              <AccountDetails />
             </div>
             {isLoading && (
               <div css={style.spinner}>

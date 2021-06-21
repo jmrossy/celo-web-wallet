@@ -2,14 +2,23 @@ import { utils } from 'ethers'
 import { SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { storageProvider } from 'src/features/storage/storageProvider'
-import {
-  AccountData,
-  AccountDataWhitelist,
-  AccountsData,
-} from 'src/features/wallet/management/types'
 import { isValidDerivationPath } from 'src/features/wallet/utils'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
+
+interface AccountData {
+  address: string
+  type: SignerType
+  derivationPath: string
+  // accountContract: {
+  //   isRegistered: boolean
+  //   voteSignerFor: string | null
+  //   lastUpdated: number | null
+  // }
+  encryptedMnemonic?: string // Only SignerType.local accounts will have this
+}
+const AccountDataWhitelist = ['address', 'type', 'derivationPath', 'encryptedMnemonic']
+type AccountsData = Array<AccountData>
 
 // This lock may not be necessary because storage writes/reads are synchronous
 // but adding a simple module-level lock just to be cautious
@@ -47,12 +56,7 @@ function getFilePath(file: AccountFile): string {
   else return STORAGE_PATHS.browser[file]
 }
 
-export function loadAccounts() {
-  //TODO
-}
-
-export function listAccounts() {
-  // TODO transform data here?
+export function getAccounts() {
   return getAccountsData()
 }
 
@@ -97,6 +101,15 @@ export function removeAccount(address: string) {
 
     accountsMetadata.splice(index, 1)
     setAccountsData(accountsMetadata)
+  } finally {
+    releaseLock()
+  }
+}
+
+export function removeAllAccounts() {
+  try {
+    acquireLock()
+    setAccountsData([])
   } finally {
     releaseLock()
   }

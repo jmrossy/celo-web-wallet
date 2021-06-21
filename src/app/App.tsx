@@ -31,15 +31,15 @@ import { SettingsScreen } from 'src/features/settings/SettingsScreen'
 import { ExploreValidatorsScreen } from 'src/features/validators/ExploreValidatorsScreen'
 import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmationScreen'
 import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
+import { AccountsNavigator } from 'src/features/wallet/accounts/AccountsNavigator'
+import { AddAccountScreen } from 'src/features/wallet/accounts/AddAccountScreen'
+import { AddCreateScreen } from 'src/features/wallet/accounts/AddCreateScreen'
+import { AddDeriveScreen } from 'src/features/wallet/accounts/AddDeriveScreen'
+import { AddImportScreen } from 'src/features/wallet/accounts/AddImportScreen'
+import { AddLedgerScreen } from 'src/features/wallet/accounts/AddLedgerScreen'
+import { ManageAccountsScreen } from 'src/features/wallet/accounts/ManageAccountsScreen'
+import { ViewAccountScreen } from 'src/features/wallet/accounts/ViewAccountScreen'
 import { BalanceDetailsScreen } from 'src/features/wallet/balances/BalanceDetailsScreen'
-import { ViewWalletScreen } from 'src/features/wallet/details/ViewWalletScreen'
-import { AccountsNavigator } from 'src/features/wallet/management/AccountsNavigator'
-import { AddAccountScreen } from 'src/features/wallet/management/AddAccountScreen'
-import { AddCreateScreen } from 'src/features/wallet/management/AddCreateScreen'
-import { AddDeriveScreen } from 'src/features/wallet/management/AddDeriveScreen'
-import { AddImportScreen } from 'src/features/wallet/management/AddImportScreen'
-import { AddLedgerScreen } from 'src/features/wallet/management/AddLedgerScreen'
-import { ManageAccountsScreen } from 'src/features/wallet/management/ManageAccountsScreen'
 import { WalletConnectStatusBox } from 'src/features/walletConnect/WalletConnectStatusBox'
 import { useBrowserFeatureChecks } from 'src/utils/browsers'
 
@@ -88,8 +88,7 @@ export const App = () => {
               <Route path="governance" element={<GovernanceFormScreen />} />
               <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
               <Route path="balances" element={<BalanceDetailsScreen />} />
-              <Route path="wallet" element={<ViewWalletScreen />} />
-              <Route path="settings" element={<SettingsScreen />} />
+              <Route path="account" element={<ViewAccountScreen />} />
               <Route path="accounts" element={<AccountsNavigator />}>
                 <Route path="/" element={<ManageAccountsScreen />} />
                 <Route path="add" element={<AddAccountScreen />} />
@@ -98,6 +97,7 @@ export const App = () => {
                 <Route path="import" element={<AddImportScreen />} />
                 <Route path="ledger" element={<AddLedgerScreen />} />
               </Route>
+              <Route path="settings" element={<SettingsScreen />} />
             </Route>
 
             <Route path="/setup" element={<OnboardingNavigator />}>

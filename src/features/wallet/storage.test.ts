@@ -1,5 +1,10 @@
 import { SignerType } from 'src/blockchain/signer'
-import { addAccount, listAccounts, removeAccount } from 'src/features/wallet/storage'
+import {
+  addAccount,
+  getAccounts,
+  removeAccount,
+  removeAllAccounts,
+} from 'src/features/wallet/storage'
 
 const TEST_ADDRESS1 = '0x35b74Ed5038bf0488Ff33bD9819b9D12D10A7560'
 const DERIVATION_PATH1 = "m/44'/52752'/0'/0/0"
@@ -22,11 +27,11 @@ const ACCOUNT2 = {
 describe('Wallet Storage', () => {
   it('Adds a local account', () => {
     addAccount(ACCOUNT1)
-    expect(listAccounts()).toEqual([ACCOUNT1])
+    expect(getAccounts()).toEqual([ACCOUNT1])
   })
   it('Adds a ledger account', () => {
     addAccount(ACCOUNT2)
-    expect(listAccounts()).toEqual([ACCOUNT1, ACCOUNT2])
+    expect(getAccounts()).toEqual([ACCOUNT1, ACCOUNT2])
   })
   it('Rejects invalid accounts', () => {
     // Duplicate account
@@ -56,6 +61,10 @@ describe('Wallet Storage', () => {
       /* Expected */
     }
     removeAccount(TEST_ADDRESS2)
-    expect(listAccounts()).toEqual([ACCOUNT1])
+    expect(getAccounts()).toEqual([ACCOUNT1])
+  })
+  it('Removes all accounts', () => {
+    removeAllAccounts()
+    expect(getAccounts()).toEqual([])
   })
 })
