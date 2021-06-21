@@ -27,8 +27,7 @@ export function ImportChoiceScreen() {
       <h1 css={Font.h1Green}>Import Your Celo Account</h1>
       <Box direction="row" align="center" justify="center" margin="0 0 0 2em">
         <p css={style.description}>
-          To import your account, use your secret Account Key (seed phrase) or a Ledger hardware
-          wallet.{' '}
+          To import your account, use your Account Key (seed phrase) or a Ledger hardware wallet.{' '}
         </p>
         <HelpIcon
           width="1.5em"
@@ -69,7 +68,7 @@ function HelpModal() {
 const style: Stylesheet = {
   description: {
     ...onboardingStyles.description,
-    maxWidth: 'calc(min(70vw, 22em))',
+    maxWidth: 'calc(min(70vw, 21em))',
   },
   buttonContainer: {
     marginTop: '2em',

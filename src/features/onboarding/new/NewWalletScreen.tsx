@@ -1,82 +1,69 @@
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
 import { config } from 'src/config'
+import { NULL_ADDRESS } from 'src/consts'
 import { WebWalletWarning } from 'src/features/download/WebWalletWarning'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { AccountDetails } from 'src/features/wallet/accounts/AccountDetails'
-import { createWalletActions, createWalletSagaName } from 'src/features/wallet/createWallet'
-import { resetWallet } from 'src/features/wallet/walletSlice'
+import { createRandomAccount } from 'src/features/wallet/manager'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { logger } from 'src/utils/logger'
-import { SagaStatus } from 'src/utils/saga'
+
+interface Account {
+  address: string
+  derivationPath: string
+  mnemonic: string
+}
 
 export function NewWalletScreen() {
   const [hasShownWarning, setHasShownWarning] = useState(config.isElectron)
-
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-
-  const address = useSelector((s: RootState) => s.wallet.address)
+  const [account, setAccount] = useState<Account | null>(null)
+  const addressInStore = useSelector((s: RootState) => s.wallet.address)
 
   useEffect(() => {
-    dispatch(createWalletActions.reset())
-
-    if (address) {
-      logger.warn('Attempting to create new address when one is already assigned')
-      dispatch(resetWallet())
-    }
-
+    if (addressInStore) throw new Error('Account already exists in store')
     // For smoother loading render
     setTimeout(() => {
-      dispatch(createWalletActions.trigger())
+      const newAccount = createRandomAccount()
+      if (!newAccount) throw new Error('Unable to create new random account')
+      setAccount(newAccount)
     }, 1000)
-  }, [])
+  }, [addressInStore])
 
-  const status = useSagaStatus(
-    createWalletSagaName,
-    'Error Creating Wallet',
-    'Something went wrong when creating your new wallet, sorry! Please try again.',
-    undefined,
-    false
-  )
-
+  const navigate = useNavigate()
   const onClickContinue = () => {
     navigate('/setup/set-pin', { state: { pageNumber: 3 } })
   }
 
-  const isLoading = !address || !status || status === SagaStatus.Started
-
   return (
     <OnboardingScreenFrame current={2} total={3}>
       <h1 css={style.header}>Your New Celo Account</h1>
-      {!hasShownWarning && (
+      {hasShownWarning ? (
         <WebWalletWarning type="create" onClose={() => setHasShownWarning(true)} />
-      )}
-      {hasShownWarning && (
+      ) : (
         <>
           <div css={style.container}>
-            <div css={isLoading ? style.contentLoading : null}>
-              <AccountDetails />
-            </div>
-            {isLoading && (
-              <div css={style.spinner}>
-                <Spinner />
+            {account ? (
+              <div>
+                <AccountDetails address={account.address} mnemonic={account.mnemonic} />
               </div>
+            ) : (
+              <>
+                <div css={style.contentLoading}>
+                  <AccountDetails address={NULL_ADDRESS} />
+                </div>
+                <div css={style.spinner}>
+                  <Spinner />
+                </div>
+              </>
             )}
           </div>
-          <Button
-            size="l"
-            onClick={onClickContinue}
-            margin={'3em 0 0 0'}
-            disabled={status !== SagaStatus.Success || !address}
-          >
+          <Button size="l" onClick={onClickContinue} margin="3em 0 0 0" disabled={!account}>
             Continue
           </Button>
         </>

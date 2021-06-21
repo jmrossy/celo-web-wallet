@@ -9,7 +9,7 @@ export function useAddressQrCodeModal() {
   return (address: string) => {
     const data = encodeAddressForQr(address)
     showModalWithContent({
-      head: 'Your Wallet Address',
+      head: 'Your Account Address',
       content: <AddressQrCodeModal address={address} data={data} />,
     })
   }

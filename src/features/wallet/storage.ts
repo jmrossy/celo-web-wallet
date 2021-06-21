@@ -16,8 +16,9 @@ interface AccountData {
   //   lastUpdated: number | null
   // }
   encryptedMnemonic?: string // Only SignerType.local accounts will have this
+  locale?: string // Not yet used, needed when non-english mnemonics are supported
 }
-const AccountDataWhitelist = ['address', 'type', 'derivationPath', 'encryptedMnemonic']
+const AccountDataWhitelist = ['address', 'type', 'derivationPath', 'encryptedMnemonic', 'locale']
 type AccountsData = Array<AccountData>
 
 // This lock may not be necessary because storage writes/reads are synchronous
@@ -172,11 +173,12 @@ function validateAccount(account: AccountData) {
     throw new Error(`Invalid format for account: ${reason}`)
   }
   if (!account) error('missing account')
-  const { address, type, derivationPath, encryptedMnemonic } = account
+  const { address, type, derivationPath, encryptedMnemonic, locale } = account
   if (!address || !utils.isAddress(address)) error('invalid address')
   if (!type || !Object.values(SignerType).includes(type)) error('invalid signer type')
   if (!derivationPath || !isValidDerivationPath(derivationPath)) error('invalid derivation path')
   if (type === SignerType.Local && !encryptedMnemonic) error('local account is missing mnemonic')
+  if (locale && locale !== 'en') error('only english locale currently supported')
   // TODO cleanup?
   // if (!accountContract) error('missing accountContract')
   // const { isRegistered, voteSignerFor, lastUpdated } = accountContract

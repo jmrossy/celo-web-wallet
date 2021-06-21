@@ -1,29 +1,21 @@
-import { getSigner, isSignerSet, SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
 import { HrDivider } from 'src/components/HrDivider'
 import { Identicon } from 'src/components/Identicon'
 import { Mnemonic } from 'src/components/Mnemonic'
 import { PLACEHOLDER_MNEMONIC } from 'src/consts'
-import { useWalletAddress } from 'src/features/wallet/hooks'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
-export function AccountDetails() {
-  const address = useWalletAddress()
-  const isWalletReady = address && isSignerSet()
+interface Props {
+  address: string
+  mnemonic?: string
+  type?: SignerType
+}
 
-  let mnemonicPhrase: string = PLACEHOLDER_MNEMONIC
-  let mnemonicUnavailable = false
-  if (isWalletReady) {
-    const signer = getSigner()
-    if (signer.type === SignerType.Local) {
-      mnemonicPhrase = signer.signer.mnemonic.phrase
-    } else if (signer.type === SignerType.Ledger) {
-      mnemonicUnavailable = true
-    }
-  }
-
+export function AccountDetails({ address, mnemonic, type }: Props) {
+  const isLocal = type !== SignerType.Ledger
   return (
     <div css={style.container}>
       <div css={style.itemContainer}>
@@ -59,11 +51,11 @@ export function AccountDetails() {
         <div css={style.description}>
           <strong>Keep this phrase secret and safe.</strong>
           <br />
-          {!mnemonicUnavailable && 'You can retrieve it again later.'}
+          {isLocal && 'You can retrieve it again later.'}
         </div>
       </div>
       <div css={style.itemContainer}>
-        <Mnemonic mnemonic={mnemonicPhrase} unavailable={mnemonicUnavailable} />
+        <Mnemonic mnemonic={mnemonic || PLACEHOLDER_MNEMONIC} unavailable={!isLocal} />
       </div>
     </div>
   )
