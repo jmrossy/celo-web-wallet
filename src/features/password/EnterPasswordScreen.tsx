@@ -8,14 +8,14 @@ import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import {
-  pincodeActions,
-  PincodeParams,
-  pincodeSagaName,
+  passwordActions,
+  PasswordParams,
+  passwordSagaName,
   validate,
-} from 'src/features/pincode/pincode'
-import { PincodeInput, PincodeInputType } from 'src/features/pincode/PincodeInput'
-import { PincodeAction } from 'src/features/pincode/types'
-import { secretTypeToLabel, useSecretType } from 'src/features/pincode/utils'
+} from 'src/features/password/password'
+import { PasswordInput, PasswordInputType } from 'src/features/password/PasswordInput'
+import { PasswordAction } from 'src/features/password/types'
+import { secretTypeToLabel, useSecretType } from 'src/features/password/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -23,36 +23,36 @@ import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
-const initialValues = { action: PincodeAction.Unlock, value: '' }
+const initialValues = { action: PasswordAction.Unlock, value: '' }
 
-export function EnterPincodeScreen() {
+export function EnterPasswordScreen() {
   const address = useSelector((s: RootState) => s.wallet.address)
 
   const secretType = useSecretType()
   const [label] = secretTypeToLabel(secretType)
   const inputType =
-    secretType === 'pincode' ? PincodeInputType.CurrentPincode : PincodeInputType.CurrentPassword
+    secretType === 'pincode' ? PasswordInputType.CurrentPincode : PasswordInputType.CurrentPassword
 
   const dispatch = useDispatch()
 
-  const onSubmit = (values: PincodeParams) => {
+  const onSubmit = (values: PasswordParams) => {
     if (address) {
-      dispatch(pincodeActions.trigger({ ...values, type: secretType }))
+      dispatch(passwordActions.trigger({ ...values, type: secretType }))
     } else {
       logger.error('No address found, possible redux-persist bug. Initiating recovery.')
       dispatch(
-        pincodeActions.trigger({
+        passwordActions.trigger({
           value: values.value,
-          action: PincodeAction.UnlockAndRecover,
+          action: PasswordAction.UnlockAndRecover,
           type: secretType,
         })
       )
     }
   }
 
-  const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
+  const validateForm = (values: PasswordParams) => validate({ ...values, type: secretType })
 
-  const { values, errors, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<PasswordParams>(
     initialValues,
     onSubmit,
     validateForm
@@ -61,7 +61,7 @@ export function EnterPincodeScreen() {
   const onLogout = useLogoutModal()
 
   const status = useSagaStatus(
-    pincodeSagaName,
+    passwordSagaName,
     'Error Unlocking Account',
     `Unable to unlock your account, please check your ${label} and try again.`
   )
@@ -75,7 +75,7 @@ export function EnterPincodeScreen() {
       {address && <Address address={address} />}
       <Box direction="column" align="center" margin="1.75em 0 0 0">
         <form onSubmit={handleSubmit}>
-          <PincodeInput
+          <PasswordInput
             type={inputType}
             name="value"
             value={values.value}

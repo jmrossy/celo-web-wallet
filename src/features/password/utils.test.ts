@@ -3,7 +3,7 @@ import {
   PasswordStrength,
   validatePasswordValue,
   validatePinValue,
-} from 'src/features/pincode/utils'
+} from 'src/features/password/utils'
 
 describe('pincode validation', () => {
   it('Rejects invalid pins', () => {

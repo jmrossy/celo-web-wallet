@@ -16,7 +16,7 @@ export function isWalletInStorage() {
   return storageProvider.hasItem(getWalletPath())
 }
 
-export async function saveWallet(pincode: string, override = false) {
+export async function saveWallet(password: string, override = false) {
   try {
     const signer = getSigner()
     if (!signer) throw new Error('No signer found')
@@ -28,7 +28,7 @@ export async function saveWallet(pincode: string, override = false) {
     if (!mnemonic) throw new Error('No signer mnemonic found')
     if (!isValidMnemonic(mnemonic)) throw new Error('Attempting to save invalid mnemonic')
 
-    const encryptedMnemonic = await encryptMnemonic(mnemonic, pincode)
+    const encryptedMnemonic = await encryptMnemonic(mnemonic, password)
 
     storageProvider.setItem(getWalletPath(), encryptedMnemonic, override)
 
@@ -44,7 +44,7 @@ export async function saveWallet(pincode: string, override = false) {
   }
 }
 
-export async function loadWallet(pincode: string) {
+export async function loadWallet(password: string) {
   try {
     const encryptedMnemonic = storageProvider.getItem(getWalletPath())
     if (!encryptedMnemonic) {
@@ -52,7 +52,7 @@ export async function loadWallet(pincode: string) {
       return null
     }
 
-    const mnemonic = await decryptMnemonic(encryptedMnemonic, pincode)
+    const mnemonic = await decryptMnemonic(encryptedMnemonic, password)
     return mnemonic
   } catch (error) {
     logger.error('Failed to load wallet from storage', error)

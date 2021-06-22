@@ -10,7 +10,7 @@ import { PlusIcon } from 'src/components/icons/Plus'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MAX_SEND_TOKEN_SIZE, MAX_SEND_TOKEN_SIZE_LEDGER } from 'src/consts'
-import { pincodeActions } from 'src/features/pincode/pincode'
+import { passwordActions } from 'src/features/password/password'
 import { setTxSizeLimitEnabled } from 'src/features/settings/settingsSlice'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
@@ -27,7 +27,7 @@ export function SettingsScreen() {
   }
 
   const onClickChangePassword = () => {
-    dispatch(pincodeActions.reset())
+    dispatch(passwordActions.reset())
     navigate('/change-pin')
   }
 

@@ -10,6 +10,7 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { put } from 'typed-redux-saga'
 import { resetWallet, setAddress } from './walletSlice'
 
+// TODO remove
 function* createWallet() {
   yield* put(resetWallet())
   yield* put(resetFeed())

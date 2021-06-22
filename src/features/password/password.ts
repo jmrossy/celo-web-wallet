@@ -4,12 +4,12 @@ import { isSignerSet, SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
-import { PincodeAction, SecretType } from 'src/features/pincode/types'
+import { PasswordAction, SecretType } from 'src/features/password/types'
 import {
   secretTypeToLabel,
   validatePasswordValue,
   validatePinValue,
-} from 'src/features/pincode/utils'
+} from 'src/features/password/utils'
 import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage_v1'
 import {
@@ -23,15 +23,15 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
-export interface PincodeParams {
-  action: PincodeAction
+export interface PasswordParams {
+  action: PasswordAction
   value: string
   valueConfirm?: string
   newValue?: string
   type?: SecretType
 }
 
-export function validate(params: PincodeParams): ErrorState {
+export function validate(params: PasswordParams): ErrorState {
   const { action, value, newValue, valueConfirm, type } = params
   const isPin = type === 'pincode'
 
@@ -41,7 +41,7 @@ export function validate(params: PincodeParams): ErrorState {
     return invalidInput('value', 'Value is required')
   }
 
-  if (action === PincodeAction.Set) {
+  if (action === PasswordAction.Set) {
     if (isPin) {
       errors = { ...errors, ...validatePinValue(value, 'value') }
     } else {
@@ -54,7 +54,7 @@ export function validate(params: PincodeParams): ErrorState {
     }
   }
 
-  if (action === PincodeAction.Change) {
+  if (action === PasswordAction.Change) {
     if (!newValue) {
       return invalidInput('newValue', 'New value is required')
     }
@@ -107,37 +107,37 @@ function updateUnlockedTime() {
   accountUnlockedTime = Date.now()
 }
 
-function* pincode(params: PincodeParams) {
+function* password(params: PasswordParams) {
   validateOrThrow(() => validate(params), 'Invalid Pincode or Password')
 
   const { action, value, newValue, type } = params
   if (!type) throw new Error('Missing secret type')
 
-  if (action === PincodeAction.Set) {
-    yield* call(setPin, value, type)
-  } else if (action === PincodeAction.Unlock) {
+  if (action === PasswordAction.Set) {
+    yield* call(setPassword, value, type)
+  } else if (action === PasswordAction.Unlock) {
     yield* call(unlockWallet, value, type)
-  } else if (action === PincodeAction.UnlockAndRecover) {
+  } else if (action === PasswordAction.UnlockAndRecover) {
     yield* call(unlockAndRecoverWallet, value, type)
-  } else if (action === PincodeAction.Change) {
+  } else if (action === PasswordAction.Change) {
     if (!newValue) throw new Error('Missing new value')
-    yield* call(changePin, value, newValue, type)
+    yield* call(changePassword, value, newValue, type)
   }
 }
 
 export const {
-  name: pincodeSagaName,
-  wrappedSaga: pincodeSaga,
-  reducer: pincodeReducer,
-  actions: pincodeActions,
-} = createMonitoredSaga<PincodeParams>(pincode, 'pincode')
+  name: passwordSagaName,
+  wrappedSaga: passwordSaga,
+  reducer: passwordReducer,
+  actions: passwordActions,
+} = createMonitoredSaga<PasswordParams>(password, 'password')
 
-function* setPin(pin: string, type: SecretType) {
+function* setPassword(password: string, type: SecretType) {
   if (!isSignerSet()) {
     throw new Error('Account not setup yet')
   }
 
-  yield* call(saveWallet, pin)
+  yield* call(saveWallet, password)
   yield* put(setSecretType(type))
   yield* put(setWalletUnlocked(true))
 
@@ -180,17 +180,17 @@ function* unlockAndRecoverWallet(pin: string, type: SecretType) {
   yield* call(unlockWallet, pin, type)
 }
 
-function* changePin(existingPin: string, newPin: string, type: SecretType) {
+function* changePassword(existingPass: string, newPass: string, type: SecretType) {
   if (!isSignerSet()) {
     throw new Error('Account not setup yet')
   }
 
-  const mnemonic = yield* call(loadWallet, existingPin)
+  const mnemonic = yield* call(loadWallet, existingPass)
   if (!mnemonic) {
     throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
   }
 
-  yield* call(saveWallet, newPin, true)
+  yield* call(saveWallet, newPass, true)
   yield* put(setSecretType(type))
   yield* put(setWalletUnlocked(true))
 

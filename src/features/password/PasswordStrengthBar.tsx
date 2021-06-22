@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { SecretType } from 'src/features/pincode/types'
-import { computePasswordStrength, PasswordStrength } from 'src/features/pincode/utils'
+import { SecretType } from 'src/features/password/types'
+import { computePasswordStrength, PasswordStrength } from 'src/features/password/utils'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
 

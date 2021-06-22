@@ -52,11 +52,11 @@ import {
   lockTokenSagaName,
 } from 'src/features/lock/lockToken'
 import {
-  pincodeActions,
-  pincodeReducer,
-  pincodeSaga,
-  pincodeSagaName,
-} from 'src/features/pincode/pincode'
+  passwordActions,
+  passwordReducer,
+  passwordSaga,
+  passwordSagaName,
+} from 'src/features/password/password'
 import {
   sendTokenActions,
   sendTokenReducer,
@@ -146,10 +146,10 @@ export const monitoredSagas: {
     reducer: exchangeTokenReducer,
     actions: exchangeTokenActions,
   },
-  [pincodeSagaName]: {
-    saga: pincodeSaga,
-    reducer: pincodeReducer,
-    actions: pincodeActions,
+  [passwordSagaName]: {
+    saga: passwordSaga,
+    reducer: passwordReducer,
+    actions: passwordActions,
   },
   [importWalletSagaName]: {
     saga: importWalletSaga,

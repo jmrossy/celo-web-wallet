@@ -4,8 +4,8 @@ import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { ScreenFrame } from 'src/components/layout/ScreenFrame'
 import { LedgerUnlockScreen } from 'src/features/ledger/LedgerUnlockScreen'
-import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
-import { useAccountLockStatus } from 'src/features/pincode/pincode'
+import { EnterPasswordScreen } from 'src/features/password/EnterPasswordScreen'
+import { useAccountLockStatus } from 'src/features/password/password'
 import { isWalletInStorage } from 'src/features/wallet/storage_v1'
 
 export function HomeNavigator() {
@@ -15,7 +15,7 @@ export function HomeNavigator() {
   const isConnected = useSelector((s: RootState) => s.wallet.isConnected, shallowEqual)
   if (isConnected === false) throw new Error('Unable to connect to network.')
 
-  // If pin has been entered already
+  // If password has been entered already
   if (isUnlocked) {
     return (
       <ScreenFrame>
@@ -26,7 +26,7 @@ export function HomeNavigator() {
 
   // If wallet exists in storage but is not unlocked yet
   if (isWalletInStorage()) {
-    return <EnterPincodeScreen />
+    return <EnterPasswordScreen />
   }
 
   // If a wallet has been found in redux store and it's of type Ledger

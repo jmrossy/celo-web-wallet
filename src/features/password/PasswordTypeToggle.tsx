@@ -7,7 +7,8 @@ interface Props {
   margin?: string
 }
 
-export function PincodeTypeToggle(props: Props) {
+// Not currently used as pincodes were phased out
+export function PasswordTypeToggle(props: Props) {
   const { margin, onToggle } = props
   return (
     <div css={{ ...style.buttonToggleContainer, margin }}>

@@ -1,4 +1,4 @@
-export enum PincodeAction {
+export enum PasswordAction {
   Set,
   Unlock,
   UnlockAndRecover,

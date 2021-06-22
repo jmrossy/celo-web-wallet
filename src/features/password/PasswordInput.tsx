@@ -5,7 +5,7 @@ import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
-export enum PincodeInputType {
+export enum PasswordInputType {
   NewPincode,
   CurrentPincode,
   NewPassword,
@@ -14,7 +14,7 @@ export enum PincodeInputType {
 
 interface Props {
   name: string
-  type: PincodeInputType
+  type: PasswordInputType
   value?: string
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   error?: boolean
@@ -22,7 +22,7 @@ interface Props {
   autoFocus?: boolean
 }
 
-export function PincodeInput(props: Props) {
+export function PasswordInput(props: Props) {
   const { name, type, value, onChange, error, helpText, autoFocus } = props
 
   const { placeholder, autoComplete, inputMode } = getPropsForInputType(type)
@@ -59,22 +59,22 @@ export function PincodeInput(props: Props) {
   )
 }
 
-function getPropsForInputType(type: PincodeInputType) {
-  if (type === PincodeInputType.NewPincode || type === PincodeInputType.CurrentPincode) {
+function getPropsForInputType(type: PasswordInputType) {
+  if (type === PasswordInputType.NewPincode || type === PasswordInputType.CurrentPincode) {
     return {
       placeholder: '123456',
       inputMode: 'numeric',
       autoComplete: 'off',
     }
   }
-  if (type === PincodeInputType.NewPassword) {
+  if (type === PasswordInputType.NewPassword) {
     return {
       placeholder: undefined,
       inputMode: 'text',
       autoComplete: 'new-password',
     }
   }
-  if (type === PincodeInputType.CurrentPassword) {
+  if (type === PasswordInputType.CurrentPassword) {
     return {
       placeholder: undefined,
       inputMode: 'text',
@@ -85,12 +85,12 @@ function getPropsForInputType(type: PincodeInputType) {
   throw new Error(`Unsupported Pincode Type: ${type}`)
 }
 
-export function PincodeInputRow(props: Props & { label: string }) {
+export function PasswordInputRow(props: Props & { label: string }) {
   const { label, ...passThroughProps } = props
   return (
     <Box align="center" styles={style.inputContainer}>
       <span css={style.inputLabel}>{label}</span>
-      <PincodeInput {...passThroughProps} />
+      <PasswordInput {...passThroughProps} />
     </Box>
   )
 }

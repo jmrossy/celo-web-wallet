@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
-import { SecretType } from 'src/features/pincode/types'
+import { SecretType } from 'src/features/password/types'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
 const PIN_LENGTH = 6

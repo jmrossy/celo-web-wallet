@@ -7,11 +7,28 @@ import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
+import { Mnemonic } from 'src/features/wallet/mnemonic'
 import { normalizeMnemonic } from 'src/features/wallet/utils'
 import { clearWalletCache, setAddress } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { put, select } from 'typed-redux-saga'
+
+// Used to temporarily hold keys for flows where
+// account creation/import is separate step than password set
+// Prefer to store them here than pass them via nav state
+let pendingAccountMnemonic: Mnemonic | null = null
+
+export function setPendingAccount(mnemonic: string, derivationPath: string, locale?: string) {
+  if (pendingAccountMnemonic) logger.warn('Overwriting existing pending account')
+  pendingAccountMnemonic = Mnemonic.from(mnemonic, derivationPath, locale)
+}
+
+export function getPendingAccount() {
+  const mnemonic = pendingAccountMnemonic
+  pendingAccountMnemonic = null
+  return mnemonic
+}
 
 export function createRandomAccount() {
   try {

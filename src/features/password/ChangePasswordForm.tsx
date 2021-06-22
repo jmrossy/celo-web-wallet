@@ -6,45 +6,45 @@ import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import {
-  pincodeActions,
-  PincodeParams,
-  pincodeSagaName,
+  passwordActions,
+  PasswordParams,
+  passwordSagaName,
   validate,
-} from 'src/features/pincode/pincode'
-import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
-import { PincodeAction, SecretType } from 'src/features/pincode/types'
-import { secretTypeToLabel, useSecretType } from 'src/features/pincode/utils'
+} from 'src/features/password/password'
+import { PasswordInputRow, PasswordInputType } from 'src/features/password/PasswordInput'
+import { PasswordAction, SecretType } from 'src/features/password/types'
+import { secretTypeToLabel, useSecretType } from 'src/features/password/utils'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
-const initialValues = { action: PincodeAction.Change, value: '', newValue: '', valueConfirm: '' }
+const initialValues = { action: PasswordAction.Change, value: '', newValue: '', valueConfirm: '' }
 
-export function ChangePincodeForm() {
+export function ChangePasswordForm() {
   const currentSecretType = useSecretType()
   const [currentLabel, currentLabelC] = secretTypeToLabel(currentSecretType)
   const currentInputType =
     currentSecretType === 'pincode'
-      ? PincodeInputType.CurrentPincode
-      : PincodeInputType.CurrentPassword
+      ? PasswordInputType.CurrentPincode
+      : PasswordInputType.CurrentPassword
 
   const [secretType] = useState<SecretType>('password')
   const [, newLabelC] = secretTypeToLabel(secretType)
   const newInputType =
-    secretType === 'pincode' ? PincodeInputType.NewPincode : PincodeInputType.NewPassword
+    secretType === 'pincode' ? PasswordInputType.NewPincode : PasswordInputType.NewPassword
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const onSubmit = (values: PincodeParams) => {
-    dispatch(pincodeActions.trigger({ ...values, type: secretType }))
+  const onSubmit = (values: PasswordParams) => {
+    dispatch(passwordActions.trigger({ ...values, type: secretType }))
   }
 
-  const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
+  const validateForm = (values: PasswordParams) => validate({ ...values, type: secretType })
 
-  const { values, errors, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<PasswordParams>(
     initialValues,
     onSubmit,
     validateForm
@@ -71,7 +71,7 @@ export function ChangePincodeForm() {
   }
 
   const status = useSagaStatus(
-    pincodeSagaName,
+    passwordSagaName,
     `Error Changing ${currentLabelC}`,
     'Please check your values and try again.',
     onSuccess
@@ -81,7 +81,7 @@ export function ChangePincodeForm() {
     <Box direction="column" align="center">
       <form onSubmit={handleSubmit}>
         <div css={style.formContent}>
-          <PincodeInputRow
+          <PasswordInputRow
             type={currentInputType}
             label={`Current ${currentLabelC}`}
             name="value"
@@ -90,8 +90,8 @@ export function ChangePincodeForm() {
             autoFocus={true}
             {...errors['value']}
           />
-          {/* <PincodeTypeToggle onToggle={onToggleSecretType} margin="1.5em 0 0 8em" /> */}
-          <PincodeInputRow
+          {/* <PasswordTypeToggle onToggle={onToggleSecretType} margin="1.5em 0 0 8em" /> */}
+          <PasswordInputRow
             type={newInputType}
             label={`New ${newLabelC}`}
             name="newValue"
@@ -99,7 +99,7 @@ export function ChangePincodeForm() {
             onChange={handleChange}
             {...errors['newValue']}
           />
-          <PincodeInputRow
+          <PasswordInputRow
             type={newInputType}
             label={`Confirm ${newLabelC}`}
             name="valueConfirm"

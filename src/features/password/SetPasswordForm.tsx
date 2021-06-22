@@ -7,16 +7,16 @@ import { ModalAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
-import { PasswordStrengthBar } from 'src/features/pincode/PasswordStrengthBar'
 import {
-  pincodeActions,
-  PincodeParams,
-  pincodeSagaName,
+  passwordActions,
+  PasswordParams,
+  passwordSagaName,
   validate,
-} from 'src/features/pincode/pincode'
-import { PincodeInputRow, PincodeInputType } from 'src/features/pincode/PincodeInput'
-import { PincodeAction, SecretType } from 'src/features/pincode/types'
-import { secretTypeToLabel } from 'src/features/pincode/utils'
+} from 'src/features/password/password'
+import { PasswordInputRow, PasswordInputType } from 'src/features/password/PasswordInput'
+import { PasswordStrengthBar } from 'src/features/password/PasswordStrengthBar'
+import { PasswordAction, SecretType } from 'src/features/password/types'
+import { secretTypeToLabel } from 'src/features/password/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -24,19 +24,19 @@ import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
-const initialValues = { action: PincodeAction.Set, value: '', valueConfirm: '' }
+const initialValues = { action: PasswordAction.Set, value: '', valueConfirm: '' }
 
-export function SetPincodeForm() {
+export function SetPasswordForm() {
   const [secretType] = useState<SecretType>('password')
   const [label, labelC] = secretTypeToLabel(secretType)
   const inputType =
-    secretType === 'pincode' ? PincodeInputType.NewPincode : PincodeInputType.NewPassword
+    secretType === 'pincode' ? PasswordInputType.NewPincode : PasswordInputType.NewPassword
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { showModal, closeModal } = useModal()
 
-  const onSubmit = (values: PincodeParams) => {
+  const onSubmit = (values: PasswordParams) => {
     const backAction = {
       key: 'back',
       label: 'Back',
@@ -49,7 +49,7 @@ export function SetPincodeForm() {
     }
     const onActionClick = (action: ModalAction) => {
       if (action.key === 'confirm') {
-        dispatch(pincodeActions.trigger({ ...values, type: secretType }))
+        dispatch(passwordActions.trigger({ ...values, type: secretType }))
       }
       closeModal()
     }
@@ -62,9 +62,9 @@ export function SetPincodeForm() {
     })
   }
 
-  const validateForm = (values: PincodeParams) => validate({ ...values, type: secretType })
+  const validateForm = (values: PasswordParams) => validate({ ...values, type: secretType })
 
-  const { values, errors, handleChange, handleSubmit } = useCustomForm<PincodeParams>(
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<PasswordParams>(
     initialValues,
     onSubmit,
     validateForm
@@ -79,7 +79,7 @@ export function SetPincodeForm() {
     navigate('/', { replace: true })
   }
   const status = useSagaStatus(
-    pincodeSagaName,
+    passwordSagaName,
     `Error Setting ${labelC}`,
     `Something went wrong when setting your ${label}, sorry! Please try again.`,
     onSuccess
@@ -88,11 +88,11 @@ export function SetPincodeForm() {
   return (
     <Box direction="column" align="center">
       <div css={style.description}>{`Don't lose this ${label}, it unlocks your account!`}</div>
-      {/* <PincodeTypeToggle onToggle={onToggleSecretType} /> */}
+      {/* <PasswordTypeToggle onToggle={onToggleSecretType} /> */}
       <form onSubmit={handleSubmit}>
         <Box direction="column" align="center" margin="0.5em 0 0 0">
           <div css={style.inputContainer}>
-            <PincodeInputRow
+            <PasswordInputRow
               type={inputType}
               label={`Enter ${labelC}`}
               name="value"
@@ -101,7 +101,7 @@ export function SetPincodeForm() {
               autoFocus={true}
               {...errors['value']}
             />
-            <PincodeInputRow
+            <PasswordInputRow
               type={inputType}
               label={`Confirm ${labelC}`}
               name="valueConfirm"

@@ -22,9 +22,9 @@ import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletS
 import { LedgerImportScreen } from 'src/features/onboarding/import/LedgerImportScreen'
 import { NewWalletScreen } from 'src/features/onboarding/new/NewWalletScreen'
 import { OnboardingNavigator } from 'src/features/onboarding/OnboardingNavigator'
-import { SetPincodeScreen } from 'src/features/onboarding/pincode/SetPincodeScreen'
+import { SetPasswordScreen } from 'src/features/onboarding/password/SetPasswordScreen'
 import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
-import { ChangePincodeScreen } from 'src/features/pincode/ChangePincodeScreen'
+import { ChangePasswordScreen } from 'src/features/password/ChangePasswordScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { SettingsScreen } from 'src/features/settings/SettingsScreen'
@@ -106,10 +106,10 @@ export const App = () => {
               <Route path="existing" element={<ImportChoiceScreen />} />
               <Route path="import" element={<ImportWalletScreen />} />
               <Route path="ledger" element={<LedgerImportScreen />} />
-              <Route path="set-pin" element={<SetPincodeScreen />} />
+              <Route path="set-pin" element={<SetPasswordScreen />} />
             </Route>
 
-            <Route path="change-pin" element={<ChangePincodeScreen />} />
+            <Route path="change-pin" element={<ChangePasswordScreen />} />
 
             {/* To faciliatate testing */}
             {/* <Route path="/dev/home" element={<HomeScreen />} />

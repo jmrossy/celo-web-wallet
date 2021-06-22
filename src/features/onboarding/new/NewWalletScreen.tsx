@@ -9,7 +9,7 @@ import { NULL_ADDRESS } from 'src/consts'
 import { WebWalletWarning } from 'src/features/download/WebWalletWarning'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { AccountDetails } from 'src/features/wallet/accounts/AccountDetails'
-import { createRandomAccount } from 'src/features/wallet/manager'
+import { createRandomAccount, setPendingAccount } from 'src/features/wallet/manager'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -37,6 +37,8 @@ export function NewWalletScreen() {
 
   const navigate = useNavigate()
   const onClickContinue = () => {
+    if (!account) return
+    setPendingAccount(account.mnemonic, account.derivationPath)
     navigate('/setup/set-pin', { state: { pageNumber: 3 } })
   }
 
