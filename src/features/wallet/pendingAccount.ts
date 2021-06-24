@@ -1,5 +1,5 @@
-import { utils, Wallet } from 'ethers'
-import { CELO_DERIVATION_PATH } from 'src/consts'
+import { Wallet } from 'ethers'
+import { createRandomAccount } from 'src/features/wallet/manager'
 import { normalizeMnemonic } from 'src/features/wallet/utils'
 import { logger } from 'src/utils/logger'
 
@@ -17,14 +17,11 @@ export function setPendingAccount(mnemonic: string, derivationPath: string) {
 
 export function createPendingAccount() {
   if (pendingAccount) logger.warn('Overwriting existing pending account')
-  const entropy = utils.randomBytes(32)
-  const mnemonic = utils.entropyToMnemonic(entropy)
-  const derivationPath = CELO_DERIVATION_PATH + '/0'
-  pendingAccount = Wallet.fromMnemonic(mnemonic, derivationPath)
+  pendingAccount = createRandomAccount()
   return {
     address: pendingAccount.address,
     mnemonic: pendingAccount.mnemonic.phrase,
-    derivationPath,
+    derivationPath: pendingAccount.mnemonic.path,
   }
 }
 

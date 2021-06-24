@@ -1,12 +1,10 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
-import { SignerType } from 'src/blockchain/signer'
 import { ScreenFrame } from 'src/components/layout/ScreenFrame'
-import { LedgerUnlockScreen } from 'src/features/ledger/LedgerUnlockScreen'
-import { EnterPasswordScreen } from 'src/features/password/EnterPasswordScreen'
+import { LoginScreen } from 'src/features/password/LoginScreen'
 import { useAccountLockStatus } from 'src/features/password/password'
-import { isWalletInStorage } from 'src/features/wallet/storage_v1'
+import { hasAccounts } from 'src/features/wallet/manager'
 
 export function HomeNavigator() {
   const { address, type, isUnlocked } = useAccountLockStatus()
@@ -25,14 +23,14 @@ export function HomeNavigator() {
   }
 
   // If wallet exists in storage but is not unlocked yet
-  if (isWalletInStorage()) {
-    return <EnterPasswordScreen />
+  if (hasAccounts()) {
+    return <LoginScreen />
   }
 
-  // If a wallet has been found in redux store and it's of type Ledger
-  if (address && type === SignerType.Ledger) {
-    return <LedgerUnlockScreen />
-  }
+  // // If a wallet has been found in redux store and it's of type Ledger
+  // if (address && type === SignerType.Ledger) {
+  //   return <LedgerUnlockScreen />
+  // }
 
   // Otherwise, account must not be set up yet
   return <Navigate to="/setup" replace={true} />

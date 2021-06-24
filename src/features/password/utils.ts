@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
 import { SecretType } from 'src/features/password/types'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
@@ -75,9 +73,4 @@ export function secretTypeToLabel(type: SecretType | undefined) {
     return ['password', 'Password']
   }
   throw new Error(`Invalid secret type: ${type}`)
-}
-
-export function useSecretType() {
-  const currentSecretType = useSelector((s: RootState) => s.wallet.secretType)
-  return currentSecretType ?? 'password'
 }

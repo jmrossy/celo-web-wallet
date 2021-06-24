@@ -2,25 +2,19 @@ import { shallowEqual, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { isSignerSet, SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
-import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { PasswordAction, SecretType } from 'src/features/password/types'
 import {
-	secretTypeToLabel,
-	validatePasswordValue,
-	validatePinValue
+  secretTypeToLabel,
+  validatePasswordValue,
+  validatePinValue,
 } from 'src/features/password/utils'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage_v1'
-import {
-	resetWallet,
-	setDerivationPath,
-	setSecretType,
-	setWalletUnlocked
-} from 'src/features/wallet/walletSlice'
+import { resetWallet, setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export interface PasswordParams {
   action: PasswordAction
@@ -68,7 +62,7 @@ export function validate(params: PasswordParams): ErrorState {
     if (!valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
     } else if (newValue !== valueConfirm) {
-      errors = { ...errors, ...invalidInput('valueConfirm', "New values do not match") }
+      errors = { ...errors, ...invalidInput('valueConfirm', 'New values do not match') }
     }
   }
 
@@ -137,7 +131,7 @@ function* setPassword(password: string, type: SecretType) {
   }
 
   yield* call(saveWallet, password)
-  yield* put(setSecretType(type))
+  // yield* put(setSecretType(type))
   yield* put(setWalletUnlocked(true))
 
   updateUnlockedTime()
@@ -150,7 +144,8 @@ function* unlockWallet(pin: string, type: SecretType) {
     throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
   }
 
-  const derivationPath = yield* select((s: RootState) => s.wallet.derivationPath)
+  // const derivationPath = yield* select((s: RootState) => s.wallet.derivationPath)
+  const derivationPath = 'TODO'
   if (!derivationPath) {
     throw new Error('Key found but derivation path is missing')
   }
@@ -160,7 +155,7 @@ function* unlockWallet(pin: string, type: SecretType) {
 
   // If account has not yet been imported
   if (!isSignerSet()) {
-		// TODO
+    // TODO
     // yield* call(importWallet, { mnemonic, derivationPath })
   }
   yield* put(setWalletUnlocked(true))
@@ -173,10 +168,10 @@ function* unlockWallet(pin: string, type: SecretType) {
 function* unlockAndRecoverWallet(pin: string, type: SecretType) {
   yield* put(resetWallet())
   yield* put(resetFeed())
-  yield* put(setSecretType(type))
+  // yield* put(setSecretType(type))
   // Note, this assumes the wallet was using the default Celo derivation path
   // TODO consider adding derivation path field to enter pincode screen in this recovery case.
-  yield* put(setDerivationPath(CELO_DERIVATION_PATH + '/0'))
+  // yield* put(setDerivationPath(CELO_DERIVATION_PATH + '/0'))
   yield* call(unlockWallet, pin, type)
 }
 
@@ -191,7 +186,7 @@ function* changePassword(existingPass: string, newPass: string, type: SecretType
   }
 
   yield* call(saveWallet, newPass, true)
-  yield* put(setSecretType(type))
+  // yield* put(setSecretType(type))
   yield* put(setWalletUnlocked(true))
 
   updateUnlockedTime()

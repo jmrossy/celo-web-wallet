@@ -3,10 +3,9 @@ import { createMigrate, persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import { SignerType } from 'src/blockchain/signer'
-import { SecretType } from 'src/features/password/types'
 import { Balances } from 'src/features/wallet/types'
-import { isValidDerivationPath } from 'src/features/wallet/utils'
 import { CELO, cEUR, cUSD, Token } from 'src/tokens'
+import { areAddressesEqual } from 'src/utils/addresses'
 import { assert } from 'src/utils/validation'
 
 interface Wallet {
@@ -14,17 +13,16 @@ interface Wallet {
   isUnlocked: boolean
   address: string | null
   type: SignerType | null
-  derivationPath: string | null
-  secretType: SecretType | null
+  // derivationPath: string | null
+  // secretType: SecretType | null
   balances: Balances
   account: AccountStatus
   voterBalances: Balances | null // if account is vote signer for another, balance of voter
 }
 
-interface SetWalletAction {
+interface SetAccountAction {
   address: string
   type: SignerType
-  derivationPath: string
 }
 
 // Data about status in the Account contract
@@ -39,8 +37,7 @@ export const walletInitialState: Wallet = {
   isUnlocked: false,
   address: null,
   type: null,
-  derivationPath: null,
-  secretType: null,
+  // secretType: null, // TODO still needed?
   balances: {
     tokens: {
       CELO: {
@@ -81,28 +78,38 @@ const walletSlice = createSlice({
     setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
       state.isUnlocked = action.payload
     },
-    setAddress: (state, action: PayloadAction<SetWalletAction>) => {
-      const { address, type, derivationPath } = action.payload
+    setAccount: (state, action: PayloadAction<SetAccountAction>) => {
+      const { address, type } = action.payload
+      if (state.address && areAddressesEqual(state.address, address)) return
       assert(address && address.length === 42, `Invalid address ${address}`)
-      assert(type === SignerType.Local || type === SignerType.Ledger, `Invalid type ${address}`)
-      assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
+      assert(type === SignerType.Local || type === SignerType.Ledger, `Invalid type ${type}`)
       state.address = address
       state.type = type
-      state.derivationPath = derivationPath
+      state.account = walletInitialState.account
+      state.voterBalances = walletInitialState.voterBalances
+      // TODO consider 0-ing all values here
+      state.balances.lastUpdated = walletInitialState.balances.lastUpdated
     },
-    setDerivationPath: (state, action: PayloadAction<string>) => {
-      const derivationPath = action.payload
-      assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
-      state.derivationPath = derivationPath
-    },
-    setSecretType: (state, action: PayloadAction<SecretType>) => {
-      const secretType = action.payload
-      assert(
-        secretType === 'pincode' || secretType === 'password',
-        `Invalid secret type ${secretType}`
-      )
-      state.secretType = secretType
-    },
+    // setAddress: (state, action: PayloadAction<SetWalletAction>) => {
+    //   const { address, type } = action.payload
+    //   assert(address && address.length === 42, `Invalid address ${address}`)
+    //   assert(type === SignerType.Local || type === SignerType.Ledger, `Invalid type ${address}`)
+    //   state.address = address
+    //   state.type = type
+    // },
+    // setDerivationPath: (state, action: PayloadAction<string>) => {
+    //   const derivationPath = action.payload
+    //   assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
+    //   state.derivationPath = derivationPath
+    // },
+    // setSecretType: (state, action: PayloadAction<SecretType>) => {
+    //   const secretType = action.payload
+    //   assert(
+    //     secretType === 'pincode' || secretType === 'password',
+    //     `Invalid secret type ${secretType}`
+    //   )
+    //   state.secretType = secretType
+    // },
     updateBalances: (state, action: PayloadAction<Balances>) => {
       const { tokens, lockedCelo, lastUpdated } = action.payload
       assert(tokens && lockedCelo && lastUpdated, 'Invalid balance')
@@ -131,29 +138,30 @@ const walletSlice = createSlice({
       delete newTokens[tokenId]
       state.balances.tokens = newTokens
     },
-    clearWalletCache: (state) => {
-      // Reset some account-specific state that may be stale
-      state.balances = walletInitialState.balances
-      state.account = walletInitialState.account
-      state.voterBalances = walletInitialState.voterBalances
-    },
+    // clearWalletCache: (state) => {
+    //   // Reset some account-specific state that may be stale
+    //   state.balances = walletInitialState.balances
+    //   state.account = walletInitialState.account
+    //   state.voterBalances = walletInitialState.voterBalances
+    // },
     resetWallet: () => walletInitialState,
   },
 })
 
 export const {
   setIsConnected,
-  setAddress,
-  setDerivationPath,
+  setWalletUnlocked,
+  setAccount,
+  // setAddress,
+  // setDerivationPath,
   updateBalances,
   setAccountStatus,
   setAccountIsRegistered,
   setVoterBalances,
-  setWalletUnlocked,
-  setSecretType,
+  // setSecretType,
   addToken,
   removeToken,
-  clearWalletCache,
+  // clearWalletCache,
   resetWallet,
 } = walletSlice.actions
 const walletReducer = walletSlice.reducer
@@ -181,6 +189,7 @@ const migrations = {
   },
 }
 
+// TODO migration for new schema?
 const walletPersistConfig = {
   key: 'wallet',
   storage: storage,

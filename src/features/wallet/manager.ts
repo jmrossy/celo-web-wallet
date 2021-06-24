@@ -1,10 +1,12 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
-import { Wallet } from 'ethers'
+import { utils, Wallet } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getProvider } from 'src/blockchain/provider'
 import { getSigner, setSigner, SignerType } from 'src/blockchain/signer'
+import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
+import { createLedgerSigner } from 'src/features/ledger/signerFactory'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { encryptMnemonic } from 'src/features/wallet/encryption'
 import {
@@ -13,7 +15,7 @@ import {
   StoredAccountData,
 } from 'src/features/wallet/storage'
 import { normalizeMnemonic } from 'src/features/wallet/utils'
-import { clearWalletCache, setAddress } from 'src/features/wallet/walletSlice'
+import { setAccount } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { call, put, select } from 'typed-redux-saga'
@@ -44,35 +46,43 @@ export function getAccounts() {
   return accountListCache
 }
 
+export function hasAccounts() {
+  return getAccounts().size !== 0
+}
+
+export function createRandomAccount() {
+  const entropy = utils.randomBytes(32)
+  const mnemonic = utils.entropyToMnemonic(entropy)
+  const derivationPath = CELO_DERIVATION_PATH + '/0'
+  return Wallet.fromMnemonic(mnemonic, derivationPath)
+}
+
 export function* addAccount(newAccount: LocalAccount | LedgerAccount) {
-  let storedAccount: StoredAccountData
   if (newAccount.type === SignerType.Local) {
     const { mnemonic, derivationPath, locale } = newAccount
-    const formattedMnemonic = normalizeMnemonic(mnemonic)
-    const wallet = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
+
     const password = getWalletPassword(newAccount)
+    const formattedMnemonic = normalizeMnemonic(mnemonic)
     const encryptedMnemonic = yield* call(encryptMnemonic, formattedMnemonic, password)
-    storedAccount = {
+    const wallet = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
+    const storedAccount: StoredAccountData = {
       type: SignerType.Local,
       address: wallet.address,
       derivationPath,
       locale,
       encryptedMnemonic,
     }
+
+    addAccountToStorage(storedAccount)
+    accountListCache.set(storedAccount.address, storedAccount)
+    yield* call(activateLocalAccount, wallet)
   } else if (newAccount.type === SignerType.Ledger) {
-    storedAccount = newAccount
+    addAccountToStorage(newAccount)
+    accountListCache.set(newAccount.address, newAccount)
+    yield* call(activateLedgerAccount, newAccount)
   } else {
-    throw new Error(`Invalid new account type`)
+    throw new Error('Invalid new account type')
   }
-
-  // Store the new account
-  addAccountToStorage(storedAccount)
-
-  // Update the account list cache
-  accountListCache.set(storedAccount.address, storedAccount)
-
-  // Switch to that new account to activate it
-  yield* call(switchToAccount)
 }
 
 export function* switchToAccount(address: string) {
@@ -83,22 +93,32 @@ function* activateLocalAccount(ethersWallet: Wallet) {
   const provider = getProvider()
   const celoWallet = new CeloWallet(ethersWallet, provider)
   setSigner({ signer: celoWallet, type: SignerType.Local })
+  yield* call(onAccountActivation, celoWallet.address, SignerType.Local)
+}
+
+function* activateLedgerAccount(account: LedgerAccount) {
+  const provider = getProvider()
+  const ledgerSigner = yield* call(createLedgerSigner, account.derivationPath, provider)
+  const address = ledgerSigner.address
+  if (!address || !areAddressesEqual(address, account.address)) {
+    throw new Error('Address mismatch, account may be on a different Ledger')
+  }
+  setSigner({ signer: ledgerSigner, type: SignerType.Ledger })
+  yield* call(onAccountActivation, address, SignerType.Ledger)
+}
+
+function* onAccountActivation(address: string, type: SignerType) {
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
-
-  yield* put(setAddress({ address, type, derivationPath }))
+  yield* put(setAccount({ address, type }))
   yield* put(fetchBalancesActions.trigger())
 
   if (currentAddress && !areAddressesEqual(currentAddress, address)) {
     logger.debug('New address does not match current one in store')
-    yield* put(clearWalletCache())
+    // yield* put(clearWalletCache())
     yield* put(resetFeed())
   }
   yield* put(fetchFeedActions.trigger())
-}
-
-function activateLedgerAccount() {
-  //TODO
 }
 
 export function* removeAccount(address: string) {
@@ -106,7 +126,6 @@ export function* removeAccount(address: string) {
 }
 
 export function getActiveAccount() {
-  // TODO
   const signer = getSigner()
   const address = signer.signer.address
   if (!address)

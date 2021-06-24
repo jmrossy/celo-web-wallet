@@ -94,12 +94,6 @@ import {
   fetchBalancesSagaName,
 } from 'src/features/wallet/balances/fetchBalances'
 import {
-  createWalletActions,
-  createWalletReducer,
-  createWalletSaga,
-  createWalletSagaName,
-} from 'src/features/wallet/createWallet'
-import {
   importAccountActions,
   importAccountReducer,
   importAccountSaga,
@@ -121,50 +115,25 @@ const sagas = [feedAndBalancesFetchPoller]
 export const monitoredSagas: {
   [name: string]: { saga: any; reducer: Reducer<SagaState>; actions: SagaActions }
 } = {
-  [createWalletSagaName]: {
-    saga: createWalletSaga,
-    reducer: createWalletReducer,
-    actions: createWalletActions,
-  },
-  [fetchBalancesSagaName]: {
-    saga: fetchBalancesSaga,
-    reducer: fetchBalancesReducer,
-    actions: fetchBalancesActions,
-  },
-  [sendTokenSagaName]: {
-    saga: sendTokenSaga,
-    reducer: sendTokenReducer,
-    actions: sendTokenActions,
-  },
-  [fetchFeedSagaName]: {
-    saga: fetchFeedSaga,
-    reducer: fetchFeedReducer,
-    actions: fetchFeedActions,
-  },
-  [exchangeTokenSagaName]: {
-    saga: exchangeTokenSaga,
-    reducer: exchangeTokenReducer,
-    actions: exchangeTokenActions,
+  [importAccountSagaName]: {
+    saga: importAccountSaga,
+    reducer: importAccountReducer,
+    actions: importAccountActions,
   },
   [passwordSagaName]: {
     saga: passwordSaga,
     reducer: passwordReducer,
     actions: passwordActions,
   },
-  [importAccountSagaName]: {
-    saga: importAccountSaga,
-    reducer: importAccountReducer,
-    actions: importAccountActions,
+  [fetchBalancesSagaName]: {
+    saga: fetchBalancesSaga,
+    reducer: fetchBalancesReducer,
+    actions: fetchBalancesActions,
   },
-  [importLedgerWalletSagaName]: {
-    saga: importLedgerWalletSaga,
-    reducer: importLedgerWalletReducer,
-    actions: importLedgerWalletActions,
-  },
-  [estimateFeeSagaName]: {
-    saga: estimateFeeSaga,
-    reducer: estimateFeeReducer,
-    actions: estimateFeeActions,
+  [fetchFeedSagaName]: {
+    saga: fetchFeedSaga,
+    reducer: fetchFeedReducer,
+    actions: fetchFeedActions,
   },
   [fetchExchangeRateSagaName]: {
     saga: fetchExchangeRateSaga,
@@ -175,6 +144,26 @@ export const monitoredSagas: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
+  },
+  [sendTokenSagaName]: {
+    saga: sendTokenSaga,
+    reducer: sendTokenReducer,
+    actions: sendTokenActions,
+  },
+  [exchangeTokenSagaName]: {
+    saga: exchangeTokenSaga,
+    reducer: exchangeTokenReducer,
+    actions: exchangeTokenActions,
+  },
+  [importLedgerWalletSagaName]: {
+    saga: importLedgerWalletSaga,
+    reducer: importLedgerWalletReducer,
+    actions: importLedgerWalletActions,
+  },
+  [estimateFeeSagaName]: {
+    saga: estimateFeeSaga,
+    reducer: estimateFeeReducer,
+    actions: estimateFeeActions,
   },
   [addTokenSagaName]: {
     saga: addTokenSaga,

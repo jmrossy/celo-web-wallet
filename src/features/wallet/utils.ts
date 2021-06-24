@@ -48,9 +48,10 @@ export function isValidDerivationPath(derivationPath: string) {
 }
 
 export function isValidMnemonicLocale(locale: string) {
-	if (!locale) return false
-	// Only english locales are currently supported
-	if (locale !== 'en') return false
+  if (!locale) return false
+  // Only english locales are currently supported
+  if (locale !== 'en') return false
+  return true
 }
 
 // Format the mnemonic to handle extra whitespace
