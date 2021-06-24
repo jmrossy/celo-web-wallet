@@ -1,3 +1,5 @@
+import { BigNumber } from 'ethers'
+
 interface BlockscoutResponse<R> {
   status: string
   result: R
@@ -35,9 +37,15 @@ export interface BlockscoutTransactionLog {
   address: string
 }
 
-export function validateBlockscoutLog(log: BlockscoutTransactionLog, topic0?: string) {
+export function validateBlockscoutLog(
+  log: BlockscoutTransactionLog,
+  topic0?: string,
+  minBlock?: number
+) {
   if (!log) throw new Error('Log is nullish')
   if (!log.transactionHash) throw new Error('Log has no tx hash')
+  if (minBlock && (!log.blockNumber || BigNumber.from(log.blockNumber).lt(minBlock)))
+    throw new Error('Log has invalid block number')
   if (!log.topics || !log.topics.length) throw new Error('Log has no topics')
   if (!log.topics || !log.topics.length) throw new Error('Log has no topics')
   if (topic0 && log.topics[0]?.toLowerCase() !== topic0) throw new Error('Log topic is incorrect')

@@ -90,7 +90,7 @@ async function fetchStableTokenPricesFromBlockscout(numDays: number) {
     const fromBlock = toBlock - numBlocksPerInterval
     const url = `${baseUrl}/api?module=logs&action=getLogs&fromBlock=${fromBlock}&toBlock=${toBlock}&address=${oracleContractAddress}&topic0=${MEDIAN_UPDATED_TOPIC_0}`
     const txLogs = await queryBlockscout<Array<BlockscoutTransactionLog>>(url)
-    const tokenToPrice = parseBlockscoutOracleLogs(txLogs, oracleContract)
+    const tokenToPrice = parseBlockscoutOracleLogs(txLogs, oracleContract, fromBlock)
     // The nested loop here is awkward but helps us fetch all token prices for one day in one query
     // Just prepends the new price point to each tokens history
     for (const [id, price] of tokenToPrice) {
@@ -108,12 +108,13 @@ async function fetchStableTokenPricesFromBlockscout(numDays: number) {
 
 function parseBlockscoutOracleLogs(
   logs: Array<BlockscoutTransactionLog>,
-  oracleContract: Contract
+  oracleContract: Contract,
+  minBlock: number
 ) {
   const tokenToPrice = new Map<NativeTokenId, TokenPricePoint>()
   for (const id of StableTokenIds) {
     const tokenAddress = NativeTokens[id].address
-    const price = parseBlockscoutOracleLogsForToken(logs, oracleContract, tokenAddress)
+    const price = parseBlockscoutOracleLogsForToken(logs, oracleContract, tokenAddress, minBlock)
     if (price) tokenToPrice.set(id, price)
   }
   return tokenToPrice
@@ -122,13 +123,14 @@ function parseBlockscoutOracleLogs(
 function parseBlockscoutOracleLogsForToken(
   logs: Array<BlockscoutTransactionLog>,
   oracleContract: Contract,
-  searchToken: string
+  searchToken: string,
+  minBlock: number
 ): TokenPricePoint | null {
   if (!logs || !logs.length) throw new Error('No oracle logs found in time range')
 
   for (const log of logs) {
     try {
-      validateBlockscoutLog(log, MEDIAN_UPDATED_TOPIC_0)
+      validateBlockscoutLog(log, MEDIAN_UPDATED_TOPIC_0, minBlock)
 
       const filteredTopics = log.topics.filter((t) => !!t)
       const logDescription = oracleContract.interface.parseLog({
@@ -161,7 +163,9 @@ function parseBlockscoutOracleLogsForToken(
 
       return { timestamp: timestamp.toNumber(), price: valueAdjusted }
     } catch (error) {
-      logger.error('Unable to parse log, will attempt next', error, JSON.stringify(log))
+      // Note: this creates some noise atm because of a blockscout bug
+      // that's returning garbage with the API responses
+      logger.warn('Unable to parse log, will attempt next', error)
     }
   }
 
