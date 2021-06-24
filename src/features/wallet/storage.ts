@@ -2,24 +2,19 @@ import { utils } from 'ethers'
 import { SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
 import { storageProvider } from 'src/features/storage/storageProvider'
-import { isValidDerivationPath } from 'src/features/wallet/utils'
+import { isValidDerivationPath, isValidMnemonicLocale } from 'src/features/wallet/utils'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
-interface AccountData {
+export interface StoredAccountData {
   address: string
   type: SignerType
   derivationPath: string
-  // accountContract: {
-  //   isRegistered: boolean
-  //   voteSignerFor: string | null
-  //   lastUpdated: number | null
-  // }
   encryptedMnemonic?: string // Only SignerType.local accounts will have this
   locale?: string // Not yet used, needed when non-english mnemonics are supported
 }
 const AccountDataWhitelist = ['address', 'type', 'derivationPath', 'encryptedMnemonic', 'locale']
-type AccountsData = Array<AccountData>
+export type StoredAccountsData = Array<StoredAccountData>
 
 // This lock may not be necessary because storage writes/reads are synchronous
 // but adding a simple module-level lock just to be cautious
@@ -61,7 +56,7 @@ export function getAccounts() {
   return getAccountsData()
 }
 
-export function addAccount(newAccount: AccountData) {
+export function addAccount(newAccount: StoredAccountData) {
   try {
     acquireLock()
 
@@ -122,7 +117,7 @@ function getAccountsData() {
   return parsed || []
 }
 
-function setAccountsData(accounts: AccountsData) {
+function setAccountsData(accounts: StoredAccountsData) {
   const serialized = JSON.stringify(accounts, AccountDataWhitelist)
   storageProvider.setItem(getFilePath(AccountFile.accounts), serialized, true)
 }
@@ -155,10 +150,10 @@ function setAccountsData(accounts: AccountsData) {
 //   }
 // }
 
-function parseAccountsData(data: string | null): AccountsData | null {
+function parseAccountsData(data: string | null): StoredAccountsData | null {
   try {
     if (!data) return null
-    const parsed = JSON.parse(data) as AccountsData
+    const parsed = JSON.parse(data) as StoredAccountsData
     if (!parsed || !Array.isArray(parsed)) throw new Error('Invalid format for account data')
     parsed.forEach(validateAccount)
     return parsed
@@ -168,7 +163,7 @@ function parseAccountsData(data: string | null): AccountsData | null {
   }
 }
 
-function validateAccount(account: AccountData) {
+function validateAccount(account: StoredAccountData) {
   const error = (reason: string) => {
     throw new Error(`Invalid format for account: ${reason}`)
   }
@@ -178,7 +173,7 @@ function validateAccount(account: AccountData) {
   if (!type || !Object.values(SignerType).includes(type)) error('invalid signer type')
   if (!derivationPath || !isValidDerivationPath(derivationPath)) error('invalid derivation path')
   if (type === SignerType.Local && !encryptedMnemonic) error('local account is missing mnemonic')
-  if (locale && locale !== 'en') error('only english locale currently supported')
+  if (locale && isValidMnemonicLocale(locale)) error('invalid mnemonic locale')
   // TODO cleanup?
   // if (!accountContract) error('missing accountContract')
   // const { isRegistered, voteSignerFor, lastUpdated } = accountContract

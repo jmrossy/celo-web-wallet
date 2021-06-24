@@ -2,7 +2,7 @@
 import { useDispatch } from 'react-redux'
 import { getLatestBlockDetails } from 'src/blockchain/blocks'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
-import { ImportWalletForm } from 'src/features/onboarding/import/ImportWalletForm'
+import { ImportAccountForm } from 'src/features/onboarding/import/ImportAccountForm'
 import { passwordActions } from 'src/features/password/password'
 import { PasswordAction } from 'src/features/password/types'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
@@ -57,7 +57,7 @@ export function DevTools() {
       <p>
         <a href="/wallet">Wallet Home / Empty</a>
       </p>
-      <ImportWalletForm />
+      <ImportAccountForm />
     </div>
   )
 }

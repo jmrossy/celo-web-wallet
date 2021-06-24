@@ -6,17 +6,16 @@ import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { PasswordAction, SecretType } from 'src/features/password/types'
 import {
-  secretTypeToLabel,
-  validatePasswordValue,
-  validatePinValue,
+	secretTypeToLabel,
+	validatePasswordValue,
+	validatePinValue
 } from 'src/features/password/utils'
-import { importWallet } from 'src/features/wallet/importWallet'
 import { loadWallet, saveWallet } from 'src/features/wallet/storage_v1'
 import {
-  resetWallet,
-  setDerivationPath,
-  setSecretType,
-  setWalletUnlocked,
+	resetWallet,
+	setDerivationPath,
+	setSecretType,
+	setWalletUnlocked
 } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
@@ -50,7 +49,7 @@ export function validate(params: PasswordParams): ErrorState {
     if (!valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
     } else if (value !== valueConfirm) {
-      errors = { ...errors, ...invalidInput('valueConfirm', "Values don't match") }
+      errors = { ...errors, ...invalidInput('valueConfirm', 'Values do not match') }
     }
   }
 
@@ -69,7 +68,7 @@ export function validate(params: PasswordParams): ErrorState {
     if (!valueConfirm) {
       errors = { ...errors, ...invalidInput('valueConfirm', 'Confirm value is required') }
     } else if (newValue !== valueConfirm) {
-      errors = { ...errors, ...invalidInput('valueConfirm', "New values don't match") }
+      errors = { ...errors, ...invalidInput('valueConfirm', "New values do not match") }
     }
   }
 
@@ -91,7 +90,7 @@ export function useAccountLockStatus() {
   const type = useSelector((s: RootState) => s.wallet.type, shallowEqual)
   const _isUnlocked = useSelector((s: RootState) => s.wallet.isUnlocked, shallowEqual)
   // TODO necessary to watch for state changes until auto-timeout unlock is fully implemented
-  useSelector((s: RootState) => s.saga.pincode.status, shallowEqual)
+  useSelector((s: RootState) => s.saga.password.status, shallowEqual)
 
   // Call to isAccountUnlocked() is for security reasons (so user can't change a persisted value in local storage)
   // and _isUnlocked is for flow reasons - so the UI reacts to changes after authenticating
@@ -161,7 +160,8 @@ function* unlockWallet(pin: string, type: SecretType) {
 
   // If account has not yet been imported
   if (!isSignerSet()) {
-    yield* call(importWallet, { mnemonic, derivationPath })
+		// TODO
+    // yield* call(importWallet, { mnemonic, derivationPath })
   }
   yield* put(setWalletUnlocked(true))
 }

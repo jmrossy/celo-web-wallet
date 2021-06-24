@@ -12,6 +12,7 @@ import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances
 import {
   isValidDerivationPath,
   isValidMnemonic,
+  isValidMnemonicLocale,
   normalizeMnemonic,
 } from 'src/features/wallet/utils'
 import { clearWalletCache, setAddress } from 'src/features/wallet/walletSlice'
@@ -21,13 +22,15 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
-export interface ImportWalletParams {
+export interface ImportAccountParams {
   mnemonic: string
   derivationPath?: string | null
+  locale?: string
+  password?: string
 }
 
-export function validate(params: ImportWalletParams): ErrorState {
-  const { mnemonic, derivationPath } = params
+function validate(params: ImportAccountParams): ErrorState {
+  const { mnemonic, derivationPath, locale } = params
 
   if (!isValidMnemonic(mnemonic)) {
     return invalidInput('mnemonic', 'Invalid account key')
@@ -37,10 +40,14 @@ export function validate(params: ImportWalletParams): ErrorState {
     return invalidInput('index', 'Invalid derivation path')
   }
 
+  if (locale && !isValidMnemonicLocale(locale)) {
+    return invalidInput('locale', 'Invalid locale')
+  }
+
   return { isValid: true }
 }
 
-export function* importWallet(params: ImportWalletParams) {
+export function* importAccount(params: ImportAccountParams) {
   validateOrThrow(() => validate(params), 'Invalid import values')
 
   const { mnemonic, derivationPath: _derivationPath } = params
@@ -52,10 +59,10 @@ export function* importWallet(params: ImportWalletParams) {
   const celoWallet = new CeloWallet(wallet, provider)
   setSigner({ signer: celoWallet, type: SignerType.Local })
 
-  yield* call(onWalletImport, celoWallet.address, SignerType.Local, derivationPath)
+  yield* call(onAccountImport, celoWallet.address, SignerType.Local, derivationPath)
 }
 
-export function* onWalletImport(newAddress: string, type: SignerType, derivationPath: string) {
+export function* onAccountImport(newAddress: string, type: SignerType, derivationPath: string) {
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
 
@@ -72,14 +79,16 @@ export function* onWalletImport(newAddress: string, type: SignerType, derivation
 }
 
 export const {
-  name: importWalletSagaName,
-  wrappedSaga: importWalletSaga,
-  actions: importWalletActions,
-  reducer: importWalletReducer,
-} = createMonitoredSaga<ImportWalletParams>(importWallet, 'importWallet')
+  name: importAccountSagaName,
+  wrappedSaga: importAccountSaga,
+  actions: importAccountActions,
+  reducer: importAccountReducer,
+} = createMonitoredSaga<ImportAccountParams>(importAccount, 'importAccount')
 
 // Used for better dev experience, do not used in production
 export function* importDefaultAccount() {
   if (!config.defaultAccount) return
-  yield* call(importWallet, { mnemonic: config.defaultAccount })
+  // TODO Fix later
+  const currentAddress = yield* select((state: RootState) => state.wallet.address)
+  // yield* call(importWallet, { mnemonic: config.defaultAccount })
 }

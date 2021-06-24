@@ -1,4 +1,4 @@
-import { ImportWalletForm } from 'src/features/onboarding/import/ImportWalletForm'
+import { ImportAccountForm } from 'src/features/onboarding/import/ImportAccountForm'
 import { Font } from 'src/styles/fonts'
 
 export function AddImportScreen() {
@@ -8,7 +8,7 @@ export function AddImportScreen() {
       <h4 css={Font.h4Center}>Use an account key (seed phrase) to import another account.</h4>
       <h4 css={Font.h4Center}>Only import on devices you trust.</h4>
       <div css={{ margin: '1.5em' }}>
-        <ImportWalletForm isAddFlow={true} />
+        <ImportAccountForm isAddFlow={true} />
       </div>
     </>
   )

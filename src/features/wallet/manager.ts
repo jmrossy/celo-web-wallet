@@ -1,61 +1,87 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
-import { utils, Wallet } from 'ethers'
+import { Wallet } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getProvider } from 'src/blockchain/provider'
 import { getSigner, setSigner, SignerType } from 'src/blockchain/signer'
-import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
-import { Mnemonic } from 'src/features/wallet/mnemonic'
+import { encryptMnemonic } from 'src/features/wallet/encryption'
+import {
+  addAccount as addAccountToStorage,
+  getAccounts as getAccountsFromStorage,
+  StoredAccountData,
+} from 'src/features/wallet/storage'
 import { normalizeMnemonic } from 'src/features/wallet/utils'
 import { clearWalletCache, setAddress } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
-import { put, select } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
-// Used to temporarily hold keys for flows where
-// account creation/import is separate step than password set
-// Prefer to store them here than pass them via nav state
-let pendingAccountMnemonic: Mnemonic | null = null
-
-export function setPendingAccount(mnemonic: string, derivationPath: string, locale?: string) {
-  if (pendingAccountMnemonic) logger.warn('Overwriting existing pending account')
-  pendingAccountMnemonic = Mnemonic.from(mnemonic, derivationPath, locale)
+interface LocalAccount {
+  type: SignerType.Local
+  mnemonic: string
+  derivationPath: string
+  locale?: string
+  password?: string
 }
 
-export function getPendingAccount() {
-  const mnemonic = pendingAccountMnemonic
-  pendingAccountMnemonic = null
-  return mnemonic
+interface LedgerAccount {
+  type: SignerType.Ledger
+  address: string
+  derivationPath: string
 }
 
-export function createRandomAccount() {
-  try {
-    const entropy = utils.randomBytes(32)
-    const mnemonic = utils.entropyToMnemonic(entropy)
-    const derivationPath = CELO_DERIVATION_PATH + '/0'
-    const newAccount = Wallet.fromMnemonic(mnemonic, derivationPath)
-    return { address: newAccount.address, mnemonic: newAccount.mnemonic.phrase, derivationPath }
-  } catch (error) {
-    logger.error('Error creating a random new account', error)
-    return null
+const accountListCache: Map<string, StoredAccountData> = new Map()
+
+export function getAccounts() {
+  if (accountListCache.size <= 0) {
+    const storedAccounts = getAccountsFromStorage()
+    for (const a of storedAccounts) {
+      accountListCache.set(a.address, a)
+    }
   }
+  return accountListCache
 }
 
-export function* addAccount() {
-  //TODO
+export function* addAccount(newAccount: LocalAccount | LedgerAccount) {
+  let storedAccount: StoredAccountData
+  if (newAccount.type === SignerType.Local) {
+    const { mnemonic, derivationPath, locale } = newAccount
+    const formattedMnemonic = normalizeMnemonic(mnemonic)
+    const wallet = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
+    const password = getWalletPassword(newAccount)
+    const encryptedMnemonic = yield* call(encryptMnemonic, formattedMnemonic, password)
+    storedAccount = {
+      type: SignerType.Local,
+      address: wallet.address,
+      derivationPath,
+      locale,
+      encryptedMnemonic,
+    }
+  } else if (newAccount.type === SignerType.Ledger) {
+    storedAccount = newAccount
+  } else {
+    throw new Error(`Invalid new account type`)
+  }
+
+  // Store the new account
+  addAccountToStorage(storedAccount)
+
+  // Update the account list cache
+  accountListCache.set(storedAccount.address, storedAccount)
+
+  // Switch to that new account to activate it
+  yield* call(switchToAccount)
 }
 
 export function* switchToAccount(address: string) {
-  const mnemonic = 'TODO'
-  const formattedMnemonic = normalizeMnemonic(mnemonic)
-  const derivationPath = 'TODO'
-  const type = SignerType.Local
+  //TODO
+}
 
+function* activateLocalAccount(ethersWallet: Wallet) {
   const provider = getProvider()
-  const wallet = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
-  const celoWallet = new CeloWallet(wallet, provider)
+  const celoWallet = new CeloWallet(ethersWallet, provider)
   setSigner({ signer: celoWallet, type: SignerType.Local })
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
@@ -71,6 +97,10 @@ export function* switchToAccount(address: string) {
   yield* put(fetchFeedActions.trigger())
 }
 
+function activateLedgerAccount() {
+  //TODO
+}
+
 export function* removeAccount(address: string) {
   //TODO
 }
@@ -83,4 +113,16 @@ export function getActiveAccount() {
     throw new Error('Signer address not set, may be a LedgerSigner not properly initialized')
   const mnemonic = signer.type === SignerType.Local ? signer.signer.mnemonic.phrase : undefined
   return { address, mnemonic, type: signer.type }
+}
+
+function getWalletPassword(newAccount: LocalAccount): string {
+  // If the new account included the password
+  const newAccountPass = newAccount.password
+  if (newAccountPass) return newAccountPass
+  // If there's a cached password
+  // const cachedPassword = getCachedPassword()
+  const cachedPassword = 'TODO'
+  if (cachedPassword) return cachedPassword
+  // Else throw error, the navigation should not have allowed this
+  throw new Error('No password set for wallet')
 }

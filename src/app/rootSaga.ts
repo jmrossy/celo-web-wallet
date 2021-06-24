@@ -100,12 +100,12 @@ import {
   createWalletSagaName,
 } from 'src/features/wallet/createWallet'
 import {
+  importAccountActions,
+  importAccountReducer,
+  importAccountSaga,
+  importAccountSagaName,
   importDefaultAccount,
-  importWalletActions,
-  importWalletReducer,
-  importWalletSaga,
-  importWalletSagaName,
-} from 'src/features/wallet/importWallet'
+} from 'src/features/wallet/importAccount'
 import { watchWalletConnect } from 'src/features/walletConnect/init'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
@@ -151,10 +151,10 @@ export const monitoredSagas: {
     reducer: passwordReducer,
     actions: passwordActions,
   },
-  [importWalletSagaName]: {
-    saga: importWalletSaga,
-    reducer: importWalletReducer,
-    actions: importWalletActions,
+  [importAccountSagaName]: {
+    saga: importAccountSaga,
+    reducer: importAccountReducer,
+    actions: importAccountActions,
   },
   [importLedgerWalletSagaName]: {
     saga: importLedgerWalletSaga,

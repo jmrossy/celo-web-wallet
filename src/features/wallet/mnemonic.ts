@@ -1,5 +1,11 @@
-import { isValidDerivationPath, isValidMnemonic } from 'src/features/wallet/utils'
+import {
+  isValidDerivationPath,
+  isValidMnemonic,
+  isValidMnemonicLocale,
+  normalizeMnemonic,
+} from 'src/features/wallet/utils'
 
+// TODO delete?
 export class Mnemonic {
   private readonly _mnemonic: string
   private readonly _derivationPath: string
@@ -15,8 +21,9 @@ export class Mnemonic {
     if (!isValidMnemonic(mnemonic)) throw new Error('Invalid mnemonic for pending account')
     if (!isValidDerivationPath(derivationPath))
       throw new Error('Invalid derivationPath for pending account')
-    if (locale && locale !== 'en') throw new Error('Invalid locale, only en currently supported')
-    return new Mnemonic(mnemonic, derivationPath, locale)
+    if (locale && !isValidMnemonicLocale(locale))
+      throw new Error('Invalid locale, only EN currently supported')
+    return new Mnemonic(normalizeMnemonic(mnemonic), derivationPath, locale)
   }
 
   read() {

@@ -3,13 +3,14 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
+import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
 import { config } from 'src/config'
 import { NULL_ADDRESS } from 'src/consts'
 import { WebWalletWarning } from 'src/features/download/WebWalletWarning'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { AccountDetails } from 'src/features/wallet/accounts/AccountDetails'
-import { createRandomAccount, setPendingAccount } from 'src/features/wallet/manager'
+import { createPendingAccount } from 'src/features/wallet/pendingAccount'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -24,21 +25,24 @@ export function NewWalletScreen() {
   const [hasShownWarning, setHasShownWarning] = useState(config.isElectron)
   const [account, setAccount] = useState<Account | null>(null)
   const addressInStore = useSelector((s: RootState) => s.wallet.address)
+  const { showErrorModal } = useModal()
 
   useEffect(() => {
     if (addressInStore) throw new Error('Account already exists in store')
     // For smoother loading render
     setTimeout(() => {
-      const newAccount = createRandomAccount()
-      if (!newAccount) throw new Error('Unable to create new random account')
-      setAccount(newAccount)
+      try {
+        const newAccount = createPendingAccount()
+        setAccount(newAccount)
+      } catch (error) {
+        showErrorModal('Error Creating Account', 'Unable to create a new account.', error)
+      }
     }, 1000)
   }, [addressInStore])
 
   const navigate = useNavigate()
   const onClickContinue = () => {
     if (!account) return
-    setPendingAccount(account.mnemonic, account.derivationPath)
     navigate('/setup/set-pin', { state: { pageNumber: 3 } })
   }
 

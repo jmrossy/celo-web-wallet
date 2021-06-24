@@ -4,7 +4,7 @@ import { getProvider } from 'src/blockchain/provider'
 import { setSigner, SignerType } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH, DERIVATION_PATH_MAX_INDEX } from 'src/consts'
 import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
-import { onWalletImport } from 'src/features/wallet/importWallet'
+import { onAccountImport } from 'src/features/wallet/importAccount'
 import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
@@ -53,7 +53,7 @@ function* importLedgerWallet(params: ImportWalletParams) {
   if (!address) throw new Error('Ledger Signer missing address')
   setSigner({ signer, type: SignerType.Ledger })
 
-  yield* call(onWalletImport, address, SignerType.Ledger, derivationPath)
+  yield* call(onAccountImport, address, SignerType.Ledger, derivationPath)
   yield* put(setWalletUnlocked(true))
 }
 

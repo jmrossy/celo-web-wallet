@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { Wallet } from 'ethers'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
@@ -7,16 +8,17 @@ import { ModalAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
-import {
-  passwordActions,
-  PasswordParams,
-  passwordSagaName,
-  validate,
-} from 'src/features/password/password'
+import { PasswordParams, validate } from 'src/features/password/password'
 import { PasswordInputRow, PasswordInputType } from 'src/features/password/PasswordInput'
 import { PasswordStrengthBar } from 'src/features/password/PasswordStrengthBar'
 import { PasswordAction, SecretType } from 'src/features/password/types'
 import { secretTypeToLabel } from 'src/features/password/utils'
+import {
+  importAccountActions,
+  ImportAccountParams,
+  importAccountSagaName,
+} from 'src/features/wallet/importAccount'
+import { getPendingAccount } from 'src/features/wallet/pendingAccount'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -26,14 +28,26 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 
 const initialValues = { action: PasswordAction.Set, value: '', valueConfirm: '' }
 
+// This form receives the password value, validates it, and then
+// triggers the account import with it using the pending account
 export function SetPasswordForm() {
-  const [secretType] = useState<SecretType>('password')
+  const secretType: SecretType = 'password'
   const [label, labelC] = secretTypeToLabel(secretType)
-  const inputType =
-    secretType === 'pincode' ? PasswordInputType.NewPincode : PasswordInputType.NewPassword
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  const [pendingAccount, setPendingAccount] = useState<Wallet | undefined>()
+  useEffect(() => {
+    // A pending account must have been created before reaching here
+    const pending = getPendingAccount()
+    if (pending) {
+      setPendingAccount(pending)
+    } else {
+      navigate(-1)
+    }
+  }, [])
+
   const { showModal, closeModal } = useModal()
 
   const onSubmit = (values: PasswordParams) => {
@@ -48,8 +62,13 @@ export function SetPasswordForm() {
       color: Color.primaryGreen,
     }
     const onActionClick = (action: ModalAction) => {
-      if (action.key === 'confirm') {
-        dispatch(passwordActions.trigger({ ...values, type: secretType }))
+      if (action.key === 'confirm' && pendingAccount) {
+        const params: ImportAccountParams = {
+          mnemonic: pendingAccount.mnemonic.phrase,
+          derivationPath: pendingAccount.mnemonic.path,
+          password: values.value,
+        }
+        dispatch(importAccountActions.trigger(params))
       }
       closeModal()
     }
@@ -70,30 +89,24 @@ export function SetPasswordForm() {
     validateForm
   )
 
-  // const onToggleSecretType = (index: number) => {
-  //   resetValues(initialValues)
-  //   setSecretType(index === 0 ? 'pincode' : 'password')
-  // }
-
   const onSuccess = () => {
     navigate('/', { replace: true })
   }
   const status = useSagaStatus(
-    passwordSagaName,
-    `Error Setting ${labelC}`,
-    `Something went wrong when setting your ${label}, sorry! Please try again.`,
+    importAccountSagaName,
+    'Error Saving Account',
+    'Something went wrong when saving your new account, sorry! Please try again.',
     onSuccess
   )
 
   return (
     <Box direction="column" align="center">
       <div css={style.description}>{`Don't lose this ${label}, it unlocks your account!`}</div>
-      {/* <PasswordTypeToggle onToggle={onToggleSecretType} /> */}
       <form onSubmit={handleSubmit}>
         <Box direction="column" align="center" margin="0.5em 0 0 0">
           <div css={style.inputContainer}>
             <PasswordInputRow
-              type={inputType}
+              type={PasswordInputType.NewPassword}
               label={`Enter ${labelC}`}
               name="value"
               value={values.value}
@@ -102,7 +115,7 @@ export function SetPasswordForm() {
               {...errors['value']}
             />
             <PasswordInputRow
-              type={inputType}
+              type={PasswordInputType.NewPassword}
               label={`Confirm ${labelC}`}
               name="valueConfirm"
               value={values.valueConfirm}

@@ -47,6 +47,12 @@ export function isValidDerivationPath(derivationPath: string) {
   return split[0] === 'm' && split.length === 6
 }
 
+export function isValidMnemonicLocale(locale: string) {
+	if (!locale) return false
+	// Only english locales are currently supported
+	if (locale !== 'en') return false
+}
+
 // Format the mnemonic to handle extra whitespace
 // May need more additions here as other languages are supported
 export function normalizeMnemonic(mnemonic: string) {
