@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
@@ -10,7 +9,7 @@ import SendIcon from 'src/components/icons/send_payment.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
-import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
+import { DropdownBox, useDropdownBox } from 'src/components/modal/DropdownBox'
 import { config } from 'src/config'
 import { useDownloadDesktopModal } from 'src/features/download/DownloadDesktopModal'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
@@ -28,13 +27,13 @@ interface Props {
 }
 
 export function NavButtonRow({ mobile, disabled }: Props) {
-  const [showDropdown, setShowDropdown] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const address = useWalletAddress()
   const showQrModal = useAddressQrCodeModal()
   const showWalletConnectModal = useWalletConnectModal()
   const showDownloadDesktopModal = useDownloadDesktopModal()
+  const { isDropdownVisible, showDropdown, hideDropdown } = useDropdownBox()
 
   const onSendClick = () => {
     dispatch(txFlowReset())
@@ -42,22 +41,22 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   }
 
   const onMoreClick = () => {
-    setShowDropdown(true)
+    showDropdown()
   }
 
   const onReceiveClick = () => {
-    setShowDropdown(false)
+    hideDropdown()
     showQrModal(address)
   }
 
   const onExchangeClick = () => {
-    setShowDropdown(false)
+    hideDropdown()
     dispatch(txFlowReset())
     navigate('/exchange')
   }
 
   const onLockClick = () => {
-    setShowDropdown(false)
+    hideDropdown()
     if (config.isElectron) {
       dispatch(txFlowReset())
       navigate('/lock')
@@ -67,7 +66,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   }
 
   const onStakeClick = () => {
-    setShowDropdown(false)
+    hideDropdown()
     if (config.isElectron) {
       dispatch(txFlowReset())
       navigate('/validators')
@@ -77,7 +76,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   }
 
   const onGovernClick = () => {
-    setShowDropdown(false)
+    hideDropdown()
     if (config.isElectron) {
       dispatch(txFlowReset())
       navigate('/governance')
@@ -87,7 +86,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   }
 
   const onConnectClick = () => {
-    setShowDropdown(false)
+    hideDropdown()
     showWalletConnectModal()
   }
 
@@ -95,89 +94,80 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const buttonHeight = mobile ? '2.75em' : '2.5em'
 
   return (
-    <>
-      <Box direction="row" align="center" justify="evenly" styles={style.container}>
-        <Button
-          onClick={onSendClick}
-          margin="0.75em 0"
-          size="m"
-          disabled={disabled}
-          icon={SendIcon}
-          width={buttonWidth}
-          height={buttonHeight}
-        >
-          Send
-        </Button>
-        <Button
-          onClick={onMoreClick}
-          margin="0.75em 0"
-          size="m"
-          disabled={disabled}
-          iconPosition="end"
-          width={buttonWidth}
-          height={buttonHeight}
-        >
-          More{' '}
-          <ChevronIcon
-            direction={showDropdown ? 'n' : 's'}
-            width="13px"
-            height="7.5px"
-            color="#FFFFFF"
-            styles={style.moreButtonIcon}
-          />
-        </Button>
-
-        {showDropdown && (
-          <div css={style.menu}>
-            <MenuItem
-              icon={SendIcon}
-              title="Receive"
-              description="Show QR code"
-              onClick={onReceiveClick}
-              iconStyles={style.receiveButtonIcon}
-            />
-            <MenuItem
-              icon={ExchangeIcon}
-              title="Exchange"
-              description="Swap Celo tokens"
-              onClick={onExchangeClick}
-            />
-            <MenuItem
-              icon={LockIcon}
-              title="Lock"
-              description="Lock or unlock"
-              onClick={onLockClick}
-            />
-            <MenuItem
-              icon={CubeIcon}
-              title="Stake"
-              description="Vote for validators"
-              onClick={onStakeClick}
-            />
-            <MenuItem
-              icon={VoteIcon}
-              title="Govern"
-              description="Vote for proposals"
-              onClick={onGovernClick}
-            />
-            <MenuItem
-              icon={WalletConnectIcon}
-              title="Connect"
-              description="Use WalletConnect"
-              onClick={onConnectClick}
-              iconStyles={style.walletConnectIcon}
-            />
-          </div>
-        )}
-      </Box>
-      {showDropdown && (
-        <Backdrop
-          opacity={0.01}
-          color={Color.primaryWhite}
-          onClick={() => setShowDropdown(false)}
+    <Box direction="row" align="center" justify="evenly" styles={style.container}>
+      <Button
+        onClick={onSendClick}
+        margin="0.75em 0"
+        size="m"
+        disabled={disabled}
+        icon={SendIcon}
+        width={buttonWidth}
+        height={buttonHeight}
+      >
+        Send
+      </Button>
+      <Button
+        onClick={onMoreClick}
+        margin="0.75em 0"
+        size="m"
+        disabled={disabled}
+        iconPosition="end"
+        width={buttonWidth}
+        height={buttonHeight}
+      >
+        More{' '}
+        <ChevronIcon
+          direction={isDropdownVisible ? 'n' : 's'}
+          width="13px"
+          height="7.5px"
+          color="#FFFFFF"
+          styles={style.moreButtonIcon}
         />
+      </Button>
+
+      {isDropdownVisible && (
+        <DropdownBox hide={hideDropdown} styles={style.menu}>
+          <MenuItem
+            icon={SendIcon}
+            title="Receive"
+            description="Show QR code"
+            onClick={onReceiveClick}
+            iconStyles={style.receiveButtonIcon}
+          />
+          <MenuItem
+            icon={ExchangeIcon}
+            title="Exchange"
+            description="Swap Celo tokens"
+            onClick={onExchangeClick}
+          />
+          <MenuItem
+            icon={LockIcon}
+            title="Lock"
+            description="Lock or unlock"
+            onClick={onLockClick}
+          />
+          <MenuItem
+            icon={CubeIcon}
+            title="Stake"
+            description="Vote for validators"
+            onClick={onStakeClick}
+          />
+          <MenuItem
+            icon={VoteIcon}
+            title="Govern"
+            description="Vote for proposals"
+            onClick={onGovernClick}
+          />
+          <MenuItem
+            icon={WalletConnectIcon}
+            title="Connect"
+            description="Use WalletConnect"
+            onClick={onConnectClick}
+            iconStyles={style.walletConnectIcon}
+          />
+        </DropdownBox>
       )}
-    </>
+    </Box>
   )
 }
 
@@ -236,16 +226,10 @@ const style: Stylesheet = {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
-    position: 'absolute',
     top: '4.3em',
     right: '0.2em',
     width: '20.7em',
     padding: '1.3em 0.2em 0 0.8em',
-    borderRadius: 4,
-    zIndex: backdropZIndex + 1,
-    background: Color.primaryWhite,
-    border: `1px solid ${Color.fillLight}`,
-    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.08)',
     [mq[768]]: {
       top: '4.1em',
       left: '0.1em',

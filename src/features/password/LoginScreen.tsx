@@ -6,6 +6,7 @@ import { Address } from 'src/components/Address'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import { Box } from 'src/components/layout/Box'
+import { DropdownBox, useDropdownBox } from 'src/components/modal/DropdownBox'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
@@ -43,8 +44,13 @@ export function LoginScreen() {
     }
   }, [])
 
-  const dispatch = useDispatch()
+  const { isDropdownVisible, showDropdown, hideDropdown } = useDropdownBox()
+  const onSelectAddress = (address: string) => {
+    setSelectedAddress(address)
+    hideDropdown()
+  }
 
+  const dispatch = useDispatch()
   const onSubmit = (values: PasswordParams) => {
     if (!selectedAddress) return
     dispatch(passwordActions.trigger({ ...values, type: 'password' }))
@@ -66,10 +72,6 @@ export function LoginScreen() {
     'Unable to unlock your account, please check your password and try again.'
   )
 
-  const onClickAddress = () => {
-    alert('hi')
-  }
-
   // TODO add 15 tries before account nuke logic here or in saga
 
   return (
@@ -81,12 +83,33 @@ export function LoginScreen() {
         (accounts.length == 1 ? (
           <Address address={selectedAddress} />
         ) : (
-          <button type="button" css={style.addressButton} onClick={onClickAddress}>
-            <Box align="center">
-              <Address address={selectedAddress} isTransparent={true} />
-              <ChevronIcon direction="s" styles={style.addressChevron} />
-            </Box>
-          </button>
+          <div css={{ position: 'relative' }}>
+            <button type="button" css={style.addressButton} onClick={showDropdown}>
+              <Box align="center">
+                <Address address={selectedAddress} isTransparent={true} />
+                <ChevronIcon
+                  direction={isDropdownVisible ? 'n' : 's'}
+                  styles={style.addressChevron}
+                />
+              </Box>
+            </button>
+            {isDropdownVisible && (
+              <DropdownBox hide={hideDropdown}>
+                <Box direction="column" align="center" styles={style.addressDropdownContainer}>
+                  {accounts.map((a) => (
+                    <button
+                      type="button"
+                      css={style.addressDropdownButton}
+                      onClick={() => onSelectAddress(a.address)}
+                      key={`account-button-${a.address}`}
+                    >
+                      <Address address={a.address} isTransparent={true} />
+                    </button>
+                  ))}
+                </Box>
+              </DropdownBox>
+            )}
+          </div>
         ))}
       <Box direction="column" align="center" margin="1.75em 0 0 0">
         <form onSubmit={handleSubmit}>
@@ -126,20 +149,35 @@ const style: Stylesheet = {
   },
   addressButton: {
     ...transparentButtonStyles,
+    border: `1px solid ${Color.borderMedium}`,
+    borderRadius: 6,
+    padding: '0.5em 0.75em',
+    boxShadow: '0 2px 4px 0px rgba(0, 0, 0, 0.1)',
     ':hover': {
       backgroundColor: Color.fillLighter,
     },
     ':active': {
       backgroundColor: Color.fillLight,
     },
-    border: `1px solid ${Color.borderMedium}`,
-    borderRadius: 6,
-    padding: '0.5em',
-    boxShadow: '0 2px 4px 0px rgba(0, 0, 0, 0.1)',
   },
   addressChevron: {
     width: '1em',
     margin: '0 0.1em 0 0.5em',
     opacity: 0.9,
+  },
+  addressDropdownContainer: {
+    maxHeight: '15em',
+    overflowY: 'auto',
+  },
+  addressDropdownButton: {
+    ...transparentButtonStyles,
+    padding: '0.5em 1.4em',
+    borderBottom: `1px solid ${Color.borderMedium}`,
+    ':hover': {
+      backgroundColor: Color.fillLighter,
+    },
+    ':active': {
+      backgroundColor: Color.fillLight,
+    },
   },
 }
