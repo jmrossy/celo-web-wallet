@@ -10,28 +10,39 @@ import { DropdownBox, useDropdownBox } from 'src/components/modal/DropdownBox'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
-import {
-  passwordActions,
-  PasswordParams,
-  passwordSagaName,
-  validate,
-} from 'src/features/password/password'
 import { PasswordInput, PasswordInputType } from 'src/features/password/PasswordInput'
-import { PasswordAction } from 'src/features/password/types'
 import { getAccounts } from 'src/features/wallet/manager'
 import { StoredAccountData } from 'src/features/wallet/storage'
+import {
+  unlockWalletActions,
+  UnlockWalletParams,
+  unlockWalletSagaName,
+  validate,
+} from 'src/features/wallet/unlockWallet'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
-const initialValues = { action: PasswordAction.Unlock, value: '' }
+const initialValues: UnlockWalletParams = { activeAddress: '', password: '' }
 
 export function LoginScreen() {
   const previousAddress = useSelector((s: RootState) => s.wallet.address)
-  const [selectedAddress, setSelectedAddress] = useState<string | null>(previousAddress)
   const [accounts, setAccounts] = useState<StoredAccountData[] | null>(null)
+
+  const dispatch = useDispatch()
+  const onSubmit = (values: UnlockWalletParams) => {
+    // TODO handle migration for old accounts
+    dispatch(unlockWalletActions.trigger(values))
+  }
+
+  const { values, setValues, errors, handleChange, handleSubmit } =
+    useCustomForm<UnlockWalletParams>(
+      { ...initialValues, activeAddress: previousAddress || '' },
+      onSubmit,
+      validate
+    )
 
   useEffect(() => {
     // Get account list on screen mount
@@ -39,35 +50,21 @@ export function LoginScreen() {
     if (!storedAccounts.size) throw new Error('No accounts found')
     const accountList = Array.from(storedAccounts.values())
     setAccounts(accountList)
-    if (!selectedAddress || (previousAddress && !storedAccounts.has(previousAddress))) {
-      setSelectedAddress(accountList[0].address)
+    if (!values.activeAddress || !storedAccounts.has(values.activeAddress)) {
+      setValues({ activeAddress: accountList[0].address })
     }
   }, [])
 
   const { isDropdownVisible, showDropdown, hideDropdown } = useDropdownBox()
   const onSelectAddress = (address: string) => {
-    setSelectedAddress(address)
+    setValues({ activeAddress: address })
     hideDropdown()
   }
-
-  const dispatch = useDispatch()
-  const onSubmit = (values: PasswordParams) => {
-    if (!selectedAddress) return
-    dispatch(passwordActions.trigger({ ...values, type: 'password' }))
-  }
-
-  const validateForm = (values: PasswordParams) => validate({ ...values, type: 'password' })
-
-  const { values, errors, handleChange, handleSubmit } = useCustomForm<PasswordParams>(
-    initialValues,
-    onSubmit,
-    validateForm
-  )
 
   const onLogout = useLogoutModal()
 
   const status = useSagaStatus(
-    passwordSagaName,
+    unlockWalletSagaName,
     'Error Unlocking Account',
     'Unable to unlock your account, please check your password and try again.'
   )
@@ -78,15 +75,15 @@ export function LoginScreen() {
     <OnboardingScreenFrame>
       <h1 css={Font.h1Green}>Unlock Your Wallet</h1>
       <div css={style.description}>Enter your password to unlock your wallet</div>
-      {selectedAddress &&
+      {values.activeAddress &&
         accounts &&
         (accounts.length == 1 ? (
-          <Address address={selectedAddress} />
+          <Address address={values.activeAddress} />
         ) : (
           <div css={{ position: 'relative' }}>
             <button type="button" css={style.addressButton} onClick={showDropdown}>
               <Box align="center">
-                <Address address={selectedAddress} isTransparent={true} />
+                <Address address={values.activeAddress} isTransparent={true} />
                 <ChevronIcon
                   direction={isDropdownVisible ? 'n' : 's'}
                   styles={style.addressChevron}
@@ -115,11 +112,11 @@ export function LoginScreen() {
         <form onSubmit={handleSubmit}>
           <PasswordInput
             type={PasswordInputType.CurrentPassword}
-            name="value"
-            value={values.value}
+            name="password"
+            value={values.password}
             onChange={handleChange}
             autoFocus={true}
-            {...errors['value']}
+            {...errors['password']}
           />
           <Box direction="column" margin="2em 0 0 0">
             <Button type="submit" disabled={status === SagaStatus.Started} size="l">

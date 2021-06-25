@@ -7,7 +7,7 @@ import { useAccountLockStatus } from 'src/features/password/password'
 import { hasAccounts } from 'src/features/wallet/manager'
 
 export function HomeNavigator() {
-  const { address, type, isUnlocked } = useAccountLockStatus()
+  const { isUnlocked } = useAccountLockStatus()
 
   // Force navigation to fail screen if providers are unable to connect
   const isConnected = useSelector((s: RootState) => s.wallet.isConnected, shallowEqual)
@@ -26,11 +26,6 @@ export function HomeNavigator() {
   if (hasAccounts()) {
     return <LoginScreen />
   }
-
-  // // If a wallet has been found in redux store and it's of type Ledger
-  // if (address && type === SignerType.Ledger) {
-  //   return <LedgerUnlockScreen />
-  // }
 
   // Otherwise, account must not be set up yet
   return <Navigate to="/setup" replace={true} />

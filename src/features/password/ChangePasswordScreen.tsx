@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { ChangePasswordForm } from 'src/features/password/ChangePasswordForm'
-import { isAccountUnlocked } from 'src/features/password/password'
-import { isWalletInStorage } from 'src/features/wallet/storage_v1'
+import { hasPasswordCached } from 'src/features/password/password'
+import { hasAccounts } from 'src/features/wallet/manager'
 import { Font } from 'src/styles/fonts'
 
 export function ChangePasswordScreen() {
@@ -11,7 +11,7 @@ export function ChangePasswordScreen() {
 
   //Make sure we belong here
   useEffect(() => {
-    if (!isAccountUnlocked() || !isWalletInStorage()) {
+    if (!hasPasswordCached() || !hasAccounts()) {
       navigate('/', { replace: true })
     }
   }, [])

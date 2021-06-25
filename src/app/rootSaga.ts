@@ -52,11 +52,11 @@ import {
   lockTokenSagaName,
 } from 'src/features/lock/lockToken'
 import {
-  passwordActions,
-  passwordReducer,
-  passwordSaga,
-  passwordSagaName,
-} from 'src/features/password/password'
+  changePasswordActions,
+  changePasswordReducer,
+  changePasswordSaga,
+  changePasswordSagaName,
+} from 'src/features/password/changePassword'
 import {
   sendTokenActions,
   sendTokenReducer,
@@ -100,6 +100,12 @@ import {
   importAccountSagaName,
   importDefaultAccount,
 } from 'src/features/wallet/importAccount'
+import {
+  unlockWalletActions,
+  unlockWalletReducer,
+  unlockWalletSaga,
+  unlockWalletSagaName,
+} from 'src/features/wallet/unlockWallet'
 import { watchWalletConnect } from 'src/features/walletConnect/init'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
@@ -115,15 +121,15 @@ const sagas = [feedAndBalancesFetchPoller]
 export const monitoredSagas: {
   [name: string]: { saga: any; reducer: Reducer<SagaState>; actions: SagaActions }
 } = {
+  [unlockWalletSagaName]: {
+    saga: unlockWalletSaga,
+    reducer: unlockWalletReducer,
+    actions: unlockWalletActions,
+  },
   [importAccountSagaName]: {
     saga: importAccountSaga,
     reducer: importAccountReducer,
     actions: importAccountActions,
-  },
-  [passwordSagaName]: {
-    saga: passwordSaga,
-    reducer: passwordReducer,
-    actions: passwordActions,
   },
   [fetchBalancesSagaName]: {
     saga: fetchBalancesSaga,
@@ -194,6 +200,11 @@ export const monitoredSagas: {
     saga: governanceVoteSaga,
     reducer: governanceVoteReducer,
     actions: governanceVoteActions,
+  },
+  [changePasswordSagaName]: {
+    saga: changePasswordSaga,
+    reducer: changePasswordReducer,
+    actions: changePasswordActions,
   },
   [logoutSagaName]: {
     saga: logoutSaga,

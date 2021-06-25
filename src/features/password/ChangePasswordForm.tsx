@@ -5,35 +5,32 @@ import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import {
-  passwordActions,
-  PasswordParams,
-  passwordSagaName,
+  changePasswordActions,
+  ChangePasswordParams,
+  changePasswordSagaName,
   validate,
-} from 'src/features/password/password'
+} from 'src/features/password/changePassword'
 import { PasswordInputRow, PasswordInputType } from 'src/features/password/PasswordInput'
-import { PasswordAction } from 'src/features/password/types'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
-const initialValues = { action: PasswordAction.Change, value: '', newValue: '', valueConfirm: '' }
+const initialValues = { value: '', newValue: '', valueConfirm: '' }
 
 export function ChangePasswordForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const onSubmit = (values: PasswordParams) => {
-    dispatch(passwordActions.trigger({ ...values, type: 'password' }))
+  const onSubmit = (values: ChangePasswordParams) => {
+    dispatch(changePasswordActions.trigger(values))
   }
 
-  const validateForm = (values: PasswordParams) => validate({ ...values, type: 'password' })
-
-  const { values, errors, handleChange, handleSubmit } = useCustomForm<PasswordParams>(
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<ChangePasswordParams>(
     initialValues,
     onSubmit,
-    validateForm
+    validate
   )
 
   const onClickCancel = () => {
@@ -43,7 +40,7 @@ export function ChangePasswordForm() {
   const { showModalAsync } = useModal()
   const onSuccess = async () => {
     await showModalAsync({
-      head: `Password Changed`,
+      head: 'Password Changed',
       body: `Your password has been successfully changed! Keep this password safe, it's the only way to unlock your account.`,
       size: 's',
     })
@@ -51,8 +48,8 @@ export function ChangePasswordForm() {
   }
 
   const status = useSagaStatus(
-    passwordSagaName,
-    `Error Changing Password`,
+    changePasswordSagaName,
+    'Error Changing Password',
     'Please check your values and try again.',
     onSuccess
   )

@@ -1,6 +1,19 @@
+import { logger } from 'src/utils/logger'
+
 const SALT = '68d0ad14364deb3d417cd644e84dd1f5659d70287f2d2c94be5ce6eaf21a014f' // Sha256 of 'CeloWebWallet'
 const IV_LENGTH = 12 // Size of initialization vector for encryption
 const NUM_DERIVATION_ITERATIONS = 250000
+
+export async function tryEncryptMnemonic(mnemonic: string, password: string) {
+  try {
+    const ciphertext = await encryptMnemonic(mnemonic, password)
+    return ciphertext
+  } catch (error) {
+    // Excluding error message in case it contains senstive data
+    logger.error('Error encrypting mnemonic')
+    throw new Error('Unable to encrypt your account')
+  }
+}
 
 export async function encryptMnemonic(mnemonic: string, password: string) {
   if (!mnemonic || !password) throw new Error('Invalid arguments for encryption')
@@ -9,6 +22,17 @@ export async function encryptMnemonic(mnemonic: string, password: string) {
   const keyMaterial = await getKeyMaterialFromPassword(password)
   const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
   return encrypt(encryptionKey, mnemonic)
+}
+
+export async function tryDecryptMnemonic(ciphertext: string, password: string) {
+  try {
+    const mnemonic = await decryptMnemonic(ciphertext, password)
+    return mnemonic
+  } catch (error) {
+    // Excluding error message in case it contains senstive data
+    logger.error('Error decrypting mnemonic')
+    throw new Error('Unable to decrypt your account, please check your password')
+  }
 }
 
 export async function decryptMnemonic(ciphertext: string, password: string) {

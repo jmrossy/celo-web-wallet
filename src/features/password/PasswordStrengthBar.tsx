@@ -1,17 +1,13 @@
 import { useMemo } from 'react'
-import { SecretType } from 'src/features/password/types'
 import { computePasswordStrength, PasswordStrength } from 'src/features/password/utils'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
 
 interface Props {
   value: string
-  type: SecretType
 }
 
-export function PasswordStrengthBar({ value, type }: Props) {
-  if (!type || type === 'pincode') return null
-
+export function PasswordStrengthBar({ value }: Props) {
   const strength = useMemo(() => computePasswordStrength(value), [value])
 
   let width, color

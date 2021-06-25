@@ -1,4 +1,3 @@
-import { SecretType } from 'src/features/password/types'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
 const PIN_LENGTH = 6
@@ -63,14 +62,4 @@ function countCharacters(value: string) {
     charMap.set(c, true)
   }
   return charMap.size
-}
-
-export function secretTypeToLabel(type: SecretType | undefined) {
-  if (type === 'pincode') {
-    return ['pincode', 'Pincode']
-  }
-  if (type === 'password') {
-    return ['password', 'Password']
-  }
-  throw new Error(`Invalid secret type: ${type}`)
 }
