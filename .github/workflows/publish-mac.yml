@@ -1,0 +1,32 @@
+name: publish-mac
+on: workflow_dispatch
+
+jobs:
+  build-and-publish:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          check-latest: true
+
+      - name: Adjust yarn timeout
+        run: yarn config set network-timeout 600000 -g
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build with webpack for electron
+        shell: bash
+        run: ./scripts/build.sh -n Mainnet -e
+
+      - name: Build on Mac 
+        run: yarn electron-builder --mac --publish always
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
