@@ -16,7 +16,7 @@ jobs:
           check-latest: true
 
       - name: Adjust yarn timeout
-        run: yarn config set network-timeout 1800000 -g
+        run: yarn config set network-timeout 600000 -g
 
       - name: Install dependencies
         run: yarn
