@@ -26,7 +26,7 @@ jobs:
         run: |
           (echo "=== Build try 1: ===" && yarn electron-builder --mac --publish always) || \
           (echo "=== Build try 2: ===" && yarn electron-builder --mac --publish always) || \
-          (echo "=== Build try 3: ===" && yarn electron-builder --mac --publish always) || \
+          (echo "=== Build try 3: ===" && yarn electron-builder --mac --publish always)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
