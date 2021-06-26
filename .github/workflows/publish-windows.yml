@@ -24,7 +24,6 @@ jobs:
 
       - name: Build on Windows
         run: |
-          # Retry 3 times before the steps actually fails
           (echo "=== Build try 1: ===" && yarn electron-builder --win --publish always) || \
           (echo "=== Build try 2: ===" && yarn electron-builder --win --publish always) || \
           (echo "=== Build try 3: ===" && yarn electron-builder --win --publish always) || \
