@@ -23,7 +23,11 @@ jobs:
         run: ./scripts/build.sh -n Mainnet -e
 
       - name: Build on Windows
-        run: yarn electron-builder --win --publish always
+        run: |
+          # Retry 3 times before the steps actually fails
+          (echo "=== Build try 1: ===" && yarn electron-builder --win --publish always) || \
+          (echo "=== Build try 2: ===" && yarn electron-builder --win --publish always) || \
+          (echo "=== Build try 3: ===" && yarn electron-builder --win --publish always) || \
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}

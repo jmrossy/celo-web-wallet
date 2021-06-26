@@ -24,10 +24,12 @@ jobs:
 
       - name: Install deps for Linux
         run: sudo apt-get update && sudo apt-get install libudev-dev libusb-1.0-0-dev
-        if: runner.os == 'Linux'
       
       - name: Build on Linux
-        run: yarn electron-builder --linux --publish always
+        run: |
+          # Retry 3 times before the steps actually fails
+          (echo "=== Build try 1: ===" && yarn electron-builder --linux --publish always) || \
+          (echo "=== Build try 2: ===" && yarn electron-builder --linux --publish always) || \
+          (echo "=== Build try 3: ===" && yarn electron-builder --linux --publish always) || \
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: runner.os == 'Linux'
