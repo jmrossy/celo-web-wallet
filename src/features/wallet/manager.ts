@@ -6,6 +6,7 @@ import { getSigner, setSigner, SignerType } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
+import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
 import { createLedgerSigner } from 'src/features/ledger/signerFactory'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { tryDecryptMnemonic, tryEncryptMnemonic } from 'src/features/wallet/encryption'
@@ -25,12 +26,14 @@ export interface LocalAccount {
   mnemonic: string
   derivationPath: string
   locale?: string
+  name?: string
 }
 
 export interface LedgerAccount {
   type: SignerType.Ledger
-  address: string
   derivationPath: string
+  address?: string
+  name?: string
 }
 
 const accountListCache: Map<string, StoredAccountData> = new Map()
@@ -47,6 +50,10 @@ export function getAccounts() {
 
 export function hasAccounts() {
   return getAccounts().size !== 0
+}
+
+export function getDefaultNewAccountName() {
+  return `Account ${getAccounts().size + 1}`
 }
 
 export function* loadAccount(address: string, password?: string) {
@@ -67,7 +74,9 @@ export function* loadAccount(address: string, password?: string) {
     yield* call(activateLocalAccount, wallet)
   } else if (activeAccount.type === SignerType.Ledger) {
     const { address, derivationPath } = activeAccount
-    yield* call(activateLedgerAccount, { type: SignerType.Ledger, address, derivationPath })
+    const provider = getProvider()
+    const ledgerSigner = yield* call(createLedgerSigner, derivationPath, provider)
+    yield* call(activateLedgerAccount, ledgerSigner, address)
   } else {
     throw new Error('Invalid account signer type')
   }
@@ -82,30 +91,50 @@ export function createRandomAccount() {
 
 export function* addAccount(newAccount: LocalAccount | LedgerAccount, password?: string) {
   if (newAccount.type === SignerType.Local) {
-    if (!password) throw new Error('Password required for local accounts')
-
-    const { mnemonic, derivationPath, locale } = newAccount
-    const formattedMnemonic = normalizeMnemonic(mnemonic)
-    const encryptedMnemonic = yield* call(tryEncryptMnemonic, formattedMnemonic, password)
-    const wallet = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
-    const storedAccount: StoredAccountData = {
-      type: SignerType.Local,
-      address: wallet.address,
-      derivationPath,
-      locale,
-      encryptedMnemonic,
-    }
-
-    addAccountToStorage(storedAccount)
-    accountListCache.set(storedAccount.address, storedAccount)
-    yield* call(activateLocalAccount, wallet)
+    yield* call(addLocalAccount, newAccount, password)
   } else if (newAccount.type === SignerType.Ledger) {
-    addAccountToStorage(newAccount)
-    accountListCache.set(newAccount.address, newAccount)
-    yield* call(activateLedgerAccount, newAccount)
+    yield* call(addLedgerAccount, newAccount)
   } else {
     throw new Error('Invalid new account type')
   }
+}
+
+function* addLocalAccount(newAccount: LocalAccount, password?: string) {
+  if (!password) throw new Error('Password required for local accounts')
+
+  const { mnemonic, derivationPath, locale } = newAccount
+  const formattedMnemonic = normalizeMnemonic(mnemonic)
+  const encryptedMnemonic = yield* call(tryEncryptMnemonic, formattedMnemonic, password)
+  const wallet = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
+  const name = newAccount.name || getDefaultNewAccountName()
+  const storedAccount: StoredAccountData = {
+    type: SignerType.Local,
+    address: wallet.address,
+    name,
+    derivationPath,
+    locale,
+    encryptedMnemonic,
+  }
+
+  addAccountToStorage(storedAccount)
+  accountListCache.set(storedAccount.address, storedAccount)
+  yield* call(activateLocalAccount, wallet)
+}
+
+function* addLedgerAccount(newAccount: LedgerAccount) {
+  const provider = getProvider()
+  const ledgerSigner = yield* call(createLedgerSigner, newAccount.derivationPath, provider)
+  const address = ledgerSigner.address
+  if (!address) throw new Error('LedgerSigner not properly initialized')
+  const name = newAccount.name || getDefaultNewAccountName()
+  const storedAccount = {
+    ...newAccount,
+    address,
+    name,
+  }
+  addAccountToStorage(storedAccount)
+  accountListCache.set(storedAccount.address, storedAccount)
+  yield* call(activateLedgerAccount, ledgerSigner)
 }
 
 function* activateLocalAccount(ethersWallet: Wallet) {
@@ -115,15 +144,14 @@ function* activateLocalAccount(ethersWallet: Wallet) {
   yield* call(onAccountActivation, celoWallet.address, SignerType.Local)
 }
 
-function* activateLedgerAccount(account: LedgerAccount) {
-  const provider = getProvider()
-  const ledgerSigner = yield* call(createLedgerSigner, account.derivationPath, provider)
-  const address = ledgerSigner.address
-  if (!address || !areAddressesEqual(address, account.address)) {
+function* activateLedgerAccount(signer: LedgerSigner, accountAddress?: string) {
+  const signerAddress = signer.address
+  if (!signerAddress) throw new Error('LedgerSigner not properly initialized')
+  if (accountAddress && !areAddressesEqual(signerAddress, accountAddress)) {
     throw new Error('Address mismatch, account may be on a different Ledger')
   }
-  setSigner({ signer: ledgerSigner, type: SignerType.Ledger })
-  yield* call(onAccountActivation, address, SignerType.Ledger)
+  setSigner({ signer, type: SignerType.Ledger })
+  yield* call(onAccountActivation, signerAddress, SignerType.Ledger)
 }
 
 function* onAccountActivation(address: string, type: SignerType) {
@@ -142,6 +170,10 @@ function* onAccountActivation(address: string, type: SignerType) {
 
 export function* removeAccount(address: string) {
   //TODO
+}
+
+export function renameAccount(address: string, newName: string) {
+  // TODO
 }
 
 export function getActiveAccount() {

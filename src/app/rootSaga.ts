@@ -40,12 +40,6 @@ import {
   governanceVoteSagaName,
 } from 'src/features/governance/governanceVote'
 import {
-  importLedgerWalletActions,
-  importLedgerWalletReducer,
-  importLedgerWalletSaga,
-  importLedgerWalletSagaName,
-} from 'src/features/ledger/importWallet'
-import {
   lockTokenActions,
   lockTokenReducer,
   lockTokenSaga,
@@ -160,11 +154,6 @@ export const monitoredSagas: {
     saga: exchangeTokenSaga,
     reducer: exchangeTokenReducer,
     actions: exchangeTokenActions,
-  },
-  [importLedgerWalletSagaName]: {
-    saga: importLedgerWalletSaga,
-    reducer: importLedgerWalletReducer,
-    actions: importLedgerWalletActions,
   },
   [estimateFeeSagaName]: {
     saga: estimateFeeSaga,

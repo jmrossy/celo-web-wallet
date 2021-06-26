@@ -17,13 +17,14 @@ interface Props {
   type: PasswordInputType
   value?: string
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   error?: boolean
   helpText?: string
   autoFocus?: boolean
 }
 
 export function PasswordInput(props: Props) {
-  const { name, type, value, onChange, error, helpText, autoFocus } = props
+  const { name, type, value, onChange, onBlur, error, helpText, autoFocus } = props
 
   const { placeholder, autoComplete, inputMode } = getPropsForInputType(type)
 
@@ -45,6 +46,7 @@ export function PasswordInput(props: Props) {
         name={name}
         css={{ ...sharedStyles, ...style.input }}
         value={value}
+        onBlur={onBlur}
         onChange={handleChange}
         placeholder={placeholder}
         inputMode={inputMode as any}
@@ -119,6 +121,7 @@ const style: Stylesheet = {
       opacity: 1 /* Firefox */,
     },
     ':focus': {
+      borderColor: Color.borderActive,
       '::placeholder': {
         color: Color.primaryWhite,
         opacity: 0,

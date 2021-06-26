@@ -31,7 +31,7 @@ export function DropdownBox(props: PropsWithChildren<Props>) {
 const defaultStyle: Styles = {
   position: 'absolute',
   top: '5em',
-  borderRadius: 4,
+  borderRadius: 6,
   zIndex: backdropZIndex + 1,
   background: Color.primaryWhite,
   border: `1px solid ${Color.fillLight}`,

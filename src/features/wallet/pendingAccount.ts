@@ -7,21 +7,27 @@ import { logger } from 'src/utils/logger'
 // account creation/import is separate step than password set
 // For security, prefer to store them here instead of nav state or redux
 // Note: ethers calls type 'wallet' but it's more of an account
-let pendingAccount: Wallet | null = null
+export interface PendingAccount {
+  wallet: Wallet
+  isImported: boolean
+}
 
-export function setPendingAccount(mnemonic: string, derivationPath: string) {
+let pendingAccount: PendingAccount | null = null
+
+export function setPendingAccount(mnemonic: string, derivationPath: string, isImported = true) {
   if (pendingAccount) logger.warn('Overwriting existing pending account')
   const formattedMnemonic = normalizeMnemonic(mnemonic)
-  pendingAccount = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
+  pendingAccount = { wallet: Wallet.fromMnemonic(formattedMnemonic, derivationPath), isImported }
 }
 
 export function createPendingAccount() {
   if (pendingAccount) logger.warn('Overwriting existing pending account')
-  pendingAccount = createRandomAccount()
+  const wallet = createRandomAccount()
+  pendingAccount = { wallet, isImported: false }
   return {
-    address: pendingAccount.address,
-    mnemonic: pendingAccount.mnemonic.phrase,
-    derivationPath: pendingAccount.mnemonic.path,
+    address: wallet.address,
+    mnemonic: wallet.mnemonic.phrase,
+    derivationPath: wallet.mnemonic.path,
   }
 }
 

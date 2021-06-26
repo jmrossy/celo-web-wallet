@@ -6,6 +6,7 @@ import { useModal } from 'src/components/modal/useModal'
 import { Color } from 'src/styles/Color'
 
 export function useLogoutModal() {
+  //TODO rework text here for multi-account
   const dispatch = useDispatch()
   const signerType = useSelector((s: RootState) => s.wallet.type)
   const { showModalAsync } = useModal()

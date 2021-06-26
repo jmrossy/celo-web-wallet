@@ -1,4 +1,4 @@
-import 'src/features/ledger/buffer' // Must be the first import
+import 'src/polyfills/buffer' // Must be the first import
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
 import { TransportError, TransportStatusError } from '@ledgerhq/errors'
 import { BigNumber, providers, Signer, utils } from 'ethers'

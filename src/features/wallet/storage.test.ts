@@ -14,12 +14,14 @@ const TEST_ADDRESS2 = '0xa2972a33550c33ecfa4a02a0ea212ac98e77fa55'
 const TEST_ADDRESS3 = '0xfF1668e08B50148379C9D515C3dF49f4BE4bF8e2'
 const ACCOUNT1 = {
   address: TEST_ADDRESS1,
+  name: 'Account 1',
   type: SignerType.Local,
   derivationPath: DERIVATION_PATH1,
   encryptedMnemonic: ENCRYPTED_MNEMONIC1,
 }
 const ACCOUNT2 = {
   address: TEST_ADDRESS2,
+  name: 'Account 2',
   type: SignerType.Ledger,
   derivationPath: DERIVATION_PATH1,
 }
@@ -44,6 +46,7 @@ describe('Wallet Storage', () => {
     try {
       addAccount({
         address: TEST_ADDRESS3,
+        name: 'Account 3',
         type: SignerType.Local,
         derivationPath: DERIVATION_PATH1,
       })

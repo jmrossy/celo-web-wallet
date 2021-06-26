@@ -1,4 +1,3 @@
-import { Wallet } from 'ethers'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -17,7 +16,7 @@ import {
   ImportAccountParams,
   importAccountSagaName,
 } from 'src/features/wallet/importAccount'
-import { getPendingAccount } from 'src/features/wallet/pendingAccount'
+import { getPendingAccount, PendingAccount } from 'src/features/wallet/pendingAccount'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -39,7 +38,7 @@ export function SetPasswordForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const [pendingAccount, setPendingAccount] = useState<Wallet | undefined>()
+  const [pendingAccount, setPendingAccount] = useState<PendingAccount | undefined>()
   useEffect(() => {
     // A pending account must have been created before reaching here
     const pending = getPendingAccount()
@@ -50,33 +49,22 @@ export function SetPasswordForm() {
     }
   }, [])
 
-  const { showModal, closeModal } = useModal()
-
   const onConfirm = (values: PasswordForm) => {
-    // TODO support ledger here
     if (!pendingAccount) return
     const params: ImportAccountParams = {
       account: {
         type: SignerType.Local,
-        mnemonic: pendingAccount.mnemonic.phrase,
-        derivationPath: pendingAccount.mnemonic.path,
+        mnemonic: pendingAccount.wallet.mnemonic.phrase,
+        derivationPath: pendingAccount.wallet.mnemonic.path,
       },
       password: values.value,
+      isExisting: pendingAccount.isImported,
     }
     dispatch(importAccountActions.trigger(params))
   }
 
+  const { showModal, closeModal } = useModal()
   const onSubmit = (values: PasswordForm) => {
-    const backAction = {
-      key: 'back',
-      label: 'Back',
-      color: Color.altGrey,
-    }
-    const confirmAction = {
-      key: 'confirm',
-      label: 'I Understand',
-      color: Color.primaryGreen,
-    }
     const onActionClick = (action: ModalAction) => {
       if (action.key === 'confirm') onConfirm(values)
       closeModal()
@@ -84,7 +72,10 @@ export function SetPasswordForm() {
     showModal({
       head: 'Keep This Password Safe',
       body: "This password is the only way to unlock your account. It cannot be recovered if it's lost. Please keep it in a safe place!",
-      actions: [backAction, confirmAction],
+      actions: [
+        { key: 'back', label: 'Back', color: Color.altGrey },
+        { key: 'confirm', label: 'I Understand', color: Color.primaryGreen },
+      ],
       onActionClick,
       size: 's',
     })

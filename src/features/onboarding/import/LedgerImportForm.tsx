@@ -1,34 +1,46 @@
+import { BigNumber } from 'ethers'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { SignerType } from 'src/blockchain/signer'
 import { Button } from 'src/components/buttons/Button'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { Box } from 'src/components/layout/Box'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
+import { CELO_DERIVATION_PATH, DERIVATION_PATH_MAX_INDEX } from 'src/consts'
 import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
-import {
-  importLedgerWalletActions,
-  importLedgerWalletSagaName,
-  ImportWalletParams,
-  validate,
-} from 'src/features/ledger/importWallet'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
+import {
+  importAccountActions,
+  ImportAccountParams,
+  importAccountSagaName,
+} from 'src/features/wallet/importAccount'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { ErrorState, invalidInput } from 'src/utils/validation'
 
-const initialValues = { index: '0' }
+interface ImportForm {
+  index: string
+}
+
+const initialValues: ImportForm = { index: '0' }
 
 export function LedgerImportForm() {
   const dispatch = useDispatch()
 
-  const onSubmit = (values: ImportWalletParams) => {
-    dispatch(importLedgerWalletActions.trigger(values))
+  const onSubmit = (values: ImportForm) => {
+    const params: ImportAccountParams = {
+      account: {
+        type: SignerType.Ledger,
+        derivationPath: `${CELO_DERIVATION_PATH}/${values.index}`,
+      },
+      isExisting: true,
+    }
+    dispatch(importAccountActions.trigger(params))
   }
 
-  const validateForm = (values: ImportWalletParams) => validate(values)
-
-  const { values, errors, handleChange, handleSubmit } = useCustomForm<ImportWalletParams>(
+  const { values, errors, handleChange, handleSubmit } = useCustomForm<ImportForm>(
     initialValues,
     onSubmit,
     validateForm
@@ -39,7 +51,7 @@ export function LedgerImportForm() {
     navigate('/', { replace: true })
   }
   const status = useSagaStatus(
-    importLedgerWalletSagaName,
+    importAccountSagaName,
     'Error Importing Wallet',
     'Something went wrong, sorry! Please ensure your Ledger is connected, unlocked, and running the latest Celo app.',
     onSuccess
@@ -58,7 +70,7 @@ export function LedgerImportForm() {
           <label css={style.inputLabel}>Address Index</label>
           <NumberInput
             name="index"
-            value={'' + values.index}
+            value={values.index.toString()}
             onChange={handleChange}
             width="2em"
             {...errors['index']}
@@ -70,6 +82,18 @@ export function LedgerImportForm() {
       </form>
     </>
   )
+}
+
+function validateForm(params: ImportForm): ErrorState {
+  const { index } = params
+  if (index === null || index === undefined) {
+    return invalidInput('index', 'Index required')
+  }
+  const indexBn = BigNumber.from(index)
+  if (indexBn.lt(0) || indexBn.gt(DERIVATION_PATH_MAX_INDEX)) {
+    return invalidInput('index', 'Invalid index')
+  }
+  return { isValid: true }
 }
 
 const style: Stylesheet = {

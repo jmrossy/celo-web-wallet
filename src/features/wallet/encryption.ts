@@ -11,7 +11,7 @@ export async function tryEncryptMnemonic(mnemonic: string, password: string) {
   } catch (error) {
     // Excluding error message in case it contains senstive data
     logger.error('Error encrypting mnemonic')
-    throw new Error('Unable to encrypt your account')
+    throw new Error('Cannot encrypt account key')
   }
 }
 
@@ -31,7 +31,7 @@ export async function tryDecryptMnemonic(ciphertext: string, password: string) {
   } catch (error) {
     // Excluding error message in case it contains senstive data
     logger.error('Error decrypting mnemonic')
-    throw new Error('Unable to decrypt your account, please check your password')
+    throw new Error('Cannot decrypt account key')
   }
 }
 

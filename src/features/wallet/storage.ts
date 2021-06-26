@@ -8,12 +8,20 @@ import { logger } from 'src/utils/logger'
 
 export interface StoredAccountData {
   address: string
+  name: string
   type: SignerType
   derivationPath: string
   encryptedMnemonic?: string // Only SignerType.local accounts will have this
   locale?: string // Not yet used, needed when non-english mnemonics are supported
 }
-const AccountDataWhitelist = ['address', 'type', 'derivationPath', 'encryptedMnemonic', 'locale']
+const AccountDataWhitelist = [
+  'address',
+  'name',
+  'type',
+  'derivationPath',
+  'encryptedMnemonic',
+  'locale',
+]
 export type StoredAccountsData = Array<StoredAccountData>
 
 // This lock may not be necessary because storage writes/reads are synchronous
@@ -67,15 +75,6 @@ export function addAccount(newAccount: StoredAccountData) {
       throw new Error('New account already exists in account list')
     }
 
-    // For 'local' accounts, include the encrypted mnemonic in the AccountData
-    // if (newAccount.type === SignerType.Local) {
-    //   if (!mnemonic || !isValidMnemonic(mnemonic) || !password) {
-    //     throw new Error('New account mnemonic or password is invalid')
-    //   }
-    //   const encryptedMnemonic = await encryptMnemonic(mnemonic, password)
-    //   newAccount.encryptedMnemonic = encryptedMnemonic
-    // }
-
     accountsMetadata.push(newAccount)
     setAccountsData(accountsMetadata)
 
@@ -122,34 +121,6 @@ function setAccountsData(accounts: StoredAccountsData) {
   storageProvider.setItem(getFilePath(AccountFile.accounts), serialized, true)
 }
 
-// function getAccountKeys() {
-//   const data = storageProvider.getItem(getFilePath(AccountFile.keys))
-//   const parsed = parseAccountData<AccountKey>(data, AccountDataWhitelist, validateKey)
-//   return parsed || []
-// }
-
-// function setAccountKeys(keys: AccountKeys) {
-//   const serialized = JSON.stringify(keys, accountSerializer(AccountKeyWhitelist))
-//   storageProvider.setItem(getFilePath(AccountFile.keys), serialized, true)
-// }
-
-// function parseAccountData<T>(
-//   data: string | null,
-//   propWhitelist: string[],
-//   validator: (item: T) => void
-// ): Array<T> | null {
-//   try {
-//     if (!data) return null
-//     const parsed = JSON.parse(data, accountSerializer(propWhitelist)) as Array<T>
-//     if (!parsed || !Array.isArray(parsed)) throw new Error('Invalid format for account data')
-//     parsed.forEach(validator)
-//     return parsed
-//   } catch (error) {
-//     logger.error('Error parsing account data', error)
-//     throw new Error('Failed to parse account file')
-//   }
-// }
-
 function parseAccountsData(data: string | null): StoredAccountsData | null {
   try {
     if (!data) return null
@@ -174,24 +145,7 @@ function validateAccount(account: StoredAccountData) {
   if (!derivationPath || !isValidDerivationPath(derivationPath)) error('invalid derivation path')
   if (type === SignerType.Local && !encryptedMnemonic) error('local account is missing mnemonic')
   if (locale && isValidMnemonicLocale(locale)) error('invalid mnemonic locale')
-  // TODO cleanup?
-  // if (!accountContract) error('missing accountContract')
-  // const { isRegistered, voteSignerFor, lastUpdated } = accountContract
-  // if (typeof isRegistered !== 'boolean') error('invalid isRegistered value')
-  // if (voteSignerFor && !utils.isAddress(voteSignerFor)) error('invalid voteSignerFor')
-  // if (lastUpdated && typeof lastUpdated !== 'number') error('invalid lastUpdated')
 }
-
-// function validateKey(key: AccountKey) {
-//   const error = (reason: string) => {
-//     throw new Error(`Invalid format for account key: ${reason}`)
-//   }
-//   if (!key) error('missing key')
-//   const { address, mnemonic, derivationPath } = key
-//   if (!address || !utils.isAddress(address)) error('invalid address')
-//   if (!mnemonic || !isValidMnemonic(mnemonic)) error('invalid mnemonic')
-//   if (!derivationPath || !isValidDerivationPath(derivationPath)) error('invalid derivation path')
-// }
 
 function tryPersistBrowserStorage() {
   // Request persistent storage for site

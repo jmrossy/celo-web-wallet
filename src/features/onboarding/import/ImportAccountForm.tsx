@@ -40,7 +40,7 @@ export function ImportAccountForm(props: Props) {
   const onSubmit = (values: ImportFormValues) => {
     try {
       const derivationPath = toDerivationPath(values)
-      setPendingAccount(values.mnemonic, derivationPath)
+      setPendingAccount(values.mnemonic, derivationPath, true)
       // TODO navigate to diff place if props.isAddFlow
       // and next step depends on if password was ever set
       navigate('/setup/set-pin', { state: { pageNumber: 4 } })

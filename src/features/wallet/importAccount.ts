@@ -2,8 +2,8 @@ import { utils } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
-import { CELO_DERIVATION_PATH } from 'src/consts'
 import { getPasswordCache, setPasswordCache } from 'src/features/password/password'
+import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { addAccount, LedgerAccount, LocalAccount } from 'src/features/wallet/manager'
 import {
   isValidDerivationPath,
@@ -19,6 +19,7 @@ import { call, put, select } from 'typed-redux-saga'
 export interface ImportAccountParams {
   account: LocalAccount | LedgerAccount
   password?: string
+  isExisting?: boolean // i.e. is not a newly created account
 }
 
 function validate(params: ImportAccountParams): ErrorState {
@@ -36,7 +37,7 @@ function validate(params: ImportAccountParams): ErrorState {
     }
   } else if (account.type === SignerType.Ledger) {
     const { address, derivationPath } = account
-    if (!utils.isAddress(address)) {
+    if (address && !utils.isAddress(address)) {
       return invalidInput('address', 'Invalid address')
     }
     if (!isValidDerivationPath(derivationPath)) {
@@ -51,11 +52,16 @@ function validate(params: ImportAccountParams): ErrorState {
 export function* importAccount(params: ImportAccountParams) {
   validateOrThrow(() => validate(params), 'Invalid import values')
 
-  const { account, password } = params
+  const { account, password, isExisting } = params
   if (account.type === SignerType.Local) {
     yield* call(importLocalAccount, account, password)
   } else if (account.type === SignerType.Ledger) {
     yield* call(importLedgerAccount, account)
+  }
+
+  if (isExisting) {
+    // No need to show backup reminder banner if account was imported with mnemonic/ledger
+    yield* put(setBackupReminderDismissed(true))
   }
 
   yield* put(setWalletUnlocked(true))
@@ -63,8 +69,7 @@ export function* importAccount(params: ImportAccountParams) {
 }
 
 function* importLocalAccount(account: LocalAccount, password?: string) {
-  const { mnemonic, derivationPath: _derivationPath, locale } = account
-  const derivationPath = _derivationPath || CELO_DERIVATION_PATH + '/0'
+  const { mnemonic, derivationPath, locale } = account
 
   if (password) {
     setPasswordCache(password)

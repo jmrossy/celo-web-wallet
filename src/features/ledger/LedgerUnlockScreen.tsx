@@ -1,13 +1,9 @@
-import { useDispatch } from 'react-redux'
+// TODO remove file
 import { useLogoutModal } from 'src/app/logout/useLogoutModal'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
-import {
-  importLedgerWalletActions,
-  importLedgerWalletSagaName,
-} from 'src/features/ledger/importWallet'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import { useWalletAddress } from 'src/features/wallet/hooks'
@@ -19,16 +15,10 @@ import { SagaStatus } from 'src/utils/saga'
 export function LedgerUnlockScreen() {
   const address = useWalletAddress()
 
-  const dispatch = useDispatch()
-
-  const onClickConnect = () => {
-    dispatch(importLedgerWalletActions.trigger({ useExisting: true }))
-  }
-
   const onLogout = useLogoutModal()
 
   const status = useSagaStatus(
-    importLedgerWalletSagaName,
+    'TODO',
     'Error Unlocking Wallet',
     'Something went wrong, sorry! Please ensure your Ledger is connected, unlocked, and running the latest Celo app.'
   )
@@ -44,7 +34,7 @@ export function LedgerUnlockScreen() {
         <DeviceAnimation xOffset={48} />
       </div>
       <Button
-        onClick={onClickConnect}
+        onClick={() => 'TODO'}
         margin="2em 0 0 0"
         disabled={status === SagaStatus.Started}
         size="l"
