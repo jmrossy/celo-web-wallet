@@ -1,12 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useLogoutModal } from 'src/app/logout/useLogoutModal'
 import type { RootState } from 'src/app/rootReducer'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { SwitchButton } from 'src/components/buttons/SwitchButton'
 import { HrDivider } from 'src/components/HrDivider'
+import AvatarSwapIcon from 'src/components/icons/avatar_swap.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import LockIcon from 'src/components/icons/lock.svg'
 import { PlusIcon } from 'src/components/icons/Plus'
+import SignPostIcon from 'src/components/icons/sign_post.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MAX_SEND_TOKEN_SIZE, MAX_SEND_TOKEN_SIZE_LEDGER } from 'src/consts'
@@ -22,13 +25,22 @@ export function SettingsScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const onClickViewWallet = () => {
-    navigate('/wallet')
+  const onClickViewAccount = () => {
+    navigate('/account')
+  }
+
+  const onClickManageAccounts = () => {
+    navigate('/accounts')
   }
 
   const onClickChangePassword = () => {
     dispatch(changePasswordActions.reset())
     navigate('/change-pin')
+  }
+
+  const onLogout = useLogoutModal()
+  const onClickLogout = async () => {
+    await onLogout()
   }
 
   const onClickAddToken = () => {
@@ -47,39 +59,40 @@ export function SettingsScreen() {
       <Box direction="column" align="center">
         <h2 css={style.sectionHeader}>Account Settings</h2>
         <Box direction="row" align="center" justify="center" wrap={true} margin="0.5em 0 0 0">
-          <button css={style.pageLinkBox} onClick={onClickViewWallet}>
-            <Box direction="row" align="center">
-              <img src={IdCardIcon} alt="wallet details" css={style.pageLinkIcon} />
-              <div>
-                <h3 css={style.h3}>Account Details</h3>
-                <div css={style.description}>
-                  See your acount information like your address and Account Key.
-                </div>
-              </div>
-            </Box>
-          </button>
-          <button css={style.pageLinkBox} onClick={onClickChangePassword}>
-            <Box direction="row" align="center">
-              <img src={LockIcon} alt="change pin" css={style.pageLinkIcon} />
-              <div>
-                <h3 css={style.h3}>Change Password</h3>
-                <div css={style.description}>
-                  Set the password used to unlock your account on this device.
-                </div>
-              </div>
-            </Box>
-          </button>
+          <PageLinkBox
+            header="Account Details"
+            body="See your acount information like your address and Account Key."
+            icon={IdCardIcon}
+            iconAlt="wallet details"
+            onClick={onClickViewAccount}
+          />
+          <PageLinkBox
+            header="Manage Accounts"
+            body="View your detailed account list and add/edit accounts."
+            icon={AvatarSwapIcon}
+            iconAlt="manage accounts"
+            onClick={onClickManageAccounts}
+          />
+        </Box>
+        <Box direction="row" align="center" justify="center" wrap={true}>
+          <PageLinkBox
+            header="Change Password"
+            body="Set the password used to unlock your accounts on this device."
+            icon={LockIcon}
+            iconAlt="change password"
+            onClick={onClickChangePassword}
+          />
+          <PageLinkBox
+            header="Logout"
+            body="Remove account keys and information from this device."
+            icon={SignPostIcon}
+            iconAlt="logout"
+            onClick={onClickLogout}
+          />
         </Box>
         <HrDivider styles={style.divider} />
         <h2 css={style.sectionHeader}>Advanced Settings</h2>
-        {/* <h3 css={style.warningLabel}>Changes here are not recommended, use at your own risk.</h3> */}
-        <Box
-          direction="row"
-          align="center"
-          justify="between"
-          margin="2.5em 0 0 0"
-          styles={style.toggleSettingContainer}
-        >
+        <Box direction="row" align="center" justify="between" styles={style.toggleSettingContainer}>
           <div>
             <h3 css={style.h3}>Add New Tokens</h3>
             <div css={style.description}>
@@ -97,13 +110,7 @@ export function SettingsScreen() {
             />
           </div>
         </Box>
-        <Box
-          direction="row"
-          align="center"
-          justify="between"
-          margin="2.5em 0 0 0"
-          styles={style.toggleSettingContainer}
-        >
+        <Box direction="row" align="center" justify="between" styles={style.toggleSettingContainer}>
           <div>
             <h3 css={style.h3}>Transaction Size Limits</h3>
             <div css={style.description}>
@@ -120,6 +127,29 @@ export function SettingsScreen() {
         </Box>
       </Box>
     </ScreenContentFrame>
+  )
+}
+
+interface PageLinkBoxProps {
+  header: string
+  body: string
+  icon: string
+  iconAlt: string
+  onClick: () => void
+}
+
+function PageLinkBox(props: PageLinkBoxProps) {
+  const { header, body, icon, iconAlt, onClick } = props
+  return (
+    <button css={style.pageLinkBox} onClick={onClick}>
+      <Box direction="row" align="center">
+        <img src={icon} alt={iconAlt} css={style.pageLinkIcon} />
+        <div>
+          <h3 css={style.h3}>{header}</h3>
+          <div css={style.description}>{body}</div>
+        </div>
+      </Box>
+    </button>
   )
 }
 
@@ -150,7 +180,7 @@ const style: Stylesheet = {
     ...transparentButtonStyles,
     textAlign: 'left',
     fontWeight: 400,
-    marginTop: '1em',
+    marginTop: '0.25em',
     width: '20em',
     padding: '1.1em 0.8em',
     borderRadius: 4,
@@ -165,6 +195,7 @@ const style: Stylesheet = {
     paddingRight: '1em',
   },
   toggleSettingContainer: {
+    margin: '1.75em 0 0 0',
     width: 'calc(100% - 2em)',
   },
   switchContainer: {

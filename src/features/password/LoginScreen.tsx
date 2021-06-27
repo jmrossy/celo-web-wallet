@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { showLogoutModal } from 'src/app/logout/useLogoutModal'
 import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
@@ -9,7 +10,6 @@ import { KeyIcon } from 'src/components/icons/Key'
 import { LedgerIcon } from 'src/components/icons/logos/Ledger'
 import { Box } from 'src/components/layout/Box'
 import { DropdownBox, useDropdownBox } from 'src/components/modal/DropdownBox'
-import { ModalAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
 import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
@@ -43,7 +43,6 @@ export function LoginScreen() {
   const dispatch = useDispatch()
   const onSubmit = (values: UnlockWalletParams) => {
     // TODO handle migration for old accounts
-    // TODO handle ledger too
     dispatch(unlockWalletActions.trigger(values))
   }
 
@@ -83,14 +82,9 @@ export function LoginScreen() {
       : 'Unable to unlock your wallet. Please ensure your Ledger is connected, unlocked, and running the latest Celo app.'
   )
 
-  // const onLogout = useLogoutModal() TODO
-  const { showModal, closeModal } = useModal()
-  const onClickHelp = () => {
-    const onActionClick = (action: ModalAction) => {
-      if (action.key === 'logout') alert('TODO')
-      else closeModal()
-    }
-    showModal({
+  const { showModalAsync } = useModal()
+  const onClickHelp = async () => {
+    const answer = await showModalAsync({
       head: 'Having Trouble Unlocking?',
       body: isLocalAcc
         ? "Local accounts can only be unlocked with your password. If you've lost your password, those accounts can unfortunately never be unlocked. But if you have your Account Keys, you can logout to re-import them."
@@ -99,8 +93,10 @@ export function LoginScreen() {
         { key: 'back', label: 'Back', color: Color.altGrey },
         { key: 'logout', label: 'Logout', color: Color.primaryRed },
       ],
-      onActionClick,
     })
+    if (answer && answer.key === 'logout') {
+      await showLogoutModal(showModalAsync, dispatch)
+    }
   }
 
   return (

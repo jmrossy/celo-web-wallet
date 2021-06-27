@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { useLogoutModal } from 'src/app/logout/useLogoutModal'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { useFundWalletModal } from 'src/components/FundWalletModal'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
@@ -10,14 +9,15 @@ import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
 import Discord from 'src/components/icons/logos/discord.svg'
 import Github from 'src/components/icons/logos/github.svg'
+import QrCodeIcon from 'src/components/icons/qr_code_big.svg'
 import SettingsIcon from 'src/components/icons/settings.svg'
-import SignPostIcon from 'src/components/icons/sign_post.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { DropdownBox, useDropdownBox } from 'src/components/modal/DropdownBox'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
 import { config } from 'src/config'
+import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { useChooseAccountModal } from 'src/features/wallet/accounts/ChooseAccountModal'
 import { useWalletAddress } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
@@ -29,10 +29,10 @@ import { logger } from 'src/utils/logger'
 const MenuItems = [
   { id: 'switch', label: 'Switch Account', icon: AvatarSwapIcon },
   { id: 'account', label: 'Account Details', icon: IdCardIcon },
+  { id: 'qr', label: 'QR Code', icon: QrCodeIcon },
   { id: 'fund', label: 'Fund Wallet', icon: CoinSwapIcon },
   { id: 'help', label: 'Help', icon: HelpIcon },
   { id: 'settings', label: 'Settings', icon: SettingsIcon, iconWidth: '1.8em' },
-  { id: 'logout', label: 'Logout', icon: SignPostIcon },
 ]
 
 export const AccountMenu = () => {
@@ -42,30 +42,30 @@ export const AccountMenu = () => {
   const identiconSize = isMobile ? 28 : 38
 
   const { showModalWithContent } = useModal()
-  const onLogout = useLogoutModal()
 
   const address = useWalletAddress()
   const addressStub = shortenAddress(address, false, true)
   const showFundModal = useFundWalletModal()
   const showAccountsModal = useChooseAccountModal()
+  const showQrModal = useAddressQrCodeModal()
 
   const navigate = useNavigate()
   const onItemClick = (key: string) => async () => {
     switch (key) {
       case 'account':
-        navigate('/wallet')
+        navigate('/account')
         break
       case 'switch':
         showAccountsModal()
+        break
+      case 'qr':
+        showQrModal(address)
         break
       case 'settings':
         navigate('/settings')
         break
       case 'fund':
         showFundModal(address)
-        break
-      case 'logout':
-        await onLogout()
         break
       case 'help':
         showModalWithContent({

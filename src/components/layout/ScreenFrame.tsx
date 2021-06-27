@@ -13,7 +13,7 @@ import { isWindowSizeMobile, isWindowSizeSmallMobile, useWindowSize } from 'src/
 import { Stylesheet } from 'src/styles/types'
 
 const SCREENS_WITHOUT_FEED: Record<string, boolean> = {
-  wallet: true,
+  account: true,
   accounts: true,
   settings: true,
 }

@@ -29,6 +29,9 @@ interface StandardModalProps extends ModalBase {
   body: string
 }
 
+export type showModalFunction = (props: StandardModalProps) => void
+export type showModalFunctionAsync = (props: StandardModalProps) => Promise<ModalAction | null>
+
 export function useModal() {
   const context = useContext(ModalContext)
 
