@@ -18,7 +18,6 @@ import {
 } from 'src/features/wallet/importAccount'
 import { getPendingAccount, PendingAccount } from 'src/features/wallet/pendingAccount'
 import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -99,7 +98,7 @@ export function SetPasswordForm() {
 
   return (
     <Box direction="column" align="center">
-      <div css={style.description}>Do not lose this password, it unlocks your account!</div>
+      <h2 css={style.description}>This password encrypts your accounts on this device.</h2>
       <form onSubmit={handleSubmit}>
         <Box direction="column" align="center" margin="0.5em 0 0 0">
           <div css={style.inputContainer}>
@@ -156,7 +155,6 @@ function validateForm(params: PasswordForm): ErrorState {
 const style: Stylesheet = {
   description: {
     ...onboardingStyles.description,
-    ...Font.extraBold,
     maxWidth: '22em',
     margin: '0 0.5em 0.5em 0.5em',
   },

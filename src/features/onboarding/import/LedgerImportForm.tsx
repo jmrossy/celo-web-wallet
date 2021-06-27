@@ -86,7 +86,7 @@ export function LedgerImportForm() {
 
 function validateForm(params: ImportForm): ErrorState {
   const { index } = params
-  if (index === null || index === undefined) {
+  if (!index) {
     return invalidInput('index', 'Index required')
   }
   const indexBn = BigNumber.from(index)

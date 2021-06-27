@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Address } from 'src/components/Address'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
-import { PencilIcon } from 'src/components/icons/Pencil'
-import { PlusIcon } from 'src/components/icons/Plus'
+import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import { useWalletAddress } from 'src/features/wallet/hooks'
@@ -73,23 +72,16 @@ export function ChooseAccountModal({ close }: ModalProps) {
             </Box>
           </button>
         ))}
+        <DashedBorderButton onClick={onClickAdd} styles={style.addButton}>
+          + Add new account
+        </DashedBorderButton>
       </Box>
-      <Box align="center" justify="between" margin="3em 0 0 0">
-        <Button
-          size="s"
-          width="10em"
-          onClick={onClickManage}
-          icon={<PencilIcon width="0.9em" height="0.9em" />}
-        >
+      <Box align="center" justify="between" margin="2.75em 0 0 0">
+        <Button size="s" width="10em" onClick={onClickManage}>
           Manage
         </Button>
-        <Button
-          size="s"
-          width="10em"
-          onClick={onClickAdd}
-          icon={<PlusIcon width="0.9em" height="0.9em" />}
-        >
-          Add
+        <Button size="s" width="10em" onClick={close}>
+          Close
         </Button>
       </Box>
     </Box>
@@ -117,6 +109,14 @@ const style: Stylesheet = {
     [mq[480]]: {
       marginLeft: '2em',
     },
+    [mq[768]]: {
+      marginLeft: '2.5em',
+    },
+  },
+  addButton: {
+    margin: '1.25em 1.05em 0 1.05em',
+    padding: '1em 0',
+    width: 'auto',
   },
 }
 
