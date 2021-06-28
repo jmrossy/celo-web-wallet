@@ -149,7 +149,7 @@ export function LockConfirmationScreen() {
             size="m"
             width="5em"
             margin="0 2em 0 0"
-            color={Color.altGrey}
+            color={Color.primaryWhite}
             onClick={onGoBack}
             disabled={isWorking || !feeAmount}
           >

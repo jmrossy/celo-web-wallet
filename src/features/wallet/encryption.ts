@@ -4,9 +4,14 @@ const SALT = '68d0ad14364deb3d417cd644e84dd1f5659d70287f2d2c94be5ce6eaf21a014f' 
 const IV_LENGTH = 12 // Size of initialization vector for encryption
 const NUM_DERIVATION_ITERATIONS = 250000
 
-export async function tryEncryptMnemonic(mnemonic: string, password: string) {
+export async function encryptMnemonic(mnemonic: string, password: string) {
   try {
-    const ciphertext = await encryptMnemonic(mnemonic, password)
+    if (!mnemonic || !password) throw new Error('Invalid arguments for encryption')
+    if (!crypto || !crypto.subtle) throw new Error('Crypto libs not available')
+
+    const keyMaterial = await getKeyMaterialFromPassword(password)
+    const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
+    const ciphertext = await encrypt(encryptionKey, mnemonic)
     return ciphertext
   } catch (error) {
     // Excluding error message in case it contains senstive data
@@ -15,34 +20,21 @@ export async function tryEncryptMnemonic(mnemonic: string, password: string) {
   }
 }
 
-export async function encryptMnemonic(mnemonic: string, password: string) {
-  if (!mnemonic || !password) throw new Error('Invalid arguments for encryption')
-  if (!crypto || !crypto.subtle) throw new Error('Crypto libs not available')
-
-  const keyMaterial = await getKeyMaterialFromPassword(password)
-  const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
-  return encrypt(encryptionKey, mnemonic)
-}
-
-export async function tryDecryptMnemonic(ciphertext: string, password: string) {
+export async function decryptMnemonic(ciphertext: string, password: string) {
   try {
-    const mnemonic = await decryptMnemonic(ciphertext, password)
+    if (!ciphertext || !password) {
+      throw new Error('Invalid arguments for decryption')
+    }
+
+    const keyMaterial = await getKeyMaterialFromPassword(password)
+    const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
+    const mnemonic = await decrypt(encryptionKey, ciphertext)
     return mnemonic
   } catch (error) {
     // Excluding error message in case it contains senstive data
     logger.error('Error decrypting mnemonic')
     throw new Error('Cannot decrypt account key')
   }
-}
-
-export async function decryptMnemonic(ciphertext: string, password: string) {
-  if (!ciphertext || !password) {
-    throw new Error('Invalid arguments for decryption')
-  }
-
-  const keyMaterial = await getKeyMaterialFromPassword(password)
-  const encryptionKey = await deriveKeyFromKeyMaterial(keyMaterial)
-  return decrypt(encryptionKey, ciphertext)
 }
 
 function encodeText(data: string) {

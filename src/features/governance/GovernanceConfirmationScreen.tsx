@@ -118,7 +118,7 @@ export function GovernanceConfirmationScreen() {
           <Button
             type="button"
             size="m"
-            color={Color.altGrey}
+            color={Color.primaryWhite}
             onClick={onGoBack}
             disabled={isWorking || !feeAmount}
             margin="0 2em 0 0"

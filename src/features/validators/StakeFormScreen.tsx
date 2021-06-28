@@ -221,7 +221,7 @@ export function StakeFormScreen() {
               <Button
                 type="button"
                 size="m"
-                color={Color.altGrey}
+                color={Color.primaryWhite}
                 onClick={onGoBack}
                 margin="0 5.4em 0 0"
                 width="5em"

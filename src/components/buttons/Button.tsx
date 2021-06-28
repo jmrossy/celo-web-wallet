@@ -37,10 +37,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
   const dimensions = getDimensions(size, widthOverride, heightOverride)
   const icoLayout = getLayout(size)
 
-  const baseBg = color || Color.primaryGreen
-  // TODO make this more robust. Could use a css filter to just brighten the base color
-  // perhaps consider the function from this SO answer: https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
-  const { hoverBg, activeBg } = getStateColors(baseBg)
+  const { backgroundColor, hoverBg, activeBg, border, textColor } = getColors(color)
 
   return (
     <button
@@ -49,13 +46,15 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
         ...icoLayout,
         ...dimensions,
         margin,
-        backgroundColor: baseBg,
+        backgroundColor,
         ':hover': {
           backgroundColor: hoverBg,
         },
         ':active': {
           backgroundColor: activeBg,
         },
+        border: border || defaultButtonStyles.border,
+        color: textColor || defaultButtonStyles.color,
         ...styles,
       }}
       onClick={onClick}
@@ -120,13 +119,22 @@ function getLayout(size?: string) {
     : null
 }
 
-function getStateColors(baseColor: string) {
+function getColors(baseColor: string = Color.primaryGreen) {
   if (baseColor === Color.primaryGreen) {
-    return { hoverBg: '#4cdd91', activeBg: '#29d67d' }
+    return { backgroundColor: baseColor, hoverBg: '#4cdd91', activeBg: '#29d67d' }
   } else if (baseColor === Color.primaryWhite) {
-    return { hoverBg: '#e4e6e7', activeBg: '#c8ccd0' }
+    return {
+      backgroundColor: baseColor,
+      hoverBg: '#f0faf4',
+      activeBg: '#e8f7ee',
+      border: `2px solid ${Color.primaryGreen}`,
+      textColor: Color.primaryGreen,
+    }
   } else {
     return {
+      backgroundColor: baseColor,
+      // TODO make this more robust. Could use a css filter to just brighten the base color
+      // perhaps consider the function from this SO answer: https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
       hoverBg: `${baseColor}${baseColor.length === 3 ? 'c' : 'cc'}`,
       activeBg: `${baseColor}${baseColor.length === 3 ? 'e' : 'ee'}`,
     }

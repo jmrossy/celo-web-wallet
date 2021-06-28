@@ -130,7 +130,7 @@ function renderAddressAndRemoveButton(row: BalanceTableRow) {
 
   const onClickRemove = () => {
     const actions = [
-      { key: 'cancel', label: 'Cancel', color: Color.altGrey },
+      { key: 'cancel', label: 'Cancel', color: Color.primaryWhite },
       { key: 'remove', label: 'Remove', color: Color.primaryGreen },
     ]
     const onActionClick = (action: ModalAction) => {

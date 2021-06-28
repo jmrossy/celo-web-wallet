@@ -80,7 +80,7 @@ export function ChooseAccountModal({ close }: ModalProps) {
         <Button size="s" width="10em" onClick={onClickManage}>
           Manage
         </Button>
-        <Button size="s" width="10em" onClick={close}>
+        <Button size="s" width="10em" onClick={close} color={Color.primaryWhite}>
           Close
         </Button>
       </Box>
@@ -114,8 +114,8 @@ const style: Stylesheet = {
     },
   },
   addButton: {
-    margin: '1.25em 1.05em 0 1.05em',
-    padding: '1em 0',
+    margin: '1.25em 1.1em 0 1.1em',
+    padding: '0.9em 0',
     width: 'auto',
   },
 }

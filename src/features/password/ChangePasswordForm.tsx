@@ -88,7 +88,7 @@ export function ChangePasswordForm() {
           <Button
             type="button"
             size="m"
-            color={Color.altGrey}
+            color={Color.primaryWhite}
             onClick={onClickCancel}
             margin="0 1em 0 0"
             disabled={status === SagaStatus.Started}

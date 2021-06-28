@@ -104,7 +104,7 @@ export function WalletConnectStatusBox() {
             {(isReqPending || isSessionPending) && (
               <Box margin="1em 0 0 0">
                 <Button
-                  color={Color.altGrey}
+                  color={Color.primaryWhite}
                   size="xs"
                   onClick={onClickDeny}
                   margin="0 1.2em 0 0"

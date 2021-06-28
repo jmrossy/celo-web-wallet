@@ -70,7 +70,7 @@ export function AddTokenModal(props: { close: () => void }) {
         <Box direction="row" align="center" margin="7em 0 0 0">
           <Button
             size="s"
-            color={Color.altGrey}
+            color={Color.primaryWhite}
             margin="0 1em"
             onClick={props.close}
             type="button"

@@ -9,7 +9,7 @@ import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
 import { createLedgerSigner } from 'src/features/ledger/signerFactory'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
-import { tryDecryptMnemonic, tryEncryptMnemonic } from 'src/features/wallet/encryption'
+import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
 import {
   addAccount as addAccountToStorage,
   getAccounts as getAccountsFromStorage,
@@ -65,7 +65,7 @@ export function* loadAccount(address: string, password?: string) {
     const { encryptedMnemonic, derivationPath } = activeAccount
     if (!password) throw new Error('Password required for local accounts')
     if (!encryptedMnemonic) throw new Error('Expected local account to have mnemonic')
-    const mnemonic = yield* call(tryDecryptMnemonic, encryptedMnemonic, password)
+    const mnemonic = yield* call(decryptMnemonic, encryptedMnemonic, password)
 
     const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
     if (!areAddressesEqual(wallet.address, address))
@@ -104,7 +104,7 @@ function* addLocalAccount(newAccount: LocalAccount, password?: string) {
 
   const { mnemonic, derivationPath, locale } = newAccount
   const formattedMnemonic = normalizeMnemonic(mnemonic)
-  const encryptedMnemonic = yield* call(tryEncryptMnemonic, formattedMnemonic, password)
+  const encryptedMnemonic = yield* call(encryptMnemonic, formattedMnemonic, password)
   const wallet = Wallet.fromMnemonic(formattedMnemonic, derivationPath)
   const name = newAccount.name || getDefaultNewAccountName()
   const storedAccount: StoredAccountData = {

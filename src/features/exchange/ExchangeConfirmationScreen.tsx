@@ -164,7 +164,7 @@ export function ExchangeConfirmationScreen() {
               type="button"
               onClick={onGoBack}
               size="m"
-              color={Color.altGrey}
+              color={Color.primaryWhite}
               disabled={isWorking}
               margin="0 1em 0 0"
               width="5.5em"
