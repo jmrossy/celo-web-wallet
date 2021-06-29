@@ -28,7 +28,7 @@ export class LedgerSigner extends Signer {
     this.celoApp = new CeloLedgerApp(transport)
     await this.validateCeloAppVersion()
 
-    const account = await this.perform((celoApp) => celoApp.getAddress(this.path, true))
+    const account = await this.perform((celoApp) => celoApp.getAddress(this.path))
     this.address = utils.getAddress(account.address)
   }
 

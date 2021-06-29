@@ -8,6 +8,11 @@ import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
 import { createLedgerSigner } from 'src/features/ledger/signerFactory'
+import {
+  getPasswordCache,
+  hasPasswordCached,
+  setPasswordCache,
+} from 'src/features/password/password'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
 import {
@@ -15,7 +20,7 @@ import {
   getAccounts as getAccountsFromStorage,
   StoredAccountData,
 } from 'src/features/wallet/storage'
-import { normalizeMnemonic } from 'src/features/wallet/utils'
+import { isValidMnemonic, normalizeMnemonic } from 'src/features/wallet/utils'
 import { setAccount } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
@@ -52,6 +57,16 @@ export function hasAccounts() {
   return getAccounts().size !== 0
 }
 
+// Does the wallet have any encrypted local accounts
+// I.e. has the user ever set a password
+export function hasPasswordedAccount() {
+  const accounts = getAccounts().values()
+  for (const account of accounts) {
+    if (account.type === SignerType.Local && account.encryptedMnemonic) return true
+  }
+  return false
+}
+
 export function getDefaultNewAccountName() {
   return `Account ${getAccounts().size + 1}`
 }
@@ -62,24 +77,39 @@ export function* loadAccount(address: string, password?: string) {
   if (!activeAccount) throw new Error(`No account found with address ${address}`)
 
   if (activeAccount.type === SignerType.Local) {
-    const { encryptedMnemonic, derivationPath } = activeAccount
-    if (!password) throw new Error('Password required for local accounts')
-    if (!encryptedMnemonic) throw new Error('Expected local account to have mnemonic')
-    const mnemonic = yield* call(decryptMnemonic, encryptedMnemonic, password)
-
-    const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
-    if (!areAddressesEqual(wallet.address, address))
-      throw new Error('Address from menmonic does not match desired address')
-
-    yield* call(activateLocalAccount, wallet)
+    yield* call(loadLocalAccount, activeAccount, password)
   } else if (activeAccount.type === SignerType.Ledger) {
-    const { address, derivationPath } = activeAccount
-    const provider = getProvider()
-    const ledgerSigner = yield* call(createLedgerSigner, derivationPath, provider)
-    yield* call(activateLedgerAccount, ledgerSigner, address)
+    yield* call(loadLedgerAccount, activeAccount)
   } else {
     throw new Error('Invalid account signer type')
   }
+}
+
+function* loadLocalAccount(account: StoredAccountData, password?: string) {
+  if (!password) {
+    const cachedPassword = getPasswordCache()
+    if (cachedPassword) password = cachedPassword.password
+    else throw new Error('Must unlock account with password before importing')
+  }
+
+  const { encryptedMnemonic, derivationPath } = account
+  if (!password) throw new Error('Password required for local accounts')
+  if (!encryptedMnemonic) throw new Error('Expected local account to have mnemonic')
+  const mnemonic = yield* call(decryptMnemonic, encryptedMnemonic, password)
+
+  const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
+  if (!areAddressesEqual(wallet.address, account.address))
+    throw new Error('Address from menmonic does not match desired address')
+
+  if (!hasPasswordCached()) setPasswordCache(password)
+  yield* call(activateLocalAccount, wallet)
+}
+
+function* loadLedgerAccount(account: StoredAccountData) {
+  const { address, derivationPath } = account
+  const provider = getProvider()
+  const ledgerSigner = yield* call(createLedgerSigner, derivationPath, provider)
+  yield* call(activateLedgerAccount, ledgerSigner, address)
 }
 
 export function createRandomAccount() {
@@ -100,7 +130,14 @@ export function* addAccount(newAccount: LocalAccount | LedgerAccount, password?:
 }
 
 function* addLocalAccount(newAccount: LocalAccount, password?: string) {
-  if (!password) throw new Error('Password required for local accounts')
+  if (!password) {
+    const cachedPassword = getPasswordCache()
+    if (cachedPassword) password = cachedPassword.password
+    else throw new Error('Must unlock account with password before importing')
+  } else {
+    yield* call(verifyPassword, password)
+    setPasswordCache(password)
+  }
 
   const { mnemonic, derivationPath, locale } = newAccount
   const formattedMnemonic = normalizeMnemonic(mnemonic)
@@ -165,6 +202,7 @@ function* onAccountActivation(address: string, type: SignerType) {
     //TODO load in feed data
     yield* put(resetFeed())
   }
+
   yield* put(fetchFeedActions.trigger())
 }
 
@@ -183,4 +221,26 @@ export function getActiveAccount() {
     throw new Error('Signer address not set, may be a LedgerSigner not properly initialized')
   const mnemonic = signer.type === SignerType.Local ? signer.signer.mnemonic.phrase : undefined
   return { address, mnemonic, type: signer.type }
+}
+
+// Verifies that provided password decrypts one of the
+// current local accounts (if there are any)
+// Otherwise throws error
+async function verifyPassword(password: string) {
+  const accounts = getAccounts()
+  if (accounts.size === 0) return
+  for (const acc of accounts.values()) {
+    if (acc.type === SignerType.Local && acc.encryptedMnemonic) {
+      const mnemonic = await decryptMnemonic(acc.encryptedMnemonic, password)
+      if (isValidMnemonic(mnemonic)) return
+      else throw new Error('Password is incorrect')
+    }
+  }
+  return
+}
+
+export async function changeWalletPassword(oldPassword: string, newPassword: string) {
+  await verifyPassword(oldPassword)
+  //TODO stuff
+  setPasswordCache(newPassword)
 }

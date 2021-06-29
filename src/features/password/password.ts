@@ -44,10 +44,11 @@ export function useAccountLockStatus() {
 
   // Call to hasPasswordCached() is for security reasons (so user can't change a persisted value in local storage)
   // and isWalletUnlocked is for flow reasons - so the UI reacts to changes after authenticating
-  const isUnlocked =
+  const isUnlocked = !!(
     address &&
     isWalletUnlocked &&
     (hasPasswordCached() || type === SignerType.Ledger || config.defaultAccount)
+  )
 
   return { address, type, isUnlocked }
 }

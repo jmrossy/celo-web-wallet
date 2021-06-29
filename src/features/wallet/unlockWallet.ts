@@ -1,12 +1,10 @@
 import { utils } from 'ethers'
 import { SignerType } from 'src/blockchain/signer'
-import { setPasswordCache } from 'src/features/password/password'
 import { loadAccount } from 'src/features/wallet/manager'
-import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put } from 'typed-redux-saga'
+import { call } from 'typed-redux-saga'
 
 export interface UnlockWalletParams {
   activeAddress: string
@@ -32,8 +30,6 @@ function* unlockWallet(params: UnlockWalletParams) {
   const { activeAddress, password } = params
   yield* call(loadAccount, activeAddress, password)
 
-  if (password) setPasswordCache(password)
-  yield* put(setWalletUnlocked(true))
   logger.info('Account unlocked successfully')
 }
 

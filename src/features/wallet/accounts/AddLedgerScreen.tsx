@@ -5,7 +5,7 @@ import { Font } from 'src/styles/fonts'
 export function AddLedgerScreen() {
   return (
     <>
-      <h2 css={Font.h2Center}>Import Another Ledger Account</h2>
+      <h2 css={Font.h2Center}>Import a Ledger Account</h2>
       <Box direction="column" align="center">
         <LedgerImportForm />
       </Box>

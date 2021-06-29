@@ -51,7 +51,7 @@ export function setSigner(_signer: CeloSigner) {
   }
 
   if (signer) {
-    logger.warn('Signer is being overridden')
+    logger.debug('Signer is being overridden')
   }
 
   signer = _signer

@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { showLogoutModal } from 'src/app/logout/useLogoutModal'
 import type { RootState } from 'src/app/rootReducer'
@@ -16,7 +15,7 @@ import { DeviceAnimation } from 'src/features/ledger/animation/DeviceAnimation'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
 import { PasswordInput, PasswordInputType } from 'src/features/password/PasswordInput'
-import { getAccounts } from 'src/features/wallet/manager'
+import { useAccountList } from 'src/features/wallet/hooks'
 import { StoredAccountData } from 'src/features/wallet/storage'
 import {
   unlockWalletActions,
@@ -37,33 +36,22 @@ const initialValues: UnlockWalletParams = {
 }
 
 export function LoginScreen() {
-  const previousAddress = useSelector((s: RootState) => s.wallet.address)
-  const [accounts, setAccounts] = useState<StoredAccountData[] | null>(null)
-
   const dispatch = useDispatch()
   const onSubmit = (values: UnlockWalletParams) => {
     // TODO handle migration for old accounts
     dispatch(unlockWalletActions.trigger(values))
   }
-
+  const initialFormValues = useFormInitialValues()
   const { values, setValues, errors, handleChange, handleBlur, handleSubmit } =
-    useCustomForm<UnlockWalletParams>(
-      { ...initialValues, activeAddress: previousAddress || '' },
-      onSubmit,
-      validate
-    )
+    useCustomForm<UnlockWalletParams>(initialFormValues, onSubmit, validate)
 
-  useEffect(() => {
-    // Get account list on screen mount
-    const storedAccounts = getAccounts()
-    if (!storedAccounts.size) throw new Error('No accounts found')
-    const accountList = Array.from(storedAccounts.values())
-    setAccounts(accountList)
-    if (!values.activeAddress || !storedAccounts.has(values.activeAddress)) {
-      const firstAccount = accountList[0]
+  const accounts = useAccountList((accs) => {
+    const activeAddr = values.activeAddress
+    if (!activeAddr || !accs.find((a) => a.address === activeAddr)) {
+      const firstAccount = accs[0]
       setValues({ activeAddress: firstAccount.address, type: firstAccount.type, password: '' })
     }
-  }, [])
+  })
 
   const { isDropdownVisible, showDropdown, hideDropdown } = useDropdownBox()
   const onSelectAddress = (address: string) => {
@@ -190,6 +178,15 @@ export function LoginScreen() {
       </form>
     </OnboardingScreenFrame>
   )
+}
+
+function useFormInitialValues(): UnlockWalletParams {
+  const { address: previousAddress, type: previousType } = useSelector((s: RootState) => s.wallet)
+  return {
+    ...initialValues,
+    activeAddress: previousAddress || initialValues.activeAddress,
+    type: previousType || initialValues.type,
+  }
 }
 
 function getAccountType(address: string | null, accounts: StoredAccountData[] | null): SignerType {

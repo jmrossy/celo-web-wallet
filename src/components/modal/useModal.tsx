@@ -1,4 +1,4 @@
-import { ReactElement, useContext } from 'react'
+import { ReactElement, useCallback, useContext } from 'react'
 import {
   ModalAction,
   ModalActionCallback,
@@ -35,16 +35,16 @@ export type showModalFunctionAsync = (props: StandardModalProps) => Promise<Moda
 export function useModal() {
   const context = useContext(ModalContext)
 
-  const showLoadingModal = (head: string, subHead?: string | null) => {
+  const showLoadingModal = useCallback((head: string, subHead?: string | null) => {
     const modalProps: ModalProps = {
       type: 'loading',
       head: head,
       subHead: subHead ?? undefined,
     }
     context.showModal(modalProps)
-  }
+  }, [])
 
-  const showSuccessModal = (head: string, subHead?: string | null) => {
+  const showSuccessModal = useCallback((head: string, subHead?: string | null) => {
     const modalProps: ModalProps = {
       head,
       subHead: subHead ?? undefined,
@@ -53,23 +53,26 @@ export function useModal() {
       onActionClick: context.closeModal,
     }
     context.showModal(modalProps, <SuccessModalContent />)
-  }
+  }, [])
 
-  const showErrorModal = (head: string, subHead?: string | undefined, error?: unknown) => {
-    const errorMsg = errorToString(error, 80)
-    const modalProps: ModalProps = {
-      head,
-      subHead: subHead,
-      body: errorMsg,
-      severity: 'error',
-      actions: ModalOkAction,
-      onClose: context.closeModal,
-      onActionClick: context.closeModal,
-    }
-    context.showModal(modalProps)
-  }
+  const showErrorModal = useCallback(
+    (head: string, subHead?: string | undefined, error?: unknown) => {
+      const errorMsg = errorToString(error, 80)
+      const modalProps: ModalProps = {
+        head,
+        subHead: subHead,
+        body: errorMsg,
+        severity: 'error',
+        actions: ModalOkAction,
+        onClose: context.closeModal,
+        onActionClick: context.closeModal,
+      }
+      context.showModal(modalProps)
+    },
+    []
+  )
 
-  const showModalWithContent = (props: ModalWithContentProps) => {
+  const showModalWithContent = useCallback((props: ModalWithContentProps) => {
     const modalProps: ModalProps = {
       head: props.head,
       headIcon: props.headIcon ?? undefined,
@@ -80,9 +83,9 @@ export function useModal() {
       onActionClick: props.onActionClick,
     }
     context.showModal(modalProps, props.content)
-  }
+  }, [])
 
-  const showModalAsync = (props: StandardModalProps) => {
+  const showModalAsync = useCallback((props: StandardModalProps) => {
     const modalProps: ModalProps = {
       head: props.head,
       headIcon: props.headIcon ?? undefined,
@@ -94,11 +97,10 @@ export function useModal() {
       onActionClick: props.actions ? props.onActionClick : context.closeModal, //default to close for the Ok button,
       size: props.size ?? undefined,
     }
-
     return context.showModalAsync(modalProps)
-  }
+  }, [])
 
-  const showModal = (props: StandardModalProps) => {
+  const showModal = useCallback((props: StandardModalProps) => {
     const modalProps: ModalProps = {
       head: props.head,
       headIcon: props.headIcon ?? undefined,
@@ -110,9 +112,8 @@ export function useModal() {
       onActionClick: props.actions ? props.onActionClick : context.closeModal, //default to close for the Ok button,
       size: props.size ?? undefined,
     }
-
     context.showModal(modalProps)
-  }
+  }, [])
 
   return {
     showModal,

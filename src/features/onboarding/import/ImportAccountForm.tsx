@@ -1,16 +1,27 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { SignerType } from 'src/blockchain/signer'
 import { Button } from 'src/components/buttons/Button'
 import { ButtonToggle } from 'src/components/buttons/ButtonToggle'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
+import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import {
   DerivationPathForm,
   DerivationPathFormValues,
   derivationPathInitialValues,
   toDerivationPath,
 } from 'src/features/onboarding/import/DerivationPathForm'
+import { useEnterPasswordModal } from 'src/features/password/EnterPasswordModal'
+import { hasPasswordCached } from 'src/features/password/password'
+import {
+  importAccountActions,
+  ImportAccountParams,
+  importAccountSagaName,
+} from 'src/features/wallet/importAccount'
+import { hasPasswordedAccount } from 'src/features/wallet/manager'
 import { setPendingAccount } from 'src/features/wallet/pendingAccount'
 import { isValidDerivationPath, isValidMnemonic } from 'src/features/wallet/utils'
 import { Font } from 'src/styles/fonts'
@@ -33,17 +44,51 @@ interface Props {
 }
 
 export function ImportAccountForm(props: Props) {
-  const navigate = useNavigate()
   const [mode, setMode] = useState<'simple' | 'advanced'>('simple')
+  const onToggleMode = (index: number) => {
+    resetValues(initialValues)
+    setMode(index === 0 ? 'simple' : 'advanced')
+  }
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const { showErrorModal } = useModal()
+  const showPasswordModal = useEnterPasswordModal()
+
   const onSubmit = (values: ImportFormValues) => {
     try {
+      const mnemonic = values.mnemonic
       const derivationPath = toDerivationPath(values)
-      setPendingAccount(values.mnemonic, derivationPath, true)
-      // TODO navigate to diff place if props.isAddFlow
-      // and next step depends on if password was ever set
-      navigate('/setup/set-pin', { state: { pageNumber: 4 } })
+
+      const triggerImport = (password?: string) => {
+        const params: ImportAccountParams = {
+          account: {
+            type: SignerType.Local,
+            mnemonic,
+            derivationPath,
+          },
+          isExisting: true,
+          password,
+        }
+        dispatch(importAccountActions.trigger(params))
+      }
+
+      if (!props.isAddFlow) {
+        // If this is for onboarding flow
+        setPendingAccount(mnemonic, derivationPath, true)
+        navigate('/setup/set-pin', { state: { pageNumber: 4 } })
+      } else if (hasPasswordCached()) {
+        // If the user already logged in to a passworded account
+        triggerImport()
+      } else if (hasPasswordedAccount()) {
+        // If the user has set a pass but logged in with Ledger
+        showPasswordModal(triggerImport)
+      } else {
+        // User never set a password before
+        setPendingAccount(mnemonic, derivationPath, true)
+        navigate('/accounts/set-pin')
+      }
     } catch (error) {
       showErrorModal(
         'Error Importing Account',
@@ -56,10 +101,14 @@ export function ImportAccountForm(props: Props) {
   const { values, errors, handleChange, handleBlur, handleSubmit, setValues, resetValues } =
     useCustomForm<ImportFormValues>(initialValues, onSubmit, validateForm)
 
-  const onToggleMode = (index: number) => {
-    resetValues(initialValues)
-    setMode(index === 0 ? 'simple' : 'advanced')
-  }
+  const status = useSagaStatus(
+    importAccountSagaName,
+    'Error Importing Account',
+    'Something went wrong when importing your new account, sorry! Please try again.',
+    () => {
+      navigate('/')
+    }
+  )
 
   return (
     <Box direction="column" align="center">

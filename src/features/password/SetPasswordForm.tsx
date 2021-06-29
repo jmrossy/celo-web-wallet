@@ -31,12 +31,14 @@ interface PasswordForm {
 
 const initialValues: PasswordForm = { value: '', valueConfirm: '' }
 
+interface Props {
+  onSuccess: () => void
+}
+
 // This form receives the password value, validates it, and then
 // triggers the account import with it using the pending account
-export function SetPasswordForm() {
-  const dispatch = useDispatch()
+export function SetPasswordForm(props: Props) {
   const navigate = useNavigate()
-
   const [pendingAccount, setPendingAccount] = useState<PendingAccount | undefined>()
   useEffect(() => {
     // A pending account must have been created before reaching here
@@ -48,6 +50,7 @@ export function SetPasswordForm() {
     }
   }, [])
 
+  const dispatch = useDispatch()
   const onConfirm = (values: PasswordForm) => {
     if (!pendingAccount) return
     const params: ImportAccountParams = {
@@ -86,53 +89,47 @@ export function SetPasswordForm() {
     validateForm
   )
 
-  const onSuccess = () => {
-    navigate('/', { replace: true })
-  }
   const status = useSagaStatus(
     importAccountSagaName,
     'Error Saving Account',
     'Something went wrong when saving your new account, sorry! Please try again.',
-    onSuccess
+    props.onSuccess
   )
 
   return (
-    <Box direction="column" align="center">
-      <h2 css={style.description}>This password encrypts your accounts on this device.</h2>
-      <form onSubmit={handleSubmit}>
-        <Box direction="column" align="center" margin="0.5em 0 0 0">
-          <div css={style.inputContainer}>
-            <PasswordInputRow
-              type={PasswordInputType.NewPassword}
-              label="Enter Password"
-              name="value"
-              value={values.value}
-              onChange={handleChange}
-              autoFocus={true}
-              {...errors['value']}
-            />
-            <PasswordInputRow
-              type={PasswordInputType.NewPassword}
-              label="Confirm Password"
-              name="valueConfirm"
-              value={values.valueConfirm}
-              onChange={handleChange}
-              autoFocus={false}
-              {...errors['valueConfirm']}
-            />
-          </div>
-          <PasswordStrengthBar value={values.value} />
-          <Button
-            size="l"
-            type="submit"
-            margin="1.5em 0 0 0"
-            disabled={status === SagaStatus.Started}
-          >
-            Set Password
-          </Button>
-        </Box>
-      </form>
-    </Box>
+    <form onSubmit={handleSubmit}>
+      <Box direction="column" align="center" margin="0.5em 0 0 0">
+        <div css={style.inputContainer}>
+          <PasswordInputRow
+            type={PasswordInputType.NewPassword}
+            label="Enter Password"
+            name="value"
+            value={values.value}
+            onChange={handleChange}
+            autoFocus={true}
+            {...errors['value']}
+          />
+          <PasswordInputRow
+            type={PasswordInputType.NewPassword}
+            label="Confirm Password"
+            name="valueConfirm"
+            value={values.valueConfirm}
+            onChange={handleChange}
+            autoFocus={false}
+            {...errors['valueConfirm']}
+          />
+        </div>
+        <PasswordStrengthBar value={values.value} />
+        <Button
+          size="l"
+          type="submit"
+          margin="1.5em 0 0 0"
+          disabled={status === SagaStatus.Started}
+        >
+          Set Password
+        </Button>
+      </Box>
+    </form>
   )
 }
 

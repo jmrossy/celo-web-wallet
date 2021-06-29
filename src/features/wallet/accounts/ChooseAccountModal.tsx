@@ -4,7 +4,7 @@ import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
-import { useWalletAddress } from 'src/features/wallet/hooks'
+import { useAccountList, useWalletAddress } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -36,22 +36,21 @@ interface ModalProps {
 
 export function ChooseAccountModal({ close }: ModalProps) {
   const activeAddress = useWalletAddress()
-  const navigate = useNavigate()
-
-  const accounts = [
-    { address: activeAddress, balance: '$9231.12' },
-    { address: '0xa2972a33550c33ecfa4a02a0ea212ac98e77fa55', balance: '$0.01' },
-  ]
+  const accounts = useAccountList()
+  // TODO real balance
+  const accountsWithBalance = accounts?.map((a) => ({ address: a.address, balance: '0' })) || []
 
   const onClickAddress = (addr: string) => {
+    if (addr === activeAddress) return
+    //TODO
     alert('Clicked' + addr)
   }
 
+  const navigate = useNavigate()
   const onClickAdd = () => {
     navigate('/accounts/add')
     close()
   }
-
   const onClickManage = () => {
     navigate('/accounts')
     close()
@@ -60,9 +59,13 @@ export function ChooseAccountModal({ close }: ModalProps) {
   return (
     <Box direction="column" align="stretch">
       <Box direction="column" align="stretch" margin="-1.4em">
-        {accounts.map((a) => (
+        {accountsWithBalance.map((a) => (
           <button
-            css={a.address === activeAddress ? activeAccountButton : style.accountButton}
+            css={
+              a.address === activeAddress && accountsWithBalance.length > 1
+                ? activeAccountButton
+                : style.accountButton
+            }
             key={`account-${a.address}`}
             onClick={() => onClickAddress(a.address)}
           >
@@ -77,7 +80,7 @@ export function ChooseAccountModal({ close }: ModalProps) {
         </DashedBorderButton>
       </Box>
       <Box align="center" justify="between" margin="2.75em 0 0 0">
-        <Button size="s" width="10em" onClick={onClickManage}>
+        <Button size="s" width="10em" onClick={onClickManage} margin="0 1em 0 0">
           Manage
         </Button>
         <Button size="s" width="10em" onClick={close} color={Color.primaryWhite}>

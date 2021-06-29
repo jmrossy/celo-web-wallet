@@ -33,7 +33,7 @@ export function createPendingAccount() {
 
 export function getPendingAccount() {
   const pending = pendingAccount
-  // Cached pending account can only be retrieved once
+  // Auto-clear it after first read
   pendingAccount = null
   return pending
 }

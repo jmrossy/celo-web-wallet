@@ -165,8 +165,9 @@ export const defaultButtonStyles: Styles = {
   },
   ':disabled': {
     cursor: 'default',
-    color: Color.primaryGrey,
-    backgroundColor: Color.borderInactive,
+    color: `${Color.primaryGrey} !important`,
+    backgroundColor: `${Color.borderInactive} !important`,
+    border: 'none !important',
     'img, svg': {
       filter: 'brightness(0.7)',
     },

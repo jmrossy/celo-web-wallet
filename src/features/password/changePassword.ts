@@ -1,9 +1,9 @@
 import { validatePasswordValue } from 'src/features/password/utils'
-import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
+import { changeWalletPassword } from 'src/features/wallet/manager'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { put } from 'typed-redux-saga'
+import { call } from 'typed-redux-saga'
 
 export interface ChangePasswordParams {
   value: string
@@ -37,24 +37,11 @@ export function validate(params: ChangePasswordParams): ErrorState {
 }
 
 function* changePassword(params: ChangePasswordParams) {
-  validateOrThrow(() => validate(params), 'Invalid Pincode or Password')
+  validateOrThrow(() => validate(params), 'Invalid Password')
 
   const { value, newValue } = params
-  //TODO
-  // if (!isSignerSet()) {
-  //   throw new Error('Account not setup yet')
-  // }
+  yield* call(changeWalletPassword, value, newValue)
 
-  // const mnemonic = yield* call(loadWallet, existingPass)
-  // if (!mnemonic) {
-  //   throw new Error(`Incorrect ${secretTypeToLabel(type)[0]} or missing wallet`)
-  // }
-
-  // yield* call(saveWallet, newPass, true)
-  // yield* put(setSecretType(type))
-  yield* put(setWalletUnlocked(true))
-
-  // updateUnlockedTime()
   logger.info('password changed')
 }
 

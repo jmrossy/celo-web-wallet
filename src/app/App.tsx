@@ -37,6 +37,7 @@ import { AddCreateScreen } from 'src/features/wallet/accounts/AddCreateScreen'
 import { AddDeriveScreen } from 'src/features/wallet/accounts/AddDeriveScreen'
 import { AddImportScreen } from 'src/features/wallet/accounts/AddImportScreen'
 import { AddLedgerScreen } from 'src/features/wallet/accounts/AddLedgerScreen'
+import { AddSetPasswordScreen } from 'src/features/wallet/accounts/AddSetPasswordScreen'
 import { ManageAccountsScreen } from 'src/features/wallet/accounts/ManageAccountsScreen'
 import { ViewAccountScreen } from 'src/features/wallet/accounts/ViewAccountScreen'
 import { BalanceDetailsScreen } from 'src/features/wallet/balances/BalanceDetailsScreen'
@@ -96,6 +97,7 @@ export const App = () => {
                 <Route path="derive" element={<AddDeriveScreen />} />
                 <Route path="import" element={<AddImportScreen />} />
                 <Route path="ledger" element={<AddLedgerScreen />} />
+                <Route path="set-pin" element={<AddSetPasswordScreen />} />
               </Route>
               <Route path="settings" element={<SettingsScreen />} />
             </Route>

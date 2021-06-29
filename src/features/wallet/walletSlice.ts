@@ -13,8 +13,6 @@ interface Wallet {
   isUnlocked: boolean
   address: string | null
   type: SignerType | null
-  // derivationPath: string | null
-  // secretType: SecretType | null
   balances: Balances
   account: AccountStatus
   voterBalances: Balances | null // if account is vote signer for another, balance of voter
@@ -37,7 +35,6 @@ export const walletInitialState: Wallet = {
   isUnlocked: false,
   address: null,
   type: null,
-  // secretType: null, // TODO still needed?
   balances: {
     tokens: {
       CELO: {
@@ -75,14 +72,12 @@ const walletSlice = createSlice({
     setIsConnected: (state, action: PayloadAction<boolean>) => {
       state.isConnected = action.payload
     },
-    setWalletUnlocked: (state, action: PayloadAction<boolean>) => {
-      state.isUnlocked = action.payload
-    },
     setAccount: (state, action: PayloadAction<SetAccountAction>) => {
       const { address, type } = action.payload
-      if (state.address && areAddressesEqual(state.address, address)) return
+      state.isUnlocked = true
       assert(address && address.length === 42, `Invalid address ${address}`)
       assert(type === SignerType.Local || type === SignerType.Ledger, `Invalid type ${type}`)
+      if (state.address && areAddressesEqual(state.address, address)) return
       state.address = address
       state.type = type
       state.account = walletInitialState.account
@@ -90,26 +85,6 @@ const walletSlice = createSlice({
       // TODO consider 0-ing all values here
       state.balances.lastUpdated = walletInitialState.balances.lastUpdated
     },
-    // setAddress: (state, action: PayloadAction<SetWalletAction>) => {
-    //   const { address, type } = action.payload
-    //   assert(address && address.length === 42, `Invalid address ${address}`)
-    //   assert(type === SignerType.Local || type === SignerType.Ledger, `Invalid type ${address}`)
-    //   state.address = address
-    //   state.type = type
-    // },
-    // setDerivationPath: (state, action: PayloadAction<string>) => {
-    //   const derivationPath = action.payload
-    //   assert(isValidDerivationPath(derivationPath), `Invalid derivation path ${derivationPath}`)
-    //   state.derivationPath = derivationPath
-    // },
-    // setSecretType: (state, action: PayloadAction<SecretType>) => {
-    //   const secretType = action.payload
-    //   assert(
-    //     secretType === 'pincode' || secretType === 'password',
-    //     `Invalid secret type ${secretType}`
-    //   )
-    //   state.secretType = secretType
-    // },
     updateBalances: (state, action: PayloadAction<Balances>) => {
       const { tokens, lockedCelo, lastUpdated } = action.payload
       assert(tokens && lockedCelo && lastUpdated, 'Invalid balance')
@@ -138,30 +113,19 @@ const walletSlice = createSlice({
       delete newTokens[tokenId]
       state.balances.tokens = newTokens
     },
-    // clearWalletCache: (state) => {
-    //   // Reset some account-specific state that may be stale
-    //   state.balances = walletInitialState.balances
-    //   state.account = walletInitialState.account
-    //   state.voterBalances = walletInitialState.voterBalances
-    // },
     resetWallet: () => walletInitialState,
   },
 })
 
 export const {
   setIsConnected,
-  setWalletUnlocked,
   setAccount,
-  // setAddress,
-  // setDerivationPath,
   updateBalances,
   setAccountStatus,
   setAccountIsRegistered,
   setVoterBalances,
-  // setSecretType,
   addToken,
   removeToken,
-  // clearWalletCache,
   resetWallet,
 } = walletSlice.actions
 const walletReducer = walletSlice.reducer
@@ -189,7 +153,6 @@ const migrations = {
   },
 }
 
-// TODO migration for new schema?
 const walletPersistConfig = {
   key: 'wallet',
   storage: storage,

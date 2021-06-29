@@ -2,7 +2,6 @@ import { utils } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
-import { getPasswordCache, setPasswordCache } from 'src/features/password/password'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { addAccount, LedgerAccount, LocalAccount } from 'src/features/wallet/manager'
 import {
@@ -10,7 +9,6 @@ import {
   isValidMnemonic,
   isValidMnemonicLocale,
 } from 'src/features/wallet/utils'
-import { setWalletUnlocked } from 'src/features/wallet/walletSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -64,21 +62,11 @@ export function* importAccount(params: ImportAccountParams) {
     yield* put(setBackupReminderDismissed(true))
   }
 
-  yield* put(setWalletUnlocked(true))
   logger.info('Account imported successfully')
 }
 
 function* importLocalAccount(account: LocalAccount, password?: string) {
   const { mnemonic, derivationPath, locale } = account
-
-  if (password) {
-    setPasswordCache(password)
-  } else {
-    const cachedPassword = getPasswordCache()
-    if (cachedPassword) password = cachedPassword.password
-    else throw new Error('Must unlock account with password before importing')
-  }
-
   yield* call(
     addAccount,
     {

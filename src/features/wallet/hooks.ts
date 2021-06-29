@@ -1,7 +1,10 @@
 import { createSelector } from '@reduxjs/toolkit'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { NULL_ADDRESS } from 'src/consts'
+import { getAccounts } from 'src/features/wallet/manager'
+import { StoredAccountData } from 'src/features/wallet/storage'
 import { areBalancesEmpty } from 'src/features/wallet/utils'
 import { select } from 'typed-redux-saga'
 
@@ -39,6 +42,19 @@ export function* selectVoterBalances() {
 export function useWalletAddress() {
   const address = useSelector((s: RootState) => s.wallet.address)
   return address || NULL_ADDRESS
+}
+
+export function useAccountList(onReady?: (accs: StoredAccountData[]) => void) {
+  const [accounts, setAccounts] = useState<StoredAccountData[] | null>(null)
+  useEffect(() => {
+    // Get account list on screen mount
+    const storedAccounts = getAccounts()
+    if (!storedAccounts?.size) throw new Error('No accounts found')
+    const accountList = Array.from(storedAccounts.values())
+    setAccounts(accountList)
+    if (onReady) onReady(accountList)
+  }, [])
+  return accounts
 }
 
 export function useVoterAccountAddress() {
