@@ -30,7 +30,6 @@ interface Props {
 export function NewAccountForm(props: Props) {
   const [account, setAccount] = useState<Wallet | null>(null)
   const { showErrorModal } = useModal()
-
   useEffect(() => {
     // For smoother loading render
     setTimeout(() => {

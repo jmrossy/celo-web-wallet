@@ -1,3 +1,4 @@
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Address } from 'src/components/Address'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
@@ -5,6 +6,7 @@ import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import { useAccountList, useWalletAddress } from 'src/features/wallet/hooks'
+import { switchAccountActions } from 'src/features/wallet/switchAccount'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -40,10 +42,12 @@ export function ChooseAccountModal({ close }: ModalProps) {
   // TODO real balance
   const accountsWithBalance = accounts?.map((a) => ({ address: a.address, balance: '0' })) || []
 
+  const dispatch = useDispatch()
   const onClickAddress = (addr: string) => {
     if (addr === activeAddress) return
-    //TODO
-    alert('Clicked' + addr)
+    dispatch(switchAccountActions.trigger({ toAddress: addr }))
+    close()
+    // TODO Erorr handling, spinner, password box if needed
   }
 
   const navigate = useNavigate()
@@ -103,7 +107,7 @@ const style: Stylesheet = {
   },
   accountContainer: {
     margin: '0 1em',
-    padding: '0.75em 0',
+    padding: '0.6em 0',
     borderBottom: `1px solid ${Color.borderMedium}`,
   },
   accountValue: {
@@ -118,7 +122,7 @@ const style: Stylesheet = {
   },
   addButton: {
     margin: '1.25em 1.1em 0 1.1em',
-    padding: '0.9em 0',
+    padding: '0.7em 0',
     width: 'auto',
   },
 }

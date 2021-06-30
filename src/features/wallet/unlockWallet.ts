@@ -22,7 +22,7 @@ export function validate(params: UnlockWalletParams): ErrorState {
 }
 
 function* unlockWallet(params: UnlockWalletParams) {
-  validateOrThrow(() => validate(params), 'Invalid Pincode or Password')
+  validateOrThrow(() => validate(params), 'Invalid unlock parameters')
 
   // TODO check to nuke account after 15 tries
   // Requires new UI in login screen too

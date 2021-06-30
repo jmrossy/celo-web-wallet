@@ -95,6 +95,12 @@ import {
   importDefaultAccount,
 } from 'src/features/wallet/importAccount'
 import {
+  switchAccountActions,
+  switchAccountReducer,
+  switchAccountSaga,
+  switchAccountSagaName,
+} from 'src/features/wallet/switchAccount'
+import {
   unlockWalletActions,
   unlockWalletReducer,
   unlockWalletSaga,
@@ -124,6 +130,11 @@ export const monitoredSagas: {
     saga: importAccountSaga,
     reducer: importAccountReducer,
     actions: importAccountActions,
+  },
+  [switchAccountSagaName]: {
+    saga: switchAccountSaga,
+    reducer: switchAccountReducer,
+    actions: switchAccountActions,
   },
   [fetchBalancesSagaName]: {
     saga: fetchBalancesSaga,
