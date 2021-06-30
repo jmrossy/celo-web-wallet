@@ -37,7 +37,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
   const dimensions = getDimensions(size, widthOverride, heightOverride)
   const icoLayout = getLayout(size)
 
-  const { backgroundColor, hoverBg, activeBg, border, textColor } = getColors(color)
+  const { backgroundColor, hoverBg, activeBg, border, textColor, disabledStyles } = getColors(color)
 
   return (
     <button
@@ -53,6 +53,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
         ':active': {
           backgroundColor: activeBg,
         },
+        ':disabled': disabledStyles || defaultButtonStyles[':disabled'],
         border: border || defaultButtonStyles.border,
         color: textColor || defaultButtonStyles.color,
         ...styles,
@@ -129,6 +130,11 @@ function getColors(baseColor: string = Color.primaryGreen) {
       activeBg: '#e8f7ee',
       border: `2px solid ${Color.primaryGreen}`,
       textColor: Color.primaryGreen,
+      disabledStyles: {
+        cursor: 'default',
+        color: Color.primaryGrey,
+        borderColor: Color.primaryGrey,
+      },
     }
   } else {
     return {
@@ -165,9 +171,8 @@ export const defaultButtonStyles: Styles = {
   },
   ':disabled': {
     cursor: 'default',
-    color: `${Color.primaryGrey} !important`,
-    backgroundColor: `${Color.borderInactive} !important`,
-    border: 'none !important',
+    color: Color.primaryGrey,
+    backgroundColor: Color.borderInactive,
     'img, svg': {
       filter: 'brightness(0.7)',
     },

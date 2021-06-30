@@ -40,7 +40,8 @@ const initialValues: ImportFormValues = {
 }
 
 interface Props {
-  isAddFlow?: boolean // Is the form in the add flow instead of onboarding flow
+  navigateToSetPin: () => void
+  hideDescription?: boolean // Is the form in the add flow instead of onboarding flow
 }
 
 export function ImportAccountForm(props: Props) {
@@ -51,11 +52,8 @@ export function ImportAccountForm(props: Props) {
   }
 
   const dispatch = useDispatch()
-  const navigate = useNavigate()
-
   const { showErrorModal } = useModal()
   const showPasswordModal = useEnterPasswordModal()
-
   const onSubmit = (values: ImportFormValues) => {
     try {
       const mnemonic = values.mnemonic
@@ -74,11 +72,7 @@ export function ImportAccountForm(props: Props) {
         dispatch(importAccountActions.trigger(params))
       }
 
-      if (!props.isAddFlow) {
-        // If this is for onboarding flow
-        setPendingAccount(mnemonic, derivationPath, true)
-        navigate('/setup/set-pin', { state: { pageNumber: 4 } })
-      } else if (hasPasswordCached()) {
+      if (hasPasswordCached()) {
         // If the user already logged in to a passworded account
         triggerImport()
       } else if (hasPasswordedAccount()) {
@@ -87,7 +81,7 @@ export function ImportAccountForm(props: Props) {
       } else {
         // User never set a password before
         setPendingAccount(mnemonic, derivationPath, true)
-        navigate('/accounts/set-pin')
+        props.navigateToSetPin()
       }
     } catch (error) {
       showErrorModal(
@@ -101,6 +95,7 @@ export function ImportAccountForm(props: Props) {
   const { values, errors, handleChange, handleBlur, handleSubmit, setValues, resetValues } =
     useCustomForm<ImportFormValues>(initialValues, onSubmit, validateForm)
 
+  const navigate = useNavigate()
   const status = useSagaStatus(
     importAccountSagaName,
     'Error Importing Account',
@@ -113,7 +108,7 @@ export function ImportAccountForm(props: Props) {
   return (
     <Box direction="column" align="center">
       <ButtonToggle label1="Simple" label2="Advanced" onToggle={onToggleMode} />
-      {!props.isAddFlow && (
+      {!props.hideDescription && (
         <>
           <p css={{ ...style.description, marginTop: '1.3em' }}>
             Enter your account key (seed phrase).

@@ -1,5 +1,4 @@
 import { Wallet } from 'ethers'
-import { createRandomAccount } from 'src/features/wallet/manager'
 import { normalizeMnemonic } from 'src/features/wallet/utils'
 import { logger } from 'src/utils/logger'
 
@@ -20,15 +19,9 @@ export function setPendingAccount(mnemonic: string, derivationPath: string, isIm
   pendingAccount = { wallet: Wallet.fromMnemonic(formattedMnemonic, derivationPath), isImported }
 }
 
-export function createPendingAccount() {
+export function setPendingAccountWithWallet(wallet: Wallet, isImported = false) {
   if (pendingAccount) logger.warn('Overwriting existing pending account')
-  const wallet = createRandomAccount()
-  pendingAccount = { wallet, isImported: false }
-  return {
-    address: wallet.address,
-    mnemonic: wallet.mnemonic.phrase,
-    derivationPath: wallet.mnemonic.path,
-  }
+  pendingAccount = { wallet, isImported }
 }
 
 export function getPendingAccount() {

@@ -17,10 +17,10 @@ import { HomeNavigator } from 'src/features/home/HomeNavigator'
 import { HomeScreen } from 'src/features/home/HomeScreen'
 import { LockConfirmationScreen } from 'src/features/lock/LockConfirmationScreen'
 import { LockFormScreen } from 'src/features/lock/LockFormScreen'
+import { ImportAccountScreen } from 'src/features/onboarding/import/ImportAccountScreen'
 import { ImportChoiceScreen } from 'src/features/onboarding/import/ImportChoiceScreen'
-import { ImportWalletScreen } from 'src/features/onboarding/import/ImportWalletScreen'
 import { LedgerImportScreen } from 'src/features/onboarding/import/LedgerImportScreen'
-import { NewWalletScreen } from 'src/features/onboarding/new/NewWalletScreen'
+import { NewAccountScreen } from 'src/features/onboarding/new/NewAccountScreen'
 import { OnboardingNavigator } from 'src/features/onboarding/OnboardingNavigator'
 import { SetPasswordScreen } from 'src/features/onboarding/password/SetPasswordScreen'
 import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
@@ -104,9 +104,9 @@ export const App = () => {
 
             <Route path="/setup" element={<OnboardingNavigator />}>
               <Route path="/" element={<WelcomeScreen />} />
-              <Route path="new" element={<NewWalletScreen />} />
+              <Route path="new" element={<NewAccountScreen />} />
               <Route path="existing" element={<ImportChoiceScreen />} />
-              <Route path="import" element={<ImportWalletScreen />} />
+              <Route path="import" element={<ImportAccountScreen />} />
               <Route path="ledger" element={<LedgerImportScreen />} />
               <Route path="set-pin" element={<SetPasswordScreen />} />
             </Route>
