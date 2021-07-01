@@ -391,6 +391,6 @@ const style: Stylesheet = {
   spinnerContainer: {
     marginTop: '1.5em',
     transform: 'scale(0.8)',
-    opacity: 0.9,
+    opacity: 0.85,
   },
 }

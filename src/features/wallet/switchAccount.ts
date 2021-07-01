@@ -3,7 +3,7 @@ import { loadAccount } from 'src/features/wallet/manager'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call } from 'typed-redux-saga'
+import { call, delay } from 'typed-redux-saga'
 
 export interface SwitchAccountParams {
   toAddress: string
@@ -24,6 +24,10 @@ function* switchAccount(params: SwitchAccountParams) {
   yield* call(loadAccount, toAddress, password)
 
   logger.info('Account switched successfully')
+
+  // Delay b.c. spinner shows for too short a time, feels jarring
+  // Also gives time for fetch balance get a head start
+  yield* delay(1000) // 1 second
 }
 
 export const {
