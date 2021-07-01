@@ -6,11 +6,12 @@ import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import { useAccountList, useWalletAddress } from 'src/features/wallet/hooks'
-import { switchAccountActions } from 'src/features/wallet/switchAccount'
+import { switchAccountActions, switchAccountSagaName } from 'src/features/wallet/switchAccount'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
+import { useSagaStatusNoModal } from 'src/utils/useSagaStatus'
 
 export enum AccountModalScreen {
   ViewAccounts,
@@ -49,6 +50,8 @@ export function ChooseAccountModal({ close }: ModalProps) {
     close()
     // TODO Erorr handling, spinner, password box if needed
   }
+
+  const sagaStatus = useSagaStatusNoModal(switchAccountSagaName)
 
   const navigate = useNavigate()
   const onClickAdd = () => {

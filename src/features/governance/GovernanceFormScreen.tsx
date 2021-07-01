@@ -10,7 +10,6 @@ import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
 import {
   fetchProposalsActions,
@@ -36,6 +35,7 @@ import { fromWei } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 import { trimToLength } from 'src/utils/string'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 const initialValues: GovernanceVoteParams = {
   proposalId: '',

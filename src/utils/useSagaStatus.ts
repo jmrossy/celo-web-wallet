@@ -12,9 +12,35 @@ export function useSagaStatus(
   errorTitle: string,
   errorMsg?: string,
   onSuccess?: () => void,
-  resetSagaOnSuccess = true,
-  showModalOnError = true
+  resetSagaOnSuccess = true
 ) {
+  const { status, error } = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess)
+
+  const { showErrorModal } = useModal()
+  useEffect(() => {
+    if (status === SagaStatus.Failure) {
+      showErrorModal(
+        errorTitle,
+        errorMsg || 'Something went wrong, sorry! Please try again.',
+        error
+      )
+    }
+  }, [status, error])
+
+  return status
+}
+
+// Same as above but without the error modal
+export function useSagaStatusNoModal(
+  sagaName: string,
+  onSuccess?: () => void,
+  resetSagaOnSuccess = true
+) {
+  const sagaState = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess)
+  return sagaState.status
+}
+
+function _useSagaStatus(sagaName: string, resetSagaOnSuccess: boolean, onSuccess?: () => void) {
   const dispatch = useDispatch()
   const sagaState = useSelector((s: RootState) => s.saga[sagaName])
   if (!sagaState) {
@@ -28,17 +54,10 @@ export function useSagaStatus(
 
   const { status, error } = sagaState
 
-  const { showErrorModal } = useModal()
   useEffect(() => {
     if (status === SagaStatus.Success) {
       if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
       if (onSuccess) onSuccess()
-    } else if (status === SagaStatus.Failure && showModalOnError) {
-      showErrorModal(
-        errorTitle,
-        errorMsg || 'Something went wrong, sorry! Please try again.',
-        error
-      )
     }
   }, [status, error])
 
@@ -48,5 +67,5 @@ export function useSagaStatus(
     }
   }, [])
 
-  return status
+  return sagaState
 }

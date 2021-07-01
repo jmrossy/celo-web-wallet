@@ -7,7 +7,6 @@ import { ButtonToggle } from 'src/components/buttons/ButtonToggle'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import {
   DerivationPathForm,
   DerivationPathFormValues,
@@ -28,6 +27,7 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useSagaStatus } from 'src/utils/useSagaStatus'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
 interface ImportFormValues extends DerivationPathFormValues {

@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { SignerType } from 'src/blockchain/signer'
 import { Button } from 'src/components/buttons/Button'
 import { useModal } from 'src/components/modal/useModal'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Spinner } from 'src/components/Spinner'
 import { NULL_ADDRESS } from 'src/consts'
 import { useEnterPasswordModal } from 'src/features/password/EnterPasswordModal'
@@ -20,6 +19,7 @@ import { createRandomAccount, hasPasswordedAccount } from 'src/features/wallet/m
 import { setPendingAccountWithWallet } from 'src/features/wallet/pendingAccount'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
+import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 interface Props {
   navigateToSetPin: () => void

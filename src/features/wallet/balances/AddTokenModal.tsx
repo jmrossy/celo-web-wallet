@@ -6,7 +6,6 @@ import { HelpText } from 'src/components/input/HelpText'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { modalStyles } from 'src/components/modal/modalStyles'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { getKnownErc20Tokens } from 'src/erc20'
 import { addTokenActions, addTokenSagaName, validate } from 'src/features/wallet/balances/addToken'
 import { AddTokenParams } from 'src/features/wallet/types'
@@ -15,6 +14,7 @@ import { Stylesheet } from 'src/styles/types'
 import { shortenAddress } from 'src/utils/addresses'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useSagaStatusNoModal } from 'src/utils/useSagaStatus'
 
 const initialValues: AddTokenParams = {
   address: '',
@@ -36,7 +36,7 @@ export function AddTokenModal(props: { close: () => void }) {
     validateForm
   )
 
-  const sagaStatus = useSagaStatus(addTokenSagaName, '', undefined, props.close, true, false)
+  const sagaStatus = useSagaStatusNoModal(addTokenSagaName, props.close)
   const isLoading = sagaStatus === SagaStatus.Started
   const isFailure = sagaStatus === SagaStatus.Failure
 

@@ -1,4 +1,5 @@
 import { Fragment, FunctionComponent, ReactElement, useMemo, useState } from 'react'
+import { CloseButton } from 'src/components/buttons/CloseButton'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import { Spinner } from 'src/components/Spinner'
 import { Font } from 'src/styles/fonts'
@@ -10,7 +11,7 @@ export interface TableColumn {
   renderer?: (dataCell: any) => string | ReactElement
 }
 
-type DataElement = { id: string } & Record<string, any>
+type DataElement = { id: string; onRemove?: (id: string) => void } & Record<string, any>
 
 interface Props<T extends DataElement> {
   columns: TableColumn[]
@@ -86,7 +87,7 @@ export function Table<T extends DataElement>(props: Props<T>) {
                   {columns.map((column, j) => {
                     return (
                       <td key={`table-cell-${i}-${j}`} css={ExpandedRow ? tdExandable : style.td}>
-                        <>
+                        <div css={{ position: 'relative' }}>
                           {j === 0 && ExpandedRow && (
                             <ChevronIcon
                               width="8px"
@@ -96,7 +97,16 @@ export function Table<T extends DataElement>(props: Props<T>) {
                             />
                           )}
                           {column.renderer ? column.renderer(row) : row[column.id]}
-                        </>
+                          {row.onRemove && j === columns.length - 1 && (
+                            <div css={style.removeButtonContainer}>
+                              <CloseButton
+                                onClick={() => row.onRemove!(row.id)}
+                                styles={style.removeButton}
+                                iconStyles={style.removeButton}
+                              />
+                            </div>
+                          )}
+                        </div>
                       </td>
                     )
                   })}
@@ -184,6 +194,16 @@ const style: Stylesheet = {
     marginRight: 12,
     marginBottom: 2,
     opacity: 0.5,
+  },
+  removeButtonContainer: {
+    position: 'absolute',
+    right: '-3em',
+    top: '14%',
+    paddingRight: '0.75em',
+  },
+  removeButton: {
+    height: '1em',
+    width: '1em',
   },
   spinner: {
     display: 'flex',

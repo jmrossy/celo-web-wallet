@@ -7,7 +7,6 @@ import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { Mnemonic } from 'src/components/Mnemonic'
 import { useModal } from 'src/components/modal/useModal'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { PLACEHOLDER_MNEMONIC } from 'src/consts'
 import {
   DerivationPathForm,
@@ -26,6 +25,7 @@ import { Font } from 'src/styles/fonts'
 import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useSagaStatus } from 'src/utils/useSagaStatus'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
 export function AddDeriveScreen() {

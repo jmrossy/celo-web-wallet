@@ -1,6 +1,7 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
 import { utils, Wallet } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
+import { clearContractCache } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { getSigner, setSigner, SignerType } from 'src/blockchain/signer'
 import { CELO_DERIVATION_PATH } from 'src/consts'
@@ -195,14 +196,15 @@ function* onAccountActivation(address: string, type: SignerType) {
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
   yield* put(setAccount({ address, type }))
-  yield* put(fetchBalancesActions.trigger())
 
   if (currentAddress && !areAddressesEqual(currentAddress, address)) {
-    logger.debug('New address does not match current one in store')
+    logger.debug('New address activated, clearing old data')
+    clearContractCache()
     //TODO load in feed data
     yield* put(resetFeed())
   }
 
+  yield* put(fetchBalancesActions.trigger())
   yield* put(fetchFeedActions.trigger())
 }
 

@@ -19,6 +19,7 @@ export interface BalanceTableRow {
   balanceWei: string
   address: string
   token: Token
+  onRemove?: (id: string) => void
 }
 
 export interface AddTokenParams {

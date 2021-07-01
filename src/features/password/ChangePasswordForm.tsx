@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import {
   changePasswordActions,
   ChangePasswordParams,
@@ -16,6 +15,7 @@ import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 const initialValues = { value: '', newValue: '', valueConfirm: '' }
 

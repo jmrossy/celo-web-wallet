@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
-import { CloseButton } from 'src/components/buttons/CloseButton'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { Box } from 'src/components/layout/Box'
@@ -11,7 +10,6 @@ import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { ModalAction } from 'src/components/modal/modal'
 import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Table, TableColumn } from 'src/components/Table'
 import { config } from 'src/config'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
@@ -30,6 +28,7 @@ import { isNativeToken, LockedCELO } from 'src/tokens'
 import { shortenAddress } from 'src/utils/addresses'
 import { fromWeiRounded } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
+import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 export function BalanceDetailsScreen() {
   const dispatch = useDispatch()
@@ -44,27 +43,52 @@ export function BalanceDetailsScreen() {
     'Something went wrong when loading balances, sorry! Please try again later.'
   )
 
-  const balances = useSelector((state: RootState) => state.wallet.balances)
-
-  const data = useMemo(() => {
-    return balancesToTableData(balances)
-  }, [balances])
-
-  const isMobile = useIsMobile()
-  const responsiveTableColumns = isMobile ? tableColumns : tableColumnsWithWei
-
-  const { showModalWithContent, closeModal } = useModal()
+  const { showModal, showModalWithContent, closeModal } = useModal()
 
   const onClickAdd = () => {
     showModalWithContent({ head: 'Add New Token', content: <AddTokenModal close={closeModal} /> })
   }
+
+  const onClickRemove = (id: string) => {
+    const actions = [
+      { key: 'cancel', label: 'Cancel', color: Color.primaryWhite },
+      { key: 'remove', label: 'Remove', color: Color.primaryGreen },
+    ]
+    const onActionClick = (action: ModalAction) => {
+      if (action.key === 'remove') dispatch(removeToken(id))
+      closeModal()
+    }
+    showModal({
+      head: 'Remove Token',
+      subHead: `Would you like to remove ${id}?`,
+      body: 'Note, this will not affect your balance. It will only hide this token from your wallet.',
+      actions,
+      onActionClick,
+      size: 's',
+    })
+  }
+
+  const onClickAddress = (row: BalanceTableRow) => {
+    const name = row.token.name || row.token.symbol
+    showModalWithContent({
+      head: `${name} Token`,
+      content: <TokenAddressDetails row={row} />,
+    })
+  }
+
+  const isMobile = useIsMobile()
+  const tableColumns = getTableColumns(isMobile, onClickAddress)
+  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const data = useMemo(() => {
+    return balancesToTableData(balances, onClickRemove)
+  }, [balances])
 
   return (
     <ScreenContentFrame>
       <div css={style.content}>
         <h1 css={style.h1}>Account Balance Details</h1>
         <Table<BalanceTableRow>
-          columns={responsiveTableColumns}
+          columns={tableColumns}
           data={data}
           isLoading={status === SagaStatus.Started}
           initialSortBy="balance"
@@ -77,32 +101,36 @@ export function BalanceDetailsScreen() {
   )
 }
 
-const tableColumns: TableColumn[] = [
-  {
-    header: 'Currency',
-    id: 'label',
-    renderer: renderLabel,
-  },
-  {
-    header: 'Balance',
-    id: 'balance',
-  },
-  {
-    header: 'Contract',
-    id: 'address',
-    renderer: renderAddressAndRemoveButton,
-  },
-]
+function getTableColumns(isMobile: boolean, onClickAddress: (row: BalanceTableRow) => void) {
+  const tableColumns: TableColumn[] = [
+    {
+      header: 'Currency',
+      id: 'label',
+      renderer: renderLabel,
+    },
+    {
+      header: 'Balance',
+      id: 'balance',
+    },
+    {
+      header: 'Contract',
+      id: 'address',
+      renderer: createRenderAddress(onClickAddress),
+    },
+  ]
 
-const tableColumnsWithWei: TableColumn[] = [
-  tableColumns[0],
-  tableColumns[1],
-  {
-    header: 'Balance (Wei)',
-    id: 'balanceWei',
-  },
-  tableColumns[2],
-]
+  const tableColumnsWithWei: TableColumn[] = [
+    tableColumns[0],
+    tableColumns[1],
+    {
+      header: 'Balance (Wei)',
+      id: 'balanceWei',
+    },
+    tableColumns[2],
+  ]
+
+  return isMobile ? tableColumns : tableColumnsWithWei
+}
 
 function renderLabel(row: BalanceTableRow) {
   return (
@@ -113,56 +141,15 @@ function renderLabel(row: BalanceTableRow) {
   )
 }
 
-function renderAddressAndRemoveButton(row: BalanceTableRow) {
-  const { id, label, address } = row
-  const isNative = isNativeToken(id) || id === LockedCELO.id
-
-  const dispatch = useDispatch()
-  const { showModal, showModalWithContent, closeModal } = useModal()
-
-  const onClickAddress = () => {
-    const name = row.token.name || row.token.symbol
-    showModalWithContent({
-      head: `${name} Token`,
-      content: <TokenAddressDetails row={row} />,
-    })
-  }
-
-  const onClickRemove = () => {
-    const actions = [
-      { key: 'cancel', label: 'Cancel', color: Color.primaryWhite },
-      { key: 'remove', label: 'Remove', color: Color.primaryGreen },
-    ]
-    const onActionClick = (action: ModalAction) => {
-      if (action.key === 'remove') dispatch(removeToken(id))
-      closeModal()
-    }
-    showModal({
-      head: 'Remove Token',
-      subHead: `Would you like to remove ${label}?`,
-      body: 'Note, this will not affect your balance. It will only hide this token from your wallet.',
-      actions,
-      onActionClick,
-      size: 's',
-    })
-  }
-
-  return (
-    <div css={style.addressContainer}>
-      <button css={transparentButtonStyles} onClick={onClickAddress}>
-        {shortenAddress(address, true, true)}
+function createRenderAddress(onClickAddress: (row: BalanceTableRow) => void) {
+  const renderAddress = (row: BalanceTableRow) => {
+    return (
+      <button css={transparentButtonStyles} onClick={() => onClickAddress(row)}>
+        {shortenAddress(row.address, true, true)}
       </button>
-      {!isNative && (
-        <div css={style.removeButtonContainer}>
-          <CloseButton
-            onClick={onClickRemove}
-            styles={style.removeButton}
-            iconStyles={style.removeButton}
-          />
-        </div>
-      )}
-    </div>
-  )
+    )
+  }
+  return renderAddress
 }
 
 function TokenAddressDetails({ row }: { row: BalanceTableRow }) {
@@ -176,7 +163,10 @@ function TokenAddressDetails({ row }: { row: BalanceTableRow }) {
   )
 }
 
-function balancesToTableData(balances: Balances): BalanceTableRow[] {
+function balancesToTableData(
+  balances: Balances,
+  onRemove: (id: string) => void
+): BalanceTableRow[] {
   const tableRows: BalanceTableRow[] = []
 
   // Only show Locked CELO on desktop for now
@@ -191,6 +181,7 @@ function balancesToTableData(balances: Balances): BalanceTableRow[] {
     : balances.tokens
 
   for (const token of Object.values(tokens)) {
+    const isNative = isNativeToken(token.id) || token.id === LockedCELO.id
     tableRows.push({
       id: token.id,
       label: token.symbol,
@@ -198,6 +189,7 @@ function balancesToTableData(balances: Balances): BalanceTableRow[] {
       balanceWei: token.value,
       address: token.address,
       token,
+      onRemove: !isNative ? onRemove : undefined,
     })
   }
 
@@ -215,19 +207,6 @@ const style: Stylesheet = {
   },
   tokenLabel: {
     paddingLeft: '0.6em',
-  },
-  addressContainer: {
-    position: 'relative',
-  },
-  removeButtonContainer: {
-    position: 'absolute',
-    right: '-3em',
-    top: '0.25em',
-    paddingRight: '0.75em',
-  },
-  removeButton: {
-    height: '1em',
-    width: '1em',
   },
   tokenModalWarning: {
     ...modalStyles.p,
