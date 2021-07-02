@@ -97,7 +97,7 @@ export function LoginScreen() {
         ) : (
           <div css={style.addressContainer}>
             <button type="button" css={style.addressButton} onClick={showDropdown}>
-              <Box align="center">
+              <Box align="center" justify="between">
                 <Address address={values.activeAddress} isTransparent={true} />
                 <ChevronIcon
                   direction={isDropdownVisible ? 'n' : 's'}
@@ -116,7 +116,7 @@ export function LoginScreen() {
                       key={`account-button-${a.address}`}
                     >
                       <Box align="center" justify="between">
-                        <Address address={a.address} isTransparent={true} />
+                        <Address address={a.address} name={a.name} isTransparent={true} />
                         {a.type === SignerType.Local ? (
                           <KeyIcon color={Color.primaryBlack} styles={style.addressDropdownIcon} />
                         ) : (
@@ -206,9 +206,10 @@ const style: Stylesheet = {
   },
   addressButton: {
     ...transparentButtonStyles,
+    width: '20.5em',
+    padding: '0.5em 1em',
     border: `1px solid ${Color.borderMedium}`,
     borderRadius: 12,
-    padding: '0.5em 1em',
     boxShadow: '0 2px 4px 0px rgba(0, 0, 0, 0.1)',
     ':hover': {
       backgroundColor: Color.fillLighter,
@@ -219,10 +220,11 @@ const style: Stylesheet = {
   },
   addressChevron: {
     width: '1em',
-    margin: '0 0.25em 0 0.75em',
+    margin: '0 0em 0 0.5em',
     opacity: 0.9,
   },
   addressDropdownContainer: {
+    width: 'calc(20.5em - 2px)',
     maxHeight: '15em',
     overflowY: 'auto',
   },

@@ -219,6 +219,7 @@ const style: Stylesheet = {
   loadingHead: {
     position: 'absolute',
     top: '1em',
+    opacity: 0.85,
   },
   loadingContainer: {
     position: 'absolute',

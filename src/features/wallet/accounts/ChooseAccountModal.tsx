@@ -104,7 +104,7 @@ export function ChooseAccountModal({ close }: ModalProps) {
                 onClick={() => onClickAddress(a.address)}
               >
                 <Box align="center" justify="between" styles={style.accountContainer}>
-                  <Address address={a.address} isTransparent={true} />
+                  <Address address={a.address} name={a.name} isTransparent={true} />
                   {a.type === SignerType.Local ? (
                     <KeyIcon color={Color.primaryBlack} styles={style.accountTypeIcon} />
                   ) : (
@@ -118,10 +118,10 @@ export function ChooseAccountModal({ close }: ModalProps) {
           </DashedBorderButton>
         </Box>
         <Box align="center" justify="between" margin="2.75em 0 0 0">
-          <Button size="s" width="10em" onClick={onClickManage} margin="0 1em 0 0">
+          <Button size="s" width="9.5em" onClick={onClickManage} margin="0 1em 0 0">
             Manage
           </Button>
-          <Button size="s" width="10em" onClick={close} color={Color.primaryWhite}>
+          <Button size="s" width="9.5em" onClick={close} color={Color.primaryWhite}>
             Close
           </Button>
         </Box>
@@ -191,11 +191,11 @@ const style: Stylesheet = {
   loadingContainer: {
     minHeight: '13em',
     minWidth: '18em',
+    opacity: 0.85,
   },
   spinnerContainer: {
     marginTop: '2.5em',
     transform: 'scale(0.8)',
-    opacity: 0.85,
   },
 }
 
