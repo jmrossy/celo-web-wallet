@@ -1,16 +1,22 @@
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { SignerType } from 'src/blockchain/signer'
 import { Address } from 'src/components/Address'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
+import { KeyIcon } from 'src/components/icons/Key'
+import { LedgerIcon } from 'src/components/icons/logos/Ledger'
 import { Box } from 'src/components/layout/Box'
 import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
+import { EnterPasswordModal } from 'src/features/password/EnterPasswordModal'
+import { hasPasswordCached } from 'src/features/password/password'
 import { useAccountList, useWalletAddress } from 'src/features/wallet/hooks'
+import { hasPasswordedAccount } from 'src/features/wallet/manager'
 import { switchAccountActions, switchAccountSagaName } from 'src/features/wallet/switchAccount'
 import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
 import { SagaStatus } from 'src/utils/saga'
@@ -43,14 +49,24 @@ interface ModalProps {
 export function ChooseAccountModal({ close }: ModalProps) {
   const activeAddress = useWalletAddress()
   const accounts = useAccountList()
-  // TODO real balance
-  const accountsWithBalance = accounts?.map((a) => ({ address: a.address, balance: '0' })) || []
-
+  const [needsPasswordForAddr, setNeedsPassworForAddr] = useState<string | null>(null)
   const dispatch = useDispatch()
+
   const onClickAddress = (addr: string) => {
-    if (addr === activeAddress) return
-    // TODO check if password is needed
-    dispatch(switchAccountActions.trigger({ toAddress: addr }))
+    if (addr === activeAddress || !accounts) return
+    const accountType = accounts.find((a) => a.address === addr)?.type
+    if (!accountType) return
+
+    if (hasPasswordCached() || accountType === SignerType.Ledger) {
+      dispatch(switchAccountActions.trigger({ toAddress: addr }))
+    } else if (hasPasswordedAccount()) {
+      setNeedsPassworForAddr(addr)
+    }
+  }
+  const onSubmitPassword = (password: string) => {
+    if (!needsPasswordForAddr) return
+    dispatch(switchAccountActions.trigger({ toAddress: needsPasswordForAddr, password }))
+    setNeedsPassworForAddr(null)
   }
 
   const sagaStatus = useSagaStatusNoModal(switchAccountSagaName, close)
@@ -68,26 +84,35 @@ export function ChooseAccountModal({ close }: ModalProps) {
     close()
   }
 
+  if (needsPasswordForAddr) {
+    return <EnterPasswordModal onSubmit={onSubmitPassword} />
+  }
+
   if (!sagaStatus) {
     return (
       <Box direction="column" align="stretch">
         <Box direction="column" align="stretch" margin="-1.4em">
-          {accountsWithBalance.map((a) => (
-            <button
-              css={
-                a.address === activeAddress && accountsWithBalance.length > 1
-                  ? activeAccountButton
-                  : style.accountButton
-              }
-              key={`account-${a.address}`}
-              onClick={() => onClickAddress(a.address)}
-            >
-              <Box align="center" justify="between" styles={style.accountContainer}>
-                <Address address={a.address} isTransparent={true} />
-                <div css={style.accountValue}>{a.balance}</div>
-              </Box>
-            </button>
-          ))}
+          {accounts &&
+            accounts.map((a) => (
+              <button
+                css={
+                  a.address === activeAddress && accounts.length > 1
+                    ? activeAccountButton
+                    : style.accountButton
+                }
+                key={`account-${a.address}`}
+                onClick={() => onClickAddress(a.address)}
+              >
+                <Box align="center" justify="between" styles={style.accountContainer}>
+                  <Address address={a.address} isTransparent={true} />
+                  {a.type === SignerType.Local ? (
+                    <KeyIcon color={Color.primaryBlack} styles={style.accountTypeIcon} />
+                  ) : (
+                    <LedgerIcon color={Color.primaryBlack} styles={style.accountTypeIcon} />
+                  )}
+                </Box>
+              </button>
+            ))}
           <DashedBorderButton onClick={onClickAdd} styles={style.addButton}>
             + Add new account
           </DashedBorderButton>
@@ -149,14 +174,13 @@ const style: Stylesheet = {
     padding: '0.6em 0',
     borderBottom: `1px solid ${Color.borderMedium}`,
   },
-  accountValue: {
-    ...Font.bold,
+  accountTypeIcon: {
+    width: '1.2em',
+    height: 'auto',
     marginLeft: '1em',
+    marginRight: '0.5em',
     [mq[480]]: {
       marginLeft: '2em',
-    },
-    [mq[768]]: {
-      marginLeft: '2.5em',
     },
   },
   addButton: {

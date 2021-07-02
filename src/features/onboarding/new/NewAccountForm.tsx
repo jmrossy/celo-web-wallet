@@ -23,6 +23,7 @@ import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 interface Props {
   navigateToSetPin: () => void
+  accountName?: string
 }
 
 // Note, this is not really a form, but keeping consistent naming scheme
@@ -53,6 +54,7 @@ export function NewAccountForm(props: Props) {
           type: SignerType.Local,
           mnemonic: account.mnemonic.phrase,
           derivationPath: account.mnemonic.path,
+          name: props.accountName,
         },
         isExisting: false,
         password,

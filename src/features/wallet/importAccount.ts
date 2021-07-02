@@ -44,6 +44,9 @@ function validate(params: ImportAccountParams): ErrorState {
   } else {
     return invalidInput('type', 'Invalid signer type')
   }
+  if (account.name && account.name.length > 100) {
+    return invalidInput('name', 'Account name too long')
+  }
   return { isValid: true }
 }
 
@@ -66,7 +69,7 @@ export function* importAccount(params: ImportAccountParams) {
 }
 
 function* importLocalAccount(account: LocalAccount, password?: string) {
-  const { mnemonic, derivationPath, locale } = account
+  const { mnemonic, derivationPath, locale, name } = account
   yield* call(
     addAccount,
     {
@@ -74,17 +77,19 @@ function* importLocalAccount(account: LocalAccount, password?: string) {
       mnemonic,
       derivationPath,
       locale,
+      name,
     },
     password
   )
 }
 
 function* importLedgerAccount(account: LedgerAccount) {
-  const { address, derivationPath } = account
+  const { address, derivationPath, name } = account
   yield* call(addAccount, {
     type: SignerType.Ledger,
     address,
     derivationPath,
+    name,
   })
 }
 

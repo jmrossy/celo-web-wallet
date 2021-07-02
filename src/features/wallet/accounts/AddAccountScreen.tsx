@@ -35,15 +35,15 @@ const initialValues: AddAcountForm = {
 export function AddAccountScreen() {
   const navigate = useNavigate()
   const onSubmit = (values: AddAcountForm) => {
-    const { name, action } = values
+    const { name: accountName, action } = values
     if (action === NewAccountAction.Create) {
-      navigate('/accounts/create', { state: { name } })
+      navigate('/accounts/create', { state: { accountName } })
     } else if (action === NewAccountAction.Derive) {
-      navigate('/accounts/derive', { state: { name } })
+      navigate('/accounts/derive', { state: { accountName } })
     } else if (action === NewAccountAction.Import) {
-      navigate('/accounts/import', { state: { name } })
+      navigate('/accounts/import', { state: { accountName } })
     } else if (action === NewAccountAction.Ledger) {
-      navigate('/accounts/ledger', { state: { name } })
+      navigate('/accounts/ledger', { state: { accountName } })
     }
   }
 

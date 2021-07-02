@@ -13,7 +13,7 @@ export function useFundWalletModal() {
     showModalWithContent({
       head: 'Where to buy Celo',
       content: <FundWalletModal address={address} />,
-      subHead: 'Celo currencies can be earned or purchased from these online exchanges.',
+      subHead: 'Celo currencies can be earned or purchased from online exchanges including these.',
     })
   }
 }

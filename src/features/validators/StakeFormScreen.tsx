@@ -1,5 +1,5 @@
 import { BigNumber, utils } from 'ethers'
-import { Location } from 'history'
+import type { Location } from 'history'
 import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'

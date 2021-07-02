@@ -41,6 +41,7 @@ const initialValues: ImportFormValues = {
 
 interface Props {
   navigateToSetPin: () => void
+  accountName?: string
   hideDescription?: boolean // Is the form in the add flow instead of onboarding flow
 }
 
@@ -65,6 +66,7 @@ export function ImportAccountForm(props: Props) {
             type: SignerType.Local,
             mnemonic,
             derivationPath,
+            name: props.accountName,
           },
           isExisting: true,
           password,

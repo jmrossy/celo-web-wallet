@@ -1,11 +1,15 @@
-import { useNavigate } from 'react-router-dom'
+import type { Location } from 'history'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ImportAccountForm } from 'src/features/onboarding/import/ImportAccountForm'
 import { Font } from 'src/styles/fonts'
 
 export function AddImportScreen() {
+  const location: Location<any> = useLocation()
+  const accountName = location?.state?.accountName
+
   const navigate = useNavigate()
   const navigateToSetPin = () => {
-    navigate('/accounts/set-pin')
+    navigate('/accounts/set-pin', { state: { accountName } })
   }
 
   return (
@@ -14,7 +18,11 @@ export function AddImportScreen() {
       <h4 css={Font.h4Center}>Use an account key (seed phrase) to import another account.</h4>
       <h4 css={Font.h4Center}>Only import on devices you trust.</h4>
       <div css={{ margin: '1.5em' }}>
-        <ImportAccountForm hideDescription={true} navigateToSetPin={navigateToSetPin} />
+        <ImportAccountForm
+          hideDescription={true}
+          navigateToSetPin={navigateToSetPin}
+          accountName={accountName}
+        />
       </div>
     </>
   )

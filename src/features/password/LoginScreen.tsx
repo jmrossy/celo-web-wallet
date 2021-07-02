@@ -115,7 +115,7 @@ export function LoginScreen() {
                       onClick={() => onSelectAddress(a.address)}
                       key={`account-button-${a.address}`}
                     >
-                      <Box align="center">
+                      <Box align="center" justify="between">
                         <Address address={a.address} isTransparent={true} />
                         {a.type === SignerType.Local ? (
                           <KeyIcon color={Color.primaryBlack} styles={style.addressDropdownIcon} />

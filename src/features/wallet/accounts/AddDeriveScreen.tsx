@@ -1,7 +1,8 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
+import type { Location } from 'history'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { getSigner, SignerType } from 'src/blockchain/signer'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
@@ -30,8 +31,10 @@ import { ErrorState, invalidInput } from 'src/utils/validation'
 
 export function AddDeriveScreen() {
   const [account, setAccount] = useState<CeloWallet | null>(null)
-  const { showModal, closeModal } = useModal()
+  const location: Location<any> = useLocation()
+  const accountName = location?.state?.accountName
   const navigate = useNavigate()
+  const { showModal, closeModal } = useModal()
 
   useEffect(() => {
     try {
@@ -64,6 +67,7 @@ export function AddDeriveScreen() {
         type: SignerType.Local,
         mnemonic: account.mnemonic.phrase,
         derivationPath,
+        name: accountName,
       },
       isExisting: true,
     }

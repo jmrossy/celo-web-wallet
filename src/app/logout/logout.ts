@@ -5,6 +5,7 @@ import { resetSettings } from 'src/features/settings/settingsSlice'
 import { resetValidators } from 'src/features/validators/validatorsSlice'
 import { removeWallet } from 'src/features/wallet/storage_v1'
 import { resetWallet } from 'src/features/wallet/walletSlice'
+import { disconnectWcClient, resetWcClient } from 'src/features/walletConnect/walletConnectSlice'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put } from 'typed-redux-saga'
 
@@ -17,6 +18,8 @@ export function* logout() {
   yield* put(resetSettings())
   yield* put(resetValidators())
   yield* put(resetFeed())
+  yield* put(disconnectWcClient())
+  yield* put(resetWcClient())
   clearContractCache()
   clearSigner()
 }

@@ -26,7 +26,7 @@ interface ImportForm {
 
 const initialValues: ImportForm = { index: '0' }
 
-export function LedgerImportForm() {
+export function LedgerImportForm(props: { accountName?: string }) {
   const dispatch = useDispatch()
 
   const onSubmit = (values: ImportForm) => {
@@ -34,6 +34,7 @@ export function LedgerImportForm() {
       account: {
         type: SignerType.Ledger,
         derivationPath: `${CELO_DERIVATION_PATH}/${values.index}`,
+        name: props.accountName,
       },
       isExisting: true,
     }

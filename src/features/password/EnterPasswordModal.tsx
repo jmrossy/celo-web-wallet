@@ -19,17 +19,17 @@ export function useEnterPasswordModal() {
 
 interface Props {
   onSubmit: (password: string) => void
-  close: () => void
+  close?: () => void
 }
 
 interface PasswordForm {
   password: string
 }
 
-function EnterPasswordModal(props: Props) {
+export function EnterPasswordModal(props: Props) {
   const onSubmit = (values: PasswordForm) => {
     props.onSubmit(values.password)
-    props.close()
+    if (props.close) props.close()
   }
 
   const { values, errors, handleChange, handleBlur, handleSubmit } = useCustomForm<PasswordForm>(

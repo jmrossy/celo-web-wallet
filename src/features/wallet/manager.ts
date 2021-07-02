@@ -14,6 +14,7 @@ import {
   hasPasswordCached,
   setPasswordCache,
 } from 'src/features/password/password'
+import { resetValidatorForAccount } from 'src/features/validators/validatorsSlice'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
 import {
@@ -23,6 +24,7 @@ import {
 } from 'src/features/wallet/storage'
 import { isValidMnemonic, normalizeMnemonic } from 'src/features/wallet/utils'
 import { setAccount } from 'src/features/wallet/walletSlice'
+import { disconnectWcClient, resetWcClient } from 'src/features/walletConnect/walletConnectSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { call, put, select } from 'typed-redux-saga'
@@ -202,6 +204,9 @@ function* onAccountActivation(address: string, type: SignerType) {
     clearContractCache()
     //TODO load in feed data
     yield* put(resetFeed())
+    yield* put(resetValidatorForAccount())
+    yield* put(disconnectWcClient())
+    yield* put(resetWcClient())
   }
 
   yield* put(fetchBalancesActions.trigger())
