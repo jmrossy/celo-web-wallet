@@ -3,6 +3,7 @@ import { CloseButton } from 'src/components/buttons/CloseButton'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import { Spinner } from 'src/components/Spinner'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
 
 export interface TableColumn {
@@ -45,9 +46,11 @@ export function Table<T extends DataElement>(props: Props<T>) {
     setExpandedRows({ ...expandedRows, [id]: !expandedRows[id] })
   }
 
+  const tableStyle = useMemo(() => getTableStyle(data, isLoading), [data, isLoading])
+
   return (
     <div css={style.container}>
-      <table css={isLoading ? tableLoading : style.table}>
+      <table css={tableStyle}>
         <thead>
           <tr>
             {columns.map((column) => {
@@ -100,6 +103,7 @@ export function Table<T extends DataElement>(props: Props<T>) {
                           {row.onRemove && j === columns.length - 1 && (
                             <div css={style.removeButtonContainer}>
                               <CloseButton
+                                title="Remove"
                                 onClick={() => row.onRemove!(row.id)}
                                 styles={style.removeButton}
                                 iconStyles={style.removeButton}
@@ -143,6 +147,18 @@ function sortDataBy<T extends DataElement>(data: T[], columnId: string, decendin
     const order = decending ? aVal > bVal : aVal <= bVal
     return order ? -1 : 1
   })
+}
+
+function getTableStyle(data: DataElement[], isLoading?: boolean): Styles {
+  const hasRemoveButton = data.findIndex((d) => !!d.onRemove) >= 0
+  const baseStyles = hasRemoveButton ? tableWithRemoveButtons : style.table
+  return isLoading
+    ? {
+        ...baseStyles,
+        opacity: 0.7,
+        filter: 'blur(3px)',
+      }
+    : baseStyles
 }
 
 const thTextAlign = {
@@ -219,10 +235,18 @@ const style: Stylesheet = {
   },
 }
 
-const tableLoading: Styles = {
+const tableWithRemoveButtons: Styles = {
   ...style.table,
-  opacity: 0.7,
-  filter: 'blur(3px)',
+  width: '93%',
+  [mq[768]]: {
+    width: '95%',
+  },
+  [mq[1024]]: {
+    width: '96%',
+  },
+  [mq[1200]]: {
+    width: '98%',
+  },
 }
 
 const headerThSelected: Styles = {

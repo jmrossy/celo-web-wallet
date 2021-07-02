@@ -1,6 +1,7 @@
 import { ChangeEvent, Fragment, ReactElement } from 'react'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
+import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
 
 interface RadioBoxProps<L extends string | ReactElement> {
@@ -42,8 +43,11 @@ export function RadioBoxGrid(props: RadioBoxProps<ReactElement>) {
   const grid = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(16em, 1fr))',
-    gap: '2.5em 0em',
     width: '100%',
+    gap: '2.5em 0em',
+    [mq[1024]]: {
+      gap: '3.5em 0em',
+    },
   }
   return (
     <div css={{ ...grid, margin, ...containerStyles }}>

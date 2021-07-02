@@ -20,6 +20,9 @@ import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption
 import {
   addAccount as addAccountToStorage,
   getAccounts as getAccountsFromStorage,
+  modifyAccount as modifyAccountInStorage,
+  removeAccount as removeAccountFromStorage,
+  removeAllAccounts as removeAllAccountsFromStorage,
   StoredAccountData,
 } from 'src/features/wallet/storage'
 import { isValidMnemonic, normalizeMnemonic } from 'src/features/wallet/utils'
@@ -213,12 +216,22 @@ function* onAccountActivation(address: string, type: SignerType) {
   yield* put(fetchFeedActions.trigger())
 }
 
-export function* removeAccount(address: string) {
-  //TODO
+export function renameAccount(address: string, newName: string) {
+  const accountData = accountListCache.get(address)
+  if (!accountData) throw new Error(`Account ${address} not found in account list cache`)
+  accountData.name = newName
+  modifyAccountInStorage(address, accountData)
+  accountListCache.set(address, accountData)
 }
 
-export function renameAccount(address: string, newName: string) {
-  // TODO
+export function* removeAccount(address: string) {
+  const currentAddress = yield* select((state: RootState) => state.wallet.address)
+  if (address === currentAddress)
+    throw new Error('Cannot remove active account, please switch first.')
+  const numAccounts = getAccounts().size
+  if (numAccounts === 1) throw new Error('Cannot remove last account. Use logout instead.')
+  removeAccountFromStorage(address)
+  accountListCache.delete(address)
 }
 
 export function getActiveAccount() {
@@ -250,4 +263,9 @@ export async function changeWalletPassword(oldPassword: string, newPassword: str
   await verifyPassword(oldPassword)
   //TODO stuff
   setPasswordCache(newPassword)
+}
+
+export function resetWallet() {
+  // TODO
+  removeAllAccountsFromStorage()
 }

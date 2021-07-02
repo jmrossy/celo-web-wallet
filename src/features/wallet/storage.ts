@@ -84,16 +84,27 @@ export function addAccount(newAccount: StoredAccountData) {
   }
 }
 
+export function modifyAccount(address: string, newAccountData: StoredAccountData) {
+  try {
+    acquireLock()
+
+    const accountsMetadata = getAccountsData()
+    const index = accountsMetadata.findIndex((a) => areAddressesEqual(a.address, address))
+    if (index < 0) throw new Error('Address not found in account list')
+    accountsMetadata[index] = newAccountData
+    setAccountsData(accountsMetadata)
+  } finally {
+    releaseLock()
+  }
+}
+
 export function removeAccount(address: string) {
   try {
     acquireLock()
 
     const accountsMetadata = getAccountsData()
     const index = accountsMetadata.findIndex((a) => areAddressesEqual(a.address, address))
-    if (index < 0) {
-      throw new Error('Address not found in account list')
-    }
-
+    if (index < 0) throw new Error('Address not found in account list')
     accountsMetadata.splice(index, 1)
     setAccountsData(accountsMetadata)
   } finally {

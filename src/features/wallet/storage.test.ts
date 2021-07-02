@@ -2,6 +2,7 @@ import { SignerType } from 'src/blockchain/signer'
 import {
   addAccount,
   getAccounts,
+  modifyAccount,
   removeAccount,
   removeAllAccounts,
 } from 'src/features/wallet/storage'
@@ -34,6 +35,14 @@ describe('Wallet Storage', () => {
   it('Adds a ledger account', () => {
     addAccount(ACCOUNT2)
     expect(getAccounts()).toEqual([ACCOUNT1, ACCOUNT2])
+  })
+  it('Modifies an account', () => {
+    const modifiedAcc = {
+      ...ACCOUNT2,
+      name: 'NewName',
+    }
+    modifyAccount(ACCOUNT2.address, modifiedAcc)
+    expect(getAccounts()).toEqual([ACCOUNT1, modifiedAcc])
   })
   it('Rejects invalid accounts', () => {
     // Duplicate account

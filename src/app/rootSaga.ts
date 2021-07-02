@@ -88,6 +88,12 @@ import {
   fetchBalancesSagaName,
 } from 'src/features/wallet/balances/fetchBalances'
 import {
+  editAccountActions,
+  editAccountReducer,
+  editAccountSaga,
+  editAccountSagaName,
+} from 'src/features/wallet/editAccount'
+import {
   importAccountActions,
   importAccountReducer,
   importAccountSaga,
@@ -200,6 +206,11 @@ export const monitoredSagas: {
     saga: governanceVoteSaga,
     reducer: governanceVoteReducer,
     actions: governanceVoteActions,
+  },
+  [editAccountSagaName]: {
+    saga: editAccountSaga,
+    reducer: editAccountReducer,
+    actions: editAccountActions,
   },
   [changePasswordSagaName]: {
     saga: changePasswordSaga,

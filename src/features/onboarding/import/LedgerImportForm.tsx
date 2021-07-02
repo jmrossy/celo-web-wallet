@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import { SignerType } from 'src/blockchain/signer'
 import { Button } from 'src/components/buttons/Button'
 import { NumberInput } from 'src/components/input/NumberInput'
@@ -26,7 +25,12 @@ interface ImportForm {
 
 const initialValues: ImportForm = { index: '0' }
 
-export function LedgerImportForm(props: { accountName?: string }) {
+interface Props {
+  onSuccess: () => void
+  accountName?: string
+}
+
+export function LedgerImportForm(props: Props) {
   const dispatch = useDispatch()
 
   const onSubmit = (values: ImportForm) => {
@@ -47,15 +51,11 @@ export function LedgerImportForm(props: { accountName?: string }) {
     validateForm
   )
 
-  const navigate = useNavigate()
-  const onSuccess = () => {
-    navigate('/', { replace: true })
-  }
   const status = useSagaStatus(
     importAccountSagaName,
     'Error Importing Wallet',
     'Something went wrong, sorry! Please ensure your Ledger is connected, unlocked, and running the latest Celo app.',
-    onSuccess
+    props.onSuccess
   )
 
   return (

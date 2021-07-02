@@ -1,27 +1,82 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { SignerType } from 'src/blockchain/signer'
+import { Button } from 'src/components/buttons/Button'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
+import { TransparentIconButton } from 'src/components/buttons/TransparentIconButton'
+import { PencilIcon } from 'src/components/icons/Pencil'
 import { Identicon } from 'src/components/Identicon'
+import { TextInput } from 'src/components/input/TextInput'
 import { Box } from 'src/components/layout/Box'
+import { modalStyles } from 'src/components/modal/modalStyles'
+import { useModal } from 'src/components/modal/useModal'
 import { Table, TableColumn } from 'src/components/Table'
-import { useWalletAddress } from 'src/features/wallet/hooks'
+import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
+import {
+  EditAccountAction,
+  editAccountActions,
+  editAccountSagaName,
+} from 'src/features/wallet/editAccount'
+import { useAccountList } from 'src/features/wallet/hooks'
+import { StoredAccountData } from 'src/features/wallet/storage'
+import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
+import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { formatNumberWithCommas } from 'src/utils/amount'
+import { SagaStatus } from 'src/utils/saga'
+import { trimToLength } from 'src/utils/string'
+import { useCustomForm } from 'src/utils/useCustomForm'
+import { useSagaStatus } from 'src/utils/useSagaStatus'
+import { ErrorState, invalidInput } from 'src/utils/validation'
 
 export function ManageAccountsScreen() {
-  const navigate = useNavigate()
-  const address = useWalletAddress()
+  const [refetchList, setRefetchList] = useState(false)
+  const accounts = useAccountList(undefined, refetchList)
 
+  const { showModalAsync, showModalWithContent, closeModal } = useModal()
+  const dispatch = useDispatch()
+
+  const onClickEditName = async (row: AccountTableRow) => {
+    showModalWithContent({
+      head: 'Rename Account',
+      content: <RenameAccountModal row={row} close={closeModal} />,
+    })
+  }
+
+  const onClickRemove = async (id: string) => {
+    const answer = await showModalAsync({
+      head: 'REMOVE ACCOUNT WARNING',
+      subHead: 'Are you sure you want to remove this account?',
+      body: 'The account will be deleted. Other accounts, including ones with the same key, will not be affected.',
+      actions: [
+        { key: 'cancel', label: 'Cancel', color: Color.primaryWhite },
+        { key: 'remove', label: 'Remove', color: Color.primaryRed },
+      ],
+    })
+    if (answer && answer.key === 'remove') {
+      dispatch(editAccountActions.trigger({ action: EditAccountAction.Remove, address: id }))
+    }
+  }
+
+  const isMobile = useIsMobile()
+  const tableColumns = getTableColumns(isMobile, onClickEditName)
+  const data = useMemo(() => {
+    return accountsToTableData(accounts, onClickRemove)
+  }, [accounts])
+
+  const navigate = useNavigate()
   const onClickAdd = () => {
     navigate('/accounts/add')
   }
 
-  const data = useMemo(() => {
-    return accountsToTableData(address)
-  }, [address])
+  const status = useSagaStatus(
+    editAccountSagaName,
+    'Error Modifying Account',
+    'Something went wrong, sorry!',
+    () => setRefetchList(!refetchList)
+  )
 
   return (
     <>
@@ -29,18 +84,32 @@ export function ManageAccountsScreen() {
       <Table<AccountTableRow>
         columns={tableColumns}
         data={data}
-        isLoading={false}
-        initialSortBy="value"
+        isLoading={!accounts}
+        initialSortBy="name"
       />
-      <DashedBorderButton onClick={onClickAdd} margin="0.5em 0 0 0">
+      <DashedBorderButton
+        onClick={onClickAdd}
+        margin="0.5em 0 0 0"
+        disabled={status === SagaStatus.Started}
+      >
         + Add new account
       </DashedBorderButton>
     </>
   )
 }
 
-function accountsToTableData(address: string): AccountTableRow[] {
-  return [{ id: address, address, name: 'Account 1', type: SignerType.Local, value: 100 }]
+function accountsToTableData(
+  accounts: StoredAccountData[] | null,
+  onRemove: (id: string) => void
+): AccountTableRow[] {
+  if (!accounts) return []
+  return accounts.map((a) => ({
+    id: a.address,
+    address: a.address,
+    name: a.name,
+    type: a.type,
+    onRemove,
+  }))
 }
 
 interface AccountTableRow {
@@ -48,47 +117,144 @@ interface AccountTableRow {
   name: string
   address: string
   type: SignerType
-  value: number
+  onRemove?: (id: string) => void
 }
 
-const tableColumns: TableColumn[] = [
-  {
-    header: 'Name',
-    id: 'name',
-    renderer: renderNameWithIcon,
-  },
-  {
-    header: 'Address',
-    id: 'address',
-    renderer: renderAddress,
-  },
-  {
-    header: 'Type',
-    id: 'type',
-    renderer: (row) => (row.type === SignerType.Ledger ? 'Ledger' : 'Local'),
-  },
-  {
-    header: 'Value (estimate)',
-    id: 'value',
-    renderer: (row) => formatNumberWithCommas(row.value),
-  },
-]
+function getTableColumns(
+  isMobile: boolean,
+  onClickEditName: (row: AccountTableRow) => void
+): TableColumn[] {
+  return [
+    {
+      header: 'Name',
+      id: 'name',
+      renderer: createRenderName(onClickEditName),
+    },
+    {
+      header: 'Type',
+      id: 'type',
+      renderer: renderType,
+    },
+    {
+      header: 'Address',
+      id: 'address',
+      renderer: createRenderAddress(isMobile),
+    },
+  ]
+}
 
-function renderNameWithIcon(row: AccountTableRow) {
-  return (
+function createRenderName(onClickEditName: (row: AccountTableRow) => void) {
+  const renderName = (row: AccountTableRow) => (
     <Box align="center">
       <Identicon address={row.address} styles={style.identicon} />
-      <div>{row.name}</div>
+      <div>{trimToLength(row.name, 20)}</div>
+      <TransparentIconButton
+        title="Edit account name"
+        icon={<PencilIcon color="#3d434a" styles={style.pencilIcon} />}
+        margin="0 0 0 0.5em"
+        onClick={() => onClickEditName(row)}
+      />
     </Box>
+  )
+  return renderName
+}
+
+function createRenderAddress(isMobile: boolean) {
+  const renderAddress = (row: AccountTableRow) => (
+    <CopiableAddress address={row.address} length={isMobile ? 'short' : 'full'} />
+  )
+  return renderAddress
+}
+
+function renderType(row: AccountTableRow) {
+  // return (
+  //   <Box align="center" justify="end">
+  //     {row.type === SignerType.Ledger ? (
+  //       <>
+  //         <div>Ledger</div>
+  //         <LedgerIcon color={Color.primaryBlack} styles={style.accountTypeIcon} />
+  //       </>
+  //     ) : (
+  //       <>
+  //         <div>Local</div>
+  //         <KeyIcon color={Color.primaryBlack} styles={style.accountTypeIcon} />{' '}
+  //       </>
+  //     )}
+  //   </Box>
+  // )
+  return row.type === SignerType.Ledger ? 'Ledger' : 'Local'
+}
+
+interface RenameForm {
+  newName: string
+}
+
+function RenameAccountModal(props: { row: AccountTableRow; close: () => void }) {
+  const { row, close } = props
+  const dispatch = useDispatch()
+
+  const onSubmit = (values: RenameForm) => {
+    if (values.newName !== row.name) {
+      dispatch(
+        editAccountActions.trigger({
+          action: EditAccountAction.Rename,
+          address: row.address,
+          newName: values.newName,
+        })
+      )
+    }
+    close()
+  }
+
+  const { values, errors, handleChange, handleBlur, handleSubmit } = useCustomForm<RenameForm>(
+    { newName: '' },
+    onSubmit,
+    validateForm
+  )
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Box direction="column" align="center">
+        <p css={style.renameDescription}>Please input a new name for the account.</p>
+        <TextInput
+          name="newName"
+          value={values.newName}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder="My new name"
+          width="11em"
+          {...errors['newName']}
+        />
+        <Button size="s" margin="1.8em 0 0 0" type="submit">
+          Rename
+        </Button>
+      </Box>
+    </form>
   )
 }
 
-function renderAddress(row: AccountTableRow) {
-  return <CopiableAddress address={row.address} length="short" />
+function validateForm(values: RenameForm): ErrorState {
+  if (!values.newName) return invalidInput('newName', 'New name is required')
+  if (values.newName.length > MAX_ACCOUNT_NAME_LENGTH)
+    return invalidInput('newName', 'New name is too long')
+  return { isValid: true }
 }
 
 const style: Stylesheet = {
   identicon: {
     marginRight: '0.75em',
+  },
+  pencilIcon: {
+    width: '0.7em',
+    height: 'auto',
+  },
+  accountTypeIcon: {
+    width: '1em',
+    height: 'auto',
+    marginLeft: '0.5em',
+  },
+  renameDescription: {
+    ...modalStyles.p,
+    margin: '0 0 1.75em 0',
   },
 }

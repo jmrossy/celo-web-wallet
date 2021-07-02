@@ -102,9 +102,7 @@ export function ImportAccountForm(props: Props) {
     importAccountSagaName,
     'Error Importing Account',
     'Something went wrong when importing your new account, sorry! Please try again.',
-    () => {
-      navigate('/')
-    }
+    () => navigate('/')
   )
 
   return (

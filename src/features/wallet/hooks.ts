@@ -44,16 +44,22 @@ export function useWalletAddress() {
   return address || NULL_ADDRESS
 }
 
-export function useAccountList(onReady?: (accs: StoredAccountData[]) => void) {
+export function useAccountList(
+  onReady?: (accs: StoredAccountData[]) => void,
+  refetchTrigger?: boolean
+) {
   const [accounts, setAccounts] = useState<StoredAccountData[] | null>(null)
-  useEffect(() => {
-    // Get account list on screen mount
-    const storedAccounts = getAccounts()
-    if (!storedAccounts?.size) throw new Error('No accounts found')
-    const accountList = Array.from(storedAccounts.values())
-    setAccounts(accountList)
-    if (onReady) onReady(accountList)
-  }, [])
+  useEffect(
+    () => {
+      // Get account list on screen mount
+      const storedAccounts = getAccounts()
+      if (!storedAccounts?.size) throw new Error('No accounts found')
+      const accountList = Array.from(storedAccounts.values())
+      setAccounts(accountList)
+      if (onReady) onReady(accountList)
+    },
+    typeof refetchTrigger === 'boolean' ? [refetchTrigger] : []
+  )
   return accounts
 }
 

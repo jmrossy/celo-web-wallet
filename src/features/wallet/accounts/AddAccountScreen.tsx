@@ -8,6 +8,7 @@ import { PlusIcon } from 'src/components/icons/Plus'
 import { RadioBoxGrid } from 'src/components/input/RadioBoxRow'
 import { TextInput } from 'src/components/input/TextInput'
 import { Box } from 'src/components/layout/Box'
+import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -157,7 +158,7 @@ function RadioBoxOption(props: RadioBoxOptionProps) {
 
 function validate(values: AddAcountForm): ErrorState {
   if (!values.name) return invalidInput('name', 'Name required')
-  if (values.name.length > 100) return invalidInput('name', 'Name too long')
+  if (values.name.length > MAX_ACCOUNT_NAME_LENGTH) return invalidInput('name', 'Name too long')
   if (!Object.values(NewAccountAction).includes(values.action))
     return invalidInput('action', 'Invalid action type')
   return { isValid: true }

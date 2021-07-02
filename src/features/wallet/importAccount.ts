@@ -2,6 +2,7 @@ import { utils } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/signer'
 import { config } from 'src/config'
+import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { addAccount, LedgerAccount, LocalAccount } from 'src/features/wallet/manager'
 import {
@@ -44,7 +45,7 @@ function validate(params: ImportAccountParams): ErrorState {
   } else {
     return invalidInput('type', 'Invalid signer type')
   }
-  if (account.name && account.name.length > 100) {
+  if (account.name && account.name.length > MAX_ACCOUNT_NAME_LENGTH) {
     return invalidInput('name', 'Account name too long')
   }
   return { isValid: true }

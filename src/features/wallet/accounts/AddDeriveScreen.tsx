@@ -81,9 +81,7 @@ export function AddDeriveScreen() {
     importAccountSagaName,
     'Error Importing Account',
     'Something went wrong when deriving your new account, sorry! Please try again.',
-    () => {
-      navigate('/')
-    }
+    () => navigate('/')
   )
 
   const mnemonicPhrase = account ? account.mnemonic.phrase : PLACEHOLDER_MNEMONIC
