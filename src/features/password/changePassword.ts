@@ -42,7 +42,7 @@ function* changePassword(params: ChangePasswordParams) {
   const { value, newValue } = params
   yield* call(changeWalletPassword, value, newValue)
 
-  logger.info('password changed')
+  logger.info('Password changed')
 }
 
 export const {

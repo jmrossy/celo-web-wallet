@@ -2,7 +2,7 @@ import { SignerType } from 'src/blockchain/types'
 import {
   addAccount,
   getAccounts,
-  modifyAccount,
+  modifyAccounts,
   removeAccount,
   removeAllAccounts,
 } from 'src/features/wallet/storage'
@@ -28,7 +28,7 @@ describe('Wallet Storage', () => {
       ...MOCK_ACCOUNT2,
       name: 'NewName',
     }
-    modifyAccount(MOCK_ACCOUNT2.address, modifiedAcc)
+    modifyAccounts([modifiedAcc])
     expect(getAccounts()).toEqual([MOCK_ACCOUNT1, modifiedAcc])
   })
   it('Rejects invalid accounts', () => {

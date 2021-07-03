@@ -3,7 +3,7 @@ import { utils, Wallet } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { clearContractCache } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
-import { getSigner, setSigner } from 'src/blockchain/signer'
+import { clearSigner, getSigner, setSigner } from 'src/blockchain/signer'
 import { SignerType } from 'src/blockchain/types'
 import { CELO_DERIVATION_PATH } from 'src/consts'
 import { resetFeed } from 'src/features/feed/feedSlice'
@@ -11,6 +11,7 @@ import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
 import { createLedgerSigner } from 'src/features/ledger/signerFactory'
 import {
+  clearPasswordCache,
   getPasswordCache,
   hasPasswordCached,
   setPasswordCache,
@@ -21,13 +22,13 @@ import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption
 import {
   addAccount as addAccountToStorage,
   getAccounts as getAccountsFromStorage,
-  modifyAccount as modifyAccountInStorage,
+  modifyAccounts as modifyAccountsInStorage,
   removeAccount as removeAccountFromStorage,
   removeAllAccounts as removeAllAccountsFromStorage,
   StoredAccountData,
 } from 'src/features/wallet/storage'
 import { isValidMnemonic, normalizeMnemonic } from 'src/features/wallet/utils'
-import { setAccount } from 'src/features/wallet/walletSlice'
+import { resetWallet, setAccount } from 'src/features/wallet/walletSlice'
 import { disconnectWcClient, resetWcClient } from 'src/features/walletConnect/walletConnectSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
@@ -221,8 +222,7 @@ export function renameAccount(address: string, newName: string) {
   const accountData = accountListCache.get(address)
   if (!accountData) throw new Error(`Account ${address} not found in account list cache`)
   accountData.name = newName
-  modifyAccountInStorage(address, accountData)
-  accountListCache.set(address, accountData)
+  modifyAccountsInStorage([accountData])
 }
 
 export function* removeAccount(address: string) {
@@ -261,12 +261,27 @@ async function verifyPassword(password: string) {
 }
 
 export async function changeWalletPassword(oldPassword: string, newPassword: string) {
-  await verifyPassword(oldPassword)
-  //TODO stuff
+  const accounts = getAccounts()
+  if (accounts.size === 0) return
+  const updatedAccounts: StoredAccountData[] = []
+  for (const account of accounts.values()) {
+    if (account.type === SignerType.Local && account.encryptedMnemonic) {
+      const mnemonic = await decryptMnemonic(account.encryptedMnemonic, oldPassword)
+      if (!isValidMnemonic(mnemonic)) throw new Error('Unable to decrypt with old password')
+      const encryptedMnemonic = await encryptMnemonic(mnemonic, newPassword)
+      updatedAccounts.push({ ...account, encryptedMnemonic })
+    }
+  }
+  if (!updatedAccounts.length) throw new Error('No local accounts found, password was never set')
+  modifyAccountsInStorage(updatedAccounts)
   setPasswordCache(newPassword)
 }
 
-export function resetWallet() {
-  // TODO
+export function* removeAllAccounts() {
+  accountListCache.clear()
   removeAllAccountsFromStorage()
+  clearContractCache()
+  clearSigner()
+  clearPasswordCache()
+  yield* put(resetWallet())
 }

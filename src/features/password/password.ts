@@ -35,6 +35,10 @@ export function hasPasswordCached() {
   return !!cachedPassword
 }
 
+export function clearPasswordCache() {
+  return (cachedPassword = null)
+}
+
 export function useAccountLockStatus() {
   // Using individual selects here to avoid re-renders this high-level
   // components that use this hook
