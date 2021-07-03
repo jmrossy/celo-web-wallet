@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { ButtonToggle } from 'src/components/buttons/ButtonToggle'
 import { TextArea } from 'src/components/input/TextArea'

@@ -2,8 +2,6 @@ import { ipcRenderer } from 'electron'
 import * as fs from 'fs'
 import * as path from 'path'
 import { StorageProvider } from 'src/features/storage/types'
-import { logger } from 'src/utils/logger'
-import { sleep } from 'src/utils/promises'
 
 let defaultCwd: string
 
@@ -33,33 +31,36 @@ function getItem(path: string) {
   return fs.readFileSync(fullPath, 'utf8')
 }
 
+// This uses a similar method as the write-file-atomic lib
+// It writes to a temp file then renames the tmp file
 function setItem(path: string, data: string, allowOverwrite = false) {
   if (!data) throw new Error('No data provided to store')
   if (hasItem(path) && !allowOverwrite) throw new Error('Attempting to overwrite existing item')
-  const fullPath = getAppCwdPath(path)
-  // TODO do tmp file + swap here
-  fs.writeFileSync(fullPath, data, { encoding: 'utf8' })
-  if (!hasItem(path)) throw new Error('Setting item seems to have failed')
+  const tmpFullPath = getAppCwdPath(getTmpFilePath(path))
+  const realFullPath = getAppCwdPath(path)
+  fs.writeFileSync(tmpFullPath, data, { encoding: 'utf8' })
+  fs.renameSync(tmpFullPath, realFullPath)
+  if (!hasItem(path)) throw new Error('Setting item in storage seems to have failed')
 }
 
-async function removeItem(path: string) {
+function getTmpFilePath(path: string) {
+  const parts = path.split('.')
+  if (parts.length !== 2) throw new Error(`Invalid file path ${path}`)
+  const name = parts[0]
+  const ext = parts[1]
+  return `${name}-tmp-${Date.now()}.${ext}`
+}
+
+function removeItem(path: string) {
   if (!hasItem(path)) throw new Error('Item does not exist')
   const fullPath = getAppCwdPath(path)
-  for (let i = 0; i < 5; i++) {
-    try {
-      fs.unlinkSync(fullPath)
-      break
-    } catch (error) {
-      logger.error(`Error removing item ${path}. Retries remaining: ${4 - i}`)
-      await sleep(1000)
-    }
-  }
+  fs.unlinkSync(fullPath)
   if (hasItem(path)) throw new Error('Item removal seems to have failed')
 }
 
-export const storageProvider: StorageProvider = {
+export const storageProvider: StorageProvider = Object.freeze({
   hasItem,
   getItem,
   setItem,
   removeItem,
-}
+})

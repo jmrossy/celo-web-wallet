@@ -1,5 +1,5 @@
 import { utils } from 'ethers'
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { config } from 'src/config'
 import { storageProvider } from 'src/features/storage/storageProvider'
 import { isValidDerivationPath, isValidMnemonicLocale } from 'src/features/wallet/utils'

@@ -19,7 +19,7 @@ export function NewAccountScreen() {
   return (
     <OnboardingScreenFrame current={2} total={3}>
       <h1 css={style.header}>Your New Celo Account</h1>
-      {hasShownWarning ? (
+      {!hasShownWarning ? (
         <WebWalletWarning type="create" onClose={() => setHasShownWarning(true)} />
       ) : (
         <NewAccountForm navigateToSetPin={navigateToSetPin} />

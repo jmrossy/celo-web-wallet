@@ -1,4 +1,4 @@
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { Address } from 'src/components/Address'
 import { HrDivider } from 'src/components/HrDivider'
 import { Identicon } from 'src/components/Identicon'

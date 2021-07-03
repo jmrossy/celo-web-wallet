@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers'
 import { useDispatch } from 'react-redux'
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { Box } from 'src/components/layout/Box'

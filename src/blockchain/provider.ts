@@ -53,7 +53,7 @@ function isProviderSynced(block?: providers.Block, network?: providers.Network) 
     block &&
     block.number &&
     block.timestamp &&
-    !isStale(block.timestamp * 1000, STALE_BLOCK_TIME) &&
+    !isStale(block.timestamp * 1000, STALE_BLOCK_TIME * 6) &&
     network &&
     network.chainId === config.chainId
   )

@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { config } from 'src/config'
 import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'

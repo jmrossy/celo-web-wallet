@@ -1,6 +1,6 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { config } from 'src/config'
 import { logger } from 'src/utils/logger'
 

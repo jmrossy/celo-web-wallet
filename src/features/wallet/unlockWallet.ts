@@ -1,5 +1,5 @@
 import { utils } from 'ethers'
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { loadAccount } from 'src/features/wallet/manager'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'

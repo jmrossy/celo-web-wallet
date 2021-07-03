@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'

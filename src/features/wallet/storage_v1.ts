@@ -1,4 +1,5 @@
-import { getSigner, SignerType } from 'src/blockchain/signer'
+import { getSigner } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { config } from 'src/config'
 import { storageProvider } from 'src/features/storage/storageProvider'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
@@ -60,9 +61,9 @@ export async function loadWallet(password: string) {
   }
 }
 
-export async function removeWallet() {
+export function removeWallet() {
   try {
-    await storageProvider.removeItem(getWalletPath())
+    storageProvider.removeItem(getWalletPath())
   } catch (error) {
     logger.error('Failed to remove wallet from storage', error)
   }

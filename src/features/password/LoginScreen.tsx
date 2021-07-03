@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { showLogoutModal } from 'src/app/logout/useLogoutModal'
 import type { RootState } from 'src/app/rootReducer'
-import { SignerType } from 'src/blockchain/signer'
+import { SignerType } from 'src/blockchain/types'
 import { Address } from 'src/components/Address'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { ChevronIcon } from 'src/components/icons/Chevron'

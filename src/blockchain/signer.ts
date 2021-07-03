@@ -1,24 +1,6 @@
-import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
 import { isProviderSet } from 'src/blockchain/provider'
-import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
+import { CeloSigner, SignerType } from 'src/blockchain/types'
 import { logger } from 'src/utils/logger'
-
-export enum SignerType {
-  Local = 'local',
-  Ledger = 'ledger',
-}
-
-interface CeloWalletSigner {
-  type: SignerType.Local
-  signer: CeloWallet
-}
-
-interface CeloLedgerSigner {
-  type: SignerType.Ledger
-  signer: LedgerSigner
-}
-
-export type CeloSigner = CeloWalletSigner | CeloLedgerSigner
 
 // Note this is the wallet's local signer, not to be confused with
 // vote signers in the Accounts contract
