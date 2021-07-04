@@ -61,7 +61,7 @@ export function LedgerImportForm(props: Props) {
   return (
     <>
       <p css={onboardingStyles.description}>
-        To import, connect your Ledger, open the Celo application, and verify the address.
+        To import an account, connect your Ledger and open the Celo application.
       </p>
       <div css={style.animationContainer}>
         <DeviceAnimation xOffset={48} />

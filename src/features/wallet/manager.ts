@@ -179,14 +179,14 @@ function* addLedgerAccount(newAccount: LedgerAccount) {
   }
   addAccountToStorage(storedAccount)
   accountListCache.set(storedAccount.address, storedAccount)
-  yield* call(activateLedgerAccount, ledgerSigner)
+  yield* call(activateLedgerAccount, ledgerSigner, newAccount.address)
 }
 
 function* activateLocalAccount(ethersWallet: Wallet) {
   const provider = getProvider()
   const celoWallet = new CeloWallet(ethersWallet, provider)
   setSigner({ signer: celoWallet, type: SignerType.Local })
-  yield* call(onAccountActivation, celoWallet.address, SignerType.Local)
+  yield* call(onAccountActivation, celoWallet.address, celoWallet.mnemonic.path, SignerType.Local)
 }
 
 function* activateLedgerAccount(signer: LedgerSigner, accountAddress?: string) {
@@ -196,13 +196,13 @@ function* activateLedgerAccount(signer: LedgerSigner, accountAddress?: string) {
     throw new Error('Address mismatch, account may be on a different Ledger')
   }
   setSigner({ signer, type: SignerType.Ledger })
-  yield* call(onAccountActivation, signerAddress, SignerType.Ledger)
+  yield* call(onAccountActivation, signerAddress, signer.path, SignerType.Ledger)
 }
 
-function* onAccountActivation(address: string, type: SignerType) {
+function* onAccountActivation(address: string, derivationPath: string, type: SignerType) {
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
-  yield* put(setAccount({ address, type }))
+  yield* put(setAccount({ address, derivationPath, type }))
 
   if (currentAddress && !areAddressesEqual(currentAddress, address)) {
     logger.debug('New address activated, clearing old data')

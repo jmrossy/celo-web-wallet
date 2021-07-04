@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { utils } from 'ethers'
 import { createMigrate, persistReducer } from 'redux-persist'
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 import storage from 'redux-persist/lib/storage'
 import { SignerType } from 'src/blockchain/types'
 import { Balances } from 'src/features/wallet/types'
+import { isValidDerivationPath } from 'src/features/wallet/utils'
 import { CELO, cEUR, cUSD, Token } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { assert } from 'src/utils/validation'
@@ -12,6 +14,7 @@ interface Wallet {
   isConnected: boolean | null
   isUnlocked: boolean
   address: string | null
+  derivationPath: string | null
   type: SignerType | null
   balances: Balances
   account: AccountStatus
@@ -20,6 +23,7 @@ interface Wallet {
 
 interface SetAccountAction {
   address: string
+  derivationPath: string
   type: SignerType
 }
 
@@ -34,6 +38,7 @@ export const walletInitialState: Wallet = {
   isConnected: null,
   isUnlocked: false,
   address: null,
+  derivationPath: null,
   type: null,
   balances: {
     tokens: {
@@ -73,12 +78,14 @@ const walletSlice = createSlice({
       state.isConnected = action.payload
     },
     setAccount: (state, action: PayloadAction<SetAccountAction>) => {
-      const { address, type } = action.payload
+      const { address, derivationPath, type } = action.payload
       state.isUnlocked = true
-      assert(address && address.length === 42, `Invalid address ${address}`)
+      assert(address && utils.isAddress(address), `Invalid address ${address}`)
       assert(type === SignerType.Local || type === SignerType.Ledger, `Invalid type ${type}`)
+      assert(isValidDerivationPath(derivationPath), `Invalid derivationPath ${derivationPath}`)
       if (state.address && areAddressesEqual(state.address, address)) return
       state.address = address
+      state.derivationPath = derivationPath
       state.type = type
       state.account = walletInitialState.account
       state.voterBalances = walletInitialState.voterBalances

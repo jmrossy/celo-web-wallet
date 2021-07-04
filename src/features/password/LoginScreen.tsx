@@ -38,7 +38,6 @@ const initialValues: UnlockWalletParams = {
 export function LoginScreen() {
   const dispatch = useDispatch()
   const onSubmit = (values: UnlockWalletParams) => {
-    // TODO handle migration for old accounts
     dispatch(unlockWalletActions.trigger(values))
   }
   const initialFormValues = useFormInitialValues()
@@ -90,55 +89,54 @@ export function LoginScreen() {
   return (
     <OnboardingScreenFrame>
       <h1 css={Font.h1Green}>Unlock Your Wallet</h1>
-      {values.activeAddress &&
-        accounts &&
-        (accounts.length == 1 ? (
-          <Address address={values.activeAddress} />
-        ) : (
-          <div css={style.addressContainer}>
-            <button type="button" css={style.addressButton} onClick={showDropdown}>
-              <Box align="center" justify="between">
-                <Address address={values.activeAddress} isTransparent={true} />
-                <ChevronIcon
-                  direction={isDropdownVisible ? 'n' : 's'}
-                  styles={style.addressChevron}
-                />
+
+      {values.activeAddress && (!accounts || accounts.length <= 1) && (
+        <Address address={values.activeAddress} />
+      )}
+
+      {values.activeAddress && accounts && accounts.length > 1 && (
+        <div css={style.addressContainer}>
+          <button type="button" css={style.addressButton} onClick={showDropdown}>
+            <Box align="center" justify="between">
+              <Address address={values.activeAddress} isTransparent={true} />
+              <ChevronIcon
+                direction={isDropdownVisible ? 'n' : 's'}
+                styles={style.addressChevron}
+              />
+            </Box>
+          </button>
+          {isDropdownVisible && (
+            <DropdownBox hide={hideDropdown}>
+              <Box direction="column" align="stretch" styles={style.addressDropdownContainer}>
+                {accounts.map((a) => (
+                  <button
+                    type="button"
+                    css={style.addressDropdownButton}
+                    onClick={() => onSelectAddress(a.address)}
+                    key={`account-button-${a.address}`}
+                  >
+                    <Box align="center" justify="between">
+                      <Address address={a.address} name={a.name} isTransparent={true} />
+                      {a.type === SignerType.Local ? (
+                        <KeyIcon color={Color.primaryBlack} styles={style.addressDropdownIcon} />
+                      ) : (
+                        <LedgerIcon color={Color.primaryBlack} styles={style.addressDropdownIcon} />
+                      )}
+                    </Box>
+                  </button>
+                ))}
               </Box>
-            </button>
-            {isDropdownVisible && (
-              <DropdownBox hide={hideDropdown}>
-                <Box direction="column" align="stretch" styles={style.addressDropdownContainer}>
-                  {accounts.map((a) => (
-                    <button
-                      type="button"
-                      css={style.addressDropdownButton}
-                      onClick={() => onSelectAddress(a.address)}
-                      key={`account-button-${a.address}`}
-                    >
-                      <Box align="center" justify="between">
-                        <Address address={a.address} name={a.name} isTransparent={true} />
-                        {a.type === SignerType.Local ? (
-                          <KeyIcon color={Color.primaryBlack} styles={style.addressDropdownIcon} />
-                        ) : (
-                          <LedgerIcon
-                            color={Color.primaryBlack}
-                            styles={style.addressDropdownIcon}
-                          />
-                        )}
-                      </Box>
-                    </button>
-                  ))}
-                </Box>
-              </DropdownBox>
-            )}
-          </div>
-        ))}
+            </DropdownBox>
+          )}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         <Box direction="column" align="center" margin="1.75em 0 0 0">
           <div css={style.description}>
             {isLocalAcc
               ? 'Enter your password to unlock your wallet'
-              : 'To unlock your wallet, connect your Ledger and confirm your address'}
+              : 'Connect your Ledger to unlock your wallet'}
           </div>
           {isLocalAcc ? (
             <PasswordInput

@@ -6,6 +6,7 @@ import { NULL_ADDRESS } from 'src/consts'
 import { getAccounts } from 'src/features/wallet/manager'
 import { StoredAccountData } from 'src/features/wallet/storage'
 import { areBalancesEmpty } from 'src/features/wallet/utils'
+import { logger } from 'src/utils/logger'
 import { select } from 'typed-redux-saga'
 
 const balanceEmptySelector = createSelector(
@@ -53,7 +54,10 @@ export function useAccountList(
     () => {
       // Get account list on screen mount
       const storedAccounts = getAccounts()
-      if (!storedAccounts?.size) throw new Error('No accounts found')
+      if (!storedAccounts?.size) {
+        logger.warn('No accounts found')
+        return
+      }
       const accountList = Array.from(storedAccounts.values())
       setAccounts(accountList)
       if (onReady) onReady(accountList)
