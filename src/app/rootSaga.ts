@@ -98,7 +98,6 @@ import {
   importAccountReducer,
   importAccountSaga,
   importAccountSagaName,
-  importDefaultAccount,
 } from 'src/features/wallet/importAccount'
 import {
   switchAccountActions,
@@ -117,7 +116,6 @@ import { SagaActions, SagaState } from 'src/utils/saga'
 
 function* init() {
   yield call(initProvider)
-  yield call(importDefaultAccount)
 }
 
 // All regular sagas must be included here

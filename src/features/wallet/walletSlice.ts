@@ -89,7 +89,6 @@ const walletSlice = createSlice({
       state.type = type
       state.account = walletInitialState.account
       state.voterBalances = walletInitialState.voterBalances
-      // TODO consider 0-ing all values here
       state.balances.lastUpdated = walletInitialState.balances.lastUpdated
     },
     updateBalances: (state, action: PayloadAction<Balances>) => {

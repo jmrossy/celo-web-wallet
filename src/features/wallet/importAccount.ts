@@ -1,7 +1,5 @@
 import { utils } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/types'
-import { config } from 'src/config'
 import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { addAccount, LedgerAccount, LocalAccount } from 'src/features/wallet/manager'
@@ -13,7 +11,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export interface ImportAccountParams {
   account: LocalAccount | LedgerAccount
@@ -100,11 +98,3 @@ export const {
   actions: importAccountActions,
   reducer: importAccountReducer,
 } = createMonitoredSaga<ImportAccountParams>(importAccount, 'importAccount')
-
-// Used for better dev experience, do not used in production
-export function* importDefaultAccount() {
-  if (!config.defaultAccount) return
-  // TODO Fix later
-  const currentAddress = yield* select((state: RootState) => state.wallet.address)
-  // yield* call(importWallet, { mnemonic: config.defaultAccount })
-}

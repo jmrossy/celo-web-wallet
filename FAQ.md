@@ -27,11 +27,11 @@ Yes, the web version was designed from the ground-up to be lightweight and mobil
 
 ## Will it work with Valora wallets?
 
-Yes, you can use your Account Key (mnemonic phrase) to import your account into the web wallet, back into Valora, or use both at the same time.
+Yes, you can use your Account Key (seed phrase) to import your account into the Celo Wallet, back into Valora, or use both at the same time.
 
 ## How is it different than Valora?
 
-The most obvious difference is platform: Valora runs on iOS and Android, the web wallet runs in any modern browser and on desktop. More abstractly though, Valora is a social payments application whereas the web wallet is just a tool. That's why Valora includes extra features around importing contacts, verifying phone numbers, finding friends, etc. In contrast, one of this wallet's design principles is to be minimal, meaning no analytics, no plugins, and no device permissions (except for Ledger access).
+The most obvious difference is platform: Valora runs on iOS and Android, whereas Celo Wallet runs in browsers and on desktop. More abstractly though, Valora is a social payments application whereas the Celo Wallet is just a tool. That's why Valora includes extra features around importing contacts, verifying phone numbers, finding friends, etc. In contrast, one of this wallet's design principles is to be minimal, meaning no analytics, no plugins, and no device permissions (except for Ledger access).
 
 ## Is the web version safe?
 
@@ -41,11 +41,11 @@ Long answer: The web version does what it can to protect your funds but web apps
 
 ## Where are my keys stored?
 
-Your mnemonic, from which you keys are derived, is encrypted using your password and stored either in browser local storage for web or on disk for desktop. Your keys never leave your device. In other words, this wallet is a self-sovereign (non-custodial) wallet.
+Your seed phrases, from which you keys are derived, are encrypted using your password and stored either in browser local storage for web or on disk for desktop. Your keys never leave your device. In other words, this wallet is a self-sovereign (non-custodial) wallet.
 
-- Mac: `~/Library/Application Support/celo-web-wallet`
-- Linux: `~/.config/celo-web-wallet or $XDG_CONFIG_HOME/celo-web-wallet`
-- Windows: `C:\Users\{USERNAME}\AppData\Roaming\celo-web-wallet`
+- Mac: `~/Library/Application Support/celo-web-wallet/accounts.json`
+- Linux: `~/.config/celo-web-wallet or $XDG_CONFIG_HOME/celo-web-wallet/accounts.json`
+- Windows: `C:\Users\{USERNAME}\AppData\Roaming\celo-web-wallet\accounts.json`
 
 ## Is Ledger supported?
 

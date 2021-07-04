@@ -1,13 +1,12 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
-import { config } from 'src/config'
 import { hasAccounts } from 'src/features/wallet/manager'
 import { hasAccount_v1 } from 'src/features/wallet/storage_v1'
 
 export function OnboardingNavigator() {
   // If wallet exists in storage don't allow user back into onboarding flow
-  if (hasAccounts() || hasAccount_v1() || config.defaultAccount) {
+  if (hasAccounts() || hasAccount_v1()) {
     return <Navigate to="/" replace={true} />
   }
 

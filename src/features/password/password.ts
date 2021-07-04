@@ -1,7 +1,6 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/types'
-import { config } from 'src/config'
 import { logger } from 'src/utils/logger'
 
 export class PasswordCache {
@@ -51,7 +50,7 @@ export function useAccountLockStatus() {
   const isUnlocked = !!(
     address &&
     isWalletUnlocked &&
-    (hasPasswordCached() || type === SignerType.Ledger || config.defaultAccount)
+    (hasPasswordCached() || type === SignerType.Ledger)
   )
 
   return { address, type, isUnlocked }
