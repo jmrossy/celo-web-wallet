@@ -2,6 +2,7 @@ import { utils } from 'ethers'
 import { SignerType } from 'src/blockchain/types'
 import { config } from 'src/config'
 import { storageProvider } from 'src/features/storage/storageProvider'
+import { TransactionMap } from 'src/features/types'
 import { isValidDerivationPath, isValidMnemonicLocale } from 'src/features/wallet/utils'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
@@ -47,11 +48,11 @@ enum AccountFile {
 const STORAGE_PATHS = Object.freeze({
   browser: {
     [AccountFile.accounts]: 'wallet/accounts',
-    [AccountFile.feedData]: 'wallet/feedData',
+    [AccountFile.feedData]: 'wallet/feedData/ADDRESS',
   },
   electron: {
     [AccountFile.accounts]: 'accounts.json',
-    [AccountFile.feedData]: 'feedData.json',
+    [AccountFile.feedData]: 'feedData-ADDRESS.json',
   },
 })
 
@@ -157,6 +158,62 @@ function validateAccount(account: StoredAccountData) {
   if (!derivationPath || !isValidDerivationPath(derivationPath)) error('invalid derivation path')
   if (type === SignerType.Local && !encryptedMnemonic) error('local account is missing mnemonic')
   if (locale && isValidMnemonicLocale(locale)) error('invalid mnemonic locale')
+}
+
+export function getFeedDataForAccount(address: string) {
+  try {
+    acquireLock()
+    const data = storageProvider.getItem(getFeedDataPath(address))
+    return parseFeedData(data)
+  } catch (error) {
+    // Since feed data is not critical, swallow errors
+    logger.error('Error getting feed data from storage', error)
+    return null
+  } finally {
+    releaseLock()
+  }
+}
+
+export function setFeedDataForAccount(address: string, feedData: TransactionMap) {
+  try {
+    acquireLock()
+    const serialized = JSON.stringify(feedData)
+    storageProvider.setItem(getFeedDataPath(address), serialized, true)
+  } catch (error) {
+    // Since feed data is not critical, swallow errors
+    logger.error('Error setting feed data in storage', error)
+  } finally {
+    releaseLock()
+  }
+}
+
+export function removeFeedDataForAccount(address: string) {
+  try {
+    acquireLock()
+    const dataPath = getFeedDataPath(address)
+    storageProvider.removeItem(dataPath)
+  } catch (error) {
+    // Since feed data is not critical, swallow errors
+    logger.error('Error deleting feed data item in storage', error)
+  } finally {
+    releaseLock()
+  }
+}
+
+export function removeAllFeedData(addresses: string[]) {
+  addresses.forEach(removeFeedDataForAccount)
+}
+
+function getFeedDataPath(address: string) {
+  const basePath = getFilePath(AccountFile.feedData)
+  return basePath.replace('ADDRESS', address)
+}
+
+function parseFeedData(data: string | null): TransactionMap | null {
+  if (!data) return null
+  const parsed = JSON.parse(data) as TransactionMap
+  if (!parsed || typeof parsed !== 'object') throw new Error('Invalid format for feed data')
+  return parsed
 }
 
 function tryPersistBrowserStorage() {

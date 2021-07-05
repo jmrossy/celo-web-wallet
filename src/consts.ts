@@ -8,6 +8,7 @@ export const DERIVATION_PATH_MAX_INDEX = 1000000
 export const AVG_BLOCK_TIMES = 5000 // 5 seconds
 export const CONNECTION_CHECK_INTERVAL = 15000 // 15 seconds
 export const STALE_BLOCK_TIME = 20000 // 20 seconds
+export const STATUS_POLLER_DELAY = 10000 // 10 seconds
 export const MAX_NUM_ELECTABLE_VALIDATORS = 100
 
 export const MAX_SEND_TOKEN_SIZE = '100000000000000000000' // 100 Tokens

@@ -32,7 +32,7 @@ export async function loadWallet_v1(password: string) {
 
 export function removeWallet_v1() {
   try {
-    if (hasAccount_v1()) storageProvider.removeItem(getWalletPath())
+    storageProvider.removeItem(getWalletPath())
   } catch (error) {
     logger.error('Failed to remove wallet from storage', error)
   }

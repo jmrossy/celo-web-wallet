@@ -6,7 +6,7 @@ import { getProvider } from 'src/blockchain/provider'
 import { clearSigner, getSigner, setSigner } from 'src/blockchain/signer'
 import { SignerType } from 'src/blockchain/types'
 import { CELO_DERIVATION_PATH } from 'src/consts'
-import { resetFeed } from 'src/features/feed/feedSlice'
+import { resetFeed, setTransactions } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
 import { createLedgerSigner } from 'src/features/ledger/signerFactory'
@@ -22,9 +22,13 @@ import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption
 import {
   addAccount as addAccountToStorage,
   getAccounts as getAccountsFromStorage,
+  getFeedDataForAccount,
   modifyAccounts as modifyAccountsInStorage,
   removeAccount as removeAccountFromStorage,
   removeAllAccounts as removeAllAccountsFromStorage,
+  removeAllFeedData,
+  removeFeedDataForAccount,
+  setFeedDataForAccount,
   StoredAccountData,
 } from 'src/features/wallet/storage'
 import { isValidMnemonic, normalizeMnemonic } from 'src/features/wallet/utils'
@@ -94,6 +98,7 @@ export function* loadAccount(address: string, password?: string) {
 }
 
 function* loadLocalAccount(account: StoredAccountData, password?: string) {
+  logger.debug('Loading a local account')
   if (!password) {
     const cachedPassword = getPasswordCache()
     if (cachedPassword) password = cachedPassword.password
@@ -114,6 +119,7 @@ function* loadLocalAccount(account: StoredAccountData, password?: string) {
 }
 
 function* loadLedgerAccount(account: StoredAccountData) {
+  logger.debug('Loading a ledger account')
   const { address, derivationPath } = account
   const provider = getProvider()
   const ledgerSigner = yield* call(createLedgerSigner, derivationPath, provider)
@@ -138,6 +144,7 @@ export function* addAccount(newAccount: LocalAccount | LedgerAccount, password?:
 }
 
 function* addLocalAccount(newAccount: LocalAccount, password?: string) {
+  logger.debug('Adding a local account')
   if (!password) {
     const cachedPassword = getPasswordCache()
     if (cachedPassword) password = cachedPassword.password
@@ -167,6 +174,7 @@ function* addLocalAccount(newAccount: LocalAccount, password?: string) {
 }
 
 function* addLedgerAccount(newAccount: LedgerAccount) {
+  logger.debug('Adding a ledger account')
   const provider = getProvider()
   const ledgerSigner = yield* call(createLedgerSigner, newAccount.derivationPath, provider)
   const address = ledgerSigner.address
@@ -207,8 +215,7 @@ function* onAccountActivation(address: string, derivationPath: string, type: Sig
   if (currentAddress && !areAddressesEqual(currentAddress, address)) {
     logger.debug('New address activated, clearing old data')
     clearContractCache()
-    //TODO load in feed data
-    yield* put(resetFeed())
+    yield* call(swapFeedData, currentAddress, address)
     yield* put(resetValidatorForAccount())
     yield* put(disconnectWcClient())
     yield* put(resetWcClient())
@@ -232,6 +239,7 @@ export function* removeAccount(address: string) {
   const numAccounts = getAccounts().size
   if (numAccounts === 1) throw new Error('Cannot remove last account. Use logout instead.')
   removeAccountFromStorage(address)
+  removeFeedDataForAccount(address)
   accountListCache.delete(address)
 }
 
@@ -278,10 +286,40 @@ export async function changeWalletPassword(oldPassword: string, newPassword: str
 }
 
 export function* removeAllAccounts() {
-  accountListCache.clear()
+  const addresses = Array.from(getAccounts().keys())
+  removeAllFeedData(addresses)
   removeAllAccountsFromStorage()
+  accountListCache.clear()
   clearContractCache()
   clearSigner()
   clearPasswordCache()
   yield* put(resetWallet())
+}
+
+function* swapFeedData(currentAddress: string, nextAddress: string) {
+  try {
+    // Save current data
+    const transactions = yield* select((s: RootState) => s.feed.transactions)
+    if (transactions && Object.keys(transactions).length) {
+      setFeedDataForAccount(currentAddress, transactions)
+    }
+
+    // Load data for new acive address
+    const feedData = getFeedDataForAccount(nextAddress)
+    if (feedData) {
+      logger.debug('Feed data found in storage. Updating feed')
+      let maxBlockNumber = 0
+      for (const tx of Object.values(feedData)) {
+        maxBlockNumber = Math.max(tx.blockNumber, maxBlockNumber)
+      }
+      yield* put(setTransactions({ txs: feedData, lastBlockNumber: maxBlockNumber }))
+    } else {
+      logger.debug('No feed data found in storage. Resetting feed')
+      yield* put(resetFeed())
+    }
+  } catch (error) {
+    // Since feed data is not critical, swallow errors
+    logger.error('Error loading feed data. Resetting feed', error)
+    yield* put(resetFeed())
+  }
 }

@@ -24,6 +24,18 @@ const feedSlice = createSlice({
   name: 'feed',
   initialState: feedInitialState,
   reducers: {
+    setTransactions: (
+      state,
+      action: PayloadAction<{
+        txs: TransactionMap
+        lastBlockNumber: number
+      }>
+    ) => {
+      state.transactions = action.payload.txs
+      state.lastBlockNumber = action.payload.lastBlockNumber
+      state.lastUpdatedTime = null
+      state.openTransaction = null
+    },
     addTransactions: (
       state,
       action: PayloadAction<{
@@ -59,6 +71,7 @@ const feedSlice = createSlice({
 })
 
 export const {
+  setTransactions,
   addTransactions,
   addPlaceholderTransaction,
   openTransaction,

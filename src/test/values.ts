@@ -1,4 +1,5 @@
 import { SignerType } from 'src/blockchain/types'
+import { TransactionMap } from 'src/features/types'
 
 export const MOCK_MNEMONIC =
   'hamster bulb chef popular soft hip flight chest enhance reveal game throw hen oxygen despair fish forest skate melody apple outdoor extend alien polar'
@@ -22,4 +23,45 @@ export const MOCK_ACCOUNT2 = {
   derivationPath: MOCK_DERIVATION_PATH1,
 }
 
-const MOCK_ACCOUNTS = [MOCK_ACCOUNT1, MOCK_ACCOUNT2]
+export const MOCK_FEED_DATA: TransactionMap = {
+  '0xa6c3969ad06abf78ccbbee47bbdf4b87ea217d3502ab2d003e95a3aa4fe77141': {
+    type: 11,
+    hash: '0xa6c3969ad06abf78ccbbee47bbdf4b87ea217d3502ab2d003e95a3aa4fe77141',
+    from: '0x35b74ed5038bf0488ff33bd9819b9d12d10a7560',
+    to: '0xe383394b913d7302c49f794c7d3243c429d53d1d',
+    value: '0',
+    inputData:
+      '0x8ab1a5d4000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000077ea55457cba30000000000000000000000000000000000000000000000000000000000000000',
+    blockNumber: 6496373,
+    nonce: 35,
+    timestamp: 1620058392,
+    gasPrice: '2314501140',
+    gasUsed: '188900',
+    // @ts-ignore
+    feeCurrency: 'CELO',
+    gatewayFee: '0',
+    gatewayFeeRecipient: '',
+    fromTokenId: 'cEUR',
+    toTokenId: 'CELO',
+    fromValue: '10000000000000000',
+    toValue: '2141698869764583',
+  },
+  '0xba6f513c54e16440ffb1c36f2792ab89ec3a253ba08c95f239e6b7563c3a5ab9': {
+    type: 2,
+    hash: '0xba6f513c54e16440ffb1c36f2792ab89ec3a253ba08c95f239e6b7563c3a5ab9',
+    from: '0x2e272d55cbd07c64eb04cccc85ab3f712438ca8e',
+    to: '0x35b74ed5038bf0488ff33bd9819b9d12d10a7560',
+    value: '0',
+    inputData:
+      '0x8ab1a5d4000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000077ea55457cba30000000000000000000000000000000000000000000000000000000000000000',
+    blockNumber: 6497102,
+    nonce: 8,
+    timestamp: 1625436947,
+    gasPrice: '2314501140',
+    gasUsed: '188900',
+    // @ts-ignore
+    feeCurrency: 'CELO',
+    gatewayFee: '0',
+    gatewayFeeRecipient: '',
+  },
+}

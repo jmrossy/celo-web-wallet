@@ -2,27 +2,35 @@ import { SignerType } from 'src/blockchain/types'
 import {
   addAccount,
   getAccounts,
+  getFeedDataForAccount,
   modifyAccounts,
   removeAccount,
   removeAllAccounts,
+  removeAllFeedData,
+  removeFeedDataForAccount,
+  setFeedDataForAccount,
 } from 'src/features/wallet/storage'
 import {
   MOCK_ACCOUNT1,
   MOCK_ACCOUNT2,
+  MOCK_ADDRESS1,
   MOCK_ADDRESS2,
   MOCK_ADDRESS3,
   MOCK_DERIVATION_PATH1,
+  MOCK_FEED_DATA,
 } from 'src/test/values'
 
-describe('Wallet Storage', () => {
+describe('Wallet Account Storage', () => {
   it('Adds a local account', () => {
     addAccount(MOCK_ACCOUNT1)
     expect(getAccounts()).toEqual([MOCK_ACCOUNT1])
   })
+
   it('Adds a ledger account', () => {
     addAccount(MOCK_ACCOUNT2)
     expect(getAccounts()).toEqual([MOCK_ACCOUNT1, MOCK_ACCOUNT2])
   })
+
   it('Modifies an account', () => {
     const modifiedAcc = {
       ...MOCK_ACCOUNT2,
@@ -31,6 +39,7 @@ describe('Wallet Storage', () => {
     modifyAccounts([modifiedAcc])
     expect(getAccounts()).toEqual([MOCK_ACCOUNT1, modifiedAcc])
   })
+
   it('Rejects invalid accounts', () => {
     // Duplicate account
     try {
@@ -51,6 +60,7 @@ describe('Wallet Storage', () => {
       /* Expected */
     }
   })
+
   it('Removes account', () => {
     // Duplicate account
     try {
@@ -62,8 +72,33 @@ describe('Wallet Storage', () => {
     removeAccount(MOCK_ADDRESS2)
     expect(getAccounts()).toEqual([MOCK_ACCOUNT1])
   })
+
   it('Removes all accounts', () => {
     removeAllAccounts()
     expect(getAccounts()).toEqual([])
+  })
+})
+
+describe('Wallet Feed Storage', () => {
+  it('Saves feed data', () => {
+    setFeedDataForAccount(MOCK_ADDRESS1, MOCK_FEED_DATA)
+    const data = getFeedDataForAccount(MOCK_ADDRESS1)
+    expect(data).toEqual(MOCK_FEED_DATA)
+  })
+
+  it('Removes feed data for account', () => {
+    removeFeedDataForAccount(MOCK_ADDRESS1)
+    const data = getFeedDataForAccount(MOCK_ADDRESS1)
+    expect(data).toEqual(null)
+  })
+
+  it('Removes all feed data', () => {
+    setFeedDataForAccount(MOCK_ADDRESS1, MOCK_FEED_DATA)
+    setFeedDataForAccount(MOCK_ADDRESS2, MOCK_FEED_DATA)
+    removeAllFeedData([MOCK_ADDRESS1, MOCK_ADDRESS2])
+    const data1 = getFeedDataForAccount(MOCK_ADDRESS1)
+    const data2 = getFeedDataForAccount(MOCK_ADDRESS2)
+    expect(data1).toEqual(null)
+    expect(data2).toEqual(null)
   })
 })

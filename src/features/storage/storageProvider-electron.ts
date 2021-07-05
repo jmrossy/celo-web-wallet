@@ -52,7 +52,7 @@ function getTmpFilePath(path: string) {
 }
 
 function removeItem(path: string) {
-  if (!hasItem(path)) throw new Error('Item does not exist')
+  if (!hasItem(path)) return
   const fullPath = getAppCwdPath(path)
   fs.unlinkSync(fullPath)
   if (hasItem(path)) throw new Error('Item removal seems to have failed')

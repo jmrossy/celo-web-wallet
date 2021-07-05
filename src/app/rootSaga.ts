@@ -15,7 +15,6 @@ import {
   exchangeTokenSagaName,
 } from 'src/features/exchange/exchangeToken'
 import {
-  feedAndBalancesFetchPoller,
   fetchFeedActions,
   fetchFeedReducer,
   fetchFeedSaga,
@@ -99,6 +98,7 @@ import {
   importAccountSaga,
   importAccountSagaName,
 } from 'src/features/wallet/importAccount'
+import { walletStatusPoller } from 'src/features/wallet/statusPoller'
 import {
   switchAccountActions,
   switchAccountReducer,
@@ -114,12 +114,13 @@ import {
 import { watchWalletConnect } from 'src/features/walletConnect/init'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
+// Things that should happen before other sagas start go here
 function* init() {
   yield call(initProvider)
 }
 
 // All regular sagas must be included here
-const sagas = [feedAndBalancesFetchPoller]
+const sagas = [walletStatusPoller, watchWalletConnect]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {
@@ -235,11 +236,10 @@ export const monitoredSagaReducers: MonitoredSagaReducer = combineReducers(
 
 export function* rootSaga() {
   yield spawn(init)
-  for (const s of sagas) {
-    yield spawn(s)
-  }
   for (const m of Object.values(monitoredSagas)) {
     yield spawn(m.saga)
   }
-  yield spawn(watchWalletConnect)
+  for (const s of sagas) {
+    yield spawn(s)
+  }
 }
