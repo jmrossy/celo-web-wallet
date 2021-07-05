@@ -14,6 +14,7 @@ export const requiredFeatures: IBrowserFeature[] = [
     check: () => CSS && CSS.supports && CSS.supports('filter', 'brightness(0) invert(1)'),
   },
   { key: 'resizeObserver', check: () => Boolean(window.ResizeObserver) },
+  { key: 'abortController', check: () => Boolean(window.AbortController) },
   { key: 'notIE', check: () => !isBrowserIE() },
 ]
 

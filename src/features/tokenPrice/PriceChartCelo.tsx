@@ -28,7 +28,6 @@ export function PriceChartCelo(props: PriceChartProps) {
     dispatch(
       fetchTokenPriceActions.trigger({
         baseCurrency: NativeTokenId.CELO,
-        quoteCurrency: stableTokenId,
       })
     )
   }, [])
@@ -36,8 +35,8 @@ export function PriceChartCelo(props: PriceChartProps) {
   const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)
   const allPrices = useSelector((s: RootState) => s.tokenPrice.prices)
   const celoPrices = allPrices[NativeTokenId.CELO]
-  const celoUsdPrices = celoPrices ? celoPrices[stableTokenId] : undefined
-  const chartData = tokenPriceHistoryToChartData(celoUsdPrices)
+  const stableTokenPrices = celoPrices ? celoPrices[stableTokenId] : undefined
+  const chartData = tokenPriceHistoryToChartData(stableTokenPrices)
 
   let headerRate: number | null = null
   if (showHeaderPrice) {
@@ -51,7 +50,7 @@ export function PriceChartCelo(props: PriceChartProps) {
           true
         ).exchangeRateNum
       : null
-    headerRate = celoToCUsdRate || findPriceForDay(celoUsdPrices, new Date())
+    headerRate = celoToCUsdRate || findPriceForDay(stableTokenPrices, new Date())
   }
 
   const chartHeight = height || 250

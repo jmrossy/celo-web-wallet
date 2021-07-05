@@ -5,7 +5,7 @@ import { feeReducer } from 'src/features/fees/feeSlice'
 import { governanceReducer } from 'src/features/governance/governanceSlice'
 import { lockReducer } from 'src/features/lock/lockSlice'
 import { persistedSettingsReducer } from 'src/features/settings/settingsSlice'
-import { tokenPriceReducer } from 'src/features/tokenPrice/tokenPriceSlice'
+import { persistedTokenPriceReducer } from 'src/features/tokenPrice/tokenPriceSlice'
 import { txFlowReducer } from 'src/features/txFlow/txFlowSlice'
 import { persistedValidatorsReducer } from 'src/features/validators/validatorsSlice'
 import { persistedWalletReducer } from 'src/features/wallet/walletSlice'
@@ -18,7 +18,7 @@ export const rootReducer = combineReducers({
   exchange: exchangeReducer,
   lock: lockReducer,
   fees: feeReducer,
-  tokenPrice: tokenPriceReducer,
+  tokenPrice: persistedTokenPriceReducer,
   validators: persistedValidatorsReducer,
   governance: governanceReducer,
   settings: persistedSettingsReducer,
