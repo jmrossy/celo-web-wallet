@@ -297,13 +297,8 @@ export function* removeAllAccounts() {
 
 function* loadFeedData(nextAddress: string, currentAddress?: string | null) {
   try {
-    // Save current data
-    if (currentAddress) {
-      const transactions = yield* select((s: RootState) => s.feed.transactions)
-      if (transactions && Object.keys(transactions).length) {
-        yield* call(setFeedDataForAccount, currentAddress, transactions)
-      }
-    }
+    // Save current address' data
+    yield* call(saveFeedData, currentAddress)
 
     // Load data for new active address
     const feedData = yield* call(getFeedDataForAccount, nextAddress)
@@ -324,6 +319,14 @@ function* loadFeedData(nextAddress: string, currentAddress?: string | null) {
     // Since feed data is not critical, swallow errors
     logger.error('Error loading feed data. Resetting feed', error)
     yield* put(resetFeed())
+  }
+}
+
+export function* saveFeedData(currentAddress?: string | null) {
+  if (!currentAddress) return
+  const transactions = yield* select((s: RootState) => s.feed.transactions)
+  if (transactions && Object.keys(transactions).length) {
+    yield* call(setFeedDataForAccount, currentAddress, transactions)
   }
 }
 
