@@ -211,11 +211,11 @@ function* onAccountActivation(address: string, derivationPath: string, type: Sig
   // Grab the current address from the store (may have been loaded by persist)
   const currentAddress = yield* select((state: RootState) => state.wallet.address)
   yield* put(setAccount({ address, derivationPath, type }))
+  yield* call(loadFeedData, address, currentAddress)
 
   if (currentAddress && !areAddressesEqual(currentAddress, address)) {
     logger.debug('New address activated, clearing old data')
     clearContractCache()
-    yield* call(swapFeedData, currentAddress, address)
     yield* put(resetValidatorForAccount())
     yield* put(disconnectWcClient())
     yield* put(resetWcClient())
@@ -239,7 +239,7 @@ export function* removeAccount(address: string) {
   const numAccounts = getAccounts().size
   if (numAccounts === 1) throw new Error('Cannot remove last account. Use logout instead.')
   removeAccountFromStorage(address)
-  removeFeedDataForAccount(address)
+  yield* call(removeFeedDataForAccount, address)
   accountListCache.delete(address)
 }
 
@@ -286,8 +286,7 @@ export async function changeWalletPassword(oldPassword: string, newPassword: str
 }
 
 export function* removeAllAccounts() {
-  const addresses = Array.from(getAccounts().keys())
-  removeAllFeedData(addresses)
+  yield* call(removeAllFeedData)
   removeAllAccountsFromStorage()
   accountListCache.clear()
   clearContractCache()
@@ -296,16 +295,18 @@ export function* removeAllAccounts() {
   yield* put(resetWallet())
 }
 
-function* swapFeedData(currentAddress: string, nextAddress: string) {
+function* loadFeedData(nextAddress: string, currentAddress?: string | null) {
   try {
     // Save current data
-    const transactions = yield* select((s: RootState) => s.feed.transactions)
-    if (transactions && Object.keys(transactions).length) {
-      setFeedDataForAccount(currentAddress, transactions)
+    if (currentAddress) {
+      const transactions = yield* select((s: RootState) => s.feed.transactions)
+      if (transactions && Object.keys(transactions).length) {
+        yield* call(setFeedDataForAccount, currentAddress, transactions)
+      }
     }
 
-    // Load data for new acive address
-    const feedData = getFeedDataForAccount(nextAddress)
+    // Load data for new active address
+    const feedData = yield* call(getFeedDataForAccount, nextAddress)
     if (feedData) {
       logger.debug('Feed data found in storage. Updating feed')
       let maxBlockNumber = 0
@@ -317,9 +318,23 @@ function* swapFeedData(currentAddress: string, nextAddress: string) {
       logger.debug('No feed data found in storage. Resetting feed')
       yield* put(resetFeed())
     }
+
+    clearV1FeedData()
   } catch (error) {
     // Since feed data is not critical, swallow errors
     logger.error('Error loading feed data. Resetting feed', error)
     yield* put(resetFeed())
+  }
+}
+
+// Not essential just a bit of cleanup
+// Since feed data is no longer stored in localstorage
+// remove it to free up that space
+// Can be safely removed after roughly 2021/09/01
+function clearV1FeedData() {
+  try {
+    localStorage && localStorage.removeItem('persist:feed')
+  } catch (error) {
+    logger.warn('Error when removing v1 feed data, not critical')
   }
 }

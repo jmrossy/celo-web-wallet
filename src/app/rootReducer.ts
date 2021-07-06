@@ -1,6 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import { exchangeReducer } from 'src/features/exchange/exchangeSlice'
-import { persistedFeedReducer } from 'src/features/feed/feedSlice'
+import { feedReducer } from 'src/features/feed/feedSlice'
 import { feeReducer } from 'src/features/fees/feeSlice'
 import { governanceReducer } from 'src/features/governance/governanceSlice'
 import { lockReducer } from 'src/features/lock/lockSlice'
@@ -14,7 +14,7 @@ import { monitoredSagaReducers } from './rootSaga'
 
 export const rootReducer = combineReducers({
   wallet: persistedWalletReducer,
-  feed: persistedFeedReducer,
+  feed: feedReducer,
   exchange: exchangeReducer,
   lock: lockReducer,
   fees: feeReducer,

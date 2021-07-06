@@ -24,7 +24,7 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
 
 const DEFAULT_HISTORY_NUM_DAYS = 7
-const MAX_HISTORY_NUM_DAYS = 30
+const MAX_HISTORY_NUM_DAYS = 14
 const SECONDS_PER_DAY = 86400
 const BLOCK_FETCHING_INTERVAL_SIZE = 300 // 6 minutes
 const MEDIAN_UPDATED_TOPIC_0 = '0xa9981ebfc3b766a742486e898f54959b050a66006dbce1a4155c1f84a08bcf41'

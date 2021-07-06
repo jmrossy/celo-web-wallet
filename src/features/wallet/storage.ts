@@ -1,4 +1,5 @@
 import { utils } from 'ethers'
+import { clear as clearIdb, del as delIdb, get as getIdb, set as setIdb } from 'idb-keyval'
 import { SignerType } from 'src/blockchain/types'
 import { config } from 'src/config'
 import { storageProvider } from 'src/features/storage/storageProvider'
@@ -160,60 +161,47 @@ function validateAccount(account: StoredAccountData) {
   if (locale && isValidMnemonicLocale(locale)) error('invalid mnemonic locale')
 }
 
-export function getFeedDataForAccount(address: string) {
+export async function getFeedDataForAccount(address: string) {
   try {
-    acquireLock()
-    const data = storageProvider.getItem(getFeedDataPath(address))
-    return parseFeedData(data)
+    const feedData = await getIdb<TransactionMap | undefined>(getFeedKey(address))
+    return feedData || null
   } catch (error) {
     // Since feed data is not critical, swallow errors
     logger.error('Error getting feed data from storage', error)
     return null
-  } finally {
-    releaseLock()
   }
 }
 
-export function setFeedDataForAccount(address: string, feedData: TransactionMap) {
+export async function setFeedDataForAccount(address: string, feedData: TransactionMap) {
   try {
-    acquireLock()
-    const serialized = JSON.stringify(feedData)
-    storageProvider.setItem(getFeedDataPath(address), serialized, true)
+    await setIdb(getFeedKey(address), feedData)
   } catch (error) {
     // Since feed data is not critical, swallow errors
     logger.error('Error setting feed data in storage', error)
-  } finally {
-    releaseLock()
   }
 }
 
-export function removeFeedDataForAccount(address: string) {
+export async function removeFeedDataForAccount(address: string) {
   try {
-    acquireLock()
-    const dataPath = getFeedDataPath(address)
-    storageProvider.removeItem(dataPath)
+    await delIdb(getFeedKey(address))
   } catch (error) {
     // Since feed data is not critical, swallow errors
     logger.error('Error deleting feed data item in storage', error)
-  } finally {
-    releaseLock()
   }
 }
 
-export function removeAllFeedData(addresses: string[]) {
-  addresses.forEach(removeFeedDataForAccount)
+export async function removeAllFeedData() {
+  try {
+    // Note if IndexDb later gets used for other things, this clear could cause issues
+    await clearIdb()
+  } catch (error) {
+    // Since feed data is not critical, swallow errors
+    logger.error('Error clearing all feed data in storage', error)
+  }
 }
 
-function getFeedDataPath(address: string) {
-  const basePath = getFilePath(AccountFile.feedData)
-  return basePath.replace('ADDRESS', address)
-}
-
-function parseFeedData(data: string | null): TransactionMap | null {
-  if (!data) return null
-  const parsed = JSON.parse(data) as TransactionMap
-  if (!parsed || typeof parsed !== 'object') throw new Error('Invalid format for feed data')
-  return parsed
+function getFeedKey(address: string) {
+  return `feedData_${address}`
 }
 
 function tryPersistBrowserStorage() {
