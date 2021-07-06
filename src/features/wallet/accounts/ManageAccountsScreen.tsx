@@ -167,21 +167,6 @@ function createRenderAddress(isMobile: boolean) {
 }
 
 function renderType(row: AccountTableRow) {
-  // return (
-  //   <Box align="center" justify="end">
-  //     {row.type === SignerType.Ledger ? (
-  //       <>
-  //         <div>Ledger</div>
-  //         <LedgerIcon color={Color.primaryBlack} styles={style.accountTypeIcon} />
-  //       </>
-  //     ) : (
-  //       <>
-  //         <div>Local</div>
-  //         <KeyIcon color={Color.primaryBlack} styles={style.accountTypeIcon} />{' '}
-  //       </>
-  //     )}
-  //   </Box>
-  // )
   return row.type === SignerType.Ledger ? 'Ledger' : 'Local'
 }
 

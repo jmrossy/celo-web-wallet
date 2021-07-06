@@ -333,7 +333,7 @@ export function* saveFeedData(currentAddress?: string | null) {
 // Not essential just a bit of cleanup
 // Since feed data is no longer stored in localstorage
 // remove it to free up that space
-// Can be safely removed after roughly 2021/09/01
+// TODO: Can be safely removed after roughly 2021/09/01
 function clearV1FeedData() {
   try {
     localStorage && localStorage.removeItem('persist:feed')
