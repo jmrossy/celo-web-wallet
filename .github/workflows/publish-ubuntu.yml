@@ -26,9 +26,6 @@ jobs:
         run: sudo apt-get update && sudo apt-get install libudev-dev libusb-1.0-0-dev
       
       - name: Build on Linux
-        run: |
-          (echo "=== Build try 1: ===" && yarn electron-builder --linux --publish always) || \
-          (echo "=== Build try 2: ===" && yarn electron-builder --linux --publish always) || \
-          (echo "=== Build try 3: ===" && yarn electron-builder --linux --publish always)
+        run: yarn electron-builder --linux --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
