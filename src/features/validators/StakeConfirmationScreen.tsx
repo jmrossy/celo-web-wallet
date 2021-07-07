@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import CubeIcon from 'src/components/icons/cube.svg'
 import { Box } from 'src/components/layout/Box'
@@ -21,8 +21,8 @@ import {
   stakeTokenSagaName,
 } from 'src/features/validators/stakeToken'
 import { stakeActionLabel, StakeActionType } from 'src/features/validators/types'
-import { useVoterAccountAddress, useVoterBalances } from 'src/features/wallet/utils'
-import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
+import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
+import { useVoterAccountAddress, useVoterBalances } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -158,7 +158,7 @@ export function StakeConfirmationScreen() {
           <Button
             type="button"
             size="m"
-            color={Color.altGrey}
+            color={Color.primaryWhite}
             onClick={onGoBack}
             disabled={isWorking || !feeAmount}
             margin="0 2em 0 0"

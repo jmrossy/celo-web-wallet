@@ -1,5 +1,5 @@
 import { BigNumber, Contract, providers } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContractByAddress } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
@@ -18,7 +18,10 @@ import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
-import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import {
+  fetchBalancesActions,
+  fetchBalancesIfStale,
+} from 'src/features/wallet/balances/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { CELO, NativeTokenId, NativeTokens, Token } from 'src/tokens'
 import {

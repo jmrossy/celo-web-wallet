@@ -42,9 +42,23 @@ export const Font: Stylesheet = {
     marginTop: 0,
     marginBottom: '1em',
   },
+  h2Center: {
+    fontSize: '1.4em',
+    fontWeight: 400,
+    color: Color.primaryBlack,
+    margin: '0 0 1.75em 0',
+    textAlign: 'center',
+  },
   h3: {
     fontSize: '1.2em',
     fontWeight: 400,
+  },
+  h4Center: {
+    fontSize: '1.1em',
+    fontWeight: 400,
+    color: Color.primaryBlack,
+    textAlign: 'center',
+    margin: '0 0 0.5em 0',
   },
   label: {
     fontSize: '1em',

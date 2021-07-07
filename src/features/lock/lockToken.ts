@@ -1,5 +1,5 @@
 import { BigNumber, providers } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { getSigner } from 'src/blockchain/signer'
 import { signTransaction } from 'src/blockchain/transaction'
@@ -14,8 +14,14 @@ import { getTotalPendingCelo, getTotalUnlockedCelo } from 'src/features/lock/uti
 import { LockTokenTx, LockTokenType, TransactionType } from 'src/features/types'
 import { GroupVotes } from 'src/features/validators/types'
 import { getTotalNonvotingLocked } from 'src/features/validators/utils'
-import { createAccountRegisterTx, fetchAccountStatus } from 'src/features/wallet/accountsContract'
-import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import {
+  createAccountRegisterTx,
+  fetchAccountStatus,
+} from 'src/features/wallet/accounts/accountsContract'
+import {
+  fetchBalancesActions,
+  fetchBalancesIfStale,
+} from 'src/features/wallet/balances/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { setAccountIsRegistered } from 'src/features/wallet/walletSlice'
 import { CELO } from 'src/tokens'

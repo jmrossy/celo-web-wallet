@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { ModalOkAction } from 'src/components/modal/modal'

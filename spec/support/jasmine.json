@@ -8,5 +8,5 @@
     "../spec/helpers/**/*.{js,ts}"
   ],
   "stopSpecOnExpectationFailure": false,
-  "random": true
+  "random": false
 }

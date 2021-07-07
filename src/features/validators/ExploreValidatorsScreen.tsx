@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { RefreshButton } from 'src/components/buttons/RefreshButton'
@@ -9,7 +9,6 @@ import { TextLink } from 'src/components/buttons/TextLink'
 import { CircleIcon } from 'src/components/icons/Circle'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { useSagaStatus } from 'src/components/modal/useSagaStatusModal'
 import { Table, TableColumn } from 'src/components/Table'
 import {
   fetchValidatorsActions,
@@ -26,6 +25,7 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { formatNumberWithCommas } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
+import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 export function ExploreValidatorsScreen() {
   const navigate = useNavigate()
@@ -67,7 +67,13 @@ export function ExploreValidatorsScreen() {
             styles={style.refreshIcon}
           />
         </h1>
-        <Box direction="row" align="end" justify="between" margin="0 0 2em 0" styles={style.h3Row}>
+        <Box
+          direction="row"
+          align="end"
+          justify="between"
+          margin="2px 0 2em 0"
+          styles={style.h3Row}
+        >
           <h3 css={style.h3}>
             For more details, see{' '}
             <TextLink link="https://celo.org/validators/explore">celo.org</TextLink> or{' '}

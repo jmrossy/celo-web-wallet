@@ -1,5 +1,5 @@
 import { Color } from 'src/styles/Color'
-import { Stylesheet } from 'src/styles/types'
+import { Styles } from 'src/styles/types'
 
 interface BackdropProps {
   opacity?: number
@@ -12,10 +12,7 @@ export const Backdrop = (props: BackdropProps) => {
 
   return (
     <div
-      css={[
-        style.backdrop,
-        { opacity: opacity ?? 0.8, backgroundColor: color || Color.primaryWhite },
-      ]}
+      css={[style, { opacity: opacity ?? 0.8, backgroundColor: color || Color.primaryWhite }]}
       onClick={onClick}
     />
   )
@@ -23,14 +20,12 @@ export const Backdrop = (props: BackdropProps) => {
 
 export const backdropZIndex = 999
 
-const style: Stylesheet = {
-  backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    height: '100%',
-    width: '100%',
-    backgroundColor: '#FFF', //semi-transparent white
-    zIndex: backdropZIndex,
-  },
+const style: Styles = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  bottom: 0,
+  right: 0,
+  backgroundColor: '#FFF', //semi-transparent white
+  zIndex: backdropZIndex,
 }

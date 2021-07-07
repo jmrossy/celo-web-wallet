@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, providers } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
@@ -16,9 +16,12 @@ import {
 } from 'src/features/governance/types'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { GovernanceVoteTx, TransactionType } from 'src/features/types'
-import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import {
+  fetchBalancesActions,
+  fetchBalancesIfStale,
+} from 'src/features/wallet/balances/fetchBalances'
+import { selectVoterBalances } from 'src/features/wallet/hooks'
 import { Balances } from 'src/features/wallet/types'
-import { getVoterBalances } from 'src/features/wallet/utils'
 import { CELO } from 'src/tokens'
 import { validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
@@ -67,7 +70,7 @@ export function validate(
 
 function* governanceVote(params: GovernanceVoteParams) {
   yield* call(fetchBalancesIfStale)
-  const { balances, voterBalances } = yield* call(getVoterBalances)
+  const { balances, voterBalances } = yield* call(selectVoterBalances)
   const proposals = yield* select((state: RootState) => state.governance.proposals)
 
   validateOrThrow(

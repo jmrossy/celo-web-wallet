@@ -2,7 +2,13 @@ const { app, BrowserWindow, ipcMain, session, shell } = require('electron')
 const { autoUpdater } = require('electron-updater')
 
 const URL_SCHEME = 'celowallet'
-const ALLOWED_PERMISSIONS = ['clipboard-read', 'notifications', 'fullscreen', 'openExternal']
+const ALLOWED_PERMISSIONS = [
+  'clipboard-read',
+  'notifications',
+  'fullscreen',
+  'openExternal',
+  'persistent-storage',
+]
 
 let mainWindow
 let deeplinkUrl

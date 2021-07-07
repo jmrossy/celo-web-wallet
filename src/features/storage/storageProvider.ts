@@ -29,9 +29,9 @@ function removeItem(path: string) {
   localStorage.removeItem(path)
 }
 
-export const storageProvider: StorageProvider = {
+export const storageProvider: StorageProvider = Object.freeze({
   hasItem,
   getItem,
   setItem,
   removeItem,
-}
+})

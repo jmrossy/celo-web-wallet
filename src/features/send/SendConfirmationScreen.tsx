@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
@@ -21,7 +21,7 @@ import {
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
-import { useTokens } from 'src/features/wallet/utils'
+import { useTokens } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -158,7 +158,7 @@ export function SendConfirmationScreen() {
           <Button
             type="button"
             size="m"
-            color={Color.altGrey}
+            color={Color.primaryWhite}
             onClick={onGoBack}
             disabled={isWorking || !feeAmount}
             margin="0 2em 0 0"

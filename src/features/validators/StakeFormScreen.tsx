@@ -1,9 +1,9 @@
 import { BigNumber, utils } from 'ethers'
-import { Location } from 'history'
+import type { Location } from 'history'
 import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
@@ -26,8 +26,8 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { getStakingMaxAmount, getValidatorGroupName } from 'src/features/validators/utils'
-import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/utils'
-import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
+import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
+import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -221,7 +221,7 @@ export function StakeFormScreen() {
               <Button
                 type="button"
                 size="m"
-                color={Color.altGrey}
+                color={Color.primaryWhite}
                 onClick={onGoBack}
                 margin="0 5.4em 0 0"
                 width="5em"

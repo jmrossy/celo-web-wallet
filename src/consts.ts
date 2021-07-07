@@ -1,6 +1,5 @@
 export const WEI_PER_UNIT = '1000000000000000000' // 1 Celo or Ether
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
-export const TEST_ADDRESS = '0x35b74Ed5038bf0488Ff33bD9819b9D12D10A7560'
 export const MNEMONIC_LENGTH_MIN = 12
 export const MNEMONIC_LENGTH_MAX = 24
 export const ETHEREUM_DERIVATION_PATH = "m/44'/60'/0'/0"
@@ -9,13 +8,18 @@ export const DERIVATION_PATH_MAX_INDEX = 1000000
 export const AVG_BLOCK_TIMES = 5000 // 5 seconds
 export const CONNECTION_CHECK_INTERVAL = 15000 // 15 seconds
 export const STALE_BLOCK_TIME = 20000 // 20 seconds
+export const STATUS_POLLER_DELAY = 10000 // 10 seconds
 export const MAX_NUM_ELECTABLE_VALIDATORS = 100
+
+export const STALE_TOKEN_PRICE_TIME = 900000 // 15 minutes
+export const MAX_TOKEN_PRICE_NUM_DAYS = 14 // 14 days
 
 export const MAX_SEND_TOKEN_SIZE = '100000000000000000000' // 100 Tokens
 export const MAX_EXCHANGE_TOKEN_SIZE = '100000000000000000000' // 100 Tokens
 export const MAX_SEND_TOKEN_SIZE_LEDGER = '2000000000000000000000' // 2000 Tokens
 export const MAX_EXCHANGE_TOKEN_SIZE_LEDGER = '2000000000000000000000' // 2000 Tokens
 export const MAX_COMMENT_CHAR_LENGTH = 70 // Chosen to match max length in Valora
+export const MAX_ACCOUNT_NAME_LENGTH = 50
 
 export const MAX_FEE_SIZE = '1000000000000000000' // 1 Token
 export const MAX_GAS_PRICE = '5000000000' // 5 Gwei

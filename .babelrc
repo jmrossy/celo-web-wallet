@@ -56,5 +56,5 @@
       ]
     }
   },
-  "plugins": ["@emotion", "@babel/plugin-transform-runtime", "@babel/plugin-transform-strict-mode"]
+  "plugins": ["@emotion", "@babel/plugin-transform-runtime"]
 }

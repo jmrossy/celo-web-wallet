@@ -1,7 +1,9 @@
 import { Fragment, FunctionComponent, ReactElement, useMemo, useState } from 'react'
+import { CloseButton } from 'src/components/buttons/CloseButton'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import { Spinner } from 'src/components/Spinner'
 import { Font } from 'src/styles/fonts'
+import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
 
 export interface TableColumn {
@@ -10,7 +12,7 @@ export interface TableColumn {
   renderer?: (dataCell: any) => string | ReactElement
 }
 
-type DataElement = { id: string } & Record<string, any>
+type DataElement = { id: string; onRemove?: (id: string) => void } & Record<string, any>
 
 interface Props<T extends DataElement> {
   columns: TableColumn[]
@@ -44,9 +46,11 @@ export function Table<T extends DataElement>(props: Props<T>) {
     setExpandedRows({ ...expandedRows, [id]: !expandedRows[id] })
   }
 
+  const tableStyle = useMemo(() => getTableStyle(data, isLoading), [data, isLoading])
+
   return (
     <div css={style.container}>
-      <table css={isLoading ? tableLoading : style.table}>
+      <table css={tableStyle}>
         <thead>
           <tr>
             {columns.map((column) => {
@@ -86,7 +90,7 @@ export function Table<T extends DataElement>(props: Props<T>) {
                   {columns.map((column, j) => {
                     return (
                       <td key={`table-cell-${i}-${j}`} css={ExpandedRow ? tdExandable : style.td}>
-                        <>
+                        <div css={{ position: 'relative' }}>
                           {j === 0 && ExpandedRow && (
                             <ChevronIcon
                               width="8px"
@@ -96,7 +100,17 @@ export function Table<T extends DataElement>(props: Props<T>) {
                             />
                           )}
                           {column.renderer ? column.renderer(row) : row[column.id]}
-                        </>
+                          {row.onRemove && j === columns.length - 1 && (
+                            <div css={style.removeButtonContainer}>
+                              <CloseButton
+                                title="Remove"
+                                onClick={() => row.onRemove!(row.id)}
+                                styles={style.removeButton}
+                                iconStyles={style.removeButton}
+                              />
+                            </div>
+                          )}
+                        </div>
                       </td>
                     )
                   })}
@@ -135,6 +149,18 @@ function sortDataBy<T extends DataElement>(data: T[], columnId: string, decendin
   })
 }
 
+function getTableStyle(data: DataElement[], isLoading?: boolean): Styles {
+  const hasRemoveButton = data.findIndex((d) => !!d.onRemove) >= 0
+  const baseStyles = hasRemoveButton ? tableWithRemoveButtons : style.table
+  return isLoading
+    ? {
+        ...baseStyles,
+        opacity: 0.7,
+        filter: 'blur(3px)',
+      }
+    : baseStyles
+}
+
 const thTextAlign = {
   textAlign: 'center',
   ':first-of-type': {
@@ -162,7 +188,7 @@ const style: Stylesheet = {
   headerTh: {
     ...Font.body2,
     ...Font.bold,
-    opacity: 0.7,
+    opacity: 0.9,
     ...thTextAlign,
     padding: '0 20px 17px 20px',
     borderBottom: '1px solid #D8DADB',
@@ -185,6 +211,16 @@ const style: Stylesheet = {
     marginBottom: 2,
     opacity: 0.5,
   },
+  removeButtonContainer: {
+    position: 'absolute',
+    right: '-3em',
+    top: '14%',
+    paddingRight: '0.75em',
+  },
+  removeButton: {
+    height: '1em',
+    width: '1em',
+  },
   spinner: {
     display: 'flex',
     alignItems: 'center',
@@ -199,15 +235,23 @@ const style: Stylesheet = {
   },
 }
 
-const tableLoading: Styles = {
+const tableWithRemoveButtons: Styles = {
   ...style.table,
-  opacity: 0.7,
-  filter: 'blur(3px)',
+  width: '93%',
+  [mq[768]]: {
+    width: '95%',
+  },
+  [mq[1024]]: {
+    width: '96%',
+  },
+  [mq[1200]]: {
+    width: '98%',
+  },
 }
 
 const headerThSelected: Styles = {
   ...style.headerTh,
-  opacity: 0.9,
+  opacity: 1,
   paddingRight: 0,
 }
 

@@ -1,7 +1,7 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
 import { logoutActions, logoutReducer, logoutSaga, logoutSagaName } from 'src/app/logout/logout'
-import { initProvider } from 'src/blockchain/provider'
+import { initProvider } from 'src/blockchain/init'
 import {
   fetchExchangeRateActions,
   fetchExchangeRateReducer,
@@ -15,7 +15,6 @@ import {
   exchangeTokenSagaName,
 } from 'src/features/exchange/exchangeToken'
 import {
-  feedAndBalancesFetchPoller,
   fetchFeedActions,
   fetchFeedReducer,
   fetchFeedSaga,
@@ -40,23 +39,17 @@ import {
   governanceVoteSagaName,
 } from 'src/features/governance/governanceVote'
 import {
-  importLedgerWalletActions,
-  importLedgerWalletReducer,
-  importLedgerWalletSaga,
-  importLedgerWalletSagaName,
-} from 'src/features/ledger/importWallet'
-import {
   lockTokenActions,
   lockTokenReducer,
   lockTokenSaga,
   lockTokenSagaName,
 } from 'src/features/lock/lockToken'
 import {
-  pincodeActions,
-  pincodeReducer,
-  pincodeSaga,
-  pincodeSagaName,
-} from 'src/features/pincode/pincode'
+  changePasswordActions,
+  changePasswordReducer,
+  changePasswordSaga,
+  changePasswordSagaName,
+} from 'src/features/password/changePassword'
 import {
   sendTokenActions,
   sendTokenReducer,
@@ -86,85 +79,77 @@ import {
   addTokenReducer,
   addTokenSaga,
   addTokenSagaName,
-} from 'src/features/wallet/addToken'
-import {
-  createWalletActions,
-  createWalletReducer,
-  createWalletSaga,
-  createWalletSagaName,
-} from 'src/features/wallet/createWallet'
+} from 'src/features/wallet/balances/addToken'
 import {
   fetchBalancesActions,
   fetchBalancesReducer,
   fetchBalancesSaga,
   fetchBalancesSagaName,
-} from 'src/features/wallet/fetchBalances'
+} from 'src/features/wallet/balances/fetchBalances'
 import {
-  importDefaultAccount,
-  importWalletActions,
-  importWalletReducer,
-  importWalletSaga,
-  importWalletSagaName,
-} from 'src/features/wallet/importWallet'
+  editAccountActions,
+  editAccountReducer,
+  editAccountSaga,
+  editAccountSagaName,
+} from 'src/features/wallet/editAccount'
+import {
+  importAccountActions,
+  importAccountReducer,
+  importAccountSaga,
+  importAccountSagaName,
+} from 'src/features/wallet/importAccount'
+import { walletStatusPoller } from 'src/features/wallet/statusPoller'
+import {
+  switchAccountActions,
+  switchAccountReducer,
+  switchAccountSaga,
+  switchAccountSagaName,
+} from 'src/features/wallet/switchAccount'
+import {
+  unlockWalletActions,
+  unlockWalletReducer,
+  unlockWalletSaga,
+  unlockWalletSagaName,
+} from 'src/features/wallet/unlockWallet'
 import { watchWalletConnect } from 'src/features/walletConnect/init'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
+// Things that should happen before other sagas start go here
 function* init() {
   yield call(initProvider)
-  yield call(importDefaultAccount)
 }
 
 // All regular sagas must be included here
-const sagas = [feedAndBalancesFetchPoller]
+const sagas = [walletStatusPoller, watchWalletConnect]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {
   [name: string]: { saga: any; reducer: Reducer<SagaState>; actions: SagaActions }
 } = {
-  [createWalletSagaName]: {
-    saga: createWalletSaga,
-    reducer: createWalletReducer,
-    actions: createWalletActions,
+  [unlockWalletSagaName]: {
+    saga: unlockWalletSaga,
+    reducer: unlockWalletReducer,
+    actions: unlockWalletActions,
+  },
+  [importAccountSagaName]: {
+    saga: importAccountSaga,
+    reducer: importAccountReducer,
+    actions: importAccountActions,
+  },
+  [switchAccountSagaName]: {
+    saga: switchAccountSaga,
+    reducer: switchAccountReducer,
+    actions: switchAccountActions,
   },
   [fetchBalancesSagaName]: {
     saga: fetchBalancesSaga,
     reducer: fetchBalancesReducer,
     actions: fetchBalancesActions,
   },
-  [sendTokenSagaName]: {
-    saga: sendTokenSaga,
-    reducer: sendTokenReducer,
-    actions: sendTokenActions,
-  },
   [fetchFeedSagaName]: {
     saga: fetchFeedSaga,
     reducer: fetchFeedReducer,
     actions: fetchFeedActions,
-  },
-  [exchangeTokenSagaName]: {
-    saga: exchangeTokenSaga,
-    reducer: exchangeTokenReducer,
-    actions: exchangeTokenActions,
-  },
-  [pincodeSagaName]: {
-    saga: pincodeSaga,
-    reducer: pincodeReducer,
-    actions: pincodeActions,
-  },
-  [importWalletSagaName]: {
-    saga: importWalletSaga,
-    reducer: importWalletReducer,
-    actions: importWalletActions,
-  },
-  [importLedgerWalletSagaName]: {
-    saga: importLedgerWalletSaga,
-    reducer: importLedgerWalletReducer,
-    actions: importLedgerWalletActions,
-  },
-  [estimateFeeSagaName]: {
-    saga: estimateFeeSaga,
-    reducer: estimateFeeReducer,
-    actions: estimateFeeActions,
   },
   [fetchExchangeRateSagaName]: {
     saga: fetchExchangeRateSaga,
@@ -175,6 +160,21 @@ export const monitoredSagas: {
     saga: fetchTokenPriceSaga,
     reducer: fetchTokenPriceReducer,
     actions: fetchTokenPriceActions,
+  },
+  [sendTokenSagaName]: {
+    saga: sendTokenSaga,
+    reducer: sendTokenReducer,
+    actions: sendTokenActions,
+  },
+  [exchangeTokenSagaName]: {
+    saga: exchangeTokenSaga,
+    reducer: exchangeTokenReducer,
+    actions: exchangeTokenActions,
+  },
+  [estimateFeeSagaName]: {
+    saga: estimateFeeSaga,
+    reducer: estimateFeeReducer,
+    actions: estimateFeeActions,
   },
   [addTokenSagaName]: {
     saga: addTokenSaga,
@@ -206,6 +206,16 @@ export const monitoredSagas: {
     reducer: governanceVoteReducer,
     actions: governanceVoteActions,
   },
+  [editAccountSagaName]: {
+    saga: editAccountSaga,
+    reducer: editAccountReducer,
+    actions: editAccountActions,
+  },
+  [changePasswordSagaName]: {
+    saga: changePasswordSaga,
+    reducer: changePasswordReducer,
+    actions: changePasswordActions,
+  },
   [logoutSagaName]: {
     saga: logoutSaga,
     reducer: logoutReducer,
@@ -226,11 +236,10 @@ export const monitoredSagaReducers: MonitoredSagaReducer = combineReducers(
 
 export function* rootSaga() {
   yield spawn(init)
-  for (const s of sagas) {
-    yield spawn(s)
-  }
   for (const m of Object.values(monitoredSagas)) {
     yield spawn(m.saga)
   }
-  yield spawn(watchWalletConnect)
+  for (const s of sagas) {
+    yield spawn(s)
+  }
 }

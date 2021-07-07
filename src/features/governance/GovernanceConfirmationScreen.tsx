@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
@@ -19,7 +19,7 @@ import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
 import { TransactionType } from 'src/features/types'
-import { VotingForBanner } from 'src/features/wallet/VotingForBanner'
+import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -118,7 +118,7 @@ export function GovernanceConfirmationScreen() {
           <Button
             type="button"
             size="m"
-            color={Color.altGrey}
+            color={Color.primaryWhite}
             onClick={onGoBack}
             disabled={isWorking || !feeAmount}
             margin="0 2em 0 0"

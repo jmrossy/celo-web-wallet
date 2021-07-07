@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
@@ -164,7 +164,7 @@ export function ExchangeConfirmationScreen() {
               type="button"
               onClick={onGoBack}
               size="m"
-              color={Color.altGrey}
+              color={Color.primaryWhite}
               disabled={isWorking}
               margin="0 1em 0 0"
               width="5.5em"

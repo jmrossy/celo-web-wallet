@@ -12,8 +12,10 @@ export interface TokenPricePoint {
   timestamp: number
   price: number
 }
-// Must be ordered from oldest to newest
 export type TokenPriceHistory = Array<TokenPricePoint>
+
+export type QuoteCurrencyPriceHistory = Partial<Record<QuoteCurrency, TokenPriceHistory>>
+export type BaseCurrencyPriceHistory = Partial<Record<NativeTokenId, QuoteCurrencyPriceHistory>>
 
 export interface PairPriceUpdate {
   baseCurrency: NativeTokenId

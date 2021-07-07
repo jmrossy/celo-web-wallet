@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
 import { setPendingWithdrawals } from 'src/features/lock/lockSlice'
@@ -37,10 +37,8 @@ async function _fetchLockedCeloStatus(address: string, isAccountRegistered: bool
   const lockedGold = getContract(CeloContract.LockedGold)
   const lockedAmountP = lockedGold.getAccountTotalLockedGold(address)
   const pendingWithdrawalsP = lockedGold.getPendingWithdrawals(address)
-  const [lockedAmount, pendingWithdrawalsRaw]: [
-    BigNumber,
-    PendingWithdrawalsRaw
-  ] = await Promise.all([lockedAmountP, pendingWithdrawalsP])
+  const [lockedAmount, pendingWithdrawalsRaw]: [BigNumber, PendingWithdrawalsRaw] =
+    await Promise.all([lockedAmountP, pendingWithdrawalsP])
 
   let pendingBlocked = BigNumber.from(0)
   let pendingFree = BigNumber.from(0)

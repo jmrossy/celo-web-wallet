@@ -1,21 +1,21 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
-import { RootState } from 'src/app/rootReducer'
-import { SignerType } from 'src/blockchain/signer'
+import type { RootState } from 'src/app/rootReducer'
+import { SignerType } from 'src/blockchain/types'
 import { ScreenFrame } from 'src/components/layout/ScreenFrame'
-import { LedgerUnlockScreen } from 'src/features/ledger/LedgerUnlockScreen'
-import { EnterPincodeScreen } from 'src/features/pincode/EnterPincodeScreen'
-import { useAccountLockStatus } from 'src/features/pincode/pincode'
-import { isWalletInStorage } from 'src/features/wallet/storage'
+import { LoginScreen } from 'src/features/password/LoginScreen'
+import { useAccountLockStatus } from 'src/features/password/password'
+import { hasAccounts } from 'src/features/wallet/manager'
+import { hasAccount_v1 } from 'src/features/wallet/storage_v1'
 
 export function HomeNavigator() {
-  const { address, type, isUnlocked } = useAccountLockStatus()
+  const { isUnlocked, address, type } = useAccountLockStatus()
 
   // Force navigation to fail screen if providers are unable to connect
   const isConnected = useSelector((s: RootState) => s.wallet.isConnected, shallowEqual)
   if (isConnected === false) throw new Error('Unable to connect to network.')
 
-  // If pin has been entered already
+  // If password has been entered already
   if (isUnlocked) {
     return (
       <ScreenFrame>
@@ -25,13 +25,11 @@ export function HomeNavigator() {
   }
 
   // If wallet exists in storage but is not unlocked yet
-  if (isWalletInStorage()) {
-    return <EnterPincodeScreen />
-  }
-
-  // If a wallet has been found in redux store and it's of type Ledger
-  if (address && type === SignerType.Ledger) {
-    return <LedgerUnlockScreen />
+  // TODO: Remove hasLedgerAccount condition after roughly 2021/09/01
+  // Its only use is for migrating ledger accounts from before multi-account support
+  const hasLedgerAccount = address && type === SignerType.Ledger
+  if (hasAccounts() || hasAccount_v1() || hasLedgerAccount) {
+    return <LoginScreen />
   }
 
   // Otherwise, account must not be set up yet

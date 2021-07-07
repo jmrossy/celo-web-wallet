@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Fade } from 'src/components/animation/Fade'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import CloseIcon from 'src/components/icons/close.svg'
 import { Box } from 'src/components/layout/Box'
-import { useAccountLockStatus } from 'src/features/pincode/pincode'
+import { useAccountLockStatus } from 'src/features/password/password'
 import { WalletConnectStatus } from 'src/features/walletConnect/types'
 import { getPeerName } from 'src/features/walletConnect/utils'
 import { useWalletConnectModal } from 'src/features/walletConnect/WalletConnectModal'
@@ -104,7 +104,7 @@ export function WalletConnectStatusBox() {
             {(isReqPending || isSessionPending) && (
               <Box margin="1em 0 0 0">
                 <Button
-                  color={Color.altGrey}
+                  color={Color.primaryWhite}
                   size="xs"
                   onClick={onClickDeny}
                   margin="0 1.2em 0 0"

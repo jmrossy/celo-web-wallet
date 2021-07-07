@@ -21,5 +21,4 @@ export function TextButton(props: PropsWithChildren<ButtonProps>) {
 const defaultStyle: Styles = {
   ...transparentButtonStyles,
   ...Font.linkLight,
-  textRendering: 'geometricprecision',
 }

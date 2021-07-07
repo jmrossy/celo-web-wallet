@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import configureStore from 'redux-mock-store'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { walletInitialState } from 'src/features/wallet/walletSlice'
 import { SagaState } from 'src/utils/saga'

@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, ReactElement } from 'react'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
@@ -13,7 +13,7 @@ interface ButtonProps {
   styles?: Styles
   width?: number | string
   height?: number | string
-  icon?: string
+  icon?: string | ReactElement
   iconPosition?: 'start' | 'end' //defaults to start
   iconStyles?: Styles
   title?: string
@@ -37,10 +37,7 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
   const dimensions = getDimensions(size, widthOverride, heightOverride)
   const icoLayout = getLayout(size)
 
-  const baseBg = color || Color.primaryGreen
-  // TODO make this more robust. Could use a css filter to just brighten the base color
-  // perhaps consider the function from this SO answer: https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
-  const { hoverBg, activeBg } = getStateColors(baseBg)
+  const { backgroundColor, hoverBg, activeBg, border, textColor, disabledStyles } = getColors(color)
 
   return (
     <button
@@ -49,14 +46,16 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
         ...icoLayout,
         ...dimensions,
         margin,
-        backgroundColor: baseBg,
+        backgroundColor,
         ':hover': {
           backgroundColor: hoverBg,
         },
         ':active': {
-          // TODO make this dynamic like the other colors
-          backgroundColor: activeBg, //'#0fb972',
+          backgroundColor: activeBg,
         },
+        ':disabled': disabledStyles || defaultButtonStyles[':disabled'],
+        border: border || defaultButtonStyles.border,
+        color: textColor || defaultButtonStyles.color,
         ...styles,
       }}
       onClick={onClick}
@@ -66,17 +65,35 @@ export function Button(props: PropsWithChildren<ButtonProps>) {
     >
       {icon ? (
         <Box align="center" justify="center">
-          {(!iconPosition || iconPosition === 'start') && (
-            <img src={icon} css={getIconStyle(props)} />
-          )}
+          {(!iconPosition || iconPosition === 'start') && renderIcon(props)}
           {props.children}
-          {iconPosition === 'end' && <img src={icon} css={getIconStyle(props)} />}
+          {iconPosition === 'end' && renderIcon(props)}
         </Box>
       ) : (
         <>{props.children}</>
       )}
     </button>
   )
+}
+
+function renderIcon(props: PropsWithChildren<ButtonProps>) {
+  if (!props.icon) return null
+
+  let margin
+  if (props.children) {
+    margin = props.iconPosition === 'end' ? { marginLeft: 8 } : { marginRight: 8 }
+  }
+  const styles = { ...margin, ...props.iconStyles }
+
+  if (typeof props.icon === 'string') {
+    return <img src={props.icon} css={styles} />
+  } else {
+    return (
+      <Box align="center" justify="center" styles={styles}>
+        {props.icon}
+      </Box>
+    )
+  }
 }
 
 function getDimensions(size?: string, width?: number | string, height?: number | string) {
@@ -103,25 +120,31 @@ function getLayout(size?: string) {
     : null
 }
 
-function getStateColors(baseColor: string) {
+function getColors(baseColor: string = Color.primaryGreen) {
   if (baseColor === Color.primaryGreen) {
-    return { hoverBg: '#4cdd91', activeBg: '#29d67d' }
+    return { backgroundColor: baseColor, hoverBg: '#4cdd91', activeBg: '#29d67d' }
   } else if (baseColor === Color.primaryWhite) {
-    return { hoverBg: '#e4e6e7', activeBg: '#c8ccd0' }
+    return {
+      backgroundColor: baseColor,
+      hoverBg: '#f0faf4',
+      activeBg: '#e8f7ee',
+      border: `2px solid ${Color.primaryGreen}`,
+      textColor: Color.primaryGreen,
+      disabledStyles: {
+        cursor: 'default',
+        color: Color.primaryGrey,
+        borderColor: Color.primaryGrey,
+      },
+    }
   } else {
     return {
+      backgroundColor: baseColor,
+      // TODO make this more robust. Could use a css filter to just brighten the base color
+      // perhaps consider the function from this SO answer: https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
       hoverBg: `${baseColor}${baseColor.length === 3 ? 'c' : 'cc'}`,
       activeBg: `${baseColor}${baseColor.length === 3 ? 'e' : 'ee'}`,
     }
   }
-}
-
-function getIconStyle(props: PropsWithChildren<ButtonProps>) {
-  let styles = {}
-  if (props.children) {
-    styles = props.iconPosition === 'end' ? { marginLeft: 8 } : { marginRight: 8 }
-  }
-  return { ...styles, ...props.iconStyles }
 }
 
 export const transparentButtonStyles: Styles = {
@@ -130,10 +153,12 @@ export const transparentButtonStyles: Styles = {
   outline: 'none',
   background: 'none',
   cursor: 'pointer',
+  textRendering: 'geometricprecision',
 }
 
 export const defaultButtonStyles: Styles = {
   ...transparentButtonStyles,
+  textRendering: 'initial',
   borderRadius: 4,
   color: Color.primaryWhite,
   backgroundColor: Color.primaryGreen,

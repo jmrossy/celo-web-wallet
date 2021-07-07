@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getProvider } from 'src/blockchain/provider'
 import { GAS_PRICE_STALE_TIME } from 'src/consts'
 import { updateGasPrice } from 'src/features/fees/feeSlice'

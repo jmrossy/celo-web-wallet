@@ -9,7 +9,7 @@ import {
 } from 'src/features/feed/components/TransactionPropertyGroup'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { EscrowTransaction, TokenTransfer } from 'src/features/types'
-import { useTokens } from 'src/features/wallet/utils'
+import { useTokens } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 import { getTokenById } from 'src/tokens'

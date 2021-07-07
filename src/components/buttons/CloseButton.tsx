@@ -1,40 +1,21 @@
-import { PropsWithChildren } from 'react'
-import { Button } from 'src/components/buttons/Button'
+import {
+  TransparentIconButton,
+  TransparentIconButtonProps,
+} from 'src/components/buttons/TransparentIconButton'
 import CloseIcon from 'src/components/icons/close.svg'
-import { Styles } from 'src/styles/types'
 
-interface ButtonProps {
-  onClick: () => void
-  styles?: Styles
-  iconStyles?: Styles
-  margin?: string | number
-  title?: string
-}
-
-export function CloseButton(props: PropsWithChildren<ButtonProps>) {
-  const { onClick, styles, iconStyles, margin, title } = props
+export function CloseButton(props: Omit<TransparentIconButtonProps, 'icon'>) {
+  const { onClick, styles, iconStyles, margin, title, color } = props
 
   return (
-    <Button
-      size="icon"
+    <TransparentIconButton
       icon={CloseIcon}
-      styles={{ ...defaultStyle, ...styles }}
+      styles={styles}
       iconStyles={iconStyles}
+      color={color}
       margin={margin}
       onClick={onClick}
       title={title || 'Close'}
     />
   )
-}
-
-const defaultStyle: Styles = {
-  backgroundColor: 'transparent',
-  opacity: 0.9,
-  ':hover': {
-    backgroundColor: 'transparent',
-    filter: 'brightness(2.5)',
-  },
-  ':active': {
-    backgroundColor: 'transparent',
-  },
 }

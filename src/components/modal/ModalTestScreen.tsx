@@ -120,6 +120,14 @@ export function ModalTestScreen() {
     showModal({ head: 'Your Choice', body: `You chose ${result?.label} in the previous modal` })
   }
 
+  const withColorHeader = async () => {
+    showModal({
+      head: 'Color header',
+      headColor: Color.primaryGreen,
+      body: 'Look at that colorful color',
+    })
+  }
+
   const working = () => {
     setLoading(true)
     showLoadingModal('Please wait...', 'Modal will disappear shortly')
@@ -196,6 +204,9 @@ export function ModalTestScreen() {
         </Button>
         <Button onClick={withResultCapture} margin="1em">
           Result Capture
+        </Button>
+        <Button onClick={withColorHeader} margin="1em">
+          Color header
         </Button>
         <Button onClick={working} margin="1em">
           Working Modal

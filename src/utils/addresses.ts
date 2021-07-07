@@ -14,9 +14,14 @@ export function normalizeAddress(address: string) {
   return utils.getAddress(address)
 }
 
-export function shortenAddress(address: string, elipsis?: boolean) {
+export function shortenAddress(address: string, elipsis?: boolean, capitalize?: boolean) {
   validateAddress(address, 'shorten')
-  return normalizeAddress(address).substr(0, 8) + (elipsis ? '...' : '')
+  const shortened = normalizeAddress(address).substr(0, 8) + (elipsis ? '...' : '')
+  return capitalize ? capitalizeAddress(shortened) : shortened
+}
+
+export function capitalizeAddress(address: string) {
+  return '0x' + address.substring(2).toUpperCase()
 }
 
 export function areAddressesEqual(a1: string, a2: string) {

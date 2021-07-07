@@ -1,4 +1,4 @@
-import 'src/features/ledger/buffer' // Must be the first import
+import 'src/polyfills/buffer' // Must be the first import
 import { CeloTransactionRequest, serializeCeloTransaction } from '@celo-tools/celo-ethers-wrapper'
 import { TransportError, TransportStatusError } from '@ledgerhq/errors'
 import { BigNumber, providers, Signer, utils } from 'ethers'
@@ -14,7 +14,6 @@ import { sleep } from 'src/utils/promises'
 // Based partly on https://github.com/ethers-io/ethers.js/blob/master/packages/hardware-wallets/src.ts/ledger.ts
 // But with customizations for the Celo network and for electron
 export class LedgerSigner extends Signer {
-  private celoApp: CeloLedgerApp | undefined
   address: string | undefined
 
   constructor(readonly provider: providers.Provider, readonly path: string) {
@@ -22,13 +21,11 @@ export class LedgerSigner extends Signer {
   }
 
   async init() {
-    if (this.celoApp) throw new Error('Ledger Signer already initialized')
+    if (this.address) throw new Error('Ledger Signer already initialized')
 
-    const transport = await getLedgerTransport()
-    this.celoApp = new CeloLedgerApp(transport)
     await this.validateCeloAppVersion()
 
-    const account = await this.perform((celoApp) => celoApp.getAddress(this.path, true))
+    const account = await this.perform((celoApp) => celoApp.getAddress(this.path))
     this.address = utils.getAddress(account.address)
   }
 
@@ -78,43 +75,48 @@ export class LedgerSigner extends Signer {
   }
 
   private async perform<T = any>(callback: (celoApp: CeloLedgerApp) => Promise<T>): Promise<T> {
-    if (!this.celoApp) {
-      throw new Error('LedgerSigner must be initiated before used')
-    }
+    const transport = await getLedgerTransport()
+    try {
+      const celoApp = new CeloLedgerApp(transport)
 
-    // Try up to 3 times over 3 seconds
-    for (let i = 0; i < 3; i++) {
-      try {
-        const result = await callback(this.celoApp)
-        return result
-      } catch (error) {
-        if (error instanceof TransportError) {
-          logger.error('Ledger TransportError', error.name, error.id, error.message)
-          if (error.id === 'TransportLocked') {
-            // Device is locked up, possibly from another use. Wait then try again
-            await sleep(1000)
-            continue
-          } else {
-            throw new Error(`Ledger transport issue: ${error.message || 'unknown error'}`)
+      // Try up to 3 times over 3 seconds
+      for (let i = 0; i < 3; i++) {
+        try {
+          const result = await callback(celoApp)
+          return result
+        } catch (error) {
+          if (error instanceof TransportError) {
+            logger.error('Ledger TransportError', error.name, error.id, error.message)
+            if (error.id === 'TransportLocked') {
+              // Device is locked up, possibly from another use. Wait then try again
+              await sleep(1000)
+              continue
+            } else {
+              throw new Error(`Ledger transport issue: ${error.message || 'unknown error'}`)
+            }
           }
-        }
 
-        if (error instanceof TransportStatusError) {
-          logger.error(
-            'Ledger TransportStatusError',
-            error.statusCode,
-            error.statusText,
-            error.message
-          )
-          throw new Error(error.message || 'Ledger responded with failure')
-        }
+          if (error instanceof TransportStatusError) {
+            logger.error(
+              'Ledger TransportStatusError',
+              error.statusCode,
+              error.statusText,
+              error.message
+            )
+            throw new Error(error.message || 'Ledger responded with failure')
+          }
 
-        logger.error('Unknown ledger error', error)
-        break
+          logger.error('Unknown ledger error', error)
+          break
+        }
       }
-    }
 
-    throw new Error('Ledger action failed, please check connection')
+      throw new Error('Ledger action failed, please check connection')
+    } finally {
+      await transport
+        .close()
+        .catch((error: any) => logger.error('Suppressing error during transport close', error))
+    }
   }
 
   async getAddress(): Promise<string> {

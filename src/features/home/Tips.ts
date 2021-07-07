@@ -14,16 +14,20 @@ const Tips = [
     'For even better security, consider using a Ledger hardware wallet.',
   ],
   [
-    "Your wallet Address is public; it's like your username on the Celo network. Share it with your friends!",
+    "Your Account Address is public; it's like your username on the Celo network. Share it with your friends!",
     'Your Account Key is a secret; always keep it private.',
   ],
   [
-    'Your wallet can be imported in many places at once.',
+    'Your accounts can be imported in many places at once.',
     'For example, you can import your Account Key into the Valora mobile app.',
   ],
   [
     'You can lock CELO to participate in Celo network elections and governance.',
     'Voting for validators that are elected will earn you free CELO rewards.',
+  ],
+  [
+    'Your wallet can manage as many different accounts as you want!',
+    'To add accounts, choose the Switch Account option from the account menu.',
   ],
 ]
 

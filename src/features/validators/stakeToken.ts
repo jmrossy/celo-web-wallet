@@ -1,5 +1,5 @@
 import { BigNumber, providers } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan'
@@ -17,9 +17,12 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { getStakingMaxAmount } from 'src/features/validators/utils'
-import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/wallet/fetchBalances'
+import {
+  fetchBalancesActions,
+  fetchBalancesIfStale,
+} from 'src/features/wallet/balances/fetchBalances'
+import { selectVoterAccountAddress, selectVoterBalances } from 'src/features/wallet/hooks'
 import { Balances } from 'src/features/wallet/types'
-import { getVoterAccountAddress, getVoterBalances } from 'src/features/wallet/utils'
 import { CELO } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import {
@@ -85,8 +88,8 @@ function* stakeToken(params: StakeTokenParams) {
   const { action, amountInWei, feeEstimates } = params
 
   yield* call(fetchBalancesIfStale)
-  const { balances, voterBalances } = yield* call(getVoterBalances)
-  const voterAddress = yield* call(getVoterAccountAddress)
+  const { balances, voterBalances } = yield* call(selectVoterBalances)
+  const voterAddress = yield* call(selectVoterAccountAddress)
   const { validatorGroups, groupVotes } = yield* select((state: RootState) => state.validators)
 
   validateOrThrow(
@@ -282,7 +285,8 @@ async function findLesserAndGreaterAfterVote(
 
 async function getElegibleGroupVotes() {
   const election = getContract(CeloContract.Election)
-  const currentVotes: EligibleGroupsVotesRaw = await election.getTotalVotesForEligibleValidatorGroups()
+  const currentVotes: EligibleGroupsVotesRaw =
+    await election.getTotalVotesForEligibleValidatorGroups()
   const eligibleGroups = currentVotes[0]
   const groupVotes = currentVotes[1]
   const result = []

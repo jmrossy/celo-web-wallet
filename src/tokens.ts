@@ -10,7 +10,7 @@ export interface Token {
   minValue: number
   displayDecimals: number
   address: string // contract address
-  decimals: number // TODO support decimals other than 18
+  decimals: number // TODO support decimals other than 18 (Issue #53)
   chainId: number
   ticker?: string // for ledger, usually the same as id except cGLD
   signature?: string

@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
@@ -12,28 +12,16 @@ import {
   BlockscoutTxBase,
 } from 'src/features/feed/types'
 import { TransactionMap } from 'src/features/types'
-import { fetchBalancesActions } from 'src/features/wallet/fetchBalances'
+import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
+import { saveFeedData } from 'src/features/wallet/manager'
 import { Balances } from 'src/features/wallet/types'
 import { NativeTokens, StableTokenIds, Token } from 'src/tokens'
 import { normalizeAddress } from 'src/utils/addresses'
 import { queryBlockscout } from 'src/utils/blockscout'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { call, delay, put, select } from 'typed-redux-saga'
+import { call, put, select } from 'typed-redux-saga'
 
 const QUERY_DEBOUNCE_TIME = 2000 // 2 seconds
-const POLL_DELAY = 10000 // 10 seconds
-
-// Triggers polling of feed fetching
-export function* feedAndBalancesFetchPoller() {
-  let i = 0
-  while (true) {
-    yield* delay(POLL_DELAY)
-    if (!isSignerSet()) continue
-    yield* put(fetchFeedActions.trigger())
-    if (i === 2) yield* put(fetchBalancesActions.trigger())
-    i = (i + 1) % 3
-  }
-}
 
 function* fetchFeed() {
   const { address, balances } = yield* select((state: RootState) => state.wallet)
@@ -60,6 +48,7 @@ function* fetchFeed() {
   )
 
   if (Object.keys(newTransactions).length > 0) {
+    yield* call(saveFeedData, address)
     yield* put(fetchBalancesActions.trigger())
   }
 }

@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
-import KeyIcon from 'src/components/icons/key.svg'
-import LedgerIcon from 'src/components/icons/logos/ledger.svg'
+import { KeyIcon } from 'src/components/icons/Key'
+import { LedgerIcon } from 'src/components/icons/logos/Ledger'
 import { Box } from 'src/components/layout/Box'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { onboardingStyles } from 'src/features/onboarding/onboardingStyles'
@@ -27,8 +27,7 @@ export function ImportChoiceScreen() {
       <h1 css={Font.h1Green}>Import Your Celo Account</h1>
       <Box direction="row" align="center" justify="center" margin="0 0 0 2em">
         <p css={style.description}>
-          To import your account, use your secret Account Key (mnemonic) or a Ledger hardware
-          wallet.{' '}
+          To import your account, use your Account Key (seed phrase) or a Ledger hardware wallet.{' '}
         </p>
         <HelpIcon
           width="1.5em"
@@ -37,10 +36,10 @@ export function ImportChoiceScreen() {
         />
       </Box>
       <div css={style.buttonContainer}>
-        <Button onClick={onClickAccountKey} size="l" margin="1em 1.5em" icon={KeyIcon}>
+        <Button onClick={onClickAccountKey} size="l" margin="1em 1.5em" icon={<KeyIcon />}>
           Use Account Key
         </Button>
-        <Button onClick={onClickLedger} size="l" margin="1em 1.5em" icon={LedgerIcon}>
+        <Button onClick={onClickLedger} size="l" margin="1em 1.5em" icon={<LedgerIcon />}>
           Use Ledger
         </Button>
       </div>
@@ -69,7 +68,7 @@ function HelpModal() {
 const style: Stylesheet = {
   description: {
     ...onboardingStyles.description,
-    maxWidth: 'calc(min(70vw, 22em))',
+    maxWidth: 'calc(min(70vw, 21em))',
   },
   buttonContainer: {
     marginTop: '2em',

@@ -3,6 +3,7 @@ import { PERSIST, persistStore, REHYDRATE } from 'redux-persist'
 import createSagaMiddleware from 'redux-saga'
 import { rootReducer } from 'src/app/rootReducer'
 import { rootSaga } from 'src/app/rootSaga'
+import { config } from 'src/config'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -19,6 +20,7 @@ export const store = configureStore({
     }),
     sagaMiddleware,
   ],
+  devTools: config.debug,
 })
 
 sagaMiddleware.run(rootSaga)

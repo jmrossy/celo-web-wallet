@@ -1,7 +1,7 @@
 import type { SessionTypes } from '@walletconnect/types'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from 'src/app/rootReducer'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { CheckmarkInElipseIcon } from 'src/components/icons/Checkmark'
@@ -184,7 +184,7 @@ function ReviewSession({ session }: { session: WalletConnectSession | null }) {
         </TextLink>
       )}
       <Box direction="row" margin="2em 0 0.25em 0">
-        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDeny} color={Color.altGrey}>
+        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDeny} color={Color.primaryWhite}>
           Deny
         </Button>
         <Button size="s" onClick={onClickApprove}>
@@ -230,7 +230,12 @@ function ViewSession({ session, close }: { session: WalletConnectSession | null 
         </TextLink>
       )}
       <Box direction="row" margin="2em 0 0.25em 0">
-        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDisconnect} color={Color.altGrey}>
+        <Button
+          size="s"
+          margin="0 1.5em 0 0"
+          onClick={onClickDisconnect}
+          color={Color.primaryWhite}
+        >
           Disconnect
         </Button>
         <Button size="s" onClick={onClickOkay}>
@@ -276,7 +281,7 @@ function ReviewRequest({
         </TextLink>
       )}
       <Box direction="row" margin="1.5em 0 0.25em 0">
-        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDeny} color={Color.altGrey}>
+        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDeny} color={Color.primaryWhite}>
           Deny
         </Button>
         <Button size="s" onClick={onClickApprove}>
@@ -311,7 +316,7 @@ function RequestError({ message, close }: { message: string | null } & Props) {
     <Box direction="column" align="center">
       <h3 css={style.h3}>There was a problem with a WalletConnect request event</h3>
       <p css={style.error}>{message ?? 'Unknown error'}</p>
-      <Button size="s" margin="2em 0 0.5em 0" onClick={onClickDismiss} color={Color.altGrey}>
+      <Button size="s" margin="2em 0 0.5em 0" onClick={onClickDismiss} color={Color.primaryWhite}>
         Dismiss
       </Button>
     </Box>
@@ -332,7 +337,7 @@ function SessionError({ message, close }: { message: string | null } & Props) {
       <h3 css={style.h3}>Looks like something went wrong</h3>
       <p css={style.error}>{message ?? 'Unknown error'}</p>
       <Box direction="row" margin="2em 0 0.5em 0">
-        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDismiss} color={Color.altGrey}>
+        <Button size="s" margin="0 1.5em 0 0" onClick={onClickDismiss} color={Color.primaryWhite}>
           Dismiss
         </Button>
         <Button size="s" onClick={onClickNewSession}>
@@ -386,6 +391,6 @@ const style: Stylesheet = {
   spinnerContainer: {
     marginTop: '1.5em',
     transform: 'scale(0.8)',
-    opacity: 0.9,
+    opacity: 0.85,
   },
 }
