@@ -3,14 +3,15 @@ import type { RootState } from 'src/app/rootReducer'
 import { getLatestBlockDetails, getNumBlocksPerInterval } from 'src/blockchain/blocks'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
+import { MAX_TOKEN_PRICE_NUM_DAYS } from 'src/consts'
 import { updatePairPrices } from 'src/features/tokenPrice/tokenPriceSlice'
 import {
   PairPriceUpdate,
   QuoteCurrency,
   QuoteCurrencyPriceHistory,
-  TokenPriceHistory,
   TokenPricePoint,
 } from 'src/features/tokenPrice/types'
+import { findMissingPriceDays, mergePriceHistories } from 'src/features/tokenPrice/utils'
 import { NativeTokenId, NativeTokens, StableTokenIds } from 'src/tokens'
 import { areAddressesEqual, ensureLeading0x } from 'src/utils/addresses'
 import { fromFixidity } from 'src/utils/amount'
@@ -24,7 +25,6 @@ import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
 
 const DEFAULT_HISTORY_NUM_DAYS = 7
-const MAX_HISTORY_NUM_DAYS = 14
 const SECONDS_PER_DAY = 86400
 const BLOCK_FETCHING_INTERVAL_SIZE = 300 // 6 minutes
 const MEDIAN_UPDATED_TOPIC_0 = '0xa9981ebfc3b766a742486e898f54959b050a66006dbce1a4155c1f84a08bcf41'
@@ -41,7 +41,7 @@ interface FetchTokenPriceParams {
 function* fetchTokenPrice(params: FetchTokenPriceParams) {
   const { baseCurrency, numDays: _numDays } = params
   const numDays = _numDays || DEFAULT_HISTORY_NUM_DAYS
-  if (numDays > MAX_HISTORY_NUM_DAYS) {
+  if (numDays > MAX_TOKEN_PRICE_NUM_DAYS) {
     throw new Error(`Cannot retrieve prices for such a wide window: ${numDays}`)
   }
   if (baseCurrency !== NativeTokenId.CELO) {
@@ -63,83 +63,40 @@ export const {
 } = createMonitoredSaga<FetchTokenPriceParams>(fetchTokenPrice, 'fetchTokenPrice')
 
 // Fetches token prices by retrieving and parsing the oracle reporting tx logs
-async function fetchStableTokenPrices(
-  numDays: number,
-  prices?: Partial<QuoteCurrencyPriceHistory>
-) {
+async function fetchStableTokenPrices(numDays: number, oldPrices?: QuoteCurrencyPriceHistory) {
   const latestBlock = await getLatestBlockDetails()
   if (!latestBlock) throw new Error('Latest block number needed for fetching prices')
 
-  const missingDays = findMissingDays(numDays, latestBlock.number, prices)
+  const missingDays = findMissingPriceDays(numDays, oldPrices)
   // Skip task if all needed days are already in store
   if (!missingDays.length) return null
 
   const oracleContract = getContract(CeloContract.SortedOracles)
   const numBlocksPerDay = getNumBlocksPerInterval(SECONDS_PER_DAY)
   const numBlocksPerInterval = getNumBlocksPerInterval(BLOCK_FETCHING_INTERVAL_SIZE)
-  const tokenToPriceHistory = cleanupStalePriceHistory(prices)
+  const priceUpdates: QuoteCurrencyPriceHistory = {}
 
   for (const day of missingDays) {
     const toBlock = latestBlock.number - numBlocksPerDay * day
     const fromBlock = toBlock - numBlocksPerInterval
     const tokenToPrice = await tryFetchOracleLogs(fromBlock, toBlock, oracleContract)
     if (!tokenToPrice) continue
-    // The nested loop here is awkward but helps us fetch all token prices for one day in one query
-    // Just prepends the new price point to each tokens history
+    // Prepends the new price point to each tokens history
     for (const [id, price] of tokenToPrice) {
-      if (!tokenToPriceHistory.has(id)) tokenToPriceHistory.set(id, [])
-      tokenToPriceHistory.get(id)!.push(price)
+      if (!priceUpdates[id]) priceUpdates[id] = []
+      priceUpdates[id]!.push(price)
     }
   }
 
+  const mergedPrices = mergePriceHistories(priceUpdates, oldPrices)
+
   const pairPriceUpdates: PairPriceUpdate[] = []
-  for (const [id, prices] of tokenToPriceHistory) {
-    pairPriceUpdates.push({ baseCurrency: NativeTokenId.CELO, quoteCurrency: id, prices })
+  for (const key of Object.keys(mergedPrices)) {
+    const quoteCurrency = key as QuoteCurrency // TS limitation of Object.keys()
+    const prices = mergedPrices[quoteCurrency]!
+    pairPriceUpdates.push({ baseCurrency: NativeTokenId.CELO, quoteCurrency, prices })
   }
   return pairPriceUpdates
-}
-
-// Looks through the current store data to find all days for which
-// price data is missing. Returns an array of days to query for
-// E.g. [1,4] means days for 1 day ago and 4 days ago are needed
-function findMissingDays(
-  numDays: number,
-  latestBlock: number,
-  prices?: Partial<QuoteCurrencyPriceHistory>
-) {
-  const daysInData = new Map<number, boolean>()
-  // This assumes if day's price for cusd exists, they all do
-  // Should be true because all returned in the same blockscout query
-  if (prices && prices[NativeTokenId.cUSD]) {
-    prices[NativeTokenId.cUSD]?.forEach((p) => daysInData.set(p.dayIndex, true))
-  }
-
-  const currentDayIndex = getDayIndex(latestBlock)
-  const missingDayList = []
-  for (let i = 0; i < numDays; i++) {
-    const dayIndex = currentDayIndex - i
-    if (!daysInData.has(dayIndex)) missingDayList.push(i)
-  }
-  return missingDayList
-}
-
-// Removes token price points that are older than MAX_HISTORY_NUM_DAYS
-// This prevents large amounts of data from collecting in local storage, which
-// has size limits
-function cleanupStalePriceHistory(prices?: Partial<QuoteCurrencyPriceHistory>) {
-  const tokenToPriceHistory = new Map<QuoteCurrency, TokenPriceHistory>()
-  if (!prices) return tokenToPriceHistory
-  const minTimestamp = Date.now() - MAX_HISTORY_NUM_DAYS * SECONDS_PER_DAY * 1000
-  for (const key of Object.keys(prices)) {
-    const quoteCurrency = key as QuoteCurrency // TS limitation of Object.keys()
-    const priceHistory = prices[quoteCurrency]
-    if (!priceHistory) continue
-    tokenToPriceHistory.set(
-      quoteCurrency,
-      priceHistory.filter((p) => p.timestamp > minTimestamp)
-    )
-  }
-  return tokenToPriceHistory
 }
 
 async function tryFetchOracleLogs(fromBlock: number, toBlock: number, oracleContract: Contract) {
@@ -208,10 +165,7 @@ function parseBlockscoutOracleLogsForToken(
         throw new Error(`Invalid timestamp: ${log.timeStamp}`)
       }
 
-      const blockNumber = BigNumber.from(log.blockNumber).toNumber()
-      const dayIndex = getDayIndex(blockNumber)
-
-      return { timestamp: timestamp.toNumber(), dayIndex, price: valueAdjusted }
+      return { timestamp: timestamp.toNumber(), price: valueAdjusted }
     } catch (error) {
       // Note: this creates some noise atm because of a blockscout bug
       // that's returning garbage with the API responses
@@ -221,13 +175,4 @@ function parseBlockscoutOracleLogsForToken(
 
   logger.error(`All log parse attempts failed or no log found for token ${searchToken}`)
   return null
-}
-
-// Because the queries must be done by block number
-// and the block times are not perfectly consistent,
-// instead of date, the prices are matched to 'day indexes'
-// which are factors of
-function getDayIndex(blockNumber: number) {
-  const numBlocksPerDay = getNumBlocksPerInterval(SECONDS_PER_DAY)
-  return Math.floor(blockNumber / numBlocksPerDay)
 }

@@ -6,7 +6,7 @@ import { BaseCurrencyPriceHistory, PairPriceUpdate } from 'src/features/tokenPri
 
 interface TokenPrices {
   // Base currency to quote currency to price list
-  prices: Partial<BaseCurrencyPriceHistory>
+  prices: BaseCurrencyPriceHistory
 }
 
 export const tokenPriceInitialState: TokenPrices = {
