@@ -2,7 +2,6 @@ name: bundle-desktop
 on:
   push:
     branches:
-      - master
       - staging
       - production
       - desktop
