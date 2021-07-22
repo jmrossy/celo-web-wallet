@@ -31,14 +31,14 @@ export function validate(params: AddTokenParams, balances: Balances): ErrorState
   return { isValid: true }
 }
 
-function* addToken(params: AddTokenParams, fetchBalances = true) {
+function* addToken(params: AddTokenParams) {
   const balances = yield* select((state: RootState) => state.wallet.balances)
   validateOrThrow(() => validate(params, balances), 'Invalid Token')
 
   const newToken = yield* call(getTokenInfo, params.address)
   yield* put(addTokenAction(newToken))
 
-  if (fetchBalances) yield* put(fetchBalancesActions.trigger())
+  yield* put(fetchBalancesActions.trigger())
 }
 
 export function* addTokensById(ids: Set<string>) {
