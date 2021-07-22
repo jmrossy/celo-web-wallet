@@ -188,7 +188,19 @@ const ERC20_TOKENS: Record<number, Token[]> = {
     },
   ],
   // Alfajores
-  44787: [],
+  44787: [
+    {
+      id: 'vPOOF',
+      symbol: 'vPOOF',
+      name: 'Poof Voucher',
+      color: '#7c71fc',
+      minValue: 0.001,
+      displayDecimals: 3,
+      address: '0xbA58308D1784e06615EdDEB7c7a2340d64acAAf3',
+      decimals: 18,
+      chainId: 42220,
+    },
+  ],
 }
 
 export function getKnownErc20Tokens() {
