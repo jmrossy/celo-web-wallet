@@ -11,13 +11,15 @@ import {
   BlockscoutTx,
   BlockscoutTxBase,
 } from 'src/features/feed/types'
-import { TransactionMap } from 'src/features/types'
+import { TransactionMap, TransactionType } from 'src/features/types'
+import { addTokensById } from 'src/features/wallet/balances/addToken'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { saveFeedData } from 'src/features/wallet/manager'
 import { Balances } from 'src/features/wallet/types'
 import { NativeTokens, StableTokenIds, Token } from 'src/tokens'
 import { normalizeAddress } from 'src/utils/addresses'
 import { queryBlockscout } from 'src/utils/blockscout'
+import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
 
@@ -47,10 +49,11 @@ function* fetchFeed() {
     })
   )
 
-  if (Object.keys(newTransactions).length > 0) {
-    yield* call(saveFeedData, address)
-    yield* put(fetchBalancesActions.trigger())
-  }
+  if (!Object.keys(newTransactions).length) return
+
+  yield* call(saveFeedData, address)
+  yield* call(addNewTokens, newTransactions, balances)
+  yield* put(fetchBalancesActions.trigger())
 }
 
 export const {
@@ -190,5 +193,25 @@ function copyTx(tx: BlockscoutTxBase): BlockscoutTx {
     blockHash: tx.blockHash,
     cumulativeGasUsed: tx.cumulativeGasUsed,
     transactionIndex: tx.transactionIndex,
+  }
+}
+
+function* addNewTokens(newTransactions: TransactionMap, balances: Balances) {
+  try {
+    const currentTokenIds = new Set<string>(Object.values(balances.tokens).map((t) => t.id))
+    const newTokenIds = new Set<string>()
+    for (const tx of Object.values(newTransactions)) {
+      if (
+        (tx.type === TransactionType.OtherTokenTransfer ||
+          tx.type === TransactionType.OtherTokenApprove) &&
+        !currentTokenIds.has(tx.tokenId)
+      ) {
+        newTokenIds.add(tx.tokenId)
+      }
+    }
+    yield* call(addTokensById, newTokenIds)
+  } catch (error) {
+    // Not an essential function, don't propagate errors
+    logger.error('Error when finding and adding new tokens from feed', error)
   }
 }
