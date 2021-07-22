@@ -14,7 +14,7 @@ const ERC20_TOKENS: Record<number, Token[]> = {
       id: 'mCUSD',
       symbol: 'mCUSD',
       name: 'Moola cUSD',
-      color: Color.accentBlue,
+      color: Color.primaryGreen,
       minValue: 0.01,
       displayDecimals: 2,
       address: '0x64dEFa3544c695db8c535D289d843a189aa26b98',
@@ -25,7 +25,7 @@ const ERC20_TOKENS: Record<number, Token[]> = {
       id: 'mCELO',
       symbol: 'mCELO',
       name: 'Moola CELO',
-      color: Color.accentBlue,
+      color: Color.primaryGold,
       minValue: 0.001,
       displayDecimals: 3,
       address: '0x7037F7296B2fc7908de7b57a89efaa8319f0C500',
@@ -36,7 +36,7 @@ const ERC20_TOKENS: Record<number, Token[]> = {
       id: 'mCEUR',
       symbol: 'mCEUR',
       name: 'Moola cEUR',
-      color: Color.accentBlue,
+      color: Color.primaryGreen,
       minValue: 0.001,
       displayDecimals: 3,
       address: '0xa8d0E6799FF3Fd19c6459bf02689aE09c4d78Ba7',
@@ -95,6 +95,17 @@ const ERC20_TOKENS: Record<number, Token[]> = {
       minValue: 0.001,
       displayDecimals: 3,
       address: '0x00400FcbF0816bebB94654259de7273f4A05c762',
+      decimals: 18,
+      chainId: 42220,
+    },
+    {
+      id: 'vPOOF',
+      symbol: 'vPOOF',
+      name: 'Poof Voucher',
+      color: '#7c71fc',
+      minValue: 0.001,
+      displayDecimals: 3,
+      address: '0xbA58308D1784e06615EdDEB7c7a2340d64acAAf3',
       decimals: 18,
       chainId: 42220,
     },
@@ -185,7 +196,9 @@ export function getKnownErc20Tokens() {
 }
 
 export function findTokenByAddress(address: string) {
-  return getKnownErc20Tokens().find(
-    (t) => t.chainId === config.chainId && areAddressesEqual(t.address, address)
-  )
+  return getKnownErc20Tokens().find((t) => areAddressesEqual(t.address, address))
+}
+
+export function findTokenById(id: string) {
+  return getKnownErc20Tokens().find((t) => t.id === id)
 }

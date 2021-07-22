@@ -2,6 +2,7 @@ import { BigNumber, utils } from 'ethers'
 import { MNEMONIC_LENGTH_MAX, MNEMONIC_LENGTH_MIN } from 'src/consts'
 import { Balances } from 'src/features/wallet/types'
 import { Token } from 'src/tokens'
+import { areAddressesEqual } from 'src/utils/addresses'
 
 export function areBalancesEmpty(balances: Balances) {
   let totalBalance = BigNumber.from(0)
@@ -27,6 +28,11 @@ export function getTokenBalance(balances: Balances, token: Token) {
   const balance = balances.tokens[token.id]
   if (!balance) new Error(`Unknown token ${token.id}`)
   return balance.value
+}
+
+export function hasToken(balances: Balances, tokenAddr: string) {
+  const currentTokenAddrs = Object.values(balances.tokens).map((t) => t.address)
+  return currentTokenAddrs.some((a) => areAddressesEqual(a, tokenAddr))
 }
 
 export function isValidMnemonic(mnemonic: string | null | undefined) {

@@ -4,10 +4,12 @@ import { getTokenContract } from 'src/blockchain/contracts'
 import { config } from 'src/config'
 import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { AddTokenParams, Balances } from 'src/features/wallet/types'
+import { hasToken } from 'src/features/wallet/utils'
 import { addToken as addTokenAction } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
+import { findTokenByAddress, findTokenById } from 'src/tokenList'
 import { CELO, Token } from 'src/tokens'
-import { areAddressesEqual } from 'src/utils/addresses'
+import { normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -22,26 +24,38 @@ export function validate(params: AddTokenParams, balances: Balances): ErrorState
     logger.error(`Invalid token address: ${address}`)
     return invalidInput('address', 'Invalid token address')
   }
-  const currentTokenAddrs = Object.values(balances.tokens).map((t) => t.address)
-  const alreadyExists = currentTokenAddrs.some((a) => areAddressesEqual(a, address))
-  if (alreadyExists) {
+  if (hasToken(balances, address)) {
     logger.error(`Token already exists in wallet: ${address}`)
     return invalidInput('address', 'Token already exists')
   }
   return { isValid: true }
 }
 
-function* addToken(params: AddTokenParams) {
+function* addToken(params: AddTokenParams, fetchBalances = true) {
   const balances = yield* select((state: RootState) => state.wallet.balances)
   validateOrThrow(() => validate(params, balances), 'Invalid Token')
 
   const newToken = yield* call(getTokenInfo, params.address)
   yield* put(addTokenAction(newToken))
 
-  yield* put(fetchBalancesActions.trigger())
+  if (fetchBalances) yield* put(fetchBalancesActions.trigger())
 }
 
-async function getTokenInfo(tokenAddress: string): Promise<Token> {
+export function* addTokensById(ids: Set<string>) {
+  for (const id of ids) {
+    try {
+      const knownToken = findTokenById(id)
+      if (!knownToken) continue
+      const newToken = yield* call(getTokenInfo, knownToken.address, knownToken)
+      yield* put(addTokenAction(newToken))
+    } catch (error) {
+      logger.error(`Failed to add token ${id}`, error)
+    }
+  }
+}
+
+async function getTokenInfo(tokenAddress: string, knownToken?: Token): Promise<Token> {
+  knownToken = knownToken || findTokenByAddress(tokenAddress)
   const contract = getTokenContract(tokenAddress)
   // Note this assumes the existence of decimals, symbols, and name methods,
   // which are technically optional. May revisit later
@@ -57,10 +71,10 @@ async function getTokenInfo(tokenAddress: string): Promise<Token> {
     id: symbol,
     symbol: symbol.substring(0, 8),
     name,
-    color: Color.accentBlue,
+    color: knownToken?.color || Color.accentBlue,
     minValue: CELO.minValue,
     displayDecimals: CELO.displayDecimals,
-    address: tokenAddress,
+    address: normalizeAddress(tokenAddress),
     decimals,
     chainId: config.chainId,
   }

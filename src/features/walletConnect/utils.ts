@@ -1,13 +1,13 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumberish } from 'ethers'
 import { getContractName } from 'src/blockchain/contracts'
-import { findTokenByAddress } from 'src/erc20'
 import {
   SessionStatus,
   WalletConnectMethods,
   WalletConnectSession,
   WalletConnectUriForm,
 } from 'src/features/walletConnect/types'
+import { findTokenByAddress } from 'src/tokenList'
 import { CELO, NativeTokens, UnknownToken } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'

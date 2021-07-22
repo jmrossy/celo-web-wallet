@@ -139,7 +139,7 @@ function sortAndFilter(
   allowRawOption?: boolean
 ) {
   const filtered = [...options]
-    .sort((a, b) => (a.display < b.display ? -1 : 1))
+    .sort((a, b) => (a.display.toLowerCase() < b.display.toLowerCase() ? -1 : 1))
     .filter((o) => o.display.toLowerCase().includes(input.toLowerCase()))
   if (input && allowRawOption) {
     filtered.unshift({ display: input, value: input })
