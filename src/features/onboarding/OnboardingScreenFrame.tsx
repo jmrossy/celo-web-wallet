@@ -17,12 +17,14 @@ export function OnboardingScreenFrame({ current, total, children }: PropsWithChi
       <div css={style.logoContainer}>
         <img width="140" height="42" src={Logo} alt="Celo Logo" css={style.logo} />
       </div>
-      <Box align="center" justify="center" direction="column" styles={style.childrenContainer}>
-        {children}
-      </Box>
-      <div css={style.dotsContainer}>
+      <main>
+        <Box align="center" justify="center" direction="column" styles={style.childrenContainer}>
+          {children}
+        </Box>
+      </main>
+      <nav css={style.dotsContainer}>
         {current && total && <PageDots current={current} total={total} />}
-      </div>
+      </nav>
     </Box>
   )
 }

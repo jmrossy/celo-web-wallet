@@ -95,10 +95,10 @@ function DesktopHome(props: PropsWithChildren<DesktopHomeProps>) {
         <NavButtonRow disabled={props.isWalletEmpty} />
         <TransactionFeed />
       </Box>
-      <div css={style.childContentContainer}>
+      <main css={style.childContentContainer}>
         {!props.hideWarnings && <HomeScreenWarnings />}
         <div css={style.childContent}>{props.children}</div>
-      </div>
+      </main>
     </Box>
   )
 }
@@ -114,7 +114,7 @@ function DesktopNotHome(props: PropsWithChildren<any>) {
 function DesktopNotHomeNoFeed(props: PropsWithChildren<any>) {
   return (
     <Box direction="column" align="center" styles={style.contentContainerNoFeed}>
-      <div css={style.childContentNoFeed}>{props.children}</div>
+      <main css={style.childContentNoFeed}>{props.children}</main>
     </Box>
   )
 }
@@ -123,7 +123,7 @@ function MobileHome(props: PropsWithChildren<any>) {
   return (
     <Box direction="column" styles={style.contentContainer}>
       <HomeScreenWarnings />
-      <div>{props.children}</div>
+      <main>{props.children}</main>
       <NavButtonRow disabled={false} mobile={true} />
       <TransactionFeed feedState="mobile" />
     </Box>
@@ -134,7 +134,7 @@ function MobileHomeEmpty(props: PropsWithChildren<any>) {
   return (
     <Box direction="column" styles={style.contentContainer}>
       <HomeScreenWarnings />
-      <div>{props.children}</div>
+      <main>{props.children}</main>
     </Box>
   )
 }
@@ -160,7 +160,7 @@ function MobileNotHome(props: PropsWithChildren<any>) {
         />
         <TransactionFeed feedState="collapsed" />
       </Box>
-      <div css={style.childContentContainer}>{props.children}</div>
+      <main css={style.childContentContainer}>{props.children}</main>
     </Box>
   )
 }
@@ -168,7 +168,7 @@ function MobileNotHome(props: PropsWithChildren<any>) {
 function MobileNotHomeNoFeed(props: PropsWithChildren<any>) {
   return (
     <Box direction="column" styles={style.contentContainer}>
-      <div>{props.children}</div>
+      <main>{props.children}</main>
     </Box>
   )
 }

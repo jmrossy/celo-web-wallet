@@ -7,11 +7,13 @@ import { Stylesheet } from 'src/styles/types'
 
 export function Header() {
   return (
-    <Box align="center" justify="between" styles={style.container}>
-      <HeaderLogo />
-      <BalanceSummary />
-      <AccountMenu />
-    </Box>
+    <header>
+      <Box align="center" justify="between" styles={style.container}>
+        <HeaderLogo />
+        <BalanceSummary />
+        <AccountMenu />
+      </Box>
+    </header>
   )
 }
 

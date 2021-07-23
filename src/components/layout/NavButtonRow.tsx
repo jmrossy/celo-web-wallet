@@ -94,80 +94,82 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const buttonHeight = mobile ? '2.75em' : '2.5em'
 
   return (
-    <Box direction="row" align="center" justify="evenly" styles={style.container}>
-      <Button
-        onClick={onSendClick}
-        margin="0.75em 0"
-        size="m"
-        disabled={disabled}
-        icon={SendIcon}
-        width={buttonWidth}
-        height={buttonHeight}
-      >
-        Send
-      </Button>
-      <Button
-        onClick={onMoreClick}
-        margin="0.75em 0"
-        size="m"
-        disabled={disabled}
-        iconPosition="end"
-        width={buttonWidth}
-        height={buttonHeight}
-      >
-        More{' '}
-        <ChevronIcon
-          direction={isDropdownVisible ? 'n' : 's'}
-          width="13px"
-          height="7.5px"
-          color="#FFFFFF"
-          styles={style.moreButtonIcon}
-        />
-      </Button>
+    <nav>
+      <Box direction="row" align="center" justify="evenly" styles={style.container}>
+        <Button
+          onClick={onSendClick}
+          margin="0.75em 0"
+          size="m"
+          disabled={disabled}
+          icon={SendIcon}
+          width={buttonWidth}
+          height={buttonHeight}
+        >
+          Send
+        </Button>
+        <Button
+          onClick={onMoreClick}
+          margin="0.75em 0"
+          size="m"
+          disabled={disabled}
+          iconPosition="end"
+          width={buttonWidth}
+          height={buttonHeight}
+        >
+          More{' '}
+          <ChevronIcon
+            direction={isDropdownVisible ? 'n' : 's'}
+            width="13px"
+            height="7.5px"
+            color="#FFFFFF"
+            styles={style.moreButtonIcon}
+          />
+        </Button>
 
-      {isDropdownVisible && (
-        <DropdownBox hide={hideDropdown} styles={style.menu}>
-          <MenuItem
-            icon={SendIcon}
-            title="Receive"
-            description="Show QR code"
-            onClick={onReceiveClick}
-            iconStyles={style.receiveButtonIcon}
-          />
-          <MenuItem
-            icon={ExchangeIcon}
-            title="Exchange"
-            description="Swap Celo tokens"
-            onClick={onExchangeClick}
-          />
-          <MenuItem
-            icon={LockIcon}
-            title="Lock"
-            description="Lock or unlock"
-            onClick={onLockClick}
-          />
-          <MenuItem
-            icon={CubeIcon}
-            title="Stake"
-            description="Vote for validators"
-            onClick={onStakeClick}
-          />
-          <MenuItem
-            icon={VoteIcon}
-            title="Govern"
-            description="Vote for proposals"
-            onClick={onGovernClick}
-          />
-          <MenuItem
-            icon={WalletConnectIcon}
-            title="Connect"
-            description="Use WalletConnect"
-            onClick={onConnectClick}
-            iconStyles={style.walletConnectIcon}
-          />
-        </DropdownBox>
-      )}
-    </Box>
+        {isDropdownVisible && (
+          <DropdownBox hide={hideDropdown} styles={style.menu}>
+            <MenuItem
+              icon={SendIcon}
+              title="Receive"
+              description="Show QR code"
+              onClick={onReceiveClick}
+              iconStyles={style.receiveButtonIcon}
+            />
+            <MenuItem
+              icon={ExchangeIcon}
+              title="Exchange"
+              description="Swap Celo tokens"
+              onClick={onExchangeClick}
+            />
+            <MenuItem
+              icon={LockIcon}
+              title="Lock"
+              description="Lock or unlock"
+              onClick={onLockClick}
+            />
+            <MenuItem
+              icon={CubeIcon}
+              title="Stake"
+              description="Vote for validators"
+              onClick={onStakeClick}
+            />
+            <MenuItem
+              icon={VoteIcon}
+              title="Govern"
+              description="Vote for proposals"
+              onClick={onGovernClick}
+            />
+            <MenuItem
+              icon={WalletConnectIcon}
+              title="Connect"
+              description="Use WalletConnect"
+              onClick={onConnectClick}
+              iconStyles={style.walletConnectIcon}
+            />
+          </DropdownBox>
+        )}
+      </Box>
+    </nav>
   )
 }
 
