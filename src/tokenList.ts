@@ -44,6 +44,17 @@ const ERC20_TOKENS: Record<number, Token[]> = {
       chainId: 42220,
     },
     {
+      id: 'MOO',
+      symbol: 'MOO',
+      name: 'Moola Governance Token',
+      color: Color.accentBlue,
+      minValue: 0.001,
+      displayDecimals: 3,
+      address: '0x17700282592D6917F6A73D0bF8AcCf4D578c131e',
+      decimals: 18,
+      chainId: 42220,
+    },
+    {
       id: 'cETH',
       symbol: 'cETH',
       name: 'Wrapped Ethereum',
