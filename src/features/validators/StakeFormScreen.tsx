@@ -92,6 +92,7 @@ export function StakeFormScreen() {
     resetValues(initialValues)
     // Ensure we have the info needed otherwise send user back
     if (!groups || !groups.length) {
+      // TODO find a way to avoid this, creates a bad UX
       navigate('/validators')
     }
   }, [tx])

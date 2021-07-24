@@ -1,7 +1,9 @@
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/buttons/Button'
+import BarChartIcon from 'src/components/icons/chart_bar_small.svg'
 import { ChevronIcon } from 'src/components/icons/Chevron'
+import CoinStackIcon from 'src/components/icons/coin_stack.svg'
 import CubeIcon from 'src/components/icons/cube.svg'
 import LockIcon from 'src/components/icons/lock_small.svg'
 import WalletConnectIcon from 'src/components/icons/logos/wallet_connect.svg'
@@ -55,6 +57,11 @@ export function NavButtonRow({ mobile, disabled }: Props) {
     navigate('/exchange')
   }
 
+  const onBalancesClick = () => {
+    hideDropdown()
+    navigate('/balances')
+  }
+
   const onLockClick = () => {
     hideDropdown()
     if (config.isElectron) {
@@ -70,6 +77,15 @@ export function NavButtonRow({ mobile, disabled }: Props) {
     if (config.isElectron) {
       dispatch(txFlowReset())
       navigate('/validators')
+    } else {
+      showDownloadDesktopModal()
+    }
+  }
+
+  const onTrackClick = () => {
+    hideDropdown()
+    if (config.isElectron) {
+      navigate('/stake-rewards')
     } else {
       showDownloadDesktopModal()
     }
@@ -142,6 +158,12 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               onClick={onExchangeClick}
             />
             <MenuItem
+              icon={CoinStackIcon}
+              title="Balance"
+              description="View balances"
+              onClick={onBalancesClick}
+            />
+            <MenuItem
               icon={LockIcon}
               title="Lock"
               description="Lock or unlock"
@@ -152,6 +174,12 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               title="Stake"
               description="Vote for validators"
               onClick={onStakeClick}
+            />
+            <MenuItem
+              icon={BarChartIcon}
+              title="Track"
+              description="See staking rewards"
+              onClick={onTrackClick}
             />
             <MenuItem
               icon={VoteIcon}

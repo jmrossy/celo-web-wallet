@@ -20,10 +20,11 @@ interface Props<T extends DataElement> {
   ExpandedRow?: FunctionComponent<{ row: T }>
   initialSortBy?: string // column id
   isLoading?: boolean
+  hideDividerLine?: boolean
 }
 
 export function Table<T extends DataElement>(props: Props<T>) {
-  const { columns, data, ExpandedRow, initialSortBy, isLoading } = props
+  const { columns, data, ExpandedRow, initialSortBy, isLoading, hideDividerLine } = props
 
   const [sortBy, setSortBy] = useState(initialSortBy ?? columns[0].id)
   const [sortDesc, setSortDesc] = useState(true)
@@ -55,12 +56,11 @@ export function Table<T extends DataElement>(props: Props<T>) {
           <tr>
             {columns.map((column) => {
               const isSelected = column.id === sortBy
-              const thStyle = isSelected ? headerThSelected : style.headerTh
               return (
                 <th
                   key={`table-column-${column.id}`}
                   onClick={() => onColumnClick(column.id)}
-                  css={thStyle}
+                  css={getThStyle(isSelected, hideDividerLine)}
                 >
                   <>
                     {column.header}
@@ -159,6 +159,11 @@ function getTableStyle(data: DataElement[], isLoading?: boolean): Styles {
         filter: 'blur(3px)',
       }
     : baseStyles
+}
+
+function getThStyle(isSelected: boolean, hideBorder?: boolean): Styles {
+  const thStyle = isSelected ? headerThSelected : style.headerTh
+  return hideBorder ? { ...thStyle, border: 'none', paddingBottom: 0 } : thStyle
 }
 
 const thTextAlign = {
