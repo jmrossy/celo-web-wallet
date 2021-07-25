@@ -169,7 +169,7 @@ function parseBlockscoutOracleLogsForToken(
     } catch (error) {
       // Note: this creates some noise atm because of a blockscout bug
       // that's returning garbage with the API responses
-      logger.warn('Unable to parse log, will attempt next', error)
+      logger.warn('Unable to parse token price log, will attempt next', error)
     }
   }
 

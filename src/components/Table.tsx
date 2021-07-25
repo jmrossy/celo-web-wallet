@@ -163,7 +163,7 @@ function getTableStyle(data: DataElement[], isLoading?: boolean): Styles {
 
 function getThStyle(isSelected: boolean, hideBorder?: boolean): Styles {
   const thStyle = isSelected ? headerThSelected : style.headerTh
-  return hideBorder ? { ...thStyle, border: 'none', paddingBottom: 0 } : thStyle
+  return hideBorder ? { ...thStyle, border: 'none', paddingBottom: 4 } : thStyle
 }
 
 const thTextAlign = {

@@ -72,3 +72,26 @@ export interface StakeTokenParams {
 }
 
 export type GroupVotes = Record<string, { active: string; pending: string }> // address to votes
+
+export enum StakeEventType {
+  Activate = 'activate',
+  Revoke = 'revoke', // Revoke of active votes (i.e. not pending)
+}
+
+export interface StakeEvent {
+  type: StakeEventType
+  group: string // group address
+  value: string
+  units: string
+  blockNumber: number
+  timestamp: number
+  txHash: string
+}
+
+export interface StakeEventTableRow {
+  id: string
+  group: string // group name or address
+  action: StakeEventType
+  amount: number
+  timestamp: number
+}

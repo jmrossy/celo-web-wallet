@@ -12,15 +12,19 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Table, TableColumn } from 'src/components/Table'
 import {
+  fetchStakeHistoryActions,
+  fetchStakeHistorySagaName,
+} from 'src/features/validators/fetchStakeHistory'
+import {
   fetchValidatorsActions,
   fetchValidatorsSagaName,
 } from 'src/features/validators/fetchValidators'
-import { validatorGroupsToTableData } from 'src/features/validators/tableUtils'
-import { ValidatorGroup, ValidatorGroupTableRow } from 'src/features/validators/types'
+import { stakeEventsToTableData } from 'src/features/validators/tableUtils'
+import { StakeEventTableRow, ValidatorGroup } from 'src/features/validators/types'
+import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { formatNumberWithCommas } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 import { toTitleCase } from 'src/utils/string'
 import { useSagaStatus } from 'src/utils/useSagaStatus'
@@ -32,8 +36,8 @@ export function StakeRewardsScreen() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    // TODO
     dispatch(fetchValidatorsActions.trigger({}))
+    dispatch(fetchStakeHistoryActions.trigger())
   }, [])
 
   const onClickSeeVotes = () => {
@@ -57,23 +61,34 @@ export function StakeRewardsScreen() {
     ],
   }
 
-  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
   const [validator, setValidator] = useState<string>(ALL_VALIDATORS)
   const onChangeSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target
     setValidator(value)
   }
+
+  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
   const selectOptions = useMemo(() => getSelectOptions(groups), [groups])
 
+  const stakeEvents = useSelector((state: RootState) => state.validators.stakeEvents.events)
   const tableData = useMemo(() => {
-    return validatorGroupsToTableData(groups)
-  }, [groups])
+    return stakeEventsToTableData(stakeEvents, groups)
+  }, [stakeEvents, groups])
 
-  const status = useSagaStatus(
+  const fetchValidatorStatus = useSagaStatus(
     fetchValidatorsSagaName,
     'Error Fetching Validator Info',
     'Something went wrong when finding validators, sorry! Please try again later.'
   )
+
+  const fetchHistoryStatus = useSagaStatus(
+    fetchStakeHistorySagaName,
+    'Error Fetching Staking History',
+    'Something went wrong when finding your staking history, sorry! Please try again later.'
+  )
+
+  const isLoading =
+    fetchValidatorStatus === SagaStatus.Started || fetchHistoryStatus === SagaStatus.Started
 
   return (
     <ScreenContentFrame>
@@ -81,6 +96,7 @@ export function StakeRewardsScreen() {
         <h1 css={Font.h2Green}>
           Track Staking Rewards <HelpButton />
         </h1>
+        <VotingForBanner />
         <Box direction="row" align="end" justify="between" margin="1.8em 1.5em 0 0">
           <ButtonToggle label1="APY" label2="Amount" onToggle={onToggleMode} />
           <Button size="s" styles={style.voteButton} onClick={onClickSeeVotes}>
@@ -102,7 +118,7 @@ export function StakeRewardsScreen() {
         )}
         <div css={style.tableContainer}>
           <HrDivider margin="1em 0 1.5em 0" />
-          <Box align="center" justify="between" margin="0 0 2em 0">
+          <Box align="center" justify="between" margin="0 0 1.8em 0">
             <h2 css={style.h2}>Staking History</h2>
             <SelectInput
               name="proposalId"
@@ -114,11 +130,11 @@ export function StakeRewardsScreen() {
               options={selectOptions}
             />
           </Box>
-          <Table<ValidatorGroupTableRow>
+          <Table<StakeEventTableRow>
             columns={tableColumns}
             data={tableData}
-            initialSortBy="date"
-            isLoading={status === SagaStatus.Started}
+            initialSortBy="timestamp"
+            isLoading={isLoading}
             hideDividerLine={true}
           />
         </div>
@@ -141,22 +157,22 @@ const tableColumns: TableColumn[] = [
   {
     header: 'Group',
     id: 'name',
-    renderer: (group) => group.name.trim().substring(0, 20),
+    renderer: (event) => event.group.trim().substring(0, 20),
   },
   {
     header: 'Action',
     id: 'action',
-    renderer: (group) => `${toTitleCase(group.action || 'Hi')}`,
+    renderer: (event) => `${toTitleCase(event.action)}`,
   },
   {
     header: 'Amount',
     id: 'amount',
-    renderer: (group) => formatNumberWithCommas(Math.round(group.votes)),
+    renderer: (event) => event.amount.toFixed(2),
   },
   {
     header: 'Date',
-    id: 'date',
-    renderer: (group) => `${group.percent.toFixed(2)}%`,
+    id: 'timestamp',
+    renderer: (event) => new Date(event.timestamp).toLocaleDateString(),
   },
 ]
 

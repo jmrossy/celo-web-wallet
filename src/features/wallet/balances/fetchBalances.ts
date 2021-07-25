@@ -15,7 +15,6 @@ import {
   walletInitialState,
 } from 'src/features/wallet/walletSlice'
 import { CELO, isNativeToken, Token, TokenWithBalance } from 'src/tokens'
-import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
@@ -64,7 +63,7 @@ async function fetchTokenBalances(
   const tokens = Object.values(tokensBalances)
   const fetchPromises: Promise<TokenWithBalance>[] = []
   for (const t of tokens) {
-    logger.debug(`Fetching ${t.id} balance`)
+    // logger.debug(`Fetching ${t.id} balance`)
     if (t.id === CELO.id) {
       fetchPromises.push(fetchCeloBalance(address))
     } else {

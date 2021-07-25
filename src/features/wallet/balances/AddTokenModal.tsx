@@ -46,7 +46,7 @@ export function AddTokenModal(props: { close: () => void }) {
     <form onSubmit={handleSubmit}>
       <Box direction="column" align="center">
         <p css={style.p}>
-          Any ERC-20 compatible tokens can be added to your wallet.
+          Any cERC-20 compatible tokens can be added to your wallet.
           <br />
           Choose a known token or enter the contract address.
         </p>

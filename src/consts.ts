@@ -43,6 +43,7 @@ export const ACCOUNT_STATUS_STALE_TIME = 43200000 // 12 hours
 export const VALIDATOR_LIST_STALE_TIME = 43200000 // 12 hours
 export const VALIDATOR_VOTES_STALE_TIME = 300000 // 5 minutes
 export const VALIDATOR_ACTIVATABLE_STALE_TIME = 43200000 // 12 hours
+export const STAKE_EVENTS_STALE_TIME = 10000 // 10 seconds
 export const PROPOSAL_LIST_STALE_TIME = 60000 // 1 minutes
 
 export const PLACEHOLDER_MNEMONIC =
