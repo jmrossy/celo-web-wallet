@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import ReactFrappeChart from 'react-frappe-charts'
-import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
@@ -10,7 +10,9 @@ import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { Spinner } from 'src/components/Spinner'
 import { Table, TableColumn } from 'src/components/Table'
+import { computeGroupStakingRewards } from 'src/features/validators/computeRewards'
 import {
   fetchStakeHistoryActions,
   fetchStakeHistorySagaName,
@@ -19,46 +21,35 @@ import {
   fetchValidatorsActions,
   fetchValidatorsSagaName,
 } from 'src/features/validators/fetchValidators'
-import { stakeEventsToTableData } from 'src/features/validators/tableUtils'
-import { StakeEventTableRow, ValidatorGroup } from 'src/features/validators/types'
+import {
+  GroupVotes,
+  StakeEvent,
+  StakeEventTableRow,
+  ValidatorGroup,
+} from 'src/features/validators/types'
+import { findValidatorGroupName } from 'src/features/validators/utils'
 import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
+import { fromWei } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 import { toTitleCase } from 'src/utils/string'
 import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 const ALL_VALIDATORS = 'all'
+const CHART_HEIGHT = 200
 
 export function StakeRewardsScreen() {
-  const navigate = useNavigate()
   const dispatch = useDispatch()
-
   useEffect(() => {
     dispatch(fetchValidatorsActions.trigger({}))
     dispatch(fetchStakeHistoryActions.trigger())
   }, [])
 
+  const navigate = useNavigate()
   const onClickSeeVotes = () => {
     navigate('/stake')
-  }
-
-  const [mode, setMode] = useState<'apy' | 'amount'>('apy')
-  const onToggleMode = (index: number) => {
-    setMode(index === 0 ? 'apy' : 'amount')
-  }
-
-  const chartData = {
-    labels: ['Anchorage', 'BitCandy', 'Tango', 'Foobar', 'Ayxsdfswewre', 'sdf', 'asdfs', '23fsd'],
-
-    datasets: [
-      {
-        name: 'APY',
-        chartType: 'bar',
-        values: [4.5, 4.5, 4, 0.1, 4.6, 4, 3, 2],
-      },
-    ],
   }
 
   const [validator, setValidator] = useState<string>(ALL_VALIDATORS)
@@ -67,13 +58,22 @@ export function StakeRewardsScreen() {
     setValidator(value)
   }
 
-  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
-  const selectOptions = useMemo(() => getSelectOptions(groups), [groups])
-
+  const groups = useSelector(
+    (state: RootState) => state.validators.validatorGroups.groups,
+    shallowEqual
+  )
+  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
   const stakeEvents = useSelector((state: RootState) => state.validators.stakeEvents.events)
+
+  const selectOptions = useMemo(() => getSelectOptions(stakeEvents, groups), [stakeEvents, groups])
   const tableData = useMemo(() => {
-    return stakeEventsToTableData(stakeEvents, groups)
-  }, [stakeEvents, groups])
+    return stakeEventsToTableData(stakeEvents, groups, validator)
+  }, [stakeEvents, groups, validator])
+
+  const [mode, setMode] = useState<'apy' | 'amount'>('apy')
+  const onToggleMode = (index: number) => {
+    setMode(index === 0 ? 'apy' : 'amount')
+  }
 
   const fetchValidatorStatus = useSagaStatus(
     fetchValidatorsSagaName,
@@ -90,6 +90,12 @@ export function StakeRewardsScreen() {
   const isLoading =
     fetchValidatorStatus === SagaStatus.Started || fetchHistoryStatus === SagaStatus.Started
 
+  const chartData = useMemo(
+    () => computeChartData(stakeEvents, groupVotes, groups, mode),
+    [stakeEvents, groupVotes, groups, mode]
+  )
+  const hasChartData = chartData.labels.length > 0
+
   return (
     <ScreenContentFrame>
       <div css={style.content}>
@@ -103,18 +109,32 @@ export function StakeRewardsScreen() {
             See Your Votes
           </Button>
         </Box>
-        {mode && (
-          <div css={style.chartContainer}>
-            <ReactFrappeChart
-              type="bar"
-              height={200}
-              colors={chartConfig.colors}
-              axisOptions={chartConfig.axis}
-              barOptions={chartConfig.barOptions}
-              tooltipOptions={chartConfig.tooltipOptions}
-              data={chartData}
-            />
+        {isLoading ? (
+          <div css={style.spinner}>
+            <Spinner />
           </div>
+        ) : (
+          <>
+            {hasChartData ? (
+              <div css={style.chartContainer}>
+                <ReactFrappeChart
+                  type="bar"
+                  height={CHART_HEIGHT}
+                  colors={chartConfig.colors}
+                  axisOptions={chartConfig.axis}
+                  barOptions={chartConfig.barOptions}
+                  tooltipOptions={chartConfig.tooltipOptionsY}
+                  data={chartData}
+                />
+              </div>
+            ) : (
+              <Box align="center" justify="center" margin="3em 1.5em">
+                <p css={style.chartHelpText}>
+                  Cast and activate validator group votes to start earning rewards!
+                </p>
+              </Box>
+            )}
+          </>
         )}
         <div css={style.tableContainer}>
           <HrDivider margin="1em 0 1.5em 0" />
@@ -150,14 +170,14 @@ const chartConfig = {
     stacked: false,
     spaceRatio: 0.5,
   },
-  tooltipOptions: { formatTooltipY: (d: number | null) => d + '%' },
+  tooltipOptionsY: { formatTooltipY: (d: number | null) => `${d?.toFixed(3)}` },
 }
 
 const tableColumns: TableColumn[] = [
   {
     header: 'Group',
     id: 'name',
-    renderer: (event) => event.group.trim().substring(0, 20),
+    renderer: (event) => event.group,
   },
   {
     header: 'Action',
@@ -176,19 +196,73 @@ const tableColumns: TableColumn[] = [
   },
 ]
 
-function getSelectOptions(validatorGroups: ValidatorGroup[]) {
-  return validatorGroups
-    .filter((g) => g?.name)
-    .map((g) => {
-      return {
-        display: g.name.trim().substring(0, 20) || 'Unnamed Group',
-        value: g.address,
-      }
-    })
-    .concat({
+function getSelectOptions(stakeEvents: StakeEvent[], groups: ValidatorGroup[]) {
+  const stakedGroups = new Set<string>()
+  const options = [
+    {
       display: 'All Groups',
       value: ALL_VALIDATORS,
+    },
+  ]
+  for (const event of stakeEvents) {
+    const groupAddr = event.group
+    if (stakedGroups.has(groupAddr)) continue
+    const groupName = findValidatorGroupName(groups, groupAddr, 'address')
+    options.push({
+      display: groupName,
+      value: groupAddr,
     })
+    stakedGroups.add(groupAddr)
+  }
+  return options
+}
+
+function stakeEventsToTableData(
+  stakeEvents: StakeEvent[],
+  groups: ValidatorGroup[],
+  selectedValidator: string
+): StakeEventTableRow[] {
+  const tableRows: StakeEventTableRow[] = []
+  for (const event of stakeEvents) {
+    const { txHash, group: groupAddr, type, value, timestamp } = event
+    if (selectedValidator !== ALL_VALIDATORS && selectedValidator !== groupAddr) continue
+    const groupName = findValidatorGroupName(groups, groupAddr, 'address')
+    const row = {
+      id: txHash,
+      group: groupName,
+      action: type,
+      amount: fromWei(value),
+      timestamp,
+    }
+    tableRows.push(row)
+  }
+  return tableRows
+}
+
+function computeChartData(
+  stakeEvents: StakeEvent[],
+  groupVotes: GroupVotes,
+  groups: ValidatorGroup[],
+  mode: 'apy' | 'amount'
+) {
+  const rewards = computeGroupStakingRewards(stakeEvents, groupVotes, mode)
+  const chartData: any = {
+    labels: [],
+    datasets: [
+      {
+        name: mode === 'apy' ? 'APY' : 'Amount',
+        chartType: 'bar',
+        values: [],
+      },
+    ],
+  }
+  for (const group of Object.keys(rewards)) {
+    const groupName = findValidatorGroupName(groups, group, 'address')
+    chartData.labels.push(groupName)
+    const reward = rewards[group]
+    chartData.datasets[0].values.push(reward)
+  }
+  return chartData
 }
 
 function HelpButton() {
@@ -234,12 +308,24 @@ const style: Stylesheet = {
     fontWeight: 400,
   },
   chartContainer: {
-    marginLeft: '-2.2em',
+    marginLeft: '-1.4em',
     '*': {
       transition: 'initial',
     },
   },
   tableContainer: {
     marginRight: '1.5em',
+  },
+  chartHelpText: {
+    ...Font.label,
+    ...Font.center,
+    letterSpacing: 'initial',
+  },
+  spinner: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: CHART_HEIGHT + 3,
+    opacity: 0.8,
   },
 }

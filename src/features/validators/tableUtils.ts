@@ -1,14 +1,11 @@
 import { BigNumber } from 'ethers'
 import {
-  StakeEvent,
-  StakeEventTableRow,
   Validator,
   ValidatorGroup,
   ValidatorGroupStatus,
   ValidatorGroupTableRow,
   ValidatorStatus,
 } from 'src/features/validators/types'
-import { areAddressesEqual } from 'src/utils/addresses'
 import { fromWei } from 'src/utils/amount'
 
 export function validatorGroupsToTableData(groups: ValidatorGroup[]): ValidatorGroupTableRow[] {
@@ -75,24 +72,4 @@ function getValidatorGroupStatus(group: ValidatorGroup, averageScore: number) {
     return ValidatorGroupStatus.Okay
   }
   return ValidatorGroupStatus.Poor
-}
-
-export function stakeEventsToTableData(
-  stakeEvents: StakeEvent[],
-  groups: ValidatorGroup[]
-): StakeEventTableRow[] {
-  const tableRows: StakeEventTableRow[] = []
-  for (const event of stakeEvents) {
-    const { txHash, group, type, value, timestamp } = event
-    const validatorGroup = groups.find((g) => areAddressesEqual(g.address, group))
-    const row = {
-      id: txHash,
-      group: validatorGroup ? validatorGroup.name : group,
-      action: type,
-      amount: fromWei(value),
-      timestamp,
-    }
-    tableRows.push(row)
-  }
-  return tableRows
 }

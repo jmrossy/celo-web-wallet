@@ -1,22 +1,33 @@
 import { BigNumber } from 'ethers'
 import { GroupVotes, StakeActionType, ValidatorGroup } from 'src/features/validators/types'
 import { Balances } from 'src/features/wallet/types'
+import { areAddressesEqual, shortenAddress } from 'src/utils/addresses'
 import { trimToLength } from 'src/utils/string'
 
 const MAX_GROUP_NAME_LENGTH = 20
+const DEFAULT_GROUP_NAME = 'Unnamed Group'
 
 // Find and format group name
-export function findValidatorGroupName(groups: ValidatorGroup[], groupAddress: string) {
-  if (!groups || !groups.length || !groupAddress) return null
-  const group = groups.find((g) => g.address === groupAddress)
-  if (!group) return null
-  return getValidatorGroupName(group)
+export function findValidatorGroupName(
+  groups: ValidatorGroup[],
+  groupAddr: string,
+  fallback: 'name' | 'address'
+) {
+  if (!groups || !groups.length || !groupAddr) return getFallbackGroupName(groupAddr, fallback)
+  const group = groups.find((g) => areAddressesEqual(g.address, groupAddr))
+  if (!group) return getFallbackGroupName(groupAddr, fallback)
+  return getValidatorGroupName(group, true)
 }
 
 export function getValidatorGroupName(group: ValidatorGroup, useDefault = false) {
   const name = trimToLength(group.name, MAX_GROUP_NAME_LENGTH)
-  if (!name && useDefault) return 'Unnamed Group'
+  if (!name && useDefault) return DEFAULT_GROUP_NAME
   else return name
+}
+
+function getFallbackGroupName(groupAddr: string, fallback: 'name' | 'address') {
+  if (fallback === 'name' || !groupAddr) return DEFAULT_GROUP_NAME
+  else return shortenAddress(groupAddr, true)
 }
 
 export function getTotalNonvotingLocked(balances: Balances, votes: GroupVotes) {

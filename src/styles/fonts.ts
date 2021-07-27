@@ -89,4 +89,7 @@ export const Font: Stylesheet = {
   extraBold: {
     fontWeight: 600,
   },
+  center: {
+    textAlign: 'center',
+  },
 }
