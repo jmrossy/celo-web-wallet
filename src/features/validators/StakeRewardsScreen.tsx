@@ -12,7 +12,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Spinner } from 'src/components/Spinner'
 import { Table, TableColumn } from 'src/components/Table'
-import { computeGroupStakingRewards } from 'src/features/validators/computeRewards'
+import { computeStakingRewards } from 'src/features/validators/computeRewards'
 import {
   fetchStakeHistoryActions,
   fetchStakeHistorySagaName,
@@ -70,9 +70,9 @@ export function StakeRewardsScreen() {
     return stakeEventsToTableData(stakeEvents, groups, validator)
   }, [stakeEvents, groups, validator])
 
-  const [mode, setMode] = useState<'apy' | 'amount'>('apy')
+  const [mode, setMode] = useState<'amount' | 'apy'>('amount')
   const onToggleMode = (index: number) => {
-    setMode(index === 0 ? 'apy' : 'amount')
+    setMode(index === 0 ? 'amount' : 'apy')
   }
 
   const fetchValidatorStatus = useSagaStatus(
@@ -104,7 +104,7 @@ export function StakeRewardsScreen() {
         </h1>
         <VotingForBanner />
         <Box direction="row" align="end" justify="between" margin="1.8em 1.5em 0 0">
-          <ButtonToggle label1="APY" label2="Amount" onToggle={onToggleMode} />
+          <ButtonToggle label1="Amount" label2="APY" onToggle={onToggleMode} />
           <Button size="s" styles={style.voteButton} onClick={onClickSeeVotes}>
             See Your Votes
           </Button>
@@ -243,9 +243,9 @@ function computeChartData(
   stakeEvents: StakeEvent[],
   groupVotes: GroupVotes,
   groups: ValidatorGroup[],
-  mode: 'apy' | 'amount'
+  mode: 'amount' | 'apy'
 ) {
-  const rewards = computeGroupStakingRewards(stakeEvents, groupVotes, mode)
+  const rewards = computeStakingRewards(stakeEvents, groupVotes, mode)
   const chartData: any = {
     labels: [],
     datasets: [

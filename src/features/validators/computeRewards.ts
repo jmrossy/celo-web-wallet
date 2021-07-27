@@ -3,17 +3,20 @@ import { GroupVotes, StakeEvent, StakeEventType } from 'src/features/validators/
 import { fromWei } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 
-export function computeGroupStakingRewards(
+export function computeStakingRewards(
   stakeEvents: StakeEvent[],
   groupVotes: GroupVotes,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  mode: 'apy' | 'amount' = 'amount'
+  mode: 'amount' | 'apy' = 'amount'
 ) {
+  return mode === 'amount'
+    ? computeRewardAmount(stakeEvents, groupVotes)
+    : computeRewardApy(stakeEvents, groupVotes)
+}
+
+function computeRewardAmount(stakeEvents: StakeEvent[], groupVotes: GroupVotes) {
   const groupTotals: Record<string, BigNumber> = {} // group addr to sum votes
   for (const event of stakeEvents) {
-    // TODO
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { group, type, value, timestamp } = event
+    const { group, type, value } = event
     if (!groupTotals[group]) groupTotals[group] = BigNumber.from(0)
     if (type === StakeEventType.Activate) {
       groupTotals[group] = groupTotals[group].sub(value)
@@ -32,6 +35,60 @@ export function computeGroupStakingRewards(
       logger.warn('Reward for group < 0, should never happen', reward.toString(), group)
     }
   }
-
   return groupRewards
+}
+
+function computeRewardApy(stakeEvents: StakeEvent[], groupVotes: GroupVotes) {
+  // First get total reward amounts per group
+  const groupRewardAmounts = computeRewardAmount(stakeEvents, groupVotes)
+
+  // Next, gather events by group
+  const groupEvents: Record<string, StakeEvent[]> = {} // group addr to events
+  for (const event of stakeEvents) {
+    const group = event.group
+    if (!groupEvents[group]) groupEvents[group] = []
+    groupEvents[group].push(event)
+  }
+
+  // Finally, use avg active amounts to compute APR and APY
+  const groupApy: Record<string, number> = {} // weighted avgs of active votes
+  for (const group of Object.keys(groupEvents)) {
+    const { avgActive, totalDays } = getTimeWeightedAverageActive(groupEvents[group])
+    const rewardAmount = groupRewardAmounts[group]
+    const apr = (rewardAmount / avgActive / totalDays) * 365
+    const apy = (1 + apr / 365) ** 365 - 1
+    groupApy[group] = Math.round(apy * 10000) / 100
+  }
+
+  return groupApy
+}
+
+export function getTimeWeightedAverageActive(events: StakeEvent[]) {
+  const numEvents = events.length
+  if (numEvents === 0) throw new Error('Expected at least 1 stake event')
+  const sortedEvents = events.sort((a, b) => a.timestamp - b.timestamp)
+  let activeVotes = 0
+  let sum = 0
+  let totalDays = 0
+  for (let i = 0; i < numEvents; i++) {
+    const { type, value: valueInWei, timestamp } = sortedEvents[i]
+    const value = fromWei(valueInWei)
+    const nextTimestamp = i < numEvents - 1 ? sortedEvents[i + 1].timestamp : Date.now()
+    const numDays = getDaysBetween(timestamp, nextTimestamp)
+    if (type === StakeEventType.Activate) {
+      activeVotes += value
+    } else {
+      activeVotes -= value
+    }
+    // ignore periods where nothing was staked
+    if (activeVotes < 0.01) continue
+    sum += activeVotes * numDays
+    totalDays += numDays
+  }
+
+  return { avgActive: sum / totalDays, totalDays }
+}
+
+function getDaysBetween(timestamp1: number, timestamp2: number) {
+  return Math.round((timestamp2 - timestamp1) / (1000 * 60 * 60 * 24))
 }

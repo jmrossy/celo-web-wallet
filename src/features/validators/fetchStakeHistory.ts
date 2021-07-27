@@ -60,17 +60,9 @@ async function fetchStakeEvents(accountAddress: string, lastBlockNumber: number 
   const baseUrl = `${config.blockscoutUrl}/api?module=logs&action=getLogs&fromBlock=${fromBlock}&toBlock=latest&address=${electionAddress}&topic1=${topic1}&topic0_1_opr=and`
   const activateLogsUrl = `${baseUrl}&topic0=${VOTE_ACTIVATED_TOPIC_0}`
   const revokeLogsUrl = `${baseUrl}&topic0=${VOTE_REVOKED_TOPIC_0}`
-  // eslint-disable-next-line no-console
-  console.log(activateLogsUrl)
-  // eslint-disable-next-line no-console
-  console.log(revokeLogsUrl)
   const activeTxLogsP = queryBlockscout<Array<BlockscoutTransactionLog>>(activateLogsUrl)
   const revokeTxLogsP = queryBlockscout<Array<BlockscoutTransactionLog>>(revokeLogsUrl)
   const [activeTxLogs, revokeTxLogs] = await Promise.all([activeTxLogsP, revokeTxLogsP])
-  // eslint-disable-next-line no-console
-  console.log(activeTxLogs)
-  // eslint-disable-next-line no-console
-  console.log(revokeTxLogs)
   const activateEvents = parseBlockscoutStakeLogs(
     activeTxLogs,
     electionContract,
