@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { CeloTransaction, TransactionMap } from 'src/features/types'
+import { CeloTransaction, TransactionMap, TransactionType } from 'src/features/types'
 
 export interface TransactionFeed {
   transactions: TransactionMap
@@ -42,7 +42,7 @@ const feedSlice = createSlice({
       }>
     ) => {
       if (Object.keys(action.payload.txs).length > 0) {
-        state.transactions = { ...state.transactions, ...action.payload.txs }
+        state.transactions = mergeTransactions(state.transactions, action.payload.txs)
       }
       state.lastUpdatedTime = action.payload.lastUpdatedTime
       state.lastBlockNumber = action.payload.lastBlockNumber
@@ -66,6 +66,19 @@ const feedSlice = createSlice({
     resetFeed: () => feedInitialState,
   },
 })
+
+function mergeTransactions(oldTxs: TransactionMap, newTxs: TransactionMap) {
+  // Hacking in a fix for the missing activate tx amounts here
+  // The placeholders have the right value but the 'official' tx history does not
+  // So modifying the tx info we get from blockscout
+  for (const tx of Object.values(newTxs)) {
+    if (tx.type === TransactionType.ValidatorActivateCelo && oldTxs[tx.hash]) {
+      tx.value = oldTxs[tx.hash].value
+    }
+  }
+
+  return { ...oldTxs, ...newTxs }
+}
 
 export const {
   setTransactions,
