@@ -74,6 +74,7 @@ export function getTimeWeightedAverageActive(events: StakeEvent[]) {
   for (let i = 0; i < numEvents; i++) {
     const { type, value: valueInWei, timestamp } = sortedEvents[i]
     const value = fromWei(valueInWei)
+    // has next event ? its timestamp : today
     const nextTimestamp = i < numEvents - 1 ? sortedEvents[i + 1].timestamp : Date.now()
     const numDays = getDaysBetween(timestamp, nextTimestamp)
     if (type === StakeEventType.Activate) {

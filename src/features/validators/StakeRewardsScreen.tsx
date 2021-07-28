@@ -103,7 +103,7 @@ export function StakeRewardsScreen() {
           Track Staking Rewards <HelpButton />
         </h1>
         <VotingForBanner />
-        <Box direction="row" align="end" justify="between" margin="1.8em 1.5em 0 0">
+        <Box direction="row" align="end" justify="between" margin="1.6em 1.5em 0.2em 0">
           <ButtonToggle label1="Amount" label2="APY" onToggle={onToggleMode} />
           <Button size="s" styles={style.voteButton} onClick={onClickSeeVotes}>
             See Your Votes
@@ -116,17 +116,28 @@ export function StakeRewardsScreen() {
         ) : (
           <>
             {hasChartData ? (
-              <div css={style.chartContainer}>
-                <ReactFrappeChart
-                  type="bar"
-                  height={CHART_HEIGHT}
-                  colors={chartConfig.colors}
-                  axisOptions={chartConfig.axis}
-                  barOptions={chartConfig.barOptions}
-                  tooltipOptions={chartConfig.tooltipOptionsY}
-                  data={chartData}
-                />
-              </div>
+              <>
+                <div css={style.chartContainer}>
+                  <ReactFrappeChart
+                    type="bar"
+                    height={CHART_HEIGHT}
+                    colors={chartConfig.colors}
+                    axisOptions={chartConfig.axis}
+                    barOptions={chartConfig.barOptions}
+                    tooltipOptions={chartConfig.tooltipOptionsY}
+                    data={chartData}
+                  />
+                </div>
+                <div
+                  css={[
+                    Font.subtitle,
+                    { margin: '-0.6em 0 0 1.1em' },
+                    mode === 'amount' && { opacity: 0 },
+                  ]}
+                >
+                  Note: APYs are estimates. They get more accurate over time.
+                </div>
+              </>
             ) : (
               <Box align="center" justify="center" margin="3em 1.5em">
                 <p css={style.chartHelpText}>
