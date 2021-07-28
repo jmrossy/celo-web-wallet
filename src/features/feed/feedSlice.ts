@@ -76,7 +76,6 @@ function mergeTransactions(oldTxs: TransactionMap, newTxs: TransactionMap) {
       tx.value = oldTxs[tx.hash].value
     }
   }
-
   return { ...oldTxs, ...newTxs }
 }
 

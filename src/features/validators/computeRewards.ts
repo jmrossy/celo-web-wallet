@@ -2,6 +2,7 @@ import { BigNumber } from 'ethers'
 import { GroupVotes, StakeEvent, StakeEventType } from 'src/features/validators/types'
 import { fromWei } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
+import { getDaysBetween } from 'src/utils/time'
 
 export function computeStakingRewards(
   stakeEvents: StakeEvent[],
@@ -87,8 +88,4 @@ export function getTimeWeightedAverageActive(events: StakeEvent[]) {
   }
 
   return { avgActive: sum / totalDays, totalDays }
-}
-
-function getDaysBetween(timestamp1: number, timestamp2: number) {
-  return Math.round((timestamp2 - timestamp1) / (1000 * 60 * 60 * 24))
 }

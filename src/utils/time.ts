@@ -9,3 +9,7 @@ export function areDatesSameDay(d1: Date, d2: Date) {
     d1.getFullYear() === d2.getFullYear()
   )
 }
+
+export function getDaysBetween(timestamp1: number, timestamp2: number) {
+  return Math.round((timestamp2 - timestamp1) / (1000 * 60 * 60 * 24))
+}

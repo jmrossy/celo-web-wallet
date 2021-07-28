@@ -19,8 +19,8 @@ export enum CeloContract {
 // @ts-ignore Defined by webpack define plugin
 const debugMode = __DEBUG__ ?? false
 // @ts-ignore Defined by webpack define plugin
-// const isElectron = __IS_ELECTRON__ ?? false
-const isElectron = true // TODO
+const isElectron = __IS_ELECTRON__ ?? false
+// const isElectron = true
 // @ts-ignore Defined by webpack define plugin
 const version = __VERSION__ || null
 
