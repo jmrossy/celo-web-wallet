@@ -150,8 +150,6 @@ function parseBlockscoutStakeLogs(
         txHash: log.transactionHash,
       })
     } catch (error) {
-      // Note: this creates some noise atm because of a blockscout bug
-      // that's returning garbage with the API responses
       logger.warn('Unable to parse stake log, will skip', error)
     }
   }

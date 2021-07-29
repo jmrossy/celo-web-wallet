@@ -30,10 +30,12 @@ function computeRewardAmount(stakeEvents: StakeEvent[], groupVotes: GroupVotes) 
   for (const group of Object.keys(groupTotals)) {
     const currentVotes = BigNumber.from(groupVotes[group]?.active || 0)
     const totalVoted = groupTotals[group]
-    const reward = currentVotes.add(totalVoted)
-    groupRewards[group] = fromWei(reward)
-    if (reward.lt(0)) {
-      logger.warn('Reward for group < 0, should never happen', reward.toString(), group)
+    const rewardInWei = currentVotes.add(totalVoted)
+    if (rewardInWei.gte(0)) {
+      groupRewards[group] = fromWei(rewardInWei)
+    } else {
+      logger.warn('Reward for group < 0, should never happen', rewardInWei.toString(), group)
+      groupRewards[group] = 0
     }
   }
   return groupRewards
