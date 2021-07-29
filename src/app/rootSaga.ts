@@ -63,6 +63,12 @@ import {
   fetchTokenPriceSagaName,
 } from 'src/features/tokenPrice/fetchPrices'
 import {
+  fetchStakeHistoryActions,
+  fetchStakeHistoryReducer,
+  fetchStakeHistorySaga,
+  fetchStakeHistorySagaName,
+} from 'src/features/validators/fetchStakeHistory'
+import {
   fetchValidatorsActions,
   fetchValidatorsReducer,
   fetchValidatorsSaga,
@@ -190,6 +196,11 @@ export const monitoredSagas: {
     saga: fetchValidatorsSaga,
     reducer: fetchValidatorsReducer,
     actions: fetchValidatorsActions,
+  },
+  [fetchStakeHistorySagaName]: {
+    saga: fetchStakeHistorySaga,
+    reducer: fetchStakeHistoryReducer,
+    actions: fetchStakeHistoryActions,
   },
   [stakeTokenSagaName]: {
     saga: stakeTokenSaga,

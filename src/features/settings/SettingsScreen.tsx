@@ -90,7 +90,7 @@ export function SettingsScreen() {
             onClick={onClickLogout}
           />
         </Box>
-        <HrDivider styles={style.divider} />
+        <HrDivider margin="2em 0" />
         <h2 css={style.sectionHeader}>Advanced Settings</h2>
         <Box direction="row" align="center" justify="between" styles={style.toggleSettingContainer}>
           <div>
@@ -172,9 +172,6 @@ const style: Stylesheet = {
     ...Font.body2,
     lineHeight: '1.5em',
     maxWidth: '28em',
-  },
-  divider: {
-    margin: '2em 0',
   },
   pageLinkBox: {
     ...transparentButtonStyles,

@@ -298,7 +298,9 @@ export function* removeAllAccounts() {
 function* loadFeedData(nextAddress: string, currentAddress?: string | null) {
   try {
     // Save current address' data
-    yield* call(saveFeedData, currentAddress)
+    if (currentAddress && !areAddressesEqual(nextAddress, currentAddress)) {
+      yield* call(saveFeedData, currentAddress)
+    }
 
     // Load data for new active address
     const feedData = yield* call(getFeedDataForAccount, nextAddress)
@@ -322,8 +324,7 @@ function* loadFeedData(nextAddress: string, currentAddress?: string | null) {
   }
 }
 
-export function* saveFeedData(currentAddress?: string | null) {
-  if (!currentAddress) return
+export function* saveFeedData(currentAddress: string) {
   const transactions = yield* select((s: RootState) => s.feed.transactions)
   if (transactions && Object.keys(transactions).length) {
     yield* call(setFeedDataForAccount, currentAddress, transactions)

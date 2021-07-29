@@ -21,3 +21,9 @@ export function trimToLength(value: string, maxLength: number) {
 export function trimSlashes(value: string) {
   return value.replace(/^\/+|\/+$/g, '')
 }
+
+export function toTitleCase(str: string) {
+  return str.replace(/\w\S*/g, (txt) => {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  })
+}

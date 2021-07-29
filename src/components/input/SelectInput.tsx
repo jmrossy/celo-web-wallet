@@ -203,7 +203,7 @@ const style: Stylesheet = {
   chevronContainer: {
     position: 'absolute',
     right: 14,
-    top: 15,
+    top: '30%',
     opacity: 0.75,
   },
   dropdownContainer: {

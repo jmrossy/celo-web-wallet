@@ -22,29 +22,31 @@ export function WelcomeScreen() {
   return (
     <Box direction="column" justify="between" align="center" styles={style.frame}>
       <div css={style.topPadding}></div>
-      <Box direction="column" justify="center" align="center">
-        <img width="410rem" height="100rem" src={Logo} alt="Celo Logo" css={style.logo} />
-        <h1 css={style.h1}>{`A ${isMobile ? '' : 'simple '}wallet for the Celo network`}</h1>
-        <h2 css={style.h2}>Manage your funds in a browser or on your desktop</h2>
-        <div css={style.buttonContainer}>
-          <Button
-            size="l"
-            onClick={onClickCreateNew}
-            margin="0.75em 1.5em"
-            styles={{ fontSize: '1.1em' }}
-          >
-            Create New Account
-          </Button>
-          <Button
-            size="l"
-            onClick={onClickUseExisting}
-            margin="0.75em 1.5em"
-            styles={{ fontSize: '1.1em' }}
-          >
-            Use Existing Account
-          </Button>
-        </div>
-      </Box>
+      <main>
+        <Box direction="column" justify="center" align="center">
+          <img width="410rem" height="100rem" src={Logo} alt="Celo Logo" css={style.logo} />
+          <h1 css={style.h1}>{`A ${isMobile ? '' : 'simple '}wallet for the Celo network`}</h1>
+          <h2 css={style.h2}>Manage your funds in a browser or on your desktop</h2>
+          <div css={style.buttonContainer}>
+            <Button
+              size="l"
+              onClick={onClickCreateNew}
+              margin="0.75em 1.5em"
+              styles={{ fontSize: '1.1em' }}
+            >
+              Create New Account
+            </Button>
+            <Button
+              size="l"
+              onClick={onClickUseExisting}
+              margin="0.75em 1.5em"
+              styles={{ fontSize: '1.1em' }}
+            >
+              Use Existing Account
+            </Button>
+          </div>
+        </Box>
+      </main>
       <OnboardingFooter />
     </Box>
   )

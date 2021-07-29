@@ -10,7 +10,6 @@ import { findValidatorGroupName, getStakingMaxAmount } from 'src/features/valida
 import { Balances } from 'src/features/wallet/types'
 import { ChartDataColors, ChartDataColorsLighter, Color } from 'src/styles/Color'
 import { CELO } from 'src/tokens'
-import { shortenAddress } from 'src/utils/addresses'
 import { BigNumberMax, BigNumberMin, fromWeiRounded } from 'src/utils/amount'
 
 // Just for convinience / shortness cause this file has lots of conversions
@@ -113,7 +112,7 @@ function createGroupDataPoint(
   index: number,
   isPending?: boolean
 ) {
-  let name = findValidatorGroupName(groups, groupAddr) || shortenAddress(groupAddr, true)
+  let name = findValidatorGroupName(groups, groupAddr, 'address')
   const colorIndex = index % ChartDataColors.length
   let color = ChartDataColors[colorIndex]
   if (isPending) {

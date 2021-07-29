@@ -9,28 +9,30 @@ import { Stylesheet } from 'src/styles/types'
 
 export function OnboardingFooter() {
   return (
-    <Box align="center" justify="center" styles={style.container}>
-      <Box align="center" justify="center">
-        <AboutWalletLink styles={style.anchor} />
-        <span>-</span>
-        {!config.isElectron && (
-          <>
-            <DownloadDesktopButton styles={style.anchor} />
-            <span>-</span>
-          </>
-        )}
-        <TextLink link="https://valoraapp.com" styles={style.anchor}>
-          Valora Mobile App
-        </TextLink>
-        <span css={style.desktopOnly}>-</span>
-        <TextLink
-          link="https://github.com/celo-tools/celo-web-wallet"
-          styles={[style.anchor, style.desktopOnly]}
-        >
-          View Source
-        </TextLink>
+    <footer>
+      <Box align="center" justify="center" styles={style.container}>
+        <Box align="center" justify="center">
+          <AboutWalletLink styles={style.anchor} />
+          <span>-</span>
+          {!config.isElectron && (
+            <>
+              <DownloadDesktopButton styles={style.anchor} />
+              <span>-</span>
+            </>
+          )}
+          <TextLink link="https://valoraapp.com" styles={style.anchor}>
+            Valora Mobile App
+          </TextLink>
+          <span css={style.desktopOnly}>-</span>
+          <TextLink
+            link="https://github.com/celo-tools/celo-web-wallet"
+            styles={[style.anchor, style.desktopOnly]}
+          >
+            View Source
+          </TextLink>
+        </Box>
       </Box>
-    </Box>
+    </footer>
   )
 }
 

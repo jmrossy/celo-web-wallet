@@ -21,6 +21,7 @@ import { normalizeAddress } from 'src/utils/addresses'
 import { queryBlockscout } from 'src/utils/blockscout'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
+import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
 
 const QUERY_DEBOUNCE_TIME = 2000 // 2 seconds
@@ -32,8 +33,7 @@ function* fetchFeed() {
 
   if (!address || !isSignerSet()) return
 
-  const now = Date.now()
-  if (lastUpdatedTime && now - lastUpdatedTime < QUERY_DEBOUNCE_TIME) return
+  if (!isStale(lastUpdatedTime, QUERY_DEBOUNCE_TIME)) return
 
   const { newTransactions, newLastBlockNumber } = yield* call(
     doFetchFeed,
@@ -44,7 +44,7 @@ function* fetchFeed() {
   yield* put(
     addTransactions({
       txs: newTransactions,
-      lastUpdatedTime: now,
+      lastUpdatedTime: Date.now(),
       lastBlockNumber: newLastBlockNumber,
     })
   )

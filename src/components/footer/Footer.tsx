@@ -18,35 +18,39 @@ export function Footer() {
 function FooterDesktop() {
   const address = useWalletAddress()
   return (
-    <Box align="center" justify="between" styles={style.container}>
-      <Box align="center" justify="center">
-        <AboutWalletLink styles={style.text} />
-        <span>-</span>
-        {!config.isElectron && (
-          <>
-            <DownloadDesktopButton styles={style.text} />
-            <span>-</span>
-          </>
-        )}
-        <ValoraLink />
-        <span>-</span>
-        <ViewSourceLink />
+    <footer>
+      <Box align="center" justify="between" styles={style.container}>
+        <Box align="center" justify="center">
+          <AboutWalletLink styles={style.text} />
+          <span>-</span>
+          {!config.isElectron && (
+            <>
+              <DownloadDesktopButton styles={style.text} />
+              <span>-</span>
+            </>
+          )}
+          <ValoraLink />
+          <span>-</span>
+          <ViewSourceLink />
+        </Box>
+        <Box direction="row" align="center">
+          <CopiableAddress address={address} length="full" styles={style.address} />
+          <ConnectionStatusLink />
+        </Box>
       </Box>
-      <Box direction="row" align="center">
-        <CopiableAddress address={address} length="full" styles={style.address} />
-        <ConnectionStatusLink />
-      </Box>
-    </Box>
+    </footer>
   )
 }
 
 function FooterMobile() {
   return (
-    <Box align="center" justify="around" styles={style.container}>
-      <AboutWalletLink styles={style.text} />
-      <ValoraLink />
-      <ConnectionStatusLink />
-    </Box>
+    <footer>
+      <Box align="center" justify="around" styles={style.container}>
+        <AboutWalletLink styles={style.text} />
+        <ValoraLink />
+        <ConnectionStatusLink />
+      </Box>
+    </footer>
   )
 }
 

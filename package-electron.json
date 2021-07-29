@@ -1,6 +1,6 @@
 {
   "name": "celo-web-wallet",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A lightweight web and desktop wallet for the Celo network",
   "main": "main.js",
   "keywords": [

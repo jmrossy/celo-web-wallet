@@ -1,13 +1,8 @@
 import { STALE_TOKEN_PRICE_TIME } from 'src/consts'
 import { QuoteCurrencyPriceHistory } from 'src/features/tokenPrice/types'
 import { findMissingPriceDays, mergePriceHistories } from 'src/features/tokenPrice/utils'
+import { nowMinusDays } from 'src/test/time'
 import { NativeTokenId } from 'src/tokens'
-
-function nowMinusDays(days: number) {
-  const now = new Date()
-  now.setDate(now.getDate() - days)
-  return now.getTime()
-}
 
 function pricePoint(day: number, price: number) {
   return { timestamp: nowMinusDays(day), price }

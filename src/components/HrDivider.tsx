@@ -1,11 +1,13 @@
 import { Styles } from 'src/styles/types'
 
 interface Props {
+  margin?: number | string
   styles?: Styles
 }
 
 export function HrDivider(props: Props) {
-  return <hr css={[defaultStyle, props.styles]} />
+  const { margin, styles } = props
+  return <hr css={{ ...defaultStyle, margin, ...styles }} />
 }
 
 const defaultStyle: Styles = {

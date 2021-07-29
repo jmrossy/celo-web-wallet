@@ -31,6 +31,7 @@ import { SettingsScreen } from 'src/features/settings/SettingsScreen'
 import { ExploreValidatorsScreen } from 'src/features/validators/ExploreValidatorsScreen'
 import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmationScreen'
 import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
+import { StakeRewardsScreen } from 'src/features/validators/StakeRewardsScreen'
 import { AccountsNavigator } from 'src/features/wallet/accounts/AccountsNavigator'
 import { AddAccountScreen } from 'src/features/wallet/accounts/AddAccountScreen'
 import { AddCreateScreen } from 'src/features/wallet/accounts/AddCreateScreen'
@@ -86,6 +87,7 @@ export const App = () => {
               <Route path="validators" element={<ExploreValidatorsScreen />} />
               <Route path="stake" element={<StakeFormScreen />} />
               <Route path="stake-review" element={<StakeConfirmationScreen />} />
+              <Route path="stake-rewards" element={<StakeRewardsScreen />} />
               <Route path="governance" element={<GovernanceFormScreen />} />
               <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
               <Route path="balances" element={<BalanceDetailsScreen />} />
