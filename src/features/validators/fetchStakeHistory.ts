@@ -55,7 +55,7 @@ export const {
 async function fetchStakeEvents(accountAddress: string, lastBlockNumber: number | null) {
   const electionContract = getContract(CeloContract.Election)
   const electionAddress = electionContract.address
-  const fromBlock = lastBlockNumber ? lastBlockNumber + 1 : 0
+  const fromBlock = lastBlockNumber ? lastBlockNumber + 1 : 1
   const topic1 = getPaddedAddress(accountAddress).toLowerCase()
   const baseUrl = `${config.blockscoutUrl}/api?module=logs&action=getLogs&fromBlock=${fromBlock}&toBlock=latest&address=${electionAddress}&topic1=${topic1}&topic0_1_opr=and`
   const activateLogsUrl = `${baseUrl}&topic0=${VOTE_ACTIVATED_TOPIC_0}`
