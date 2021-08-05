@@ -29,8 +29,7 @@ function AboutWalletModal() {
   return (
     <Box direction="column" align="center" styles={style.container}>
       <p style={style.text}>
-        The Celo Wallet is a free, open source wallet for the{' '}
-        <TextLink link="https://celo.org">Celo network</TextLink>. It was created by{' '}
+        The Celo Wallet is a free, open source wallet for the Celo network. It was created by{' '}
         <TextLink link="https://twitter.com/RossyWrote">J M Rossy</TextLink> and{' '}
         <TextLink link="https://www.linkedin.com/in/brianschwalm/">Brian Schwalm</TextLink>.
       </p>
@@ -41,7 +40,8 @@ function AboutWalletModal() {
         <TextLink link="https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md">
           Frequently Asked Questions
         </TextLink>
-        .
+        . For other help, try asking in the{' '}
+        <TextLink link={config.discordUrl}>Discord chat</TextLink>.
       </p>
       <p style={style.version}>{`Version: ${config.version}`}</p>
     </Box>

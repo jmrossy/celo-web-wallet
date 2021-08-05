@@ -1,6 +1,7 @@
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { AboutWalletLink } from 'src/components/footer/AboutWallet'
 import { ConnectionStatusLink } from 'src/components/footer/ConnectionStatus'
+import { HelpButton } from 'src/components/footer/Help'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
 import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
@@ -11,7 +12,6 @@ import { Stylesheet } from 'src/styles/types'
 
 export function Footer() {
   const isMobile = useIsMobile()
-
   return isMobile ? <FooterMobile /> : <FooterDesktop />
 }
 
@@ -29,9 +29,9 @@ function FooterDesktop() {
               <span>-</span>
             </>
           )}
-          <ValoraLink />
-          <span>-</span>
           <ViewSourceLink />
+          <span>-</span>
+          <HelpButton styles={style.text} />
         </Box>
         <Box direction="row" align="center">
           <CopiableAddress address={address} length="full" styles={style.address} />
