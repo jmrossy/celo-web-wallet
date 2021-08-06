@@ -100,6 +100,6 @@ function getSelectOptions() {
 const style: Stylesheet = {
   p: {
     ...modalStyles.p,
-    marginBottom: '1.5em',
+    margin: '0 0 1.5em 0',
   },
 }

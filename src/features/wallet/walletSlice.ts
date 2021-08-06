@@ -159,7 +159,7 @@ const migrations = {
   },
 }
 
-const walletPersistConfig = {
+const persistConfig = {
   key: 'wallet',
   storage: storage,
   stateReconciler: autoMergeLevel2,
@@ -169,6 +169,6 @@ const walletPersistConfig = {
 }
 
 export const persistedWalletReducer = persistReducer<ReturnType<typeof walletReducer>>(
-  walletPersistConfig,
+  persistConfig,
   walletReducer
 )

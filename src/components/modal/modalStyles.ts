@@ -19,4 +19,12 @@ export const modalStyles: Stylesheet = {
     lineHeight: '1.6em',
     margin: '1em 0 0 0',
   },
+  pMargin0: {
+    ...Font.body2,
+    overflowWrap: 'break-word',
+    textAlign: 'center',
+    maxWidth: '25em',
+    lineHeight: '1.6em',
+    margin: 0,
+  },
 }

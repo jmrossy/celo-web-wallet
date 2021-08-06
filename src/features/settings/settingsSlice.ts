@@ -48,13 +48,13 @@ export const {
 
 const settingsReducer = settingsSlice.reducer
 
-const settingPersistConfig = {
+const persistConfig = {
   key: 'setting',
   storage: storage,
   stateReconciler: autoMergeLevel2,
   whitelist: ['backupReminderDismissed', 'txSizeLimitEnabled'], //only persist these values
 }
 export const persistedSettingsReducer = persistReducer<ReturnType<typeof settingsReducer>>(
-  settingPersistConfig,
+  persistConfig,
   settingsReducer
 )

@@ -9,7 +9,7 @@ import { TextLink } from 'src/components/buttons/TextLink'
 import { CircleIcon } from 'src/components/icons/Circle'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { Table, TableColumn } from 'src/components/Table'
+import { Table, TableColumn } from 'src/components/table/Table'
 import {
   fetchValidatorsActions,
   fetchValidatorsSagaName,

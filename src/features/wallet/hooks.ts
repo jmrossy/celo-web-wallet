@@ -15,8 +15,7 @@ const balanceEmptySelector = createSelector(
 )
 
 export function useAreBalancesEmpty() {
-  const isEmpty = useSelector(balanceEmptySelector)
-  return isEmpty
+  return useSelector(balanceEmptySelector)
 }
 
 export function useTokens() {

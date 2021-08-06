@@ -121,6 +121,7 @@ function ConnectionForm() {
             onBlur={handleBlur}
             value={values.uri}
             placeholder="wc:0123..."
+            autoFocus={true}
             inputStyles={style.uriInput}
             {...errors['uri']}
           />

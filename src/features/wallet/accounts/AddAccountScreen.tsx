@@ -118,6 +118,7 @@ export function AddAccountScreen() {
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Savings account"
+              autoFocus={true}
               width="11em"
               {...errors['name']}
             />

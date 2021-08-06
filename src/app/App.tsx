@@ -32,6 +32,7 @@ import { ExploreValidatorsScreen } from 'src/features/validators/ExploreValidato
 import { StakeConfirmationScreen } from 'src/features/validators/StakeConfirmationScreen'
 import { StakeFormScreen } from 'src/features/validators/StakeFormScreen'
 import { StakeRewardsScreen } from 'src/features/validators/StakeRewardsScreen'
+import { AccountsAndContactsScreen } from 'src/features/wallet/accounts/AccountsAndContactsScreen'
 import { AccountsNavigator } from 'src/features/wallet/accounts/AccountsNavigator'
 import { AddAccountScreen } from 'src/features/wallet/accounts/AddAccountScreen'
 import { AddCreateScreen } from 'src/features/wallet/accounts/AddCreateScreen'
@@ -39,7 +40,6 @@ import { AddDeriveScreen } from 'src/features/wallet/accounts/AddDeriveScreen'
 import { AddImportScreen } from 'src/features/wallet/accounts/AddImportScreen'
 import { AddLedgerScreen } from 'src/features/wallet/accounts/AddLedgerScreen'
 import { AddSetPasswordScreen } from 'src/features/wallet/accounts/AddSetPasswordScreen'
-import { ManageAccountsScreen } from 'src/features/wallet/accounts/ManageAccountsScreen'
 import { ViewAccountScreen } from 'src/features/wallet/accounts/ViewAccountScreen'
 import { BalanceDetailsScreen } from 'src/features/wallet/balances/BalanceDetailsScreen'
 import { WalletConnectStatusBox } from 'src/features/walletConnect/WalletConnectStatusBox'
@@ -93,7 +93,7 @@ export const App = () => {
               <Route path="balances" element={<BalanceDetailsScreen />} />
               <Route path="account" element={<ViewAccountScreen />} />
               <Route path="accounts" element={<AccountsNavigator />}>
-                <Route path="/" element={<ManageAccountsScreen />} />
+                <Route path="/" element={<AccountsAndContactsScreen />} />
                 <Route path="add" element={<AddAccountScreen />} />
                 <Route path="create" element={<AddCreateScreen />} />
                 <Route path="derive" element={<AddDeriveScreen />} />

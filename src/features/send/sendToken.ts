@@ -53,17 +53,17 @@ export function validate(
     errors = { ...errors, ...validateAmount(amountInWei, token, balances, maxAmount) }
   }
 
-  if (!utils.isAddress(recipient)) {
-    logger.error(`Invalid recipient: ${recipient}`)
-    errors = {
-      ...errors,
-      ...invalidInput('recipient', 'Invalid Recipient'),
-    }
-  } else if (!recipient) {
+  if (!recipient) {
     logger.error(`Invalid recipient: ${recipient}`)
     errors = {
       ...errors,
       ...invalidInput('recipient', 'Recipient is required'),
+    }
+  } else if (!utils.isAddress(recipient)) {
+    logger.error(`Invalid recipient: ${recipient}`)
+    errors = {
+      ...errors,
+      ...invalidInput('recipient', 'Invalid Recipient'),
     }
   }
 

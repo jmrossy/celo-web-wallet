@@ -1,4 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit'
+import { persistedContactsReducer } from 'src/features/contacts/contactsSlice'
 import { exchangeReducer } from 'src/features/exchange/exchangeSlice'
 import { feedReducer } from 'src/features/feed/feedSlice'
 import { feeReducer } from 'src/features/fees/feeSlice'
@@ -14,6 +15,7 @@ import { monitoredSagaReducers } from './rootSaga'
 
 export const rootReducer = combineReducers({
   wallet: persistedWalletReducer,
+  contacts: persistedContactsReducer,
   feed: feedReducer,
   exchange: exchangeReducer,
   lock: lockReducer,
