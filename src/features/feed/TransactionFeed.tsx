@@ -75,8 +75,8 @@ export function TransactionFeed(props: { feedState?: FeedState }) {
           <div>
             <img width="110em" height="110em" src={Nurture} alt="Plant seed" css={style.logo} />
           </div>
-          <div style={style.tipText}>You have no wallet activity yet.</div>
-          <div style={style.tipText}>
+          <div css={style.tipText}>You have no wallet activity yet.</div>
+          <div css={style.tipText}>
             {isWalletEmpty
               ? 'Start by adding funds to your account.'
               : 'Try a payment or an exchange.'}

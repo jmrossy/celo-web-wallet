@@ -62,8 +62,8 @@ export function ContactsTable({ isMobile }: { isMobile: boolean }) {
 
   return (
     <>
-      <Box align="center" justify="between" margin={`0 ${data.length ? '0.7em' : '0'} 1.4em 0`}>
-        <h2 style={Font.tableHeader}>Your Contacts</h2>
+      <Box align="center" justify="between" margin={`1.5em ${data.length ? '0.7em' : '0'} 1.2em 0`}>
+        <h2 css={Font.tableHeader}>Your Contacts</h2>
         <Button onClick={onClickAdd} size="xs" height="2em">
           Add Contact
         </Button>

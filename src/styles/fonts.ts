@@ -72,7 +72,7 @@ export const Font: Stylesheet = {
   },
   tableHeader: {
     fontSize: '1.2em',
-    fontWeight: 400,
+    fontWeight: 500,
     margin: 0,
     color: Color.primaryGreen,
   },

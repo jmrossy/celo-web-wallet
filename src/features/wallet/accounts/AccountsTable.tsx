@@ -80,8 +80,8 @@ export function AccountsTable({ isMobile }: { isMobile: boolean }) {
 
   return (
     <>
-      <Box align="center" justify="between" margin="0 0.7em 1.4em 0">
-        <h2 style={Font.tableHeader}>Your Accounts</h2>
+      <Box align="center" justify="between" margin="0 0.7em 1.2em 0">
+        <h2 css={Font.tableHeader}>Your Accounts</h2>
         <Button
           onClick={onClickAdd}
           size="xs"
