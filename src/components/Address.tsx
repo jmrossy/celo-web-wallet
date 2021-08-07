@@ -11,7 +11,7 @@ import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
-import { tryClipboardSet } from 'src/utils/clipboard'
+import { useClipboardSet } from 'src/utils/clipboard'
 import { chunk, trimToLength } from 'src/utils/string'
 
 type ButtonType = 'send' | 'copy' | 'qrAndCopy'
@@ -32,7 +32,7 @@ export function Address(props: Props) {
   }
 
   const onSendButtonClick = useSendToAddress(address)
-  const onCopyButtonClick = useCopyAddress(address)
+  const onCopyButtonClick = useClipboardSet(address)
   const showQrModal = useAddressQrCodeModal()
   const onQrButtonClick = () => {
     showQrModal(address)
@@ -120,12 +120,6 @@ export function useSendToAddress(address: string) {
   return () => {
     dispatch(txFlowReset())
     navigate('/send', { state: { recipient: address } })
-  }
-}
-
-export function useCopyAddress(address: string) {
-  return async () => {
-    await tryClipboardSet(address)
   }
 }
 

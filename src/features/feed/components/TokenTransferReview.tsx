@@ -1,7 +1,8 @@
-import { Address, useCopyAddress, useSendToAddress } from 'src/components/Address'
+import { Address, useSendToAddress } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
+import { useAddContactModal } from 'src/features/contacts/AddContactModal'
 import { TransactionStatusProperty } from 'src/features/feed/components/CommonTransactionProperties'
 import {
   TransactionProperty,
@@ -26,21 +27,21 @@ export function TokenTransferReview({ tx }: Props) {
 
   const { feeValue, feeCurrency } = getFeeFromConfirmedTx(tx)
 
-  const onClickCopyButton = useCopyAddress(address)
   const onClickSendButton = useSendToAddress(address)
+  const onClickAddContact = useAddContactModal(address)
 
   return (
     <TransactionPropertyGroup>
       <TransactionStatusProperty tx={tx} />
       <TransactionProperty label={addressLabel}>
         <div css={style.value}>
-          <Address address={address} />
-          <Box direction="row" align="center" margin="1.1em 0 0 0">
-            <Button size="xs" margin="0 1.2em 0 1px" onClick={onClickCopyButton}>
-              Copy Address
-            </Button>
-            <Button size="xs" onClick={onClickSendButton}>
+          <Address address={address} buttonType="copy" />
+          <Box align="center" margin="1.1em 0 0 0">
+            <Button size="xs" margin="0 1.2em 0 1px" width="8em" onClick={onClickSendButton}>
               Send Payment
+            </Button>
+            <Button size="xs" width="8em" onClick={onClickAddContact}>
+              Add Contact
             </Button>
           </Box>
         </div>

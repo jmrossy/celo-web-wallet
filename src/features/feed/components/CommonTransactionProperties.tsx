@@ -1,15 +1,17 @@
 import { getContract, getContractName } from 'src/blockchain/contracts'
-import { Address, useCopyAddress } from 'src/components/Address'
+import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { CeloContract, config } from 'src/config'
+import { useAddContactModal } from 'src/features/contacts/AddContactModal'
 import { TransactionProperty } from 'src/features/feed/components/TransactionPropertyGroup'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { CeloTransaction } from 'src/features/types'
 import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
+import { useClipboardSet } from 'src/utils/clipboard'
 import { logger } from 'src/utils/logger'
 
 export function TransactionStatusProperty({ tx }: { tx: CeloTransaction }) {
@@ -68,14 +70,20 @@ export function TransactionFeeProperty({ tx }: { tx: CeloTransaction }) {
 }
 
 export function TransactionToAddressProperty({ tx }: { tx: CeloTransaction }) {
-  const onClickCopyButton = useCopyAddress(tx.to)
+  const onClickCopyButton = useClipboardSet(tx.to)
+  const onClickAddContact = useAddContactModal(tx.to)
   return (
     <TransactionProperty label="To Address">
       <div css={style.value}>
         <Address address={tx.to} />
-        <Button size="xs" margin="1.1em 0 0 0" onClick={onClickCopyButton}>
-          Copy Address
-        </Button>
+        <Box align="center" margin="1.1em 0 0 0">
+          <Button size="xs" margin="0 1.2em 0 1px" width="8em" onClick={onClickCopyButton}>
+            Copy Address
+          </Button>
+          <Button size="xs" width="8em" onClick={onClickAddContact}>
+            Add Contact
+          </Button>
+        </Box>
       </div>
     </TransactionProperty>
   )

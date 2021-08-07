@@ -1,13 +1,16 @@
 import { utils } from 'ethers'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { TextInput } from 'src/components/input/TextInput'
 import { Box } from 'src/components/layout/Box'
 import { modalStyles } from 'src/components/modal/modalStyles'
+import { useModal } from 'src/components/modal/useModal'
 import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
 import { addContact } from 'src/features/contacts/contactsSlice'
 import { ContactMap } from 'src/features/contacts/types'
+import { Color } from 'src/styles/Color'
 import { normalizeAddress } from 'src/utils/addresses'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { ErrorState, invalidInput } from 'src/utils/validation'
@@ -20,9 +23,10 @@ interface AddContactForm {
 interface Props {
   contacts: ContactMap
   close: () => void
+  address?: string
 }
 
-export function AddContactModal({ contacts, close }: Props) {
+export function AddContactModal({ contacts, close, address }: Props) {
   const dispatch = useDispatch()
   const onSubmit = (values: AddContactForm) => {
     const address = normalizeAddress(values.address.trim())
@@ -33,7 +37,7 @@ export function AddContactModal({ contacts, close }: Props) {
   const validate = (values: AddContactForm) => validateForm(values, contacts)
 
   const { values, errors, handleChange, handleBlur, handleSubmit } = useCustomForm<AddContactForm>(
-    { name: '', address: '' },
+    { name: '', address: address ?? '' },
     onSubmit,
     validate
   )
@@ -80,4 +84,16 @@ function validateForm(values: AddContactForm, contacts: ContactMap): ErrorState 
   if (contacts[normalizeAddress(address.trim())])
     return invalidInput('address', 'Contact already exists')
   return { isValid: true }
+}
+
+export function useAddContactModal(address?: string) {
+  const contacts = useSelector((s: RootState) => s.contacts.contacts)
+  const { showModalWithContent, closeModal } = useModal()
+  return () => {
+    showModalWithContent({
+      head: 'Add New Contact',
+      content: <AddContactModal contacts={contacts} close={closeModal} address={address} />,
+      headColor: Color.primaryGreen,
+    })
+  }
 }
