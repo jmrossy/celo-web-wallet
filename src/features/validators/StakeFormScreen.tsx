@@ -1,4 +1,4 @@
-import { BigNumber, utils } from 'ethers'
+import { BigNumber } from 'ethers'
 import type { Location } from 'history'
 import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -33,7 +33,7 @@ import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
-import { shortenAddress } from 'src/utils/addresses'
+import { isValidAddress, shortenAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
@@ -290,7 +290,7 @@ function getInitialValues(
   const initialAction = location?.state?.action ?? initialValues.action
   const groupAddress = location?.state?.groupAddress
   const initialGroup =
-    groupAddress && utils.isAddress(groupAddress) ? groupAddress : initialValues.groupAddress
+    groupAddress && isValidAddress(groupAddress) ? groupAddress : initialValues.groupAddress
 
   // Auto use pending when defaulting to activate
   const initialAmount =

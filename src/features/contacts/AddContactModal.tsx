@@ -1,4 +1,3 @@
-import { utils } from 'ethers'
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
@@ -11,7 +10,7 @@ import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
 import { addContact } from 'src/features/contacts/contactsSlice'
 import { ContactMap } from 'src/features/contacts/types'
 import { Color } from 'src/styles/Color'
-import { normalizeAddress } from 'src/utils/addresses'
+import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
@@ -80,7 +79,7 @@ function validateForm(values: AddContactForm, contacts: ContactMap): ErrorState 
   if (!name) return invalidInput('name', 'Name is required')
   if (name.length > MAX_ACCOUNT_NAME_LENGTH) return invalidInput('name', 'Name is too long')
   if (!address) return invalidInput('address', 'Address is required')
-  if (!utils.isAddress(address.trim())) return invalidInput('address', 'Address is invalid')
+  if (!isValidAddress(address.trim())) return invalidInput('address', 'Address is invalid')
   if (contacts[normalizeAddress(address.trim())])
     return invalidInput('address', 'Contact already exists')
   return { isValid: true }

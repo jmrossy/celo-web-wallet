@@ -11,6 +11,7 @@ import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
+import { validateAddress } from 'src/utils/addresses'
 import { useClipboardSet } from 'src/utils/clipboard'
 import { chunk, trimToLength } from 'src/utils/string'
 
@@ -26,10 +27,7 @@ interface Props {
 
 export function Address(props: Props) {
   const { address, name, hideIdenticon, buttonType, isTransparent } = props
-
-  if (!utils.isAddress(address)) {
-    throw new Error('Invalid address')
-  }
+  validateAddress(address, 'Address component')
 
   const onSendButtonClick = useSendToAddress(address)
   const onCopyButtonClick = useClipboardSet(address)

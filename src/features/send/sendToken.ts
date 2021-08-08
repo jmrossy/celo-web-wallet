@@ -1,4 +1,4 @@
-import { BigNumber, providers, utils } from 'ethers'
+import { BigNumber, providers } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
@@ -20,6 +20,7 @@ import {
 } from 'src/features/wallet/balances/fetchBalances'
 import { Balances } from 'src/features/wallet/types'
 import { CELO, isNativeToken, Token } from 'src/tokens'
+import { isValidAddress } from 'src/utils/addresses'
 import {
   getAdjustedAmountFromBalances,
   validateAmount,
@@ -59,7 +60,7 @@ export function validate(
       ...errors,
       ...invalidInput('recipient', 'Recipient is required'),
     }
-  } else if (!utils.isAddress(recipient)) {
+  } else if (!isValidAddress(recipient)) {
     logger.error(`Invalid recipient: ${recipient}`)
     errors = {
       ...errors,

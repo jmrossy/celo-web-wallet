@@ -1,5 +1,5 @@
-import { utils } from 'ethers'
 import { loadAccount } from 'src/features/wallet/manager'
+import { isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -13,7 +13,7 @@ export interface SwitchAccountParams {
 function validate(params: SwitchAccountParams): ErrorState {
   const { toAddress } = params
   if (!toAddress) return invalidInput('address', 'Address is required')
-  if (!utils.isAddress(toAddress)) return invalidInput('address', 'Address is invalid')
+  if (!isValidAddress(toAddress)) return invalidInput('address', 'Address is invalid')
   return { isValid: true }
 }
 

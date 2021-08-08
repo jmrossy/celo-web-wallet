@@ -1,4 +1,3 @@
-import { utils } from 'ethers'
 import type { Location } from 'history'
 import { ChangeEvent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,11 +6,12 @@ import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import PasteIcon from 'src/components/icons/paste.svg'
-import { AddressInput } from 'src/components/input/AddressInput'
 import { AmountAndCurrencyInput } from 'src/components/input/AmountAndCurrencyInput'
+import { SelectInput } from 'src/components/input/SelectInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useContactsAndAccountsSelect } from 'src/features/contacts/hooks'
 import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
@@ -20,6 +20,7 @@ import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { cUSD, isNativeToken } from 'src/tokens'
+import { isValidAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -39,9 +40,11 @@ export function SendFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
+  const contactOptions = useContactsAndAccountsSelect()
 
   const onSubmit = (values: SendTokenForm) => {
     dispatch(txFlowStarted({ type: TxFlowType.Send, params: amountFieldToWei(values) }))
@@ -69,7 +72,7 @@ export function SendFormScreen() {
 
   const onPasteAddress = async () => {
     const value = await tryClipboardGet()
-    if (!value || !utils.isAddress(value)) return
+    if (!value || !isValidAddress(value)) return
     setValues({ ...values, recipient: value })
   }
 
@@ -97,23 +100,27 @@ export function SendFormScreen() {
           <h1 css={Font.h2Green}>Send Payment</h1>
 
           <Box direction="column" margin="0 0 2em 0">
-            <label css={style.inputLabel}>Recipient Address</label>
+            <label css={style.inputLabel}>Recipient</label>
             <Box direction="row" justify="start" align="end">
-              <AddressInput
-                fillWidth={true}
-                width="initial"
+              <SelectInput
                 name="recipient"
+                autoComplete={true}
+                fillWidth={true}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.recipient}
-                placeholder="0x1234..."
+                options={contactOptions}
+                maxOptions={4}
+                allowRawOption={true}
+                placeholder="0x123 or contact"
+                hideChevron={true}
                 {...errors['recipient']}
               />
               {isClipboardReadSupported() ? (
                 <Button
                   size="icon"
                   type="button"
-                  margin="0 0 0 0.5em"
+                  margin="0 0 1px 0.5em"
                   onClick={onPasteAddress}
                   title="Paste"
                 >
@@ -172,7 +179,7 @@ export function SendFormScreen() {
 
 function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null): SendTokenForm {
   const recipient = location?.state?.recipient
-  const initialRecipient = recipient && utils.isAddress(recipient) ? recipient : ''
+  const initialRecipient = recipient && isValidAddress(recipient) ? recipient : ''
   if (!tx || !tx.params || tx.type !== TxFlowType.Send) {
     return {
       ...initialValues,

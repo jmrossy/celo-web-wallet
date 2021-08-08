@@ -1,4 +1,4 @@
-import { utils } from 'ethers'
+import { validateAddress } from 'src/utils/addresses'
 
 const URL_BASE = 'celo://wallet/pay'
 
@@ -13,12 +13,8 @@ export interface CeloQrUriDataType {
 }
 
 export function encodeAddressForQr(address: string): string {
-  if (!utils.isAddress(address)) {
-    throw new Error('Invalid address')
-  }
-
+  validateAddress(address, 'QR Code')
   const data: CeloQrUriDataType = { address }
   const serialized = new URLSearchParams(data as any).toString()
-
   return `${URL_BASE}?${serialized}`
 }

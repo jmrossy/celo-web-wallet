@@ -1,10 +1,10 @@
-import { utils } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/types'
 import { CELO_DERIVATION_PATH } from 'src/consts'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
 import { addAccount, hasAccounts, loadAccount } from 'src/features/wallet/manager'
 import { hasAccount_v1, loadWallet_v1 } from 'src/features/wallet/storage_v1'
+import { isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -18,7 +18,7 @@ export interface UnlockWalletParams {
 
 export function validate(params: UnlockWalletParams): ErrorState {
   const { activeAddress, type, password } = params
-  if (activeAddress && !utils.isAddress(activeAddress))
+  if (activeAddress && !isValidAddress(activeAddress))
     return invalidInput('address', 'Address is invalid')
   if (type === SignerType.Local && !password)
     return invalidInput('password', 'Password is required')

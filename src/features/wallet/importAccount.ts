@@ -1,4 +1,3 @@
-import { utils } from 'ethers'
 import { SignerType } from 'src/blockchain/types'
 import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
@@ -8,6 +7,7 @@ import {
   isValidMnemonic,
   isValidMnemonicLocale,
 } from 'src/features/wallet/utils'
+import { isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -34,7 +34,7 @@ function validate(params: ImportAccountParams): ErrorState {
     }
   } else if (account.type === SignerType.Ledger) {
     const { address, derivationPath } = account
-    if (address && !utils.isAddress(address)) {
+    if (address && !isValidAddress(address)) {
       return invalidInput('address', 'Invalid address')
     }
     if (!isValidDerivationPath(derivationPath)) {
