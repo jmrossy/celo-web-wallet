@@ -15,9 +15,9 @@ export type SelectOptions = Array<SelectOption>
 export interface SelectInputProps {
   name: string
   autoComplete: boolean
-  width?: string | number
+  width?: string | number // mandatory unless fillWidth is set
   fillWidth?: boolean
-  height?: number // defaults to 40
+  height?: string | number // defaults to 40
   value: string | undefined
   options: SelectOptions
   maxOptions?: number // max number of suggestions to show
@@ -175,7 +175,7 @@ function getInputStyles(props: SelectInputProps, inputValue: string, styleOverri
     ...getSharedInputStyles(error),
     padding: '2px 10px',
     width: fillWidth ? '100%' : width,
-    height: height ?? fillWidth ? 46 : 40,
+    height: height ? height : fillWidth ? 46 : 40,
     boxSizing: fillWidth ? 'border-box' : undefined,
     ...styleOverrides,
   }

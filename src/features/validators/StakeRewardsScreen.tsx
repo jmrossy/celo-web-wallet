@@ -155,7 +155,7 @@ export function StakeRewardsScreen() {
               name="proposalId"
               autoComplete={false}
               width="15em"
-              height={30}
+              height={34}
               onChange={onChangeSelect}
               value={validator}
               options={selectOptions}
