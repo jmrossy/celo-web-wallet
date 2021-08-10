@@ -1,4 +1,3 @@
-import { utils } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { signTransaction } from 'src/blockchain/transaction'
@@ -6,7 +5,7 @@ import { CeloContract } from 'src/config'
 import { ACCOUNT_STATUS_STALE_TIME } from 'src/consts'
 import { FeeEstimate } from 'src/features/fees/types'
 import { setAccountStatus } from 'src/features/wallet/walletSlice'
-import { areAddressesEqual } from 'src/utils/addresses'
+import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
@@ -42,7 +41,7 @@ async function fetchVoteSignerAccount(address: string) {
     const accounts = getContract(CeloContract.Accounts)
     // Throws if address isn't registered and isn't a signer
     const mainAccount: string = await accounts.voteSignerToAccount(address)
-    if (!mainAccount || !utils.isAddress(mainAccount)) throw new Error('Invalid main account')
+    if (!mainAccount || !isValidAddress(mainAccount)) throw new Error('Invalid main account')
     if (areAddressesEqual(mainAccount, address)) return null
     else return mainAccount
   } catch (error) {

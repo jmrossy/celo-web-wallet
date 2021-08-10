@@ -22,3 +22,9 @@ export async function tryClipboardGet() {
     return null
   }
 }
+
+export function useClipboardSet(value: string) {
+  return async () => {
+    await tryClipboardSet(value)
+  }
+}

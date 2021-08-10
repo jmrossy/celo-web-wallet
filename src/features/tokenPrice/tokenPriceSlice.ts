@@ -34,13 +34,13 @@ const tokenPriceSlice = createSlice({
 export const { updatePairPrices, resetTokenPrices } = tokenPriceSlice.actions
 const tokenPriceReducer = tokenPriceSlice.reducer
 
-const tokenPricePersistConfig = {
+const persistConfig = {
   key: 'tokenPrice',
   storage: storage,
   stateReconciler: autoMergeLevel2,
   whitelist: ['prices'], //only persist these values
 }
 export const persistedTokenPriceReducer = persistReducer<ReturnType<typeof tokenPriceReducer>>(
-  tokenPricePersistConfig,
+  persistConfig,
   tokenPriceReducer
 )

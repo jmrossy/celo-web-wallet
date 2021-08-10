@@ -2,7 +2,7 @@ import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import WalletConnectClient from '@walletconnect/client'
 import { SessionTypes } from '@walletconnect/types'
 import { ERROR as WcError, Error as WcErrorType } from '@walletconnect/utils'
-import { BigNumber, BigNumberish, utils } from 'ethers'
+import { BigNumber, BigNumberish } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getSigner } from 'src/blockchain/signer'
 import { sendSignedTransaction } from 'src/blockchain/transaction'
@@ -10,6 +10,7 @@ import { config } from 'src/config'
 import { WalletConnectMethods } from 'src/features/walletConnect/types'
 import { translateTxFields } from 'src/features/walletConnect/utils'
 import { completeWcRequest, dismissWcRequest } from 'src/features/walletConnect/walletConnectSlice'
+import { isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { call, delay, put, select } from 'typed-redux-saga'
 
@@ -182,8 +183,8 @@ function isValidTx(tx: CeloTransactionRequest & { gas?: BigNumberish }) {
   try {
     if (!tx) throw new Error('Tx missing')
     if (!tx.nonce || BigNumber.from(tx.nonce).lte(0)) throw new Error('Invalid nonce')
-    if (!tx.to || !utils.isAddress(tx.to)) throw new Error('Invalid to field')
-    if (!tx.from || !utils.isAddress(tx.from)) throw new Error('Invalid from field')
+    if (!tx.to || !isValidAddress(tx.to)) throw new Error('Invalid to field')
+    if (!tx.from || !isValidAddress(tx.from)) throw new Error('Invalid from field')
     if (tx.chainId !== config.chainId) throw new Error('Invald chain id')
     if (!tx.gas && !tx.gasLimit) throw new Error('Invald gas')
     if (!tx.gasPrice) throw new Error('Invald gas price')

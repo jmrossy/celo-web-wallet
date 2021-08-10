@@ -2,21 +2,16 @@ import { useNavigate } from 'react-router-dom'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { useFundWalletModal } from 'src/components/FundWalletModal'
 import { AccountMenuItem } from 'src/components/header/AccountMenuItem'
+import AvatarPlusIcon from 'src/components/icons/avatar_plus.svg'
 import AvatarSwapIcon from 'src/components/icons/avatar_swap.svg'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import CoinSwapIcon from 'src/components/icons/coin_swap.svg'
-import HelpIcon from 'src/components/icons/help.svg'
 import IdCardIcon from 'src/components/icons/id_card.svg'
-import Discord from 'src/components/icons/logos/discord.svg'
-import Github from 'src/components/icons/logos/github.svg'
 import QrCodeIcon from 'src/components/icons/qr_code_big.svg'
 import SettingsIcon from 'src/components/icons/settings.svg'
 import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { DropdownBox, useDropdownBox } from 'src/components/modal/DropdownBox'
-import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
-import { useModal } from 'src/components/modal/useModal'
-import { config } from 'src/config'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { useChooseAccountModal } from 'src/features/wallet/accounts/ChooseAccountModal'
 import { useWalletAddress } from 'src/features/wallet/hooks'
@@ -30,8 +25,8 @@ const MenuItems = [
   { id: 'switch', label: 'Switch Account', icon: AvatarSwapIcon },
   { id: 'account', label: 'Account Details', icon: IdCardIcon },
   { id: 'qr', label: 'QR Code', icon: QrCodeIcon },
+  { id: 'contacts', label: 'Contacts', icon: AvatarPlusIcon },
   { id: 'fund', label: 'Fund Wallet', icon: CoinSwapIcon },
-  { id: 'help', label: 'Help', icon: HelpIcon },
   { id: 'settings', label: 'Settings', icon: SettingsIcon, iconWidth: '1.8em' },
 ]
 
@@ -40,8 +35,6 @@ export const AccountMenu = () => {
 
   const isMobile = useIsMobile()
   const identiconSize = isMobile ? 28 : 38
-
-  const { showModalWithContent } = useModal()
 
   const address = useWalletAddress()
   const addressStub = shortenAddress(address, false, true)
@@ -67,13 +60,8 @@ export const AccountMenu = () => {
       case 'fund':
         showFundModal(address)
         break
-      case 'help':
-        showModalWithContent({
-          head: 'Need some help?',
-          content: <HelpModal />,
-          subHead:
-            'See the Frequently Asked Questions (FAQ) on Github or join Discord to chat with the Celo community.',
-        })
+      case 'contacts':
+        navigate('/accounts')
         break
       default:
         logger.info('Unknown Menu Item Clicked: ', key)
@@ -108,24 +96,6 @@ export const AccountMenu = () => {
       )}
     </>
   )
-}
-
-function HelpModal() {
-  const links = [
-    {
-      url: 'https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md',
-      imgSrc: Github,
-      text: 'FAQ on Github',
-      altText: 'Github',
-    },
-    {
-      url: config.discordUrl,
-      imgSrc: Discord,
-      text: 'Chat on Discord',
-      altText: 'Discord',
-    },
-  ]
-  return <ModalLinkGrid links={links} />
 }
 
 const style: Stylesheet = {

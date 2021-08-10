@@ -11,7 +11,7 @@ import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Spinner } from 'src/components/Spinner'
-import { Table, TableColumn } from 'src/components/Table'
+import { Table, TableColumn } from 'src/components/table/Table'
 import { computeStakingRewards } from 'src/features/validators/computeRewards'
 import {
   fetchStakeHistoryActions,
@@ -155,7 +155,7 @@ export function StakeRewardsScreen() {
               name="proposalId"
               autoComplete={false}
               width="15em"
-              height={30}
+              height={34}
               onChange={onChangeSelect}
               value={validator}
               options={selectOptions}

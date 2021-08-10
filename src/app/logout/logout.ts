@@ -1,3 +1,4 @@
+import { resetContacts } from 'src/features/contacts/contactsSlice'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { resetFeed } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
@@ -33,6 +34,7 @@ export function* logout() {
   // Manually putting reset actions to the persisted reducers
   // Several attempts at using redux-persist's purge options
   // all led to different problems
+  yield* put(resetContacts())
   yield* put(resetSettings())
   yield* put(resetValidators())
   yield* put(resetFeed())

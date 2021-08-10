@@ -46,9 +46,9 @@ export function AddTokenModal(props: { close: () => void }) {
     <form onSubmit={handleSubmit}>
       <Box direction="column" align="center">
         <p css={style.p}>
-          Any cERC-20 compatible tokens can be added to your wallet.
+          Any cERC-20 compatible tokens can be added.
           <br />
-          Choose a known token or enter the contract address.
+          Choose a token or enter the contract address.
         </p>
         <SelectInput
           name="address"
@@ -100,6 +100,6 @@ function getSelectOptions() {
 const style: Stylesheet = {
   p: {
     ...modalStyles.p,
-    marginBottom: '1.5em',
+    margin: '0 0 1.5em 0',
   },
 }

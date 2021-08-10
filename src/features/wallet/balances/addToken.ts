@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish, utils } from 'ethers'
+import { BigNumber, BigNumberish } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getTokenContract } from 'src/blockchain/contracts'
 import { config } from 'src/config'
@@ -9,7 +9,7 @@ import { addToken as addTokenAction } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
 import { findTokenByAddress, findTokenById } from 'src/tokenList'
 import { CELO, Token } from 'src/tokens'
-import { normalizeAddress } from 'src/utils/addresses'
+import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
@@ -20,7 +20,7 @@ export function validate(params: AddTokenParams, balances: Balances): ErrorState
   if (!address) {
     return invalidInput('address', 'Token address is required')
   }
-  if (!utils.isAddress(address)) {
+  if (!isValidAddress(address)) {
     logger.error(`Invalid token address: ${address}`)
     return invalidInput('address', 'Invalid token address')
   }

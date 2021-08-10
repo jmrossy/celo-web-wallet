@@ -1,11 +1,10 @@
-import { utils } from 'ethers'
 import { clear as clearIdb, del as delIdb, get as getIdb, set as setIdb } from 'idb-keyval'
 import { SignerType } from 'src/blockchain/types'
 import { config } from 'src/config'
 import { storageProvider } from 'src/features/storage/storageProvider'
 import { TransactionMap } from 'src/features/types'
 import { isValidDerivationPath, isValidMnemonicLocale } from 'src/features/wallet/utils'
-import { areAddressesEqual } from 'src/utils/addresses'
+import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
 export interface StoredAccountData {
@@ -154,7 +153,7 @@ function validateAccount(account: StoredAccountData) {
   }
   if (!account) error('missing account')
   const { address, type, derivationPath, encryptedMnemonic, locale } = account
-  if (!address || !utils.isAddress(address)) error('invalid address')
+  if (!address || !isValidAddress(address)) error('invalid address')
   if (!type || !Object.values(SignerType).includes(type)) error('invalid signer type')
   if (!derivationPath || !isValidDerivationPath(derivationPath)) error('invalid derivation path')
   if (type === SignerType.Local && !encryptedMnemonic) error('local account is missing mnemonic')

@@ -147,14 +147,10 @@ const style: Stylesheet = {
     transformOrigin: 'right',
   },
   txFieldLabel: {
-    ...modalStyles.p,
+    ...modalStyles.pMargin0,
     ...Font.bold,
-    margin: 0,
   },
-  txFieldValue: {
-    ...modalStyles.p,
-    margin: 0,
-  },
+  txFieldValue: modalStyles.pMargin0,
   txFieldDetails: {
     fontSize: '0.85em',
     lineHeight: '1.6em',

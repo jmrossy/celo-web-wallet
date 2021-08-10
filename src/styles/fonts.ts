@@ -70,6 +70,12 @@ export const Font: Stylesheet = {
     fontWeight: 400,
     fontSize: '1.1em',
   },
+  tableHeader: {
+    fontSize: '1.2em',
+    fontWeight: 500,
+    margin: 0,
+    color: Color.primaryGreen,
+  },
   simpleLink: {
     cursor: 'pointer',
     ':hover': {

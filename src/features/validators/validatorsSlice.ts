@@ -100,13 +100,13 @@ export const {
 } = validatorsSlice.actions
 const validatorsReducer = validatorsSlice.reducer
 
-const validatorsPersistConfig = {
+const persistConfig = {
   key: 'validators',
   storage: storage,
   stateReconciler: autoMergeLevel2,
   whitelist: ['validatorGroups', 'groupVotes', 'hasActivatable'],
 }
 export const persistedValidatorsReducer = persistReducer<ReturnType<typeof validatorsReducer>>(
-  validatorsPersistConfig,
+  persistConfig,
   validatorsReducer
 )

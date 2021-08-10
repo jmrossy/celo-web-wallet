@@ -1,7 +1,8 @@
 import jazzicon from '@metamask/jazzicon'
-import { BigNumber, utils } from 'ethers'
+import { BigNumber } from 'ethers'
 import { PureComponent } from 'react'
 import { Styles } from 'src/styles/types'
+import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
 
 type Props = {
   address: string
@@ -10,7 +11,7 @@ type Props = {
 }
 
 function addressToSeed(address: string) {
-  return BigNumber.from(address.slice(0, 8)).toNumber()
+  return BigNumber.from(normalizeAddress(address).slice(0, 8)).toNumber()
 }
 
 export class Identicon extends PureComponent<Props> {
@@ -18,9 +19,7 @@ export class Identicon extends PureComponent<Props> {
     const { address, size: _size, styles } = this.props
     const size = _size ?? 34
 
-    if (!address || !utils.isAddress(address)) {
-      return null
-    }
+    if (!isValidAddress(address)) return null
 
     const jazziconResult = jazzicon(size, addressToSeed(address))
 

@@ -32,7 +32,7 @@ import {
   NativeTokens,
   Token,
 } from 'src/tokens'
-import { areAddressesEqual, normalizeAddress } from 'src/utils/addresses'
+import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
 const SENTINEL_INVITE_COMMENT = '__CELO_INVITE_TX__'
@@ -48,12 +48,12 @@ export function isValidTransaction(tx: BlockscoutTx) {
     return false
   }
 
-  if (!tx.to || !utils.isAddress(tx.to)) {
+  if (!tx.to || !isValidAddress(tx.to)) {
     logger.warn(`tx ${tx.hash} has invalid to field`)
     return false
   }
 
-  if (!tx.from || !utils.isAddress(tx.from)) {
+  if (!tx.from || !isValidAddress(tx.from)) {
     logger.warn(`tx ${tx.hash} has invalid from field`)
     return false
   }
@@ -258,7 +258,7 @@ function parseOutgoingTokenTransfer(
   comment: string | undefined
 ): StableTokenTransferTx | CeloTokenTransferTx | OtherTokenTransferTx {
   const valueBn = BigNumber.from(value)
-  if (!to || !utils.isAddress(to) || !value || valueBn.isNegative()) {
+  if (!to || !isValidAddress(to) || !value || valueBn.isNegative()) {
     throw new Error('Transfer tx has invalid properties')
   }
 
@@ -280,7 +280,7 @@ function parseTokenApproveTx(
   approvedValue: BigNumberish
 ): StableTokenApproveTx | CeloTokenApproveTx | OtherTokenApproveTx {
   const approvedValueBn = BigNumber.from(approvedValue)
-  if (!spender || !utils.isAddress(spender) || !approvedValue || approvedValueBn.isNegative()) {
+  if (!spender || !isValidAddress(spender) || !approvedValue || approvedValueBn.isNegative()) {
     throw new Error('Approve tx has invalid properties')
   }
 

@@ -1,4 +1,4 @@
-import { BigNumber, Contract, utils } from 'ethers'
+import { BigNumber, Contract } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
@@ -6,7 +6,12 @@ import { STAKE_EVENTS_STALE_TIME } from 'src/consts'
 import { StakeEvent, StakeEventType } from 'src/features/validators/types'
 import { addStakeEvents } from 'src/features/validators/validatorsSlice'
 import { selectVoterAccountAddress } from 'src/features/wallet/hooks'
-import { areAddressesEqual, ensureLeading0x, trimLeading0x } from 'src/utils/addresses'
+import {
+  areAddressesEqual,
+  ensureLeading0x,
+  isValidAddress,
+  trimLeading0x,
+} from 'src/utils/addresses'
 import {
   BlockscoutTransactionLog,
   queryBlockscout,
@@ -116,7 +121,7 @@ function parseBlockscoutStakeLogs(
       if (!areAddressesEqual(account, accountAddress)) {
         throw new Error(`Unexpected account address: ${account}`)
       }
-      if (!utils.isAddress(group)) {
+      if (!isValidAddress(group)) {
         throw new Error(`Invalid group address: ${group}`)
       }
 
