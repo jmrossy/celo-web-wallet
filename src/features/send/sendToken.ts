@@ -51,7 +51,17 @@ export function validate(
         ? MAX_SEND_TOKEN_SIZE_LEDGER
         : MAX_SEND_TOKEN_SIZE
       : undefined
-    errors = { ...errors, ...validateAmount(amountInWei, token, balances, maxAmount) }
+    errors = {
+      ...errors,
+      ...validateAmount(
+        amountInWei,
+        token,
+        balances,
+        maxAmount,
+        undefined,
+        'Exceeds max, see settings'
+      ),
+    }
   }
 
   if (!recipient) {

@@ -48,6 +48,7 @@ export function getExpiryTime(session: WalletConnectSession | null) {
   let time
   if (session?.status === SessionStatus.Pending) time = session.data.ttl
   if (session?.status === SessionStatus.Settled) time = session.data.expiry
+  // TODO divide time by seconds once using beta.18
   return time ? new Date(time).toLocaleString() : 'Unknown time'
 }
 

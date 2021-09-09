@@ -136,6 +136,7 @@ export function ExchangeFormScreen() {
                 onTokenSelect={onSelectToken(false)}
                 onTokenBlur={handleBlur}
                 amountValue={toAmount}
+                amountName="toAmount"
                 onAmountChange={handleChange}
                 onAmountBlur={handleBlur}
                 errors={errors}

@@ -14,6 +14,7 @@ interface Props {
   onTokenSelect: (event: ChangeEvent<HTMLInputElement>) => void
   onTokenBlur: (event: ChangeEvent<HTMLInputElement>) => void
   amountValue: string
+  amountName?: string
   onAmountChange: (event: ChangeEvent<HTMLInputElement>) => void
   onAmountBlur: (event: ChangeEvent<HTMLInputElement>) => void
   errors: ErrorState
@@ -28,6 +29,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
     onTokenSelect,
     onTokenBlur,
     amountValue,
+    amountName,
     onAmountChange,
     onAmountBlur,
     errors,
@@ -88,14 +90,14 @@ export const AmountAndCurrencyInput = (props: Props) => {
       <NumberInput
         step="0.01"
         fillWidth={true}
-        name="amount"
+        name={amountName ?? 'amount'}
         onChange={onAmountChange}
         onBlur={onAmountBlur}
         value={amountValue}
         placeholder="1.00"
         inputStyles={style.amount}
         disabled={inputDisabled}
-        {...errors['amount']}
+        {...errors[amountName ?? 'amount']}
       />
     </Box>
   )

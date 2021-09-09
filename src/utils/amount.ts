@@ -21,18 +21,20 @@ export function validateAmount(
   token: Token,
   balances?: Balances | null,
   max?: BigNumberish | null,
-  min?: BigNumberish | null
+  min?: BigNumberish | null,
+  maxErrorMsg?: string,
+  minErrorMsg?: string
 ): ErrorState | null {
   const amountInWei = BigNumber.from(_amountInWei)
 
   if ((min && amountInWei.lt(min)) || amountInWei.lte(0)) {
     logger.warn(`Invalid amount, too small: ${amountInWei.toString()}`)
-    return invalidInput('amount', 'Amount too small')
+    return invalidInput('amount', minErrorMsg ?? 'Amount too small')
   }
 
   if (max && amountInWei.gte(max) && !areAmountsNearlyEqual(amountInWei, max, token)) {
     logger.warn(`Invalid amount, too big: ${amountInWei.toString()}`)
-    return invalidInput('amount', 'Amount too big')
+    return invalidInput('amount', maxErrorMsg ?? 'Amount too big')
   }
 
   if (balances) {
