@@ -178,7 +178,7 @@ const style: Stylesheet = {
     height: '100%',
   },
   contentContainerNoFeed: {
-    height: '100%',
+    minHeight: '100%',
     backgroundColor: '#FAFAFA',
   },
   feedContainer: {
