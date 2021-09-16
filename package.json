@@ -26,7 +26,7 @@
     "electron:build": "./scripts/build.sh -n Mainnet -e",
     "electron:start": "electron ./dist/main.js --enable-logging",
     "electron:dev": "yarn electron:build && yarn electron:start",
-    "electron:dist": "yarn electron:build && DEBUG=electron-builder electron-builder --publish never"
+    "electron:prod": "yarn electron:build && DEBUG=electron-builder electron-builder --publish never"
   },
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "^0.0.5",
@@ -49,8 +49,8 @@
     "react-dom": "^17.0.2",
     "react-frappe-charts": "^4.0.0",
     "react-redux": "^7.2.5",
-    "react-router": "^6.0.0-beta.3",
-    "react-router-dom": "^6.0.0-beta.3",
+    "react-router": "^6.0.0-beta.4",
+    "react-router-dom": "^6.0.0-beta.4",
     "react-window": "^1.8.6",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.1.3",

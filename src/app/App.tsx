@@ -76,7 +76,7 @@ export const App = () => {
           <UpdateBanner />
           <Routes>
             <Route path="/" element={<HomeNavigator />}>
-              <Route path="/" element={<HomeScreen />} />
+              <Route index element={<HomeScreen />} />
               <Route path="tx" element={<TransactionReview />} />
               <Route path="send" element={<SendFormScreen />} />
               <Route path="send-review" element={<SendConfirmationScreen />} />
@@ -93,7 +93,7 @@ export const App = () => {
               <Route path="balances" element={<BalanceDetailsScreen />} />
               <Route path="account" element={<ViewAccountScreen />} />
               <Route path="accounts" element={<AccountsNavigator />}>
-                <Route path="/" element={<AccountsAndContactsScreen />} />
+                <Route index element={<AccountsAndContactsScreen />} />
                 <Route path="add" element={<AddAccountScreen />} />
                 <Route path="create" element={<AddCreateScreen />} />
                 <Route path="derive" element={<AddDeriveScreen />} />
@@ -105,7 +105,7 @@ export const App = () => {
             </Route>
 
             <Route path="/setup" element={<OnboardingNavigator />}>
-              <Route path="/" element={<WelcomeScreen />} />
+              <Route index element={<WelcomeScreen />} />
               <Route path="new" element={<NewAccountScreen />} />
               <Route path="existing" element={<ImportChoiceScreen />} />
               <Route path="import" element={<ImportAccountScreen />} />
