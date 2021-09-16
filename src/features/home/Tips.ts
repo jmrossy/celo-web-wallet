@@ -10,16 +10,16 @@ const Tips = [
     'The CELO currency is unstable and limited, like Bitcoin; its value will change over time.',
   ],
   [
-    'To keep your account safe, keep a copy of your Account Key in a private place.',
+    'To keep your account safe, keep a copy of your recovery (seed) phrase in a private place.',
     'For even better security, consider using a Ledger hardware wallet.',
   ],
   [
-    "Your Account Address is public; it's like your username on the Celo network. Share it with your friends!",
-    'Your Account Key is a secret; always keep it private.',
+    "Your account address is public; it's like your username on the Celo network. Share it with your friends!",
+    'Your recovery (seed) phrase is a secret; always keep it private.',
   ],
   [
     'Your accounts can be imported in many places at once.',
-    'For example, you can import your Account Key into the Valora mobile app.',
+    'For example, you can import your recovery (seed) phrase into the Valora mobile app.',
   ],
   [
     'You can lock CELO to participate in Celo network elections and governance.',
