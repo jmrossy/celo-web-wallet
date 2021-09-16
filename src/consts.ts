@@ -28,7 +28,7 @@ export const MAX_GAS_LIMIT = '10000000' // 10 million
 export const MIN_EXCHANGE_RATE = 0.01 // 1<->100 ratio
 export const MAX_EXCHANGE_RATE = 100 // 1<->100 ratio
 export const MAX_EXCHANGE_LOSS = 0.015 // 1.5%
-export const MAX_EXCHANGE_SPREAD = 0.05
+export const MAX_EXCHANGE_SPREAD = 0.1 // 10%
 
 export const MIN_LOCK_AMOUNT = '10000000000000000' // 0.01 CELO
 export const MIN_LOCKED_GOLD_TO_VOTE = '200000000000000000' // 0.2 Celo
@@ -54,3 +54,6 @@ export const HIGH_VALUE_THRESHOLD = '25000000000000000000' // 25 cusd - threshol
 export const CELO_LEDGER_APP_MIN_VERSION = '1.0.3' // Only allow this ledger app versions or newer
 
 export const DONATION_ADDRESS = '0xE3791A4a231D026c9567BEDbAb977617f2900383' // for receiving donations
+
+export const GOVERNANCE_GITHUB_BASEURL =
+  'https://api.github.com/repos/celo-org/governance/contents/CGPs/'
