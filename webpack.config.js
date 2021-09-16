@@ -128,7 +128,7 @@ const config = {
   devServer: {
     historyApiFallback: true,
     hot: true,
-    open: { target: ['/'], app: ['Google Chrome'] },
+    open: { target: '/', app: 'Google Chrome' },
   },
   // Show some extra info during build
   stats: {

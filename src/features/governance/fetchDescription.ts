@@ -1,3 +1,4 @@
+import { GOVERNANCE_GITHUB_BASEURL } from 'src/consts'
 import { logger } from 'src/utils/logger'
 
 // Putting these in a seperate file to faciliate testing for now
@@ -21,11 +22,11 @@ export async function fetchProposalDescription(url: string) {
 async function fetchProposalDescriptionFromGithub(url: URL) {
   // TODO hardcoding things here for now but may need more flexible retrieval logic eventually
   const urlPath = url.pathname
-  const pathRegex = /\/celo-org\/celo-proposals\/blob\/master\/CGPs\/(.*)/
+  const pathRegex = /CGPs\/(.*)/
   const pathMatches = urlPath.match(pathRegex)
   if (pathMatches?.length !== 2) throw new Error('Unable to extract proposal number')
 
-  const proposalRawUrl = `https://api.github.com/repos/celo-org/celo-proposals/contents/CGPs/${pathMatches[1]}`
+  const proposalRawUrl = `${GOVERNANCE_GITHUB_BASEURL}${pathMatches[1]}`
   const response = await fetch(proposalRawUrl, {
     headers: {
       Accept: 'application/vnd.github.3.raw',

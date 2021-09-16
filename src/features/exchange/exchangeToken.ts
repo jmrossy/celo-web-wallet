@@ -68,7 +68,14 @@ export function validate(
       : undefined
     errors = {
       ...errors,
-      ...validateAmount(amountInWei, fromToken, balances, maxAmount),
+      ...validateAmount(
+        amountInWei,
+        fromToken,
+        balances,
+        maxAmount,
+        undefined,
+        'Exceeds max, see settings'
+      ),
     }
   }
 

@@ -84,7 +84,7 @@ export class LedgerSigner extends Signer {
         try {
           const result = await callback(celoApp)
           return result
-        } catch (error) {
+        } catch (error: any) {
           if (error instanceof TransportError) {
             logger.error('Ledger TransportError', error.name, error.id, error.message)
             if (error.id === 'TransportLocked') {

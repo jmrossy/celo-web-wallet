@@ -94,11 +94,11 @@ describe('Computes time-weighted avgs correctly', () => {
 describe('Computes reward APYs correctly', () => {
   it('For a simple activation', () => {
     const rewards = computeStakingRewards([activate1], groupVotes(1.01), 'apy')
-    expect(rewards).toEqual({ '0x1': 0.1294 })
+    expect(rewards).toEqual({ '0x1': 12.94 })
   })
   it('For a simple activation and revoke', () => {
     const rewards = computeStakingRewards([activate1, revoke1], groupVotes(0.51), 'apy')
-    expect(rewards).toEqual({ '0x1': 0.2002 })
+    expect(rewards).toEqual({ '0x1': 20.02 })
   })
   it('For a complex activation and revoke', () => {
     const rewards = computeStakingRewards(
@@ -106,11 +106,11 @@ describe('Computes reward APYs correctly', () => {
       groupVotes(0),
       'apy'
     )
-    expect(rewards).toEqual({ '0x1': 0.9407 })
+    expect(rewards).toEqual({ '0x1': 94.07 })
   })
   it('For a multiple groups', () => {
     const votes = { ...groupVotes(0.51), ...groupVotes(1005, '0x2') }
     const rewards = computeStakingRewards([activate1, revoke1, activate3], votes, 'apy')
-    expect(rewards).toEqual({ '0x1': 0.2002, '0x2': 0.0627 })
+    expect(rewards).toEqual({ '0x1': 20.02, '0x2': 6.27 })
   })
 })

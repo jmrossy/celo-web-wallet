@@ -19,7 +19,7 @@ import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { cUSD, isNativeToken } from 'src/tokens'
+import { isNativeToken } from 'src/tokens'
 import { isValidAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
@@ -32,7 +32,7 @@ interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
 const initialValues: SendTokenForm = {
   recipient: '',
   amount: '',
-  tokenId: cUSD.id,
+  tokenId: '',
   comment: '',
 }
 
@@ -77,6 +77,7 @@ export function SendFormScreen() {
   }
 
   const onUseMax = () => {
+    if (!values.tokenId) return
     const tokenId = values.tokenId
     const token = balances.tokens[tokenId]
     const maxAmount = fromWeiRounded(token.value, token, true)
