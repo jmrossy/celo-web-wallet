@@ -43,7 +43,14 @@ const APP_METADATA = {
 }
 
 // alfajores, mainnet, baklava
-const SUPPORTED_CHAINS = ['celo:44787', 'celo:42220', 'celo:62320']
+const SUPPORTED_CHAINS = [
+  'celo:44787',
+  'celo:42220',
+  'celo:62320',
+  'eip155:44787',
+  'eip155:42220',
+  'eip155:62320',
+]
 
 const SESSION_INIT_TIMEOUT = 15000 // 15 seconds
 const SESSION_PROPOSAL_TIMEOUT = 180000 // 3 minutes
@@ -243,7 +250,7 @@ function approveClientSession(
 
   const response: ClientTypes.ResponseInput = {
     state: {
-      accounts: [`${account}@celo:${config.chainId}`],
+      accounts: [`celo:${config.chainId}:${account}`],
     },
     metadata: APP_METADATA,
   }
