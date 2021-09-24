@@ -61,7 +61,7 @@ export function SettingsScreen() {
         <Box direction="row" align="center" justify="center" wrap={true} margin="0.5em 0 0 0">
           <PageLinkBox
             header="Account Details"
-            body="See your acount information like your address and recovery phrase."
+            body="See acount information like your address and recovery phrase."
             icon={IdCardIcon}
             iconAlt="wallet details"
             onClick={onClickViewAccount}
