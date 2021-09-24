@@ -95,7 +95,7 @@ export async function fetchCurrentProposals(): Promise<Proposal[]> {
     })
   }
 
-  const descriptionsP = proposals.map((p) => fetchProposalDescription(p.url))
+  const descriptionsP = proposals.map((p) => fetchProposalDescription(p))
   const descriptions = await Promise.all(descriptionsP)
   for (let i = 0; i < numProps; i++) {
     proposals[i].description = descriptions[i]
