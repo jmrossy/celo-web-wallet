@@ -3,7 +3,7 @@ import { EventChannel, eventChannel } from '@redux-saga/core'
 import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
-import { SessionTypes } from '@walletconnect/types'
+import { ClientTypes, SessionTypes } from '@walletconnect/types'
 import { ERROR as WcError } from '@walletconnect/utils'
 import type { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
@@ -241,7 +241,7 @@ function approveClientSession(
 
   if (!account) throw new Error('Cannot approve WC session before creating account')
 
-  const response: SessionTypes.Response = {
+  const response: ClientTypes.ResponseInput = {
     state: {
       accounts: [`${account}@celo:${config.chainId}`],
     },
