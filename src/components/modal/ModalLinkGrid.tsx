@@ -3,8 +3,16 @@ import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
+interface GridLink {
+  url: string
+  imgSrc: string
+  text: string
+  subText?: string
+  altText?: string
+}
+
 interface ModalLinkGridProps {
-  links: Array<{ url: string; imgSrc: string; text: string; altText?: string }>
+  links: Array<GridLink>
 }
 
 export function ModalLinkGrid({ links }: ModalLinkGridProps) {
@@ -18,15 +26,34 @@ export function ModalLinkGrid({ links }: ModalLinkGridProps) {
       wrap
     >
       {links.map((link, index) => (
-        <Box key={`ModalLinkGrid-link-${index}`} align="center" justify="center">
-          <a css={style.link} href={link.url} target="_blank" rel="noopener noreferrer">
-            <Box direction="column" align="center" justify="center" styles={style.linkContent}>
-              <img src={link.imgSrc} css={style.icon} alt={link.altText || link.text} />
-              <div>{link.text}</div>
-            </Box>
-          </a>
-        </Box>
+        <BigGridLink link={link} key={`ModalLinkGrid-link-${index}`} />
       ))}
+    </Box>
+  )
+}
+
+function BigGridLink({ link }: { link: GridLink }) {
+  return (
+    <Box align="center" justify="center">
+      <a css={style.link} href={link.url} target="_blank" rel="noopener noreferrer">
+        <Box direction="column" align="center" justify="center" styles={style.linkContent}>
+          <img src={link.imgSrc} css={style.icon} alt={link.altText || link.text} />
+          <div>{link.text}</div>
+          {link.subText && <div css={style.subText}>{link.subText}</div>}
+        </Box>
+      </a>
+    </Box>
+  )
+}
+
+export function SmallGridLink({ link }: { link: GridLink }) {
+  return (
+    <Box align="center" justify="center">
+      <a css={style.link} href={link.url} target="_blank" rel="noopener noreferrer">
+        <Box direction="column" align="center" justify="center" styles={styleSm.linkContent}>
+          <img src={link.imgSrc} css={styleSm.icon} alt={link.altText || link.text} />
+        </Box>
+      </a>
     </Box>
   )
 }
@@ -66,6 +93,36 @@ const style: Stylesheet = {
     marginBottom: '1em',
     [mq[768]]: {
       width: '3em',
+    },
+  },
+  subText: {
+    fontSize: '0.8em',
+    color: Color.primaryGreen,
+    marginTop: '0.3em',
+  },
+}
+
+const styleSm: Stylesheet = {
+  linkContent: {
+    ...style.linkContent,
+    width: '2.8em',
+    height: '2.8em',
+    margin: '0 0.4em',
+    [mq[480]]: {
+      width: '2.9em',
+      height: '2.9em',
+      margin: '0 0.5em',
+    },
+    [mq[768]]: {
+      width: '3em',
+      height: '3em',
+      margin: '0 0.7em',
+    },
+  },
+  icon: {
+    width: '1.8em',
+    [mq[768]]: {
+      width: '2em',
     },
   },
 }

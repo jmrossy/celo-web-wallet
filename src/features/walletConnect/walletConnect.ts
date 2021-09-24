@@ -3,7 +3,7 @@ import { EventChannel, eventChannel } from '@redux-saga/core'
 import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
-import { SessionTypes } from '@walletconnect/types'
+import { ClientTypes, SessionTypes } from '@walletconnect/types'
 import { ERROR as WcError } from '@walletconnect/utils'
 import type { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
@@ -43,7 +43,14 @@ const APP_METADATA = {
 }
 
 // alfajores, mainnet, baklava
-const SUPPORTED_CHAINS = ['celo:44787', 'celo:42220', 'celo:62320']
+const SUPPORTED_CHAINS = [
+  'celo:44787',
+  'celo:42220',
+  'celo:62320',
+  'eip155:44787',
+  'eip155:42220',
+  'eip155:62320',
+]
 
 const SESSION_INIT_TIMEOUT = 15000 // 15 seconds
 const SESSION_PROPOSAL_TIMEOUT = 180000 // 3 minutes
@@ -241,9 +248,9 @@ function approveClientSession(
 
   if (!account) throw new Error('Cannot approve WC session before creating account')
 
-  const response: SessionTypes.Response = {
+  const response: ClientTypes.ResponseInput = {
     state: {
-      accounts: [`${account}@celo:${config.chainId}`],
+      accounts: [`celo:${config.chainId}:${account}`],
     },
     metadata: APP_METADATA,
   }

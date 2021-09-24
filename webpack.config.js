@@ -26,6 +26,7 @@ const config = {
   },
   externals: {
     'node-hid': 'commonjs node-hid',
+    ws: 'ws', // Exclude WS to work around walletconnect client bundling issue
   },
   // https://github.com/webpack/webpack-dev-server/issues/2758
   // TODO remove when fixed, should be in v4 upgrade

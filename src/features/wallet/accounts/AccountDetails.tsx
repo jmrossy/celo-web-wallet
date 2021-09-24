@@ -47,7 +47,7 @@ export function AccountDetails({ address, mnemonic, type }: Props) {
         <HrDivider />
       </div>
       <div css={style.itemContainer}>
-        <h3 css={style.h3}>Account Key</h3>
+        <h3 css={style.h3}>Recovery Phrase</h3>
         <div css={style.description}>
           <strong>Keep this phrase secret and safe.</strong>
           <br />

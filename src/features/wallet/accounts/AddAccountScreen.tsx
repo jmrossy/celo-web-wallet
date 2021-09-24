@@ -60,7 +60,7 @@ export function AddAccountScreen() {
         value: NewAccountAction.Create,
         label: (
           <RadioBoxOption
-            title="Create New Account Key"
+            title="Create New Recovery Phrase"
             subtitle="A completely new account with a different key"
             icon={<PlusIcon color={Color.primaryBlack} styles={style.optionIcon} />}
           />
@@ -80,7 +80,7 @@ export function AddAccountScreen() {
         value: NewAccountAction.Import,
         label: (
           <RadioBoxOption
-            title="Import New Account Key"
+            title="Import New Recovery Phrase"
             subtitle="Import a separate account with a different key"
             icon={<KeyIcon color={Color.primaryBlack} styles={style.optionIcon} />}
           />

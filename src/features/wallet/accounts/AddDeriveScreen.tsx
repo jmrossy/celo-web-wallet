@@ -91,7 +91,7 @@ export function AddDeriveScreen() {
     <>
       <h2 css={Font.h2Center}>Derive Another Account</h2>
       <h4 css={Font.h4Center}>Set a derivation path to import another account.</h4>
-      <h4 css={Font.h4Center}>This will use your existing account key.</h4>
+      <h4 css={Font.h4Center}>This will use your existing recovery phrase.</h4>
       <form onSubmit={handleSubmit}>
         <Box direction="column" align="center">
           <div css={{ margin: '0.5em 0 2em 0' }}>

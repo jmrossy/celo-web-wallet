@@ -74,7 +74,7 @@ export function LoginScreen() {
     const answer = await showModalAsync({
       head: 'Having Trouble Unlocking?',
       body: isLocalAcc
-        ? "Local accounts can only be unlocked with your password. If you've lost your password, those accounts can unfortunately never be unlocked. But if you have your Account Keys, you can logout to re-import them."
+        ? "Local accounts can only be unlocked with your password. If you've lost your password, those accounts can unfortunately never be unlocked. But if you have your recovery phrase, you can logout to re-import them."
         : 'Ledger accounts do not need a password to be unlocked. First open the Celo app on your device, and then click the Unlock button.',
       actions: [
         { key: 'back', label: 'Back', color: Color.primaryWhite },

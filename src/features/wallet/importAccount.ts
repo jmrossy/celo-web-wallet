@@ -24,7 +24,7 @@ function validate(params: ImportAccountParams): ErrorState {
   if (account.type === SignerType.Local) {
     const { mnemonic, derivationPath, locale } = account
     if (!isValidMnemonic(mnemonic)) {
-      return invalidInput('mnemonic', 'Invalid account key')
+      return invalidInput('mnemonic', 'Invalid seed phrase')
     }
     if (!isValidDerivationPath(derivationPath)) {
       return invalidInput('derivationPath', 'Invalid derivation path')
