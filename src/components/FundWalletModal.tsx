@@ -3,9 +3,13 @@ import Bittrex from 'src/components/icons/logos/bittrex.svg'
 import Coinbase from 'src/components/icons/logos/coinbase.svg'
 import Coinlist from 'src/components/icons/logos/coinlist.svg'
 import Okcoin from 'src/components/icons/logos/okcoin.svg'
+import Okex from 'src/components/icons/logos/okex.svg'
+import Ramp from 'src/components/icons/logos/ramp.svg'
 import Simplex from 'src/components/icons/logos/simplex.svg'
-import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
+import { Box } from 'src/components/layout/Box'
+import { ModalLinkGrid, SmallGridLink } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
+import { RAMP_PROJECT_ID } from 'src/consts'
 
 export function useFundWalletModal() {
   const { showModalWithContent } = useModal()
@@ -19,12 +23,25 @@ export function useFundWalletModal() {
 }
 
 export function FundWalletModal({ address }: { address: string }) {
-  const links = [
+  const bigLinks = [
+    {
+      url: `https://buy.ramp.network/?hostAppName=CeloWallet&hostLogoUrl=https%3A%2F%2Fcelowallet.app%2Fstatic%2Ficon.png&defaultAsset=CELO&userAddress=${address}&hostApiKey=${RAMP_PROJECT_ID}`,
+      imgSrc: Ramp,
+      text: 'Ramp',
+      subText: 'No Fees!',
+    },
     {
       url: 'https://www.coinbase.com/earn/celo',
       imgSrc: Coinbase,
       text: 'Coinbase',
     },
+    {
+      url: `https://valoraapp.com/simplex?address=${address}`,
+      imgSrc: Simplex,
+      text: 'Simplex',
+    },
+  ]
+  const smallLinks = [
     {
       url: 'https://global.bittrex.com/Market/Index?MarketName=USD-CELO',
       imgSrc: Bittrex,
@@ -41,9 +58,9 @@ export function FundWalletModal({ address }: { address: string }) {
       text: 'Binance',
     },
     {
-      url: `https://valoraapp.com/simplex?address=${address}`,
-      imgSrc: Simplex,
-      text: 'Simplex',
+      url: 'https://www.okex.com/markets/spot-info/celo-usdt',
+      imgSrc: Okex,
+      text: 'Okex',
     },
     {
       url: 'https://coinlist.co/asset/celo',
@@ -51,5 +68,14 @@ export function FundWalletModal({ address }: { address: string }) {
       text: 'Coinlist',
     },
   ]
-  return <ModalLinkGrid links={links} />
+  return (
+    <div>
+      <ModalLinkGrid links={bigLinks} />
+      <Box align="center" justify="center" wrap margin="1em 0 1em 0">
+        {smallLinks.map((link, index) => (
+          <SmallGridLink link={link} key={`ModalLinkGridSm-link-${index}`} />
+        ))}
+      </Box>
+    </div>
+  )
 }

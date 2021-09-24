@@ -57,3 +57,5 @@ export const DONATION_ADDRESS = '0xE3791A4a231D026c9567BEDbAb977617f2900383' // 
 
 export const GOVERNANCE_GITHUB_BASEURL =
   'https://api.github.com/repos/celo-org/governance/contents/CGPs/'
+
+export const RAMP_PROJECT_ID = 'jg2gy6y7o35np2w7npw9jnszaz962z3dxhpso4hq'
