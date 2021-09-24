@@ -17,7 +17,7 @@ export async function showLogoutModal(
   const answer = await showModalAsync({
     head: 'WALLET RESET WARNING',
     subHead: 'Are you sure you want to logout?',
-    body: 'All keys and information for ALL OF YOUR ACCOUNTS will be completely removed from this device. If you have local accounts, back up their Account Keys first.',
+    body: 'All keys and information for ALL OF YOUR ACCOUNTS will be completely removed from this device. If you have local accounts, back up their recovery (seed) phrase first.',
     actions: [
       { key: 'cancel', label: 'Cancel', color: Color.primaryWhite },
       { key: 'logout', label: 'Log me out', color: Color.primaryRed },

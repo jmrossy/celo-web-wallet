@@ -20,9 +20,9 @@ export function hasAccount_v1() {
 export async function loadWallet_v1(password: string) {
   try {
     const encryptedMnemonic = storageProvider.getItem(getWalletPath())
-    if (!encryptedMnemonic) throw new Error('No account key in storage')
+    if (!encryptedMnemonic) throw new Error('No seed phrase in storage')
     const mnemonic = await decryptMnemonic(encryptedMnemonic, password)
-    if (!isValidMnemonic(mnemonic)) throw new Error('Decrypted account key is invalid')
+    if (!isValidMnemonic(mnemonic)) throw new Error('Decrypted seed phrase is invalid')
     return mnemonic
   } catch (error) {
     logger.error('Failed to load wallet from storage', error)

@@ -71,8 +71,9 @@ function AccountKeyReminder() {
   const navigate = useNavigate()
   return (
     <div>
-      Reminder: Copy your <TextButton onClick={() => navigate('/wallet')}>Account Key</TextButton>{' '}
-      (seed phrase) to a safe place. Your key is the only way to recover your account.
+      Reminder: Copy your{' '}
+      <TextButton onClick={() => navigate('/wallet')}>Recovery Phrase</TextButton> (seed phrase) to
+      a safe place. Your key is the only way to recover your account.
     </div>
   )
 }

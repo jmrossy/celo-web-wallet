@@ -61,7 +61,7 @@ export function SettingsScreen() {
         <Box direction="row" align="center" justify="center" wrap={true} margin="0.5em 0 0 0">
           <PageLinkBox
             header="Account Details"
-            body="See your acount information like your address and Account Key."
+            body="See your acount information like your address and recovery phrase."
             icon={IdCardIcon}
             iconAlt="wallet details"
             onClick={onClickViewAccount}
@@ -84,7 +84,7 @@ export function SettingsScreen() {
           />
           <PageLinkBox
             header="Logout"
-            body="Remove account keys and information from this device."
+            body="Remove keys and information from this device."
             icon={SignPostIcon}
             iconAlt="logout"
             onClick={onClickLogout}

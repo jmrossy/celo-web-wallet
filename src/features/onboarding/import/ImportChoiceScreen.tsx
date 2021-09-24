@@ -27,7 +27,7 @@ export function ImportChoiceScreen() {
       <h1 css={Font.h1Green}>Import Your Celo Account</h1>
       <Box direction="row" align="center" justify="center" margin="0 0 0 2em">
         <p css={style.description}>
-          To import your account, use your Account Key (seed phrase) or a Ledger hardware wallet.{' '}
+          To import your account, use your recovery (seed) phrase or a Ledger hardware wallet.{' '}
         </p>
         <HelpIcon
           width="1.5em"
@@ -37,7 +37,7 @@ export function ImportChoiceScreen() {
       </Box>
       <div css={style.buttonContainer}>
         <Button onClick={onClickAccountKey} size="l" margin="1em 1.5em" icon={<KeyIcon />}>
-          Use Account Key
+          Use Phrase
         </Button>
         <Button onClick={onClickLedger} size="l" margin="1em 1.5em" icon={<LedgerIcon />}>
           Use Ledger
@@ -51,8 +51,8 @@ function HelpModal() {
   return (
     <BasicHelpIconModal>
       <p>
-        If you already have a Celo account, you can use the Account Key to load it here. Account
-        Keys are 24 random words (<q>dog chair hello</q>). They are secret so handle them carefully.
+        If you already have a Celo account, you can use the recovery phrase to load it here. Phrases
+        are 12-24 random words (<q>dog chair hello</q>). They are secret so handle them carefully.
       </p>
       <p>
         If you have a Ledger hardware wallet{' '}

@@ -111,7 +111,7 @@ export function ImportAccountForm(props: Props) {
       {!props.hideDescription && (
         <>
           <p css={{ ...style.description, marginTop: '1.3em' }}>
-            Enter your account key (seed phrase).
+            Enter your recovery (seed) phrase.
           </p>
           <p css={style.description}>Only import on devices you trust.</p>
         </>
@@ -154,7 +154,7 @@ export function ImportAccountForm(props: Props) {
 
 function validateForm(values: ImportFormValues): ErrorState {
   if (!isValidMnemonic(values.mnemonic)) {
-    return invalidInput('mnemonic', 'Invalid account key')
+    return invalidInput('mnemonic', 'Invalid recovery phrase')
   }
 
   const derivationPath = toDerivationPath(values)
