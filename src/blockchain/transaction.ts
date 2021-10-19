@@ -1,5 +1,5 @@
 /**
- * Utilities to faciliate sending transactions with
+ * Utilities to facilitate sending transactions with
  * different gas currencies. Prefer these to
  * sending with Ethers directly.
  */

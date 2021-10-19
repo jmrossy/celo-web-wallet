@@ -19,7 +19,7 @@ const config = {
   },
   optimization: {
     splitChunks: {
-      minChunks: 3, // Prevents the ledger dyanmic bundle from getting split up into separate vendors + local
+      minChunks: 3, // Prevents the ledger dynamic bundle from getting split up into separate vendors + local
       minSize: 90000, // Prevent a fourth bundle with walletconnect + ledger common libs
       enforceSizeThreshold: 100000,
     },
