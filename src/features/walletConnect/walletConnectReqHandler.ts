@@ -25,7 +25,7 @@ export async function validateRequestEvent(
     return false
   }
 
-  if (event.chainId !== `celo:${config.chainId}`) {
+  if (event.chainId !== `celo:${config.chainId}` && event.chainId !== `eip155:${config.chainId}`) {
     await denyRequest(event, client, WcError.UNSUPPORTED_CHAINS)
     return false
   }

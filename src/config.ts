@@ -60,7 +60,7 @@ const configMainnet: Config = {
   jsonRpcUrlSecondary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
-  walletConnectRelay: 'wss://walletconnect.celo.org',
+  walletConnectRelay: 'wss://relay.walletconnect.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
   desktopUrls,
   chainId: 42220,
