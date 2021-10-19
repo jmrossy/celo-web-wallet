@@ -1,5 +1,4 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
-import ReactFrappeChart from 'react-frappe-charts'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
@@ -10,6 +9,7 @@ import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { ReactFrappeChart } from 'src/components/ReactFrappeChart'
 import { Spinner } from 'src/components/Spinner'
 import { Table, TableColumn } from 'src/components/table/Table'
 import { computeStakingRewards } from 'src/features/validators/computeRewards'
@@ -122,7 +122,9 @@ export function StakeRewardsScreen() {
                     type="bar"
                     height={CHART_HEIGHT}
                     colors={chartConfig.colors}
+                    // @ts-ignore
                     axisOptions={chartConfig.axis}
+                    // @ts-ignore
                     barOptions={chartConfig.barOptions}
                     tooltipOptions={chartConfig.tooltipOptionsY}
                     data={chartData}
@@ -176,9 +178,9 @@ export function StakeRewardsScreen() {
 
 const chartConfig = {
   colors: [Color.primaryGold],
-  axis: { xAxisMode: 'tick', xIsSeries: true },
+  axis: { xAxisMode: 'tick', xIsSeries: 1 },
   barOptions: {
-    stacked: false,
+    stacked: 0,
     spaceRatio: 0.5,
   },
   tooltipOptionsY: { formatTooltipY: (d: number | null) => `${d?.toFixed(3)}` },
