@@ -113,7 +113,7 @@ export function validateExchangeRate(exchangeRate?: SimpleExchangeRate): ErrorSt
     return { isValid: false, fee: { error: true, helpText: 'Exchange rate seems too high' } }
   }
 
-  if (isStale(lastUpdated, EXCHANGE_RATE_STALE_TIME * 2)) {
+  if (isStale(lastUpdated, EXCHANGE_RATE_STALE_TIME * 3)) {
     logger.error(`Exchange rate too stale: ${lastUpdated}`)
     return { isValid: false, fee: { error: true, helpText: 'Exchange rate too stale' } }
   }
