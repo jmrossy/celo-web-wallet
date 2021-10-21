@@ -90,7 +90,7 @@ const configAlfajores: Config = {
   version,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
-  walletConnectRelay: 'wss://walletconnect.celo-networks-dev.org',
+  walletConnectRelay: 'wss://relay.walletconnect.org',
   discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
   desktopUrls,
   chainId: 44787,
