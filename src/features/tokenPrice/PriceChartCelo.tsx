@@ -1,9 +1,9 @@
 import { css } from '@emotion/react'
 import { useEffect } from 'react'
-import ReactFrappeChart from 'react-frappe-charts'
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { Box } from 'src/components/layout/Box'
+import { ReactFrappeChart } from 'src/components/ReactFrappeChart'
 import { WEI_PER_UNIT } from 'src/consts'
 import { calcSimpleExchangeRate } from 'src/features/exchange/utils'
 import { fetchTokenPriceActions } from 'src/features/tokenPrice/fetchPrices'
@@ -17,7 +17,7 @@ interface PriceChartProps {
   stableTokenId: NativeTokenId
   showHeaderPrice: boolean
   containerCss?: Styles
-  height?: number | string
+  height?: number
 }
 
 export function PriceChartCelo(props: PriceChartProps) {

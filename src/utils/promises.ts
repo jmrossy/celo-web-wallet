@@ -3,14 +3,13 @@ export function sleep(milliseconds: number) {
 }
 
 export async function promiseTimeout<T extends any>(promise: Promise<T>, milliseconds: number) {
-  // Create a promise that rejects in <ms> milliseconds
+  // Create a promise that resolves null in <ms> milliseconds
   const timeout = new Promise<null>((resolve) => {
     const id = setTimeout(() => {
       clearTimeout(id)
       resolve(null)
     }, milliseconds)
   })
-  // Awaits the race, which will throw on timeout
   const result = await Promise.race([promise, timeout])
   return result
 }

@@ -250,7 +250,7 @@ function approveClientSession(
 
   const response: ClientTypes.ResponseInput = {
     state: {
-      accounts: [`celo:${config.chainId}:${account}`],
+      accounts: [`eip155:${config.chainId}:${account}`],
     },
     metadata: APP_METADATA,
   }
