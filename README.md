@@ -14,9 +14,9 @@ See the [FAQ](FAQ.md) for more details about common questions.
 
 This wallet uses [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity). Current bundle hashes:
 
-* Main bundle: `bundle.js -> sha256-6a4+cKUiz9HvclmH9zjYSMj7Sfqq3nTuGUtN8BarIls=`
+* Main bundle: `bundle.js -> sha256-x9oGHUxFMH+grTV/yqpWYsWnVdmD00PPolTahdB4sUE=`
 * Optional Ledger bundle: `bundle-ledger.js -> sha256-ahGOG1h2KTAtylviHC6GYqCX9Pa2NUleoytU5knhB6E=`
-* Optional WalletConnect bundle: `bundle-walletconnect.js -> sha256-1ntMRtxOWeJxIl9x7FKOehPZtfGZcDnm1z4UC5U6nd8=`
+* Optional WalletConnect bundle: `bundle-walletconnect.js -> sha256-eGLzdWvYcl/9NmhqTvc7j8/jhWAwauOnaGL4wNMs44w=`
 
 Advanced users can verify the source integrity by comparing the hashes in their page source to these values.
 

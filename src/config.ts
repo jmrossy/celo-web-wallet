@@ -45,10 +45,10 @@ interface Config {
 
 const desktopUrls = {
   windows:
-    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.3.6/Celo-Wallet-1.3.6-win-x64.exe',
-  mac: 'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.3.6/Celo-Wallet-1.3.6-mac.dmg',
+    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.3.7/Celo-Wallet-1.3.7-win-x64.exe',
+  mac: 'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.3.7/Celo-Wallet-1.3.7-mac.dmg',
   linux:
-    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.3.6/Celo-Wallet-1.3.6-linux-x86_64.AppImage',
+    'https://github.com/celo-tools/celo-web-wallet/releases/download/v1.3.7/Celo-Wallet-1.3.7-linux-x86_64.AppImage',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
