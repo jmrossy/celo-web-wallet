@@ -1,4 +1,4 @@
-import { TextInput, TextInputProps } from 'src/components/input/TextInput'
+import { TextInput, TextInputProps } from './TextInput'
 
 export function AddressInput(props: React.PropsWithChildren<TextInputProps>) {
   // TODO only allow hex chars here

@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Styles } from 'src/styles/types'
+import { Styles } from '../../styles/types'
 
 interface Props {
   width?: string | number

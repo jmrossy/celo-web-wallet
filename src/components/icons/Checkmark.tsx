@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import Celo_Elipse from 'src/components/icons/celo_elipse.svg'
+import Celo_Elipse from './celo_elipse.svg'
 
 function _CheckmarkIcon({ fill }: { fill: string }) {
   return (

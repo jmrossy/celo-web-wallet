@@ -1,7 +1,7 @@
 import { ChangeEvent, PropsWithChildren } from 'react'
-import { sharedInputStyles } from 'src/components/input/styles'
-import { Color } from 'src/styles/Color'
-import { Styles } from 'src/styles/types'
+import { sharedInputStyles } from './styles'
+import { Color } from '../../styles/Color'
+import { Styles } from '../../styles/types'
 
 export interface RadioBoxInputProps {
   name: string

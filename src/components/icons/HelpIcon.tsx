@@ -1,12 +1,12 @@
 import { PropsWithChildren, ReactElement } from 'react'
-import { transparentButtonStyles } from 'src/components/buttons/Button'
-import QuestionIcon from 'src/components/icons/question_mark.svg'
-import { Box } from 'src/components/layout/Box'
-import { ModalOkAction } from 'src/components/modal/modal'
-import { modalStyles } from 'src/components/modal/modalStyles'
-import { useModal } from 'src/components/modal/useModal'
-import { Tooltip, TooltipProps } from 'src/components/Tooltip'
-import { Stylesheet } from 'src/styles/types'
+import { transparentButtonStyles } from '../buttons/Button'
+import QuestionIcon from './icons/question_mark.svg'
+import { Box } from '../layout/Box'
+import { ModalOkAction } from '../modal/modal'
+import { modalStyles } from '../modal/modalStyles'
+import { useModal } from '../modal/useModal'
+import { Tooltip, TooltipProps } from '../Tooltip'
+import { Stylesheet } from '../../styles/types'
 
 interface IconProps {
   width?: string | number

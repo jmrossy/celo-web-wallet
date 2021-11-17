@@ -1,13 +1,13 @@
 import { ChangeEvent, useMemo } from 'react'
-import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
-import { NumberInput } from 'src/components/input/NumberInput'
-import { SelectInput, SelectOption } from 'src/components/input/SelectInput'
-import { Box } from 'src/components/layout/Box'
-import { useTokens } from 'src/features/wallet/hooks'
-import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
-import { isNativeToken } from 'src/tokens'
-import { ErrorState } from 'src/utils/validation'
+import { TokenIcon } from '../icons/tokens/TokenIcon'
+import { NumberInput } from './NumberInput'
+import { SelectInput, SelectOption } from './SelectInput'
+import { Box } from '../layout/Box'
+import { useTokens } from '../../features/wallet/hooks'
+import { Font } from '../../styles/fonts'
+import { Stylesheet } from '../../styles/types'
+import { isNativeToken } from '../../tokens'
+import { ErrorState } from '../../utils/validation'
 
 interface Props {
   tokenValue: string

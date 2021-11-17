@@ -1,5 +1,5 @@
-import { Color } from 'src/styles/Color'
-import { Styles } from 'src/styles/types'
+import { Color } from '../../styles/Color'
+import { Styles } from '../../styles/types'
 
 export const sharedInputStyles: Styles = {
   borderRadius: 4,

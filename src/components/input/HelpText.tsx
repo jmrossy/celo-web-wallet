@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { Color } from 'src/styles/Color'
+import { Color } from '../../styles/Color'
 
 interface HelpTextProps {
   color?: Color

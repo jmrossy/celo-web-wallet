@@ -1,10 +1,10 @@
 import { ChangeEvent, PropsWithChildren, ReactElement, useEffect, useState } from 'react'
-import { ChevronIcon } from 'src/components/icons/Chevron'
-import { HelpText } from 'src/components/input/HelpText'
-import { getSharedInputStyles } from 'src/components/input/styles'
-import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { ChevronIcon } from '../icons/Chevron'
+import { HelpText } from './HelpText'
+import { getSharedInputStyles } from './styles'
+import { Box } from '../layout/Box'
+import { Color } from '../../styles/Color'
+import { Styles, Stylesheet } from '../../styles/types'
 
 export interface SelectOption {
   display: string

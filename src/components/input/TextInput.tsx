@@ -1,8 +1,8 @@
 import { PropsWithChildren } from 'react'
-import { HelpText } from 'src/components/input/HelpText'
-import { getSharedInputStyles } from 'src/components/input/styles'
-import { Box } from 'src/components/layout/Box'
-import { Styles } from 'src/styles/types'
+import { HelpText } from './HelpText'
+import { getSharedInputStyles } from './styles'
+import { Box } from '../layout/Box'
+import { Styles } from '../../styles/types'
 
 export interface TextInputProps {
   name: string

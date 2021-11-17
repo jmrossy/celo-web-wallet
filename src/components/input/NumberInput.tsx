@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { TextInput, TextInputProps } from 'src/components/input/TextInput'
+import { TextInput, TextInputProps } from './TextInput'
 
 interface Props extends TextInputProps {
   step?: string

@@ -1,8 +1,8 @@
 import { memo } from 'react'
-import SwapIcon from 'src/components/icons/swap.svg'
-import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
-import { CELO, Token } from 'src/tokens'
+import SwapIcon from './swap.svg'
+import { Box } from '../layout/Box'
+import { Color } from '../../styles/Color'
+import { CELO, Token } from '../../tokens'
 
 function _ExchangeIcon({ toToken }: { toToken: Token }) {
   const backgroundColor = toToken.id === CELO.id ? Color.primaryGold : Color.primaryGreen
