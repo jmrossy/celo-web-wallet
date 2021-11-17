@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import { DONATION_ADDRESS } from 'src/consts'
-import { Contact, ContactMap } from 'src/features/contacts/types'
-import { logger } from 'src/utils/logger'
+import { DONATION_ADDRESS } from '../../consts'
+import { Contact, ContactMap } from './types'
+import { logger } from '../../utils/logger'
 
 interface Contacts {
   contacts: ContactMap

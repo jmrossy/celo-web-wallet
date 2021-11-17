@@ -1,5 +1,5 @@
-import { FeeEstimate } from 'src/features/fees/types'
-import { NativeTokenId } from 'src/tokens'
+import { FeeEstimate } from '../fees/types'
+import { NativeTokenId } from '../../tokens'
 
 export type ToCeloRates = Record<string, ExchangeRate> // token id to token<->CELO rate
 

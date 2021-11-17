@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
-import { useAccountList } from 'src/features/wallet/hooks'
-import { normalizeAddress, shortenAddress } from 'src/utils/addresses'
-import { trimToLength } from 'src/utils/string'
+import type { RootState } from '../../app/rootReducer'
+import { useAccountList } from '../wallet/hooks'
+import { normalizeAddress, shortenAddress } from '../../utils/addresses'
+import { trimToLength } from '../../utils/string'
 
 export function useContactsAndAccountsSelect() {
   const contactMap = useSelector((s: RootState) => s.contacts.contacts)

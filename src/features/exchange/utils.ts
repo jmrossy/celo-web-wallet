@@ -1,11 +1,11 @@
 import { BigNumber, BigNumberish, FixedNumber } from 'ethers'
-import { WEI_PER_UNIT } from 'src/consts'
-import { ToCeloRates } from 'src/features/exchange/types'
-import { TokenExchangeTx } from 'src/features/types'
-import { Balances } from 'src/features/wallet/types'
-import { CELO, cUSD, Token } from 'src/tokens'
-import { fromWei, toWei } from 'src/utils/amount'
-import { logger } from 'src/utils/logger'
+import { WEI_PER_UNIT } from '../../consts'
+import { ToCeloRates } from './types'
+import { TokenExchangeTx } from '../types'
+import { Balances } from '../wallet/types'
+import { CELO, cUSD, Token } from '../../tokens'
+import { fromWei, toWei } from '../../utils/amount'
+import { logger } from '../../utils/logger'
 
 export function useExchangeValues(
   fromAmount: number | string | null | undefined,

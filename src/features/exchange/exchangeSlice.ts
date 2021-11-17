@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ToCeloRates } from 'src/features/exchange/types'
+import { ToCeloRates } from './types'
 
 export interface ExchangeState {
   toCeloRates: ToCeloRates

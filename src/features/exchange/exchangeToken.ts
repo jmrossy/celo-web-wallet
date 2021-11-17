@@ -1,8 +1,12 @@
 import { BigNumber, Contract, providers } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
-import { getContractByAddress } from 'src/blockchain/contracts'
-import { isSignerLedger } from 'src/blockchain/signer'
-import { getCurrentNonce, sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
+import type { RootState } from '../../app/rootReducer'
+import { getContractByAddress } from '../../blockchain/contracts'
+import { isSignerLedger } from '../../blockchain/signer'
+import {
+  getCurrentNonce,
+  sendSignedTransaction,
+  signTransaction,
+} from '../../blockchain/transaction'
 import {
   EXCHANGE_RATE_STALE_TIME,
   MAX_EXCHANGE_LOSS,
@@ -11,30 +15,27 @@ import {
   MAX_EXCHANGE_TOKEN_SIZE_LEDGER,
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
-import { ExchangeTokenParams, SimpleExchangeRate } from 'src/features/exchange/types'
-import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
-import { createPlaceholderForTx } from 'src/features/feed/placeholder'
-import { FeeEstimate } from 'src/features/fees/types'
-import { validateFeeEstimates } from 'src/features/fees/utils'
-import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
-import { TokenExchangeTx, TransactionType } from 'src/features/types'
-import {
-  fetchBalancesActions,
-  fetchBalancesIfStale,
-} from 'src/features/wallet/balances/fetchBalances'
-import { Balances } from 'src/features/wallet/types'
-import { CELO, NativeTokenId, NativeTokens, Token } from 'src/tokens'
+import { ExchangeTokenParams, SimpleExchangeRate } from './types'
+import { addPlaceholderTransaction } from '../feed/feedSlice'
+import { createPlaceholderForTx } from '../feed/placeholder'
+import { FeeEstimate } from '../fees/types'
+import { validateFeeEstimates } from '../fees/utils'
+import { setNumSignatures } from '../txFlow/txFlowSlice'
+import { TokenExchangeTx, TransactionType } from '../types'
+import { fetchBalancesActions, fetchBalancesIfStale } from '../wallet/balances/fetchBalances'
+import { Balances } from '../wallet/types'
+import { CELO, NativeTokenId, NativeTokens, Token } from '../../tokens'
 import {
   fromWei,
   getAdjustedAmountFromBalances,
   toWei,
   validateAmount,
   validateAmountWithFees,
-} from 'src/utils/amount'
-import { logger } from 'src/utils/logger'
-import { createMonitoredSaga } from 'src/utils/saga'
-import { isStale } from 'src/utils/time'
-import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
+} from '../../utils/amount'
+import { logger } from '../../utils/logger'
+import { createMonitoredSaga } from '../../utils/saga'
+import { isStale } from '../../utils/time'
+import { ErrorState, invalidInput, validateOrThrow } from '../../utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
 export function validate(
