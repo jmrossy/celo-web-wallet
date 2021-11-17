@@ -1,8 +1,8 @@
 import { useDispatch } from 'react-redux'
 import type { Dispatch } from 'redux'
-import { logoutActions } from 'src/app/logout/logout'
-import { showModalFunctionAsync, useModal } from 'src/components/modal/useModal'
-import { Color } from 'src/styles/Color'
+import { logoutActions } from '../logout/logout'
+import { showModalFunctionAsync, useModal } from '../../components/modal/useModal'
+import { Color } from '../../styles/Color'
 
 export function useLogoutModal() {
   const dispatch = useDispatch()

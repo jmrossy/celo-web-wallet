@@ -1,11 +1,11 @@
 import { Component } from 'react'
-import { TextLink } from 'src/components/buttons/TextLink'
-import SadFace from 'src/components/icons/sad_face.svg'
-import { config } from 'src/config'
-import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
-import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
-import { logger } from 'src/utils/logger'
+import { TextLink } from '../components/buttons/TextLink'
+import SadFace from '../components/icons/sad_face.svg'
+import { config } from '../config'
+import { OnboardingScreenFrame } from '../features/onboarding/OnboardingScreenFrame'
+import { Font } from '../styles/fonts'
+import { Stylesheet } from '../styles/types'
+import { logger } from '../utils/logger'
 
 interface ErrorBoundaryState {
   error: any

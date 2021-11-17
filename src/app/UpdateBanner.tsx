@@ -1,7 +1,7 @@
-import { restartApp } from 'src/app/update'
-import { Notification } from 'src/components/Notification'
-import { Color } from 'src/styles/Color'
-import { Styles } from 'src/styles/types'
+import { restartApp } from './update'
+import { Notification } from '../components/Notification'
+import { Color } from '../styles/Color'
+import { Styles } from '../styles/types'
 
 export function UpdateBanner() {
   return (

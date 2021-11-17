@@ -1,7 +1,7 @@
-import WebIcon from 'src/components/icons/web.svg'
-import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
-import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
+import WebIcon from '../components/icons/web.svg'
+import { OnboardingScreenFrame } from '../features/onboarding/OnboardingScreenFrame'
+import { Font } from '../styles/fonts'
+import { Stylesheet } from '../styles/types'
 
 export function BadBrowserScreen() {
   return (

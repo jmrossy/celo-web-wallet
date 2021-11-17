@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { validateWalletConnectForm } from 'src/features/walletConnect/utils'
-import { initializeWcClient } from 'src/features/walletConnect/walletConnectSlice'
-import { logger } from 'src/utils/logger'
-import { trimSlashes } from 'src/utils/string'
+import { validateWalletConnectForm } from '../features/walletConnect/utils'
+import { initializeWcClient } from '../features/walletConnect/walletConnectSlice'
+import { logger } from '../utils/logger'
+import { trimSlashes } from '../utils/string'
 
 export function useDeepLinkHandler() {
   const [searchParams] = useSearchParams()

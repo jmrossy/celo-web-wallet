@@ -1,124 +1,124 @@
 import { combineReducers, Reducer } from '@reduxjs/toolkit'
 import { call, spawn } from 'redux-saga/effects'
-import { logoutActions, logoutReducer, logoutSaga, logoutSagaName } from 'src/app/logout/logout'
-import { initProvider } from 'src/blockchain/init'
+import { logoutActions, logoutReducer, logoutSaga, logoutSagaName } from '../app/logout/logout'
+import { initProvider } from '../blockchain/init'
 import {
   fetchExchangeRateActions,
   fetchExchangeRateReducer,
   fetchExchangeRateSaga,
   fetchExchangeRateSagaName,
-} from 'src/features/exchange/exchangeRate'
+} from '../features/exchange/exchangeRate'
 import {
   exchangeTokenActions,
   exchangeTokenReducer,
   exchangeTokenSaga,
   exchangeTokenSagaName,
-} from 'src/features/exchange/exchangeToken'
+} from '../features/exchange/exchangeToken'
 import {
   fetchFeedActions,
   fetchFeedReducer,
   fetchFeedSaga,
   fetchFeedSagaName,
-} from 'src/features/feed/fetchFeed'
+} from '../features/feed/fetchFeed'
 import {
   estimateFeeActions,
   estimateFeeReducer,
   estimateFeeSaga,
   estimateFeeSagaName,
-} from 'src/features/fees/estimateFee'
+} from '../features/fees/estimateFee'
 import {
   fetchProposalsActions,
   fetchProposalsReducer,
   fetchProposalsSaga,
   fetchProposalsSagaName,
-} from 'src/features/governance/fetchProposals'
+} from '../features/governance/fetchProposals'
 import {
   governanceVoteActions,
   governanceVoteReducer,
   governanceVoteSaga,
   governanceVoteSagaName,
-} from 'src/features/governance/governanceVote'
+} from '../features/governance/governanceVote'
 import {
   lockTokenActions,
   lockTokenReducer,
   lockTokenSaga,
   lockTokenSagaName,
-} from 'src/features/lock/lockToken'
+} from '../features/lock/lockToken'
 import {
   changePasswordActions,
   changePasswordReducer,
   changePasswordSaga,
   changePasswordSagaName,
-} from 'src/features/password/changePassword'
+} from '../features/password/changePassword'
 import {
   sendTokenActions,
   sendTokenReducer,
   sendTokenSaga,
   sendTokenSagaName,
-} from 'src/features/send/sendToken'
+} from '../features/send/sendToken'
 import {
   fetchTokenPriceActions,
   fetchTokenPriceReducer,
   fetchTokenPriceSaga,
   fetchTokenPriceSagaName,
-} from 'src/features/tokenPrice/fetchPrices'
+} from '../features/tokenPrice/fetchPrices'
 import {
   fetchStakeHistoryActions,
   fetchStakeHistoryReducer,
   fetchStakeHistorySaga,
   fetchStakeHistorySagaName,
-} from 'src/features/validators/fetchStakeHistory'
+} from '../features/validators/fetchStakeHistory'
 import {
   fetchValidatorsActions,
   fetchValidatorsReducer,
   fetchValidatorsSaga,
   fetchValidatorsSagaName,
-} from 'src/features/validators/fetchValidators'
+} from '../features/validators/fetchValidators'
 import {
   stakeTokenActions,
   stakeTokenReducer,
   stakeTokenSaga,
   stakeTokenSagaName,
-} from 'src/features/validators/stakeToken'
+} from '../features/validators/stakeToken'
 import {
   addTokenActions,
   addTokenReducer,
   addTokenSaga,
   addTokenSagaName,
-} from 'src/features/wallet/balances/addToken'
+} from '../features/wallet/balances/addToken'
 import {
   fetchBalancesActions,
   fetchBalancesReducer,
   fetchBalancesSaga,
   fetchBalancesSagaName,
-} from 'src/features/wallet/balances/fetchBalances'
+} from '../features/wallet/balances/fetchBalances'
 import {
   editAccountActions,
   editAccountReducer,
   editAccountSaga,
   editAccountSagaName,
-} from 'src/features/wallet/editAccount'
+} from '../features/wallet/editAccount'
 import {
   importAccountActions,
   importAccountReducer,
   importAccountSaga,
   importAccountSagaName,
-} from 'src/features/wallet/importAccount'
-import { walletStatusPoller } from 'src/features/wallet/statusPoller'
+} from '../features/wallet/importAccount'
+import { walletStatusPoller } from '../features/wallet/statusPoller'
 import {
   switchAccountActions,
   switchAccountReducer,
   switchAccountSaga,
   switchAccountSagaName,
-} from 'src/features/wallet/switchAccount'
+} from '../features/wallet/switchAccount'
 import {
   unlockWalletActions,
   unlockWalletReducer,
   unlockWalletSaga,
   unlockWalletSagaName,
-} from 'src/features/wallet/unlockWallet'
-import { watchWalletConnect } from 'src/features/walletConnect/init'
-import { SagaActions, SagaState } from 'src/utils/saga'
+} from '../features/wallet/unlockWallet'
+import { watchWalletConnect } from '../features/walletConnect/init'
+import { SagaActions, SagaState } from '../utils/saga'
 
 // Things that should happen before other sagas start go here
 function* init() {

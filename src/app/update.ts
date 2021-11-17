@@ -1,4 +1,4 @@
-import { logger } from 'src/utils/logger'
+import { logger } from '../utils/logger'
 
 export function restartApp() {
   // No-op on web, only for electron

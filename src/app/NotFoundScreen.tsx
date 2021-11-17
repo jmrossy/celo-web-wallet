@@ -1,12 +1,12 @@
 import { Link, Navigate } from 'react-router-dom'
-import { Fade } from 'src/components/animation/Fade'
-import NotFoundIcon from 'src/components/icons/not_found.svg'
-import { Box } from 'src/components/layout/Box'
-import { config } from 'src/config'
-import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
-import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
+import { Fade } from '../components/animation/Fade'
+import NotFoundIcon from '../components/icons/not_found.svg'
+import { Box } from '../components/layout/Box'
+import { config } from '../config'
+import { OnboardingScreenFrame } from '../features/onboarding/OnboardingScreenFrame'
+import { Color } from '../styles/Color'
+import { Font } from '../styles/fonts'
+import { Stylesheet } from '../styles/types'
 
 export function NotFoundScreen() {
   if (config.isElectron) {
