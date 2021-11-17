@@ -1,18 +1,12 @@
-import { Box } from 'src/components/layout/Box'
-import { MoneyValue } from 'src/components/MoneyValue'
+import { Box } from '../../../components/layout/Box'
+import { MoneyValue } from '../../../components/MoneyValue'
 import { computeToCeloRate } from 'src/features/exchange/utils'
-import {
-  TransactionFeeProperty,
-  TransactionStatusProperty,
-} from 'src/features/feed/components/CommonTransactionProperties'
-import {
-  TransactionProperty,
-  TransactionPropertyGroup,
-} from 'src/features/feed/components/TransactionPropertyGroup'
-import { TokenExchangeTx } from 'src/features/types'
-import { useTokens } from 'src/features/wallet/hooks'
-import { Stylesheet } from 'src/styles/types'
-import { CELO, getTokenById } from 'src/tokens'
+import { TransactionFeeProperty, TransactionStatusProperty } from './CommonTransactionProperties'
+import { TransactionProperty, TransactionPropertyGroup } from './TransactionPropertyGroup'
+import { TokenExchangeTx } from '../../types'
+import { useTokens } from '../../wallet/hooks'
+import { Stylesheet } from '../../../styles/types'
+import { CELO, getTokenById } from '../../../tokens'
 
 interface Props {
   tx: TokenExchangeTx

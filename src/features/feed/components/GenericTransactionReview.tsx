@@ -3,9 +3,9 @@ import {
   TransactionContractProperty,
   TransactionStatusProperty,
   TransactionToAddressProperty,
-} from 'src/features/feed/components/CommonTransactionProperties'
-import { TransactionPropertyGroup } from 'src/features/feed/components/TransactionPropertyGroup'
-import { CeloTransaction } from 'src/features/types'
+} from './CommonTransactionProperties'
+import { TransactionPropertyGroup } from './TransactionPropertyGroup'
+import { CeloTransaction } from '../../types'
 
 export function GenericTransactionReview({ tx }: { tx: CeloTransaction }) {
   return (

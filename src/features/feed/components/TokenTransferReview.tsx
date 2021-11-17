@@ -1,19 +1,16 @@
-import { Address, useSendToAddress } from 'src/components/Address'
-import { Button } from 'src/components/buttons/Button'
-import { Box } from 'src/components/layout/Box'
-import { MoneyValue } from 'src/components/MoneyValue'
-import { useAddContactModal } from 'src/features/contacts/AddContactModal'
-import { TransactionStatusProperty } from 'src/features/feed/components/CommonTransactionProperties'
-import {
-  TransactionProperty,
-  TransactionPropertyGroup,
-} from 'src/features/feed/components/TransactionPropertyGroup'
-import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
-import { EscrowTransaction, TokenTransfer } from 'src/features/types'
-import { useTokens } from 'src/features/wallet/hooks'
-import { Color } from 'src/styles/Color'
-import { Stylesheet } from 'src/styles/types'
-import { getTokenById } from 'src/tokens'
+import { Address, useSendToAddress } from '../../../components/Address'
+import { Button } from '../../../components/buttons/Button'
+import { Box } from '../../../components/layout/Box'
+import { MoneyValue } from '../../../components/MoneyValue'
+import { useAddContactModal } from '../../contacts/AddContactModal'
+import { TransactionStatusProperty } from './CommonTransactionProperties'
+import { TransactionProperty, TransactionPropertyGroup } from './TransactionPropertyGroup'
+import { getFeeFromConfirmedTx } from '../../fees/utils'
+import { EscrowTransaction, TokenTransfer } from '../../types'
+import { useTokens } from '../../wallet/hooks'
+import { Color } from '../../../styles/Color'
+import { Stylesheet } from '../../../styles/types'
+import { getTokenById } from '../../../tokens'
 
 interface Props {
   tx: TokenTransfer | EscrowTransaction

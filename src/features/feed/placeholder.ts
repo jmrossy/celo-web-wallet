@@ -1,6 +1,6 @@
 import { providers } from 'ethers'
-import { FeeEstimate } from 'src/features/fees/types'
-import { CeloTransaction, TransactionType } from 'src/features/types'
+import { FeeEstimate } from '../fees/types'
+import { CeloTransaction, TransactionType } from '../types'
 
 export function createPlaceholderForTx(
   txReceipt: providers.TransactionReceipt,

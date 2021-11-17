@@ -1,6 +1,6 @@
-import { CeloTransaction, TransactionType } from 'src/features/types'
-import { getTokenById, Tokens } from 'src/tokens'
-import { trimToLength } from 'src/utils/string'
+import { CeloTransaction, TransactionType } from '../types'
+import { getTokenById, Tokens } from '../../tokens'
+import { trimToLength } from '../../utils/string'
 
 export function getTransactionDescription(tx: CeloTransaction, tokens: Tokens, useComment = true) {
   if (

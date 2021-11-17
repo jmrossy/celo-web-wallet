@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { CeloTransaction, TransactionMap, TransactionType } from 'src/features/types'
+import { CeloTransaction, TransactionMap, TransactionType } from '../types'
 
 export interface TransactionFeed {
   transactions: TransactionMap

@@ -1,17 +1,14 @@
-import { TextLink } from 'src/components/buttons/TextLink'
-import { Box } from 'src/components/layout/Box'
+import { TextLink } from '../../../components/buttons/TextLink'
+import { Box } from '../../../components/layout/Box'
 import {
   TransactionContractProperty,
   TransactionFeeProperty,
   TransactionStatusProperty,
-} from 'src/features/feed/components/CommonTransactionProperties'
-import {
-  TransactionProperty,
-  TransactionPropertyGroup,
-} from 'src/features/feed/components/TransactionPropertyGroup'
-import { voteValueToLabel } from 'src/features/governance/types'
-import { GovernanceVoteTx } from 'src/features/types'
-import { Stylesheet } from 'src/styles/types'
+} from './CommonTransactionProperties'
+import { TransactionProperty, TransactionPropertyGroup } from './TransactionPropertyGroup'
+import { voteValueToLabel } from '../../governance/types'
+import { GovernanceVoteTx } from '../../types'
+import { Stylesheet } from '../../../styles/types'
 
 export function GovernanceVoteReview({ tx }: { tx: GovernanceVoteTx }) {
   return (

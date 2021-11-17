@@ -2,22 +2,22 @@ import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { FixedSizeList } from 'react-window'
-import type { RootState } from 'src/app/rootReducer'
-import Nurture from 'src/components/icons/nurture.svg'
-import { Box } from 'src/components/layout/Box'
+import type { RootState } from '../../app/rootReducer'
+import Nurture from '../../components/icons/nurture.svg'
+import { Box } from '../../components/layout/Box'
 import {
   FeedItem,
   FeedItemData,
   FEED_ITEM_HEIGHT_COMPACT,
   FEED_ITEM_HEIGHT_NORMAL,
-} from 'src/features/feed/FeedItem'
-import { openTransaction } from 'src/features/feed/feedSlice'
-import { useAreBalancesEmpty, useTokens } from 'src/features/wallet/hooks'
-import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
-import { mq } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
-import { useDimensionsResizeObserver } from 'src/styles/useResizeObserver'
+} from './FeedItem'
+import { openTransaction } from './feedSlice'
+import { useAreBalancesEmpty, useTokens } from '../wallet/hooks'
+import { Color } from '../../styles/Color'
+import { Font } from '../../styles/fonts'
+import { mq } from '../../styles/mediaQueries'
+import { Stylesheet } from '../../styles/types'
+import { useDimensionsResizeObserver } from '../../styles/useResizeObserver'
 
 type FeedState = 'normal' | 'mobile' | 'collapsed'
 

@@ -1,20 +1,17 @@
 import { useNavigate } from 'react-router-dom'
-import { Address } from 'src/components/Address'
-import { Button } from 'src/components/buttons/Button'
-import { Box } from 'src/components/layout/Box'
-import { config } from 'src/config'
-import { useDownloadDesktopModal } from 'src/features/download/DownloadDesktopModal'
+import { Address } from '../../../components/Address'
+import { Button } from '../../../components/buttons/Button'
+import { Box } from '../../../components/layout/Box'
+import { config } from '../../../config'
+import { useDownloadDesktopModal } from '../../download/DownloadDesktopModal'
 import {
   TransactionAmountProperty,
   TransactionContractProperty,
   TransactionStatusProperty,
-} from 'src/features/feed/components/CommonTransactionProperties'
-import {
-  TransactionProperty,
-  TransactionPropertyGroup,
-} from 'src/features/feed/components/TransactionPropertyGroup'
-import { StakeTokenTx } from 'src/features/types'
-import { Stylesheet } from 'src/styles/types'
+} from './CommonTransactionProperties'
+import { TransactionProperty, TransactionPropertyGroup } from './TransactionPropertyGroup'
+import { StakeTokenTx } from '../../types'
+import { Stylesheet } from '../../../styles/types'
 
 export function StakeTokenReview({ tx }: { tx: StakeTokenTx }) {
   const navigate = useNavigate()

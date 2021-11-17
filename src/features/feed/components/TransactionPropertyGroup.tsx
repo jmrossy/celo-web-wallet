@@ -1,8 +1,8 @@
 import { PropsWithChildren } from 'react'
-import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
-import { mq } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import { Color } from '../../../styles/Color'
+import { Font } from '../../../styles/fonts'
+import { mq } from '../../../styles/mediaQueries'
+import { Stylesheet } from '../../../styles/types'
 
 export function TransactionPropertyGroup(props: PropsWithChildren<any>) {
   return <div css={style.propertyGroup}>{props.children}</div>

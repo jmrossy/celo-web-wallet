@@ -1,8 +1,8 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
-import { CeloContract, config } from 'src/config'
-import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
-import { AbiInterfaceMap, BlockscoutTokenTransfer, BlockscoutTx } from 'src/features/feed/types'
-import { OrderedVoteValue } from 'src/features/governance/types'
+import { CeloContract, config } from '../../config'
+import { MAX_COMMENT_CHAR_LENGTH } from '../../consts'
+import { AbiInterfaceMap, BlockscoutTokenTransfer, BlockscoutTx } from './types'
+import { OrderedVoteValue } from '../governance/types'
 import {
   CeloNativeTransferTx,
   CeloTokenApproveTx,
@@ -22,7 +22,7 @@ import {
   TokenExchangeTx,
   TokenTransaction,
   TransactionType,
-} from 'src/features/types'
+} from '../types'
 import {
   CELO,
   INativeTokens,
@@ -31,9 +31,9 @@ import {
   NativeTokenId,
   NativeTokens,
   Token,
-} from 'src/tokens'
-import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/addresses'
-import { logger } from 'src/utils/logger'
+} from '../../tokens'
+import { areAddressesEqual, isValidAddress, normalizeAddress } from '../../utils/addresses'
+import { logger } from '../../utils/logger'
 
 const SENTINEL_INVITE_COMMENT = '__CELO_INVITE_TX__'
 

@@ -1,5 +1,5 @@
 import { utils } from 'ethers'
-import { CeloContract } from 'src/config'
+import { CeloContract } from '../../config'
 
 export interface BlockscoutTxBase {
   hash: string
