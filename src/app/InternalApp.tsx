@@ -59,14 +59,14 @@ function DeepLinkHandler() {
   return null
 }
 
-export const App = () => {
+export const InternalApp = () => {
   const showSplash = useSplashScreen()
-  const isBrowserSupported = useBrowserFeatureChecks()
+  // const isBrowserSupported = useBrowserFeatureChecks()
 
   // Don't load the app until we're done with the splash screen
   if (showSplash) return null
 
-  if (!isBrowserSupported) return <BadBrowserScreen />
+  // if (!isBrowserSupported) return <BadBrowserScreen />
 
   return (
     <ErrorBoundary>
