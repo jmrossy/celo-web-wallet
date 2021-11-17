@@ -1,6 +1,6 @@
-import { transparentButtonStyles } from 'src/components/buttons/Button'
-import RefreshIcon from 'src/components/icons/refresh.svg'
-import { Styles } from 'src/styles/types'
+import { transparentButtonStyles } from './Button'
+import RefreshIcon from '../icons/refresh.svg'
+import { Styles } from '../../styles/types'
 
 interface Props {
   width: string | number

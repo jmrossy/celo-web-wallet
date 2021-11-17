@@ -1,6 +1,6 @@
-import { connectToProvider } from 'src/blockchain/provider'
-import { setIsConnected } from 'src/features/wallet/walletSlice'
-import { logger } from 'src/utils/logger'
+import { connectToProvider } from './provider'
+import { setIsConnected } from '../features/wallet/walletSlice'
+import { logger } from '../utils/logger'
 import { call, put } from 'typed-redux-saga'
 
 export function* initProvider() {

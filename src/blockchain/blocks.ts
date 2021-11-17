@@ -1,6 +1,6 @@
-import { getProvider, isProviderSet } from 'src/blockchain/provider'
-import { AVG_BLOCK_TIMES } from 'src/consts'
-import { logger } from 'src/utils/logger'
+import { getProvider, isProviderSet } from './provider'
+import { AVG_BLOCK_TIMES } from '../consts'
+import { logger } from '../utils/logger'
 
 export interface LatestBlockDetails {
   nodeUrl: string

@@ -1,7 +1,7 @@
 import { PropsWithChildren, ReactElement } from 'react'
-import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
-import { Styles } from 'src/styles/types'
+import { Box } from '../layout/Box'
+import { Color } from '../../styles/Color'
+import { Styles } from '../../styles/types'
 
 interface ButtonProps {
   size?: 'xs' | 's' | 'm' | 'l' | 'icon' // defaults to 'm'

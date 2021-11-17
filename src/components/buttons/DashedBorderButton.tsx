@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react'
-import { transparentButtonStyles } from 'src/components/buttons/Button'
-import { Color } from 'src/styles/Color'
-import { Styles } from 'src/styles/types'
+import { transparentButtonStyles } from './Button'
+import { Color } from '../../styles/Color'
+import { Styles } from '../../styles/types'
 
 interface ButtonProps {
   onClick: () => void

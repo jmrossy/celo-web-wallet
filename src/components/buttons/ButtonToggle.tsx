@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { transparentButtonStyles } from 'src/components/buttons/Button'
-import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { transparentButtonStyles } from './Button'
+import { Box } from '../layout/Box'
+import { Color } from '../../styles/Color'
+import { Styles, Stylesheet } from '../../styles/types'
 
 interface Props {
   label1: string

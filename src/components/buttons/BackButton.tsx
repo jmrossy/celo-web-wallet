@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import {
   TransparentIconButton,
   TransparentIconButtonProps,
-} from 'src/components/buttons/TransparentIconButton'
-import { ArrowIcon } from 'src/components/icons/Arrow'
-import { Color } from 'src/styles/Color'
+} from '../../components/buttons/TransparentIconButton'
+import { ArrowIcon } from '../icons/Arrow'
+import { Color } from '../../styles/Color'
 
 export function BackButton(props: Omit<Omit<TransparentIconButtonProps, 'icon'>, 'onClick'>) {
   const { styles, iconStyles, margin, title, color } = props

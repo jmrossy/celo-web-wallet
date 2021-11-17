@@ -1,8 +1,8 @@
 import { CeloProvider } from '@celo-tools/celo-ethers-wrapper'
 import { Contract, PopulatedTransaction, utils } from 'ethers'
-import { getProvider } from 'src/blockchain/provider'
-import { logger } from 'src/utils/logger'
-import { chunk } from 'src/utils/string'
+import { getProvider } from './provider'
+import { logger } from '../utils/logger'
+import { chunk } from '../utils/string'
 
 interface JsonRpcRequest {
   jsonrpc: string

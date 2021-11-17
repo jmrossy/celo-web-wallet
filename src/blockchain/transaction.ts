@@ -6,10 +6,10 @@
 
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
-import { getProvider } from 'src/blockchain/provider'
-import { getSigner } from 'src/blockchain/signer'
-import { FeeEstimate } from 'src/features/fees/types'
-import { NativeTokenId, NativeTokens } from 'src/tokens'
+import { getProvider } from './provider'
+import { getSigner } from './signer'
+import { FeeEstimate } from '../features/fees/types'
+import { NativeTokenId, NativeTokens } from '../tokens'
 
 export async function sendTransaction(tx: CeloTransactionRequest, feeEstimate?: FeeEstimate) {
   const signedTx = await signTransaction(tx, feeEstimate)

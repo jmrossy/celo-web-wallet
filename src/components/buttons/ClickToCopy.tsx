@@ -1,9 +1,9 @@
 import { transparentButtonStyles } from 'src/components/buttons/Button'
-import { Tooltip } from 'src/components/Tooltip'
-import { Color } from 'src/styles/Color'
-import { Styles } from 'src/styles/types'
-import { tryClipboardSet } from 'src/utils/clipboard'
-import { trimToLength } from 'src/utils/string'
+import { Tooltip } from '../Tooltip'
+import { Color } from '../../styles/Color'
+import { Styles } from '../../styles/types'
+import { tryClipboardSet } from '../../utils/clipboard'
+import { trimToLength } from '../../utils/string'
 
 interface ButtonProps {
   text: string

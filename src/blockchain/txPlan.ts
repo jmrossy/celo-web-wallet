@@ -1,10 +1,10 @@
 import { providers } from 'ethers'
-import { getCurrentNonce, sendSignedTransaction } from 'src/blockchain/transaction'
-import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
-import { FeeEstimate } from 'src/features/fees/types'
-import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
-import { CeloTransaction, TransactionType } from 'src/features/types'
-import { logger } from 'src/utils/logger'
+import { getCurrentNonce, sendSignedTransaction } from './transaction'
+import { addPlaceholderTransaction } from '../features/feed/feedSlice'
+import { FeeEstimate } from '../features/fees/types'
+import { setNumSignatures } from '../features/txFlow/txFlowSlice'
+import { CeloTransaction, TransactionType } from '../features/types'
+import { logger } from '../utils/logger'
 import { call, put } from 'typed-redux-saga'
 
 export interface TxPlanItem {

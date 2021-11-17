@@ -1,10 +1,10 @@
 import { CeloProvider } from '@celo-tools/celo-ethers-wrapper'
 import { providers } from 'ethers'
-import { config } from 'src/config'
-import { STALE_BLOCK_TIME } from 'src/consts'
-import { logger } from 'src/utils/logger'
-import { promiseTimeout, sleep } from 'src/utils/promises'
-import { isStale } from 'src/utils/time'
+import { config } from '../config'
+import { STALE_BLOCK_TIME } from '../consts'
+import { logger } from '../utils/logger'
+import { promiseTimeout, sleep } from '../utils/promises'
+import { isStale } from '../utils/time'
 
 let provider: CeloProvider | undefined
 

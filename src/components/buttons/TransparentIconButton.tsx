@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
-import { transparentButtonStyles } from 'src/components/buttons/Button'
-import { Styles } from 'src/styles/types'
+import { transparentButtonStyles } from './Button'
+import { Styles } from '../../styles/types'
 
 export interface TransparentIconButtonProps {
   icon: string | ReactElement

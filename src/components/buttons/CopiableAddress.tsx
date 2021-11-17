@@ -1,6 +1,6 @@
-import { ClickToCopy } from 'src/components/buttons/ClickToCopy'
-import { Styles } from 'src/styles/types'
-import { capitalizeAddress, shortenAddress } from 'src/utils/addresses'
+import { ClickToCopy } from './ClickToCopy'
+import { Styles } from '../../styles/types'
+import { capitalizeAddress, shortenAddress } from '../../utils/addresses'
 
 interface ButtonProps {
   address: string

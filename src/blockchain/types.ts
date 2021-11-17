@@ -1,5 +1,5 @@
 import type { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
-import type { LedgerSigner } from 'src/features/ledger/LedgerSigner'
+import type { LedgerSigner } from '../features/ledger/LedgerSigner'
 
 export enum SignerType {
   Local = 'local',
