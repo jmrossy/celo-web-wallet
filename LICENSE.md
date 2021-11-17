@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2020 J M Rossy
+Copyright (c) 2021 Kara Graysen (fork origin: J M Rossy)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

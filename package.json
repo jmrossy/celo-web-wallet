@@ -1,17 +1,23 @@
 {
-  "name": "celo-web-wallet",
-  "version": "1.3.7",
-  "description": "A lightweight web and desktop wallet for the Celo network",
-  "keywords": [
-    "Celo",
-    "wallet"
+  "name": "pigeon",
+  "version": "1.0.0",
+  "description": "A lightweight, self-sovereign Celo wallet for iOS and Android.",
+  "author": "Pigeon Fi",
+  "contributors": [
+    {
+      "name": "Kara Graysen",
+      "url": "https://github.com/noisypigeon"
+    },
+    {
+      "name": "J M Rossy",
+      "url": "https://github.com/jmrossy"
+    }
   ],
-  "author": "J M Rossy",
   "repository": {
     "type": "git",
-    "url": "https://github.com/celo-tools/celo-web-wallet"
+    "url": "https://github.com/pigeon-fi/wallet"
   },
-  "homepage": "https://celowallet.app",
+  "homepage": "https://pigeon.fi",
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development webpack serve --devtool inline-cheap-source-map --mode development",
