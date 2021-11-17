@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Proposal } from 'src/features/governance/types'
+import { Proposal } from './types'
 
 interface GovernanceState {
   proposals: Proposal[]

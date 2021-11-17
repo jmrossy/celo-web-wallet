@@ -1,4 +1,4 @@
-import { FeeEstimate } from 'src/features/fees/types'
+import { FeeEstimate } from '../fees/types'
 
 export enum VoteValue {
   None = 'none',

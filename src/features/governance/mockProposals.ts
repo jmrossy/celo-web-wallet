@@ -1,4 +1,4 @@
-import { ProposalStage, VoteValue } from 'src/features/governance/types'
+import { ProposalStage, VoteValue } from './types'
 
 export const mockProposals = [
   {

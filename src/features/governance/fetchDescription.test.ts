@@ -1,5 +1,5 @@
-import { fetchProposalDescription } from 'src/features/governance/fetchDescription'
-import { Proposal, ProposalStage, VoteValue } from 'src/features/governance/types'
+import { fetchProposalDescription } from './fetchDescription'
+import { Proposal, ProposalStage, VoteValue } from './types'
 
 // TODO these are causing flaky 403s when running in CI. Skipping for now
 xdescribe('fetchProposals', () => {

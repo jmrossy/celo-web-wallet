@@ -1,10 +1,10 @@
-import Lightbulb from 'src/components/icons/lightbulb.svg'
-import { Box } from 'src/components/layout/Box'
-import { useDailyTip } from 'src/features/home/Tips'
-import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
-import { mq, useIsMobile } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import Lightbulb from '../../components/icons/lightbulb.svg'
+import { Box } from '../../components/layout/Box'
+import { useDailyTip } from '../home/Tips'
+import { Color } from '../../styles/Color'
+import { Font } from '../../styles/fonts'
+import { mq, useIsMobile } from '../../styles/mediaQueries'
+import { Stylesheet } from '../../styles/types'
 
 export function HeaderSection() {
   const isMobile = useIsMobile()

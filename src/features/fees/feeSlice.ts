@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { FeeEstimate, GasPrice } from 'src/features/fees/types'
-import { NativeTokenId } from 'src/tokens'
+import { FeeEstimate, GasPrice } from './types'
+import { NativeTokenId } from '../../tokens'
 
 interface FeeState {
   gasPrices: Record<NativeTokenId, GasPrice | null>

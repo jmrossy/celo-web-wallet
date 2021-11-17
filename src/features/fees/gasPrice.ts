@@ -1,10 +1,10 @@
 import { BigNumber } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
-import { getProvider } from 'src/blockchain/provider'
-import { GAS_PRICE_STALE_TIME } from 'src/consts'
-import { updateGasPrice } from 'src/features/fees/feeSlice'
-import { isNativeToken, NativeTokenId, NativeTokens } from 'src/tokens'
-import { isStale } from 'src/utils/time'
+import type { RootState } from '../../app/rootReducer'
+import { getProvider } from '../../blockchain/provider'
+import { GAS_PRICE_STALE_TIME } from '../../consts'
+import { updateGasPrice } from './feeSlice'
+import { isNativeToken, NativeTokenId, NativeTokens } from '../../tokens'
+import { isStale } from '../../utils/time'
 import { call, put, select } from 'typed-redux-saga'
 
 export function* fetchGasPriceIfStale(feeToken: NativeTokenId) {

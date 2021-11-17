@@ -1,4 +1,4 @@
-import { NativeTokenId } from 'src/tokens'
+import { NativeTokenId } from '../../tokens'
 
 export interface GasPrice {
   value: string

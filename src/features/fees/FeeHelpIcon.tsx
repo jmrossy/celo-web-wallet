@@ -1,4 +1,4 @@
-import { HelpIcon } from 'src/components/icons/HelpIcon'
+import { HelpIcon } from '../../components/icons/HelpIcon'
 
 export function FeeHelpIcon() {
   return (

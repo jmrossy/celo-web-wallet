@@ -1,12 +1,12 @@
 import { shallowEqual, useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
-import { SignerType } from 'src/blockchain/types'
-import { ScreenFrame } from 'src/components/layout/ScreenFrame'
-import { LoginScreen } from 'src/features/password/LoginScreen'
-import { useAccountLockStatus } from 'src/features/password/password'
-import { hasAccounts } from 'src/features/wallet/manager'
-import { hasAccount_v1 } from 'src/features/wallet/storage_v1'
+import type { RootState } from '../../app/rootReducer'
+import { SignerType } from '../../blockchain/types'
+import { ScreenFrame } from '../../components/layout/ScreenFrame'
+import { LoginScreen } from '../password/LoginScreen'
+import { useAccountLockStatus } from '../password/password'
+import { hasAccounts } from '../wallet/manager'
+import { hasAccount_v1 } from '../wallet/storage_v1'
 
 export function HomeNavigator() {
   const { isUnlocked, address, type } = useAccountLockStatus()

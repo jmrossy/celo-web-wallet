@@ -1,20 +1,17 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
-import { SignerType } from 'src/blockchain/types'
-import { TextButton } from 'src/components/buttons/TextButton'
-import WarningIcon from 'src/components/icons/warning.svg'
-import { Notification } from 'src/components/Notification'
-import { config } from 'src/config'
-import { HIGH_VALUE_THRESHOLD } from 'src/consts'
-import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
-import {
-  setBackupReminderDismissed,
-  setHighValueWarningDismissed,
-} from 'src/features/settings/settingsSlice'
-import { areBalancesEmpty, hasMinTokenBalance } from 'src/features/wallet/utils'
-import { Color } from 'src/styles/Color'
+import type { RootState } from '../../app/rootReducer'
+import { SignerType } from '../../blockchain/types'
+import { TextButton } from '../../components/buttons/TextButton'
+import WarningIcon from '../../components/icons/warning.svg'
+import { Notification } from '../../components/Notification'
+import { config } from '../../config'
+import { HIGH_VALUE_THRESHOLD } from '../../consts'
+import { DownloadDesktopButton } from '../download/DownloadDesktopModal'
+import { setBackupReminderDismissed, setHighValueWarningDismissed } from '../settings/settingsSlice'
+import { areBalancesEmpty, hasMinTokenBalance } from '../wallet/utils'
+import { Color } from '../../styles/Color'
 
 export function HomeScreenWarnings() {
   const dispatch = useDispatch()

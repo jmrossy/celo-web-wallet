@@ -1,6 +1,6 @@
-import { GOVERNANCE_GITHUB_BASEURL } from 'src/consts'
-import { Proposal } from 'src/features/governance/types'
-import { logger } from 'src/utils/logger'
+import { GOVERNANCE_GITHUB_BASEURL } from '../../consts'
+import { Proposal } from './types'
+import { logger } from '../../utils/logger'
 
 // Putting these in a seperate file to faciliate testing for now
 export async function fetchProposalDescription(proposal: Proposal) {

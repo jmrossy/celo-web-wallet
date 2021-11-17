@@ -1,13 +1,13 @@
-import { Button } from 'src/components/buttons/Button'
-import { TextButton } from 'src/components/buttons/TextButton'
-import { useFundWalletModal } from 'src/components/FundWalletModal'
-import Mail from 'src/components/icons/mail.svg'
-import { Box } from 'src/components/layout/Box'
-import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
-import { useWalletAddress } from 'src/features/wallet/hooks'
-import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
+import { Button } from '../../components/buttons/Button'
+import { TextButton } from '../../components/buttons/TextButton'
+import { useFundWalletModal } from '../../components/FundWalletModal'
+import Mail from '../../components/icons/mail.svg'
+import { Box } from '../../components/layout/Box'
+import { useAddressQrCodeModal } from '../qr/QrCodeModal'
+import { useWalletAddress } from '../wallet/hooks'
+import { Color } from '../../styles/Color'
+import { Font } from '../../styles/fonts'
+import { Stylesheet } from '../../styles/types'
 
 export function HeaderSectionEmpty() {
   const address = useWalletAddress()
