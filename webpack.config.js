@@ -6,7 +6,7 @@ const packageJson = require('./package.json')
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 const isProduction = process.env.NODE_ENV === 'production'
-const targetElectron = process.env.BUILD_TARGET === 'electron'
+const targetElectron = false // todo come back and remove the rest
 
 console.log(`Building with webpack. isProduction:${isProduction}, targetElectron:${targetElectron}`)
 

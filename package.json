@@ -21,12 +21,7 @@
     "build:prod": "./scripts/build.sh -n Mainnet",
     "clean": "rm -rf dist dist-electron",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
-    "test": "NODE_ENV=test jasmine",
-    "electron:postinstall": "electron-builder install-app-deps",
-    "electron:build": "./scripts/build.sh -n Mainnet -e",
-    "electron:start": "electron ./dist/main.js --enable-logging",
-    "electron:dev": "yarn electron:build && yarn electron:start",
-    "electron:prod": "yarn electron:build && DEBUG=electron-builder electron-builder --publish never"
+    "test": "NODE_ENV=test jasmine"
   },
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "^0.0.5",
@@ -40,7 +35,6 @@
     "@reduxjs/toolkit": "^1.6.1",
     "@walletconnect/client": "2.0.0-beta.19",
     "buffer": "^6.0.3",
-    "electron-updater": "^4.3.9",
     "ethers": "^5.3.0",
     "frappe-charts": "^1.6.2",
     "history": "^5.0.1",
@@ -76,9 +70,6 @@
     "babel-plugin-module-name-mapper": "^1.2.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.2.0",
-    "electron": "^14.0.1",
-    "electron-builder": "^22.11.7",
-    "electron-notarize": "^1.1.1",
     "eslint": "^7.32.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.24.2",
