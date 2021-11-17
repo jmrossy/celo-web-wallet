@@ -1,4 +1,4 @@
-import { Styles } from 'src/styles/types'
+import { Styles } from '../styles/types'
 
 interface Props {
   margin?: number | string

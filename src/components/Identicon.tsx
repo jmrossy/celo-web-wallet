@@ -1,7 +1,7 @@
 import jazzicon from '@metamask/jazzicon'
 import { PureComponent } from 'react'
-import { Styles } from 'src/styles/types'
-import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
+import { Styles } from '../styles/types'
+import { isValidAddress, normalizeAddress } from '../utils/addresses'
 
 type Props = {
   address: string

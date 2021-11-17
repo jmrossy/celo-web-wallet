@@ -1,8 +1,8 @@
 import { keyframes } from '@emotion/react'
 import { PropsWithChildren, useEffect, useState } from 'react'
-import { CloseButton } from 'src/components/buttons/CloseButton'
-import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
+import { CloseButton } from './buttons/CloseButton'
+import { Box } from './layout/Box'
+import { Color } from '../styles/Color'
 
 interface NotificationProps {
   color?: Color

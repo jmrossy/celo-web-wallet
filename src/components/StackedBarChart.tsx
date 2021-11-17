@@ -1,6 +1,6 @@
-import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
-import { Stylesheet } from 'src/styles/types'
+import { Box } from './layout/Box'
+import { Color } from '../styles/Color'
+import { Stylesheet } from '../styles/types'
 
 interface DataElement {
   label: string

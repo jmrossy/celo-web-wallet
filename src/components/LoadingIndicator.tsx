@@ -1,11 +1,11 @@
 import { css, keyframes } from '@emotion/react'
 import { memo } from 'react'
-import elipse from 'src/components/icons/celo_elipse.svg'
-import echo1 from 'src/components/icons/elipse_echo_1.svg'
-import echo2 from 'src/components/icons/elipse_echo_2.svg'
-import echo3 from 'src/components/icons/elipse_echo_3.svg'
-import { Box } from 'src/components/layout/Box'
-import { Stylesheet } from 'src/styles/types'
+import elipse from './icons/celo_elipse.svg'
+import echo1 from './icons/elipse_echo_1.svg'
+import echo2 from './icons/elipse_echo_2.svg'
+import echo3 from './icons/elipse_echo_3.svg'
+import { Box } from './layout/Box'
+import { Stylesheet } from '../styles/types'
 
 function _LoadingIndicator() {
   return (

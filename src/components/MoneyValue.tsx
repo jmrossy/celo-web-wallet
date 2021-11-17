@@ -1,9 +1,9 @@
 import { BigNumberish } from 'ethers'
-import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
-import { Box } from 'src/components/layout/Box'
-import { Styles } from 'src/styles/types'
-import { Token } from 'src/tokens'
-import { fromWeiRounded } from 'src/utils/amount'
+import { TokenIcon } from './icons/tokens/TokenIcon'
+import { Box } from './layout/Box'
+import { Styles } from '../styles/types'
+import { Token } from '../tokens'
+import { fromWeiRounded } from '../utils/amount'
 
 interface MoneyValueProps {
   amountInWei: BigNumberish

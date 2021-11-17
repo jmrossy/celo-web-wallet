@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
-import { Color } from 'src/styles/Color'
-import { Stylesheet } from 'src/styles/types'
-import { useTimeout } from 'src/utils/timeout'
+import { Color } from '../styles/Color'
+import { Stylesheet } from '../styles/types'
+import { useTimeout } from '../utils/timeout'
 
 export type TipPositions =
   | 'top'

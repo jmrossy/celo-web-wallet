@@ -1,10 +1,10 @@
-import { Button } from 'src/components/buttons/Button'
-import { TextInput } from 'src/components/input/TextInput'
-import { Box } from 'src/components/layout/Box'
-import { modalStyles } from 'src/components/modal/modalStyles'
-import { MAX_ACCOUNT_NAME_LENGTH } from 'src/consts'
-import { useCustomForm } from 'src/utils/useCustomForm'
-import { ErrorState, invalidInput } from 'src/utils/validation'
+import { Button } from './buttons/Button'
+import { TextInput } from './input/TextInput'
+import { Box } from './layout/Box'
+import { modalStyles } from './modal/modalStyles'
+import { MAX_ACCOUNT_NAME_LENGTH } from '../consts'
+import { useCustomForm } from '../utils/useCustomForm'
+import { ErrorState, invalidInput } from '../utils/validation'
 
 export interface RenameForm {
   newName: string
