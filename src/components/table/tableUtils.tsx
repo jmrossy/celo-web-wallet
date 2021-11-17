@@ -1,10 +1,10 @@
-import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
-import { TransparentIconButton } from 'src/components/buttons/TransparentIconButton'
-import { PencilIcon } from 'src/components/icons/Pencil'
-import { Identicon } from 'src/components/Identicon'
-import { Box } from 'src/components/layout/Box'
-import { Stylesheet } from 'src/styles/types'
-import { trimToLength } from 'src/utils/string'
+import { CopiableAddress } from '../buttons/CopiableAddress'
+import { TransparentIconButton } from '../buttons/TransparentIconButton'
+import { PencilIcon } from '../icons/Pencil'
+import { Identicon } from '../Identicon'
+import { Box } from '../layout/Box'
+import { Stylesheet } from '../../styles/types'
+import { trimToLength } from '../../utils/string'
 
 export function createAddressField<P extends { address: string }>(isMobile: boolean) {
   const renderer = (row: P) => (

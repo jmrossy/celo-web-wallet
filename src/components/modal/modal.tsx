@@ -1,12 +1,12 @@
 import { PropsWithChildren, ReactElement } from 'react'
-import { Button } from 'src/components/buttons/Button'
-import { CloseButton } from 'src/components/buttons/CloseButton'
-import { CheckmarkInElipseIcon } from 'src/components/icons/Checkmark'
-import { Box } from 'src/components/layout/Box'
-import { LoadingIndicator } from 'src/components/LoadingIndicator'
-import { Backdrop } from 'src/components/modal/Backdrop'
-import { Color } from 'src/styles/Color'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { Button } from '../buttons/Button'
+import { CloseButton } from '../buttons/CloseButton'
+import { CheckmarkInElipseIcon } from '../icons/Checkmark'
+import { Box } from '../layout/Box'
+import { LoadingIndicator } from '../LoadingIndicator'
+import { Backdrop } from './Backdrop'
+import { Color } from '../../styles/Color'
+import { Styles, Stylesheet } from '../../styles/types'
 
 export type ModalActionCallback = (action: ModalAction) => void
 

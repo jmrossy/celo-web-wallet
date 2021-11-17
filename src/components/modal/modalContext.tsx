@@ -1,6 +1,6 @@
 import { createContext, useRef, useState } from 'react'
-import { Modal, ModalAction, ModalProps } from 'src/components/modal/modal'
-import { logger } from 'src/utils/logger'
+import { Modal, ModalAction, ModalProps } from './modal'
+import { logger } from '../../utils/logger'
 
 interface IModalContext {
   showModal: (props: ModalProps, content?: any) => void

@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react'
-import { Styles } from 'src/styles/types'
+import { Styles } from '../../styles/types'
 
 interface BoxProps {
   direction?: 'column' | 'row'

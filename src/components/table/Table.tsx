@@ -1,10 +1,10 @@
 import { Fragment, FunctionComponent, ReactElement, useMemo, useState } from 'react'
-import { CloseButton } from 'src/components/buttons/CloseButton'
-import { ChevronIcon } from 'src/components/icons/Chevron'
-import { Spinner } from 'src/components/Spinner'
-import { Font } from 'src/styles/fonts'
-import { mq } from 'src/styles/mediaQueries'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { CloseButton } from '../buttons/CloseButton'
+import { ChevronIcon } from '../icons/Chevron'
+import { Spinner } from '../Spinner'
+import { Font } from '../../styles/fonts'
+import { mq } from '../../styles/mediaQueries'
+import { Styles, Stylesheet } from '../../styles/types'
 
 export interface TableColumn {
   id: string // its key in the data

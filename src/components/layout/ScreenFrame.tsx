@@ -1,16 +1,20 @@
 import { PropsWithChildren } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Button } from 'src/components/buttons/Button'
-import { PlusIcon } from 'src/components/icons/Plus'
-import { Box } from 'src/components/layout/Box'
-import { HeaderFooterFrame } from 'src/components/layout/HeaderFooterFrame'
-import { NavButtonRow } from 'src/components/layout/NavButtonRow'
-import { TransactionFeed } from 'src/features/feed/TransactionFeed'
-import { HomeScreenWarnings } from 'src/features/home/HomeScreenWarnings'
-import { useAreBalancesEmpty } from 'src/features/wallet/hooks'
-import { Color } from 'src/styles/Color'
-import { isWindowSizeMobile, isWindowSizeSmallMobile, useWindowSize } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import { Button } from '../buttons/Button'
+import { PlusIcon } from '../icons/Plus'
+import { Box } from './Box'
+import { HeaderFooterFrame } from '../layout/HeaderFooterFrame'
+import { NavButtonRow } from './NavButtonRow'
+import { TransactionFeed } from '../../features/feed/TransactionFeed'
+import { HomeScreenWarnings } from '../../features/home/HomeScreenWarnings'
+import { useAreBalancesEmpty } from '../../features/wallet/hooks'
+import { Color } from '../../styles/Color'
+import {
+  isWindowSizeMobile,
+  isWindowSizeSmallMobile,
+  useWindowSize,
+} from '../../styles/mediaQueries'
+import { Stylesheet } from '../../styles/types'
 
 const SCREENS_WITHOUT_FEED: Record<string, boolean> = {
   account: true,

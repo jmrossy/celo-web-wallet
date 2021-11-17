@@ -1,7 +1,7 @@
-import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
-import { mq } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import { Box } from '../layout/Box'
+import { Color } from '../../styles/Color'
+import { mq } from '../../styles/mediaQueries'
+import { Stylesheet } from '../../styles/types'
 
 interface GridLink {
   url: string

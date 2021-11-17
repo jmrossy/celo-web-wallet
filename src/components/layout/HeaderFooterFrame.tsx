@@ -1,8 +1,8 @@
 import { PropsWithChildren } from 'react'
-import { Footer } from 'src/components/footer/Footer'
-import { Header } from 'src/components/header/Header'
-import { Box } from 'src/components/layout/Box'
-import { Stylesheet } from 'src/styles/types'
+import { Footer } from '../footer/Footer'
+import { Header } from '../header/Header'
+import { Box } from './Box'
+import { Stylesheet } from '../../styles/types'
 
 export function HeaderFooterFrame(props: PropsWithChildren<unknown>) {
   return (

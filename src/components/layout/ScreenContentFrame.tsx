@@ -1,10 +1,10 @@
 import { PropsWithChildren } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BackButton } from 'src/components/buttons/BackButton'
-import { CloseButton } from 'src/components/buttons/CloseButton'
-import { Box } from 'src/components/layout/Box'
-import { mq } from 'src/styles/mediaQueries'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { BackButton } from '../buttons/BackButton'
+import { CloseButton } from '../buttons/CloseButton'
+import { Box } from './Box'
+import { mq } from '../../styles/mediaQueries'
+import { Styles, Stylesheet } from '../../styles/types'
 
 interface FrameProps {
   onClose?: () => void

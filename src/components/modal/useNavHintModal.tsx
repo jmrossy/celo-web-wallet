@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ModalAction } from 'src/components/modal/modal'
-import { useModal } from 'src/components/modal/useModal'
-import { Color } from 'src/styles/Color'
+import { ModalAction } from './modal'
+import { useModal } from './useModal'
+import { Color } from '../../styles/Color'
 
 // Show a modal with two buttons
 // One to nav somewhere, other to dismiss

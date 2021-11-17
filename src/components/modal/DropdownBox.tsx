@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState } from 'react'
-import { Backdrop, backdropZIndex } from 'src/components/modal/Backdrop'
-import { Color } from 'src/styles/Color'
-import { Styles } from 'src/styles/types'
+import { Backdrop, backdropZIndex } from '../modal/Backdrop'
+import { Color } from '../../styles/Color'
+import { Styles } from '../../styles/types'
 
 export function useDropdownBox() {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)

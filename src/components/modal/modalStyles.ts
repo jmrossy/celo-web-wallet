@@ -1,5 +1,5 @@
-import { Font } from 'src/styles/fonts'
-import { Stylesheet } from 'src/styles/types'
+import { Font } from '../../styles/fonts'
+import { Stylesheet } from '../../styles/types'
 
 // Shared / common styles for modal content
 export const modalStyles: Stylesheet = {

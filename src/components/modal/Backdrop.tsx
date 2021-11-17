@@ -1,5 +1,5 @@
-import { Color } from 'src/styles/Color'
-import { Styles } from 'src/styles/types'
+import { Color } from '../../styles/Color'
+import { Styles } from '../../styles/types'
 
 interface BackdropProps {
   opacity?: number

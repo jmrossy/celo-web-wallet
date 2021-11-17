@@ -6,9 +6,9 @@ import {
   ModalProps,
   ModalSize,
   SuccessModalContent,
-} from 'src/components/modal/modal'
-import { ModalContext } from 'src/components/modal/modalContext'
-import { errorToString } from 'src/utils/validation'
+} from './modal'
+import { ModalContext } from './modalContext'
+import { errorToString } from '../../utils/validation'
 
 interface ModalBase {
   head: string
