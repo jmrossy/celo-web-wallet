@@ -1,9 +1,9 @@
-import { AccountMenu } from 'src/components/header/AccountMenu'
-import { BalanceSummary } from 'src/components/header/BalanceSummary'
-import { HeaderLogo } from 'src/components/header/HeaderLogo'
-import { Box } from 'src/components/layout/Box'
-import { Color } from 'src/styles/Color'
-import { Stylesheet } from 'src/styles/types'
+import { AccountMenu } from '../header/AccountMenu'
+import { BalanceSummary } from '../header/BalanceSummary'
+import { HeaderLogo } from '../header/HeaderLogo'
+import { Box } from '../layout/Box'
+import { Color } from '../../styles/Color'
+import { Stylesheet } from '../../styles/types'
 
 export function Header() {
   return (

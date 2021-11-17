@@ -1,14 +1,14 @@
 import { BigNumber } from 'ethers'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { transparentButtonStyles } from 'src/components/buttons/Button'
-import { Box } from 'src/components/layout/Box'
-import { MoneyValue } from 'src/components/MoneyValue'
-import { useTokens } from 'src/features/wallet/hooks'
-import { Color } from 'src/styles/Color'
-import { Font } from 'src/styles/fonts'
-import { mq, useWindowSize } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import { transparentButtonStyles } from '../buttons/Button'
+import { Box } from '../layout/Box'
+import { MoneyValue } from '../MoneyValue'
+import { useTokens } from '../../features/wallet/hooks'
+import { Color } from '../../styles/Color'
+import { Font } from '../../styles/fonts'
+import { mq, useWindowSize } from '../../styles/mediaQueries'
+import { Stylesheet } from '../../styles/types'
 
 export function BalanceSummary() {
   const { width: windowWidth } = useWindowSize()

@@ -1,11 +1,11 @@
-import { TextLink } from 'src/components/buttons/TextLink'
-import { AboutWalletLink } from 'src/components/footer/AboutWallet'
-import { Box } from 'src/components/layout/Box'
-import { config } from 'src/config'
-import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
-import { Color } from 'src/styles/Color'
-import { mq } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import { TextLink } from '../buttons/TextLink'
+import { AboutWalletLink } from '../footer/AboutWallet'
+import { Box } from '../layout/Box'
+import { config } from '../../config'
+import { DownloadDesktopButton } from '../../features/download/DownloadDesktopModal'
+import { Color } from '../../styles/Color'
+import { mq } from '../../styles/mediaQueries'
+import { Stylesheet } from '../../styles/types'
 
 export function OnboardingFooter() {
   return (

@@ -1,10 +1,10 @@
-import { TextButton } from 'src/components/buttons/TextButton'
-import Discord from 'src/components/icons/logos/discord.svg'
-import Github from 'src/components/icons/logos/github.svg'
-import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
-import { useModal } from 'src/components/modal/useModal'
-import { config } from 'src/config'
-import { Styles } from 'src/styles/types'
+import { TextButton } from '../buttons/TextButton'
+import Discord from '../icons/logos/discord.svg'
+import Github from '../icons/logos/github.svg'
+import { ModalLinkGrid } from '../modal/ModalLinkGrid'
+import { useModal } from '../modal/useModal'
+import { config } from '../../config'
+import { Styles } from '../../styles/types'
 
 export function HelpButton({ styles }: { styles: Styles }) {
   const { showModalWithContent } = useModal()

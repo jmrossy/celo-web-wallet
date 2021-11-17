@@ -1,11 +1,11 @@
-import { TextButton } from 'src/components/buttons/TextButton'
-import { TextLink } from 'src/components/buttons/TextLink'
-import { Box } from 'src/components/layout/Box'
-import { ModalOkAction } from 'src/components/modal/modal'
-import { useModal } from 'src/components/modal/useModal'
-import { config } from 'src/config'
-import { Font } from 'src/styles/fonts'
-import { Styles, Stylesheet } from 'src/styles/types'
+import { TextButton } from '../buttons/TextButton'
+import { TextLink } from '../buttons/TextLink'
+import { Box } from '../layout/Box'
+import { ModalOkAction } from '../modal/modal'
+import { useModal } from '../modal/useModal'
+import { config } from '../../config'
+import { Font } from '../../styles/fonts'
+import { Styles, Stylesheet } from '../../styles/types'
 
 export function AboutWalletLink({ styles }: { styles: Styles }) {
   const { showModalWithContent } = useModal()

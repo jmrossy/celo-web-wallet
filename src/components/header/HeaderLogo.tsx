@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
-import LogoCompact from 'src/components/icons/logo-compact.svg'
-import LogoNormal from 'src/components/icons/logo.svg'
-import { useIsMobile } from 'src/styles/mediaQueries'
-import { Stylesheet } from 'src/styles/types'
+import LogoCompact from '../icons/logo-compact.svg'
+import LogoNormal from '../icons/logo.svg'
+import { useIsMobile } from '../../styles/mediaQueries'
+import { Stylesheet } from '../../styles/types'
 
 export function HeaderLogo() {
   const isMobile = useIsMobile()
