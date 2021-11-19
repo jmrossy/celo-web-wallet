@@ -6,6 +6,7 @@ import { ChevronIcon } from 'src/components/icons/Chevron'
 import CoinStackIcon from 'src/components/icons/coin_stack.svg'
 import CubeIcon from 'src/components/icons/cube.svg'
 import LockIcon from 'src/components/icons/lock_small.svg'
+import ChimoneyIconfrom from 'src/components/icons/logos/chimoney_logo.svg'
 import WalletConnectIcon from 'src/components/icons/logos/wallet_connect.svg'
 import SendIcon from 'src/components/icons/send_payment.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'
@@ -15,6 +16,7 @@ import { DropdownBox, useDropdownBox } from 'src/components/modal/DropdownBox'
 import { config } from 'src/config'
 import { useDownloadDesktopModal } from 'src/features/download/DownloadDesktopModal'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
+import { useSpendCeloModal } from 'src/features/SpendCelo/SpendCeloModal'
 import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { useWalletAddress } from 'src/features/wallet/hooks'
 import { useWalletConnectModal } from 'src/features/walletConnect/WalletConnectModal'
@@ -34,6 +36,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const address = useWalletAddress()
   const showQrModal = useAddressQrCodeModal()
   const showWalletConnectModal = useWalletConnectModal()
+  const showSpendCeloModal = useSpendCeloModal()
   const showDownloadDesktopModal = useDownloadDesktopModal()
   const { isDropdownVisible, showDropdown, hideDropdown } = useDropdownBox()
 
@@ -104,6 +107,11 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const onConnectClick = () => {
     hideDropdown()
     showWalletConnectModal()
+  }
+
+  const onSpendClick = () => {
+    hideDropdown()
+    showSpendCeloModal()
   }
 
   const buttonWidth = mobile ? '44%' : '9.75em'
@@ -193,6 +201,12 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               description="Use WalletConnect"
               onClick={onConnectClick}
               iconStyles={style.walletConnectIcon}
+            />
+            <MenuItem
+              icon={ChimoneyIconfrom}
+              title="Spend"
+              description="Buy Products and services"
+              onClick={onSpendClick}
             />
           </DropdownBox>
         )}

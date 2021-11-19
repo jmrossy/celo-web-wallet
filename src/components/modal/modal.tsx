@@ -160,9 +160,9 @@ const style: Stylesheet = {
   modal: {
     position: 'relative',
     minWidth: '20em',
-    maxWidth: 'min(90vw, 30em)',
+    maxWidth: 'min(90vw, 100em)',
     minHeight: '13em',
-    maxHeight: 'min(75vh, 27em)',
+    maxHeight: 'min(75vh, 100em)',
     backgroundColor: Color.primaryWhite,
     borderRadius: 6,
     display: 'flex',

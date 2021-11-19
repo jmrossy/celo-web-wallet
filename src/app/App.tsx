@@ -25,6 +25,8 @@ import { OnboardingNavigator } from 'src/features/onboarding/OnboardingNavigator
 import { SetPasswordScreen } from 'src/features/onboarding/password/SetPasswordScreen'
 import { WelcomeScreen } from 'src/features/onboarding/welcome/WelcomeScreen'
 import { ChangePasswordScreen } from 'src/features/password/ChangePasswordScreen'
+import { PaymentConfirmationScreen } from 'src/features/pay/PayConfirmationScreen'
+import { PayFormScreen } from 'src/features/pay/PayFormScreen'
 import { SendConfirmationScreen } from 'src/features/send/SendConfirmationScreen'
 import { SendFormScreen } from 'src/features/send/SendFormScreen'
 import { SettingsScreen } from 'src/features/settings/SettingsScreen'
@@ -79,7 +81,9 @@ export const App = () => {
               <Route index element={<HomeScreen />} />
               <Route path="tx" element={<TransactionReview />} />
               <Route path="send" element={<SendFormScreen />} />
+              <Route path="pay" element={<PayFormScreen />} />
               <Route path="send-review" element={<SendConfirmationScreen />} />
+              <Route path="payment-review" element={<PaymentConfirmationScreen />} />
               <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
               <Route path="exchange" element={<ExchangeFormScreen />} />
               <Route path="lock" element={<LockFormScreen />} />
