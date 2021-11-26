@@ -61,7 +61,7 @@ const configMainnet: Config = {
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
   walletConnectRelay: 'wss://relay.walletconnect.org',
-  discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
+  discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainId: 42220,
   contractAddresses: {
@@ -91,7 +91,7 @@ const configAlfajores: Config = {
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   walletConnectRelay: 'wss://relay.walletconnect.org',
-  discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
+  discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainId: 44787,
   contractAddresses: {

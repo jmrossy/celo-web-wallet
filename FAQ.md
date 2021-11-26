@@ -55,4 +55,4 @@ Note though that currently not all transactions can be parsed by the Celo Ledger
 
 ## Can feature X be added?
 
-Maybe, let's chat about it! Please see the [wallet Discord channel](https://discord.com/channels/600834479145353243/783806028629934110) for open discussion.
+Maybe, let's chat about it! Please see the [wallet Discord channel](https://discord.gg/ht885KmG5A) for open discussion.
