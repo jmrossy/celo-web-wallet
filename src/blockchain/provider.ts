@@ -1,4 +1,4 @@
-import { CeloProvider } from '@celo-tools/celo-ethers-wrapper'
+import { CeloProvider, StaticCeloProvider } from '@celo-tools/celo-ethers-wrapper'
 import { providers } from 'ethers'
 import { config } from 'src/config'
 import { STALE_BLOCK_TIME } from 'src/consts'
@@ -29,7 +29,7 @@ export async function connectToProvider() {
 async function connectToJsonRpcProvider(url: string) {
   try {
     logger.info(`Connecting to json rpc provider: ${url}`)
-    provider = new CeloProvider(url)
+    provider = new StaticCeloProvider(url, { name: 'Celo', chainId: config.chainId })
     for (let i = 0; i < 3; i++) {
       const blockAndNetworkP = Promise.all([provider.getBlock('latest'), provider.getNetwork()])
       const blockAndNetwork = await promiseTimeout(blockAndNetworkP, 1000)

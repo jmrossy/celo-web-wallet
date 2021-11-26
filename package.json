@@ -29,7 +29,7 @@
     "electron:prod": "yarn electron:build && DEBUG=electron-builder electron-builder --publish never"
   },
   "dependencies": {
-    "@celo-tools/celo-ethers-wrapper": "^0.0.5",
+    "@celo-tools/celo-ethers-wrapper": "^0.1.0",
     "@emotion/react": "^11.4.1",
     "@ledgerhq/hw-app-eth": "^5.51.1",
     "@ledgerhq/hw-transport-node-hid-noevents": "^5.51.1",

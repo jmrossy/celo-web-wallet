@@ -136,7 +136,7 @@ export function Table<T extends DataElement>(props: Props<T>) {
   )
 }
 
-function sortDataBy<T extends DataElement>(data: T[], columnId: string, decending: boolean) {
+function sortDataBy<T extends DataElement>(data: T[], columnId: string, descending: boolean) {
   return [...data].sort((a, b) => {
     let aVal = a[columnId]
     let bVal = b[columnId]
@@ -144,7 +144,7 @@ function sortDataBy<T extends DataElement>(data: T[], columnId: string, decendin
       aVal = aVal.toLowerCase()
       bVal = bVal.toLowerCase()
     }
-    const order = decending ? aVal > bVal : aVal <= bVal
+    const order = descending ? aVal > bVal : aVal <= bVal
     return order ? -1 : 1
   })
 }
