@@ -178,7 +178,7 @@ export function SendFormScreen() {
   )
 }
 
-function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null): SendTokenForm {
+function getInitialValues(location: Location, tx: TxFlowTransaction | null): SendTokenForm {
   const recipient = location?.state?.recipient
   const initialRecipient = recipient && isValidAddress(recipient) ? recipient : ''
   if (!tx || !tx.params || tx.type !== TxFlowType.Send) {

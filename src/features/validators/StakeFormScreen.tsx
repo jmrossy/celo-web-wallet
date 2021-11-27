@@ -279,7 +279,7 @@ function HelpModal() {
 }
 
 function getInitialValues(
-  location: Location<any>,
+  location: Location,
   tx: TxFlowTransaction | null,
   groupVotes: GroupVotes
 ): StakeTokenForm {

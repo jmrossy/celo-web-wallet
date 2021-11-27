@@ -32,7 +32,7 @@ import { ErrorState, invalidInput } from 'src/utils/validation'
 
 export function AddDeriveScreen() {
   const [account, setAccount] = useState<CeloWallet | null>(null)
-  const location: Location<any> = useLocation()
+  const location: Location = useLocation()
   const accountName = location?.state?.accountName
   const navigate = useNavigate()
   const { showModal, closeModal } = useModal()
