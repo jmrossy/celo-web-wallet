@@ -2,6 +2,7 @@ const webpack = require('webpack')
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 const packageJson = require('./package.json')
+const ESLintPlugin = require('eslint-webpack-plugin')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const isDevelopment = process.env.NODE_ENV === 'development'
@@ -40,9 +41,6 @@ const config = {
             loader: 'babel-loader',
             options: { cacheDirectory: true },
           },
-          {
-            loader: 'eslint-loader',
-          },
         ],
         exclude: /node_modules/,
       },
@@ -56,9 +54,6 @@ const config = {
           },
           {
             loader: 'ts-loader',
-          },
-          {
-            loader: 'eslint-loader',
           },
         ],
       },
@@ -98,6 +93,13 @@ const config = {
   },
   // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
   plugins: [
+    new ESLintPlugin({
+      extensions: ['js', 'ts', 'jsx', 'tsx'],
+      emitError: true,
+      emitWarning: true,
+      failOnError: true,
+      failOnWarning: true,
+    }),
     // Copy over static files
     new CopyPlugin(
       targetElectron
