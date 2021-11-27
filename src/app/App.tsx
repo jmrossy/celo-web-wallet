@@ -81,9 +81,9 @@ export const App = () => {
               <Route index element={<HomeScreen />} />
               <Route path="tx" element={<TransactionReview />} />
               <Route path="send" element={<SendFormScreen />} />
-              <Route path="pay" element={<PayFormScreen />} />
+              <Route path="/pay" element={<PayFormScreen />} />
               <Route path="send-review" element={<SendConfirmationScreen />} />
-              <Route path="payment-review" element={<PaymentConfirmationScreen />} />
+              <Route path="/payment-review" element={<PaymentConfirmationScreen />} />
               <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
               <Route path="exchange" element={<ExchangeFormScreen />} />
               <Route path="lock" element={<LockFormScreen />} />
