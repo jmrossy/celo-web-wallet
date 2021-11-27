@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
@@ -12,12 +12,14 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
+import { useSpendConfirmationModal } from 'src/features/pay/SpendConfirmationModal'
 import {
   createTransferTx,
   getTokenTransferType,
   sendTokenActions,
   sendTokenSagaName,
 } from 'src/features/send/sendToken'
+import { useSpendCeloModal } from 'src/features/SpendCelo/SpendCeloModal'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -28,14 +30,16 @@ import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 import { isNativeToken, NativeTokenId } from 'src/tokens'
 import { logger } from 'src/utils/logger'
-import { fetchWithTimeout } from 'src/utils/timeout'
 
 export function PaymentConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [startedConfirm, setStartedConfirm] = useState(false)
 
   const tokens = useTokens()
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const showSpendCeloModal = useSpendCeloModal()
+  const showSpendConfirmationModal = useSpendConfirmationModal()
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -62,7 +66,6 @@ export function PaymentConfirmationScreen() {
     }
   }, [tx])
 
-  console.log({ tx })
   if (!tx || tx.type !== TxFlowType.Send) return null
   const params = tx.params
   const txToken = tokens[params.tokenId]
@@ -72,26 +75,8 @@ export function PaymentConfirmationScreen() {
   const onGoBack = () => {
     dispatch(sendTokenActions.reset())
     dispatch(txFlowCanceled())
-    navigate(-1)
-  }
-
-  const sendProduct = async (issueID: string) => {
-    const url = ''
-    const response = await fetchWithTimeout(url)
-    console.log({ response })
-    if (!response.ok) {
-      // REFUND
-    }
-    const json = await response.json()
-    console.log({ json })
-
-    if (!json.result) {
-      const responseText = await response.text()
-      throw new Error(`Invalid result format: ${responseText}`)
-      // REFUND
-    }
-
-    return json.result
+    navigate('/')
+    showSpendCeloModal()
   }
 
   let tnxDetails = {
@@ -105,6 +90,7 @@ export function PaymentConfirmationScreen() {
       comment: JSON.stringify({ issueID: tnxDetails.issueID }), // Override long comment
     }
     dispatch(sendTokenActions.trigger({ ...newParams, feeEstimate: feeEstimates[0] }))
+    setStartedConfirm(true)
   }
 
   const { isWorking } = useTxFlowStatusModals({
@@ -119,6 +105,12 @@ export function PaymentConfirmationScreen() {
   })
 
   if (params.comment) tnxDetails = JSON.parse(params.comment)
+
+  if (startedConfirm && !isWorking) {
+    dispatch(sendTokenActions.reset())
+    navigate('/')
+    showSpendConfirmationModal()
+  }
 
   return (
     <ScreenContentFrame>

@@ -43,7 +43,6 @@ export function PayFormScreen() {
   // Keep form in sync with tx state
   useEffect(() => {
     const values = getInitialValues(location, tx)
-    console.log({ values })
     validateForm(values)
     onSubmit(values)
   }, [tx])
@@ -58,8 +57,6 @@ export function PayFormScreen() {
 function getInitialValues(location: Location<any>, tx: TxFlowTransaction | null): SendTokenForm {
   const recipient = location?.state?.recipient
   const params = new URLSearchParams(location.search)
-  console.log(params.keys())
-  console.log(params.values())
 
   const valueInUSD = params.get('valueInUSD')
   const initialRecipient =

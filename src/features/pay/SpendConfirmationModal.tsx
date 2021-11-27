@@ -1,12 +1,14 @@
+import { useSelector } from 'react-redux'
+import type { RootState } from 'src/app/rootReducer'
 import ChimoneyIcon from 'src/components/icons/logos/chimoney_logo.svg'
 import { useModal } from 'src/components/modal/useModal'
 import { Stylesheet } from 'src/styles/types'
 
-export function useSpendCeloModal() {
+export function useSpendConfirmationModal() {
   const { showModalWithContent } = useModal()
   return () => {
     showModalWithContent({
-      head: 'Spend Celo (Beta)',
+      head: 'Spend Celo Confirmation',
       content: <SpendModal />,
       headIcon: <Icon />,
     })
@@ -22,10 +24,17 @@ function Icon() {
 }
 
 const SpendApp = () => {
-  const baseURL = 'https://chispend.com'
-  // const baseURL = 'http://localhost:4040'
+  const allState = useSelector((state: RootState) => state)
+
+  const tnxs = allState.feed.transactions
+  const sortedTransaction = Object.values(tnxs).sort((a, b) => b.timestamp - a.timestamp)
+  const txid = sortedTransaction[0]?.hash
+
+  const baseURL = 'https://chispend.com/process/celo/confirm'
+  // const baseURL = 'http://localhost:4040/process/celo/confirm'
   const options = {
     name: 'celowallet',
+    txid,
     xAppStyle: 'light',
     cSContext: 'celowallet-web',
     primaryColor: '#35D07F',
