@@ -1,8 +1,6 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
-import type { SessionTypes } from '@walletconnect/types'
 import { BigNumber } from 'ethers'
 import { useState } from 'react'
-import {} from 'src/blockchain/contracts'
 import { Address } from 'src/components/Address'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { Box } from 'src/components/layout/Box'
@@ -17,6 +15,7 @@ import {
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
+import type { SessionTypes } from 'wcv2/types'
 
 export function RequestDetails({
   requestEvent,

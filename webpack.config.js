@@ -89,7 +89,12 @@ const config = {
       'src/app/deepLink$': targetElectron ? 'src/app/deepLink-electron.ts' : 'src/app/deepLink.ts',
     },
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
-    modules: [path.resolve('./node_modules'), path.resolve('./')],
+    modules: [
+      // Adding this line b.c. WalletConnect v2 code imports v1 deps without it
+      path.resolve('./node_modules/wcv2/client/node_modules'),
+      path.resolve('./node_modules'),
+      path.resolve('./'),
+    ],
   },
   // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
   plugins: [

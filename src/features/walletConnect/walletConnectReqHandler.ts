@@ -1,7 +1,4 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
-import WalletConnectClient from '@walletconnect/client'
-import { SessionTypes } from '@walletconnect/types'
-import { ERROR as WcError, Error as WcErrorType } from '@walletconnect/utils'
 import { BigNumber, BigNumberish } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getSigner } from 'src/blockchain/signer'
@@ -13,6 +10,9 @@ import { completeWcRequest, dismissWcRequest } from 'src/features/walletConnect/
 import { isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { call, delay, put, select } from 'typed-redux-saga'
+import type WalletConnectClient from 'wcv2/client'
+import type { SessionTypes } from 'wcv2/types'
+import { ERROR as WcError, Error as WcErrorType } from 'wcv2/utils'
 
 const DELAY_BEFORE_DISSMISS = 2500 // 2.5 seconds
 

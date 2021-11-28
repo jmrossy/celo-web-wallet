@@ -1,4 +1,4 @@
-import type { SessionTypes } from '@walletconnect/types'
+import type { SessionTypes } from 'wcv2/types'
 
 export interface WalletConnectUriForm {
   uri: string

@@ -2,9 +2,6 @@ import 'src/polyfills/buffer' // Should be the first import
 import { EventChannel, eventChannel } from '@redux-saga/core'
 import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
-import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
-import { ClientTypes, SessionTypes } from '@walletconnect/types'
-import { ERROR as WcError } from '@walletconnect/utils'
 import type { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
 import {
@@ -34,6 +31,9 @@ import { logger } from 'src/utils/logger'
 import { withTimeout } from 'src/utils/timeout'
 import { errorToString } from 'src/utils/validation'
 import { call, cancelled, delay, fork, put, race, select, take } from 'typed-redux-saga'
+import WalletConnectClient, { CLIENT_EVENTS } from 'wcv2/client'
+import type { ClientTypes, SessionTypes } from 'wcv2/types'
+import { ERROR as WcError } from 'wcv2/utils'
 
 const APP_METADATA = {
   name: 'CeloWallet.app',

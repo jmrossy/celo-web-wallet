@@ -1,4 +1,3 @@
-import type { SessionTypes } from '@walletconnect/types'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
@@ -45,6 +44,7 @@ import { Stylesheet } from 'src/styles/types'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { trimToLength } from 'src/utils/string'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import type { SessionTypes } from 'wcv2/types'
 
 export function useWalletConnectModal() {
   const { showModalWithContent, closeModal } = useModal()

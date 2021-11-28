@@ -38,7 +38,6 @@
     "@ledgerhq/hw-transport-webusb": "^5.51.1",
     "@metamask/jazzicon": "https://github.com/jmrossy/jazzicon#7a8df28",
     "@reduxjs/toolkit": "^1.6.2",
-    "@walletconnect/client": "2.0.0-beta.19",
     "buffer": "^6.0.3",
     "electron-updater": "^4.6.1",
     "ethers": "^5.5.1",
@@ -53,7 +52,11 @@
     "react-window": "^1.8.6",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.1.3",
-    "typed-redux-saga": "^1.3.1"
+    "typed-redux-saga": "^1.3.1",
+    "wcv1/client": "npm:@walletconnect/client@1.6.6",
+    "wcv2/client": "npm:@walletconnect/client@2.0.0-beta.19",
+    "wcv2/types": "npm:@walletconnect/types@2.0.0-beta.19",
+    "wcv2/utils": "npm:@walletconnect/utils@2.0.0-beta.19"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
@@ -94,6 +97,11 @@
     "webpack-dev-server": "^4.6.0"
   },
   "resolutions": {
-    "pbkdf2": "^3.1.2"
+    "pbkdf2": "^3.1.2",
+    "wcv2/client": "npm:@walletconnect/client@2.0.0-beta.19",
+    "wcv2/types": "npm:@walletconnect/types@2.0.0-beta.19",
+    "wcv2/utils": "npm:@walletconnect/utils@2.0.0-beta.19",
+    "wcv2/**/@walletconnect/types": "npm:@walletconnect/types@2.0.0-beta.19",
+    "wcv2/**/@walletconnect/utils": "npm:@walletconnect/utils@2.0.0-beta.19"
   }
 }
