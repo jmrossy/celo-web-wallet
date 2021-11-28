@@ -15,7 +15,7 @@
   "homepage": "https://celowallet.app",
   "license": "MIT",
   "dependencies": {
-    "electron-updater": "^4.3.9",
+    "electron-updater": "^4.6.1",
     "@ledgerhq/hw-transport-node-hid-noevents": "^5.51.1"
   }
 }
