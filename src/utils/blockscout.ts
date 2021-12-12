@@ -1,4 +1,5 @@
 import { BigNumber } from 'ethers'
+import { retryAsync } from 'src/utils/retry'
 import { fetchWithTimeout } from 'src/utils/timeout'
 
 interface BlockscoutResponse<R> {
@@ -8,6 +9,11 @@ interface BlockscoutResponse<R> {
 }
 
 export async function queryBlockscout<P>(url: string) {
+  const result = await retryAsync(() => executeQuery<P>(url))
+  return result
+}
+
+async function executeQuery<P>(url: string) {
   const response = await fetchWithTimeout(url)
   if (!response.ok) {
     throw new Error(`Fetch response not okay: ${response.status}`)

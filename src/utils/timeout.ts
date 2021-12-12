@@ -69,7 +69,7 @@ export const useTimeout = (
 export async function fetchWithTimeout(
   resource: RequestInfo,
   options?: RequestInit,
-  timeout = 10000
+  timeout = 12000
 ) {
   const controller = new AbortController()
   const id = setTimeout(() => controller.abort(), timeout)
