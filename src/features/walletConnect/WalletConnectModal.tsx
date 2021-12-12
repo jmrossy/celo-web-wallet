@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
+import { TextButton } from 'src/components/buttons/TextButton'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { CheckmarkInElipseIcon } from 'src/components/icons/Checkmark'
 import WalletConnectIcon from 'src/components/icons/logos/wallet_connect.svg'
@@ -19,6 +20,7 @@ import {
   WalletConnectUriForm,
 } from 'src/features/walletConnect/types'
 import {
+  clearWalletConnectStorage,
   getExpiryTime,
   getPeerName,
   getPeerUrl,
@@ -110,10 +112,21 @@ function ConnectionForm() {
     }
   }
 
+  const onClickReset = () => {
+    dispatch(resetWcClient())
+    clearWalletConnectStorage()
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       <Box direction="column" align="center">
-        <h3 css={style.h3}>Copy the WalletConnect session info and paste it here to connect.</h3>
+        <h3 css={style.h3}>Copy the WalletConnect session link and paste it here to connect.</h3>
+        <h3 css={style.h4}>
+          Having trouble?{' '}
+          <TextButton onClick={onClickReset} styles={Font.linkLight}>
+            Reset WalletConnect
+          </TextButton>
+        </h3>
         <Box direction="row" align="center" margin="1.5em 0 0 0">
           <TextInput
             name="uri"
@@ -139,7 +152,7 @@ function ConnectionForm() {
             />
           )}
         </Box>
-        <Button size="s" type="submit" margin="1.8em 0 0.25em 0" height={42}>
+        <Button size="s" type="submit" margin="1.25em 0 0.25em 0" height={42}>
           Connect
         </Button>
       </Box>
@@ -353,6 +366,11 @@ const style: Stylesheet = {
   h3: {
     ...modalStyles.h3,
     maxWidth: '18em',
+  },
+  h4: {
+    ...modalStyles.p,
+    maxWidth: '18em',
+    marginTop: '0.5em',
   },
   uriInput: {
     width: '14em',

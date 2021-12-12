@@ -1,4 +1,3 @@
-import 'src/polyfills/buffer' // Should be the first import
 import { EventChannel, eventChannel } from '@redux-saga/core'
 import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
@@ -12,15 +11,15 @@ import {
   SUPPORTED_CHAINS,
 } from 'src/features/walletConnect/config'
 import {
+  handleWalletConnectRequest,
+  validateRequestEvent,
+} from 'src/features/walletConnect/requestHandler'
+import {
   SessionStatus,
   WalletConnectError,
   WalletConnectMethod,
   WalletConnectSession,
 } from 'src/features/walletConnect/types'
-import {
-  handleWalletConnectRequest,
-  validateRequestEvent,
-} from 'src/features/walletConnect/walletConnectReqHandler'
 import {
   approveWcRequest,
   approveWcSession,
@@ -35,6 +34,7 @@ import {
   requestFromWc,
   updateWcSession,
 } from 'src/features/walletConnect/walletConnectSlice'
+import 'src/polyfills/buffer' // Should be the first import
 import { logger } from 'src/utils/logger'
 import { withTimeout } from 'src/utils/timeout'
 import { errorToString } from 'src/utils/validation'

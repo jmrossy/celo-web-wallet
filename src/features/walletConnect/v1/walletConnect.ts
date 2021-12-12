@@ -1,4 +1,3 @@
-import 'src/polyfills/buffer' // Should be the first import
 import { EventChannel, eventChannel } from '@redux-saga/core'
 import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
@@ -10,12 +9,12 @@ import {
   SESSION_PROPOSAL_TIMEOUT,
   SESSION_REQUEST_TIMEOUT,
 } from 'src/features/walletConnect/config'
-import { WalletConnectError, WalletConnectMethod } from 'src/features/walletConnect/types'
-import { IJsonRpcRequest, ISessionParams } from 'src/features/walletConnect/v1/types'
 import {
   handleWalletConnectRequest,
   validateRequestEvent,
-} from 'src/features/walletConnect/walletConnectReqHandler'
+} from 'src/features/walletConnect/requestHandler'
+import { WalletConnectError, WalletConnectMethod } from 'src/features/walletConnect/types'
+import { IJsonRpcRequest, ISessionParams } from 'src/features/walletConnect/v1/types'
 import {
   approveWcRequest,
   approveWcSession,
@@ -29,6 +28,7 @@ import {
   rejectWcSession,
   requestFromWc,
 } from 'src/features/walletConnect/walletConnectSlice'
+import 'src/polyfills/buffer' // Should be the first import
 import { logger } from 'src/utils/logger'
 import { withTimeout } from 'src/utils/timeout'
 import { errorToString } from 'src/utils/validation'

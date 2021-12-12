@@ -34,6 +34,19 @@ export function getWalletConnectVersion(uri: string): WalletConnectVersion | nul
   else return null
 }
 
+export function clearWalletConnectStorage() {
+  try {
+    if (!localStorage) throw new Error('LocalStorage inaccessible')
+    for (const key of Object.keys(localStorage)) {
+      if (/^walletconnect.*/.test(key) || /^wc.*/.test(key)) {
+        localStorage.removeItem(key)
+      }
+    }
+  } catch (error) {
+    logger.warn('Error when clearing WalletConnect storage', error)
+  }
+}
+
 export function getPeerName(session: WalletConnectSession | null, trim = false) {
   let name = 'Unknown DApp'
   if (session?.status === SessionStatus.Pending)
