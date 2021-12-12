@@ -32,7 +32,7 @@ interface Config {
   jsonRpcUrlSecondary?: string
   gatewayFeeRecipient?: string
   blockscoutUrl: string
-  walletConnectRelay: string
+  walletConnectV2Relay: string
   discordUrl: string
   desktopUrls: {
     windows: string
@@ -60,7 +60,7 @@ const configMainnet: Config = {
   jsonRpcUrlSecondary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
-  walletConnectRelay: 'wss://relay.walletconnect.org',
+  walletConnectV2Relay: 'wss://relay.walletconnect.org',
   discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainId: 42220,
@@ -90,7 +90,7 @@ const configAlfajores: Config = {
   version,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
-  walletConnectRelay: 'wss://relay.walletconnect.org',
+  walletConnectV2Relay: 'wss://relay.walletconnect.org',
   discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainId: 44787,

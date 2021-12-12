@@ -315,7 +315,7 @@ function RequestError({ message, close }: { message: string | null } & Props) {
   }
   return (
     <Box direction="column" align="center">
-      <h3 css={style.h3}>There was a problem with a WalletConnect request event</h3>
+      <h3 css={style.h3}>There was a problem with the WalletConnect request</h3>
       <p css={style.error}>{message ?? 'Unknown error'}</p>
       <Button size="s" margin="2em 0 0.5em 0" onClick={onClickDismiss} color={Color.primaryWhite}>
         Dismiss

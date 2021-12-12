@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { monitoredSagas } from 'src/app/rootSaga'
@@ -14,19 +14,11 @@ export function useSagaStatus(
   onSuccess?: () => void,
   resetSagaOnSuccess = true
 ) {
-  const { status, error } = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess)
-
   const { showErrorModal } = useModal()
-  useEffect(() => {
-    if (status === SagaStatus.Failure) {
-      showErrorModal(
-        errorTitle,
-        errorMsg || 'Something went wrong, sorry! Please try again.',
-        error
-      )
-    }
-  }, [status, error])
-
+  const onFailure = useCallback(() => {
+    showErrorModal(errorTitle, errorMsg || 'Something went wrong, sorry! Please try again.', error)
+  }, [showErrorModal])
+  const { status, error } = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess, onFailure)
   return status
 }
 
@@ -34,13 +26,19 @@ export function useSagaStatus(
 export function useSagaStatusNoModal(
   sagaName: string,
   onSuccess?: () => void,
+  onFailure?: () => void,
   resetSagaOnSuccess = true
 ) {
-  const sagaState = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess)
+  const sagaState = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess, onFailure)
   return sagaState.status
 }
 
-function _useSagaStatus(sagaName: string, resetSagaOnSuccess: boolean, onSuccess?: () => void) {
+function _useSagaStatus(
+  sagaName: string,
+  resetSagaOnSuccess: boolean,
+  onSuccess?: () => void,
+  onFailure?: () => void
+) {
   const dispatch = useDispatch()
   const sagaState = useSelector((s: RootState) => s.saga[sagaName])
   if (!sagaState) {
@@ -58,6 +56,8 @@ function _useSagaStatus(sagaName: string, resetSagaOnSuccess: boolean, onSuccess
     if (status === SagaStatus.Success) {
       if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
       if (onSuccess) onSuccess()
+    } else if (status === SagaStatus.Failure) {
+      if (onFailure) onFailure()
     }
   }, [status, error])
 
