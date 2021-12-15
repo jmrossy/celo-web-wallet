@@ -1,5 +1,5 @@
 import { resolveTokenPreferenceOrder } from 'src/features/fees/feeTokenOrder'
-import { CELO, cEUR, cUSD, NativeTokenId } from 'src/tokens'
+import { CELO, cEUR, cREAL, cUSD, NativeTokenId } from 'src/tokens'
 
 describe('resolveCurrencyPreferenceOrder', () => {
   function getBaseBalances() {
@@ -15,6 +15,10 @@ describe('resolveCurrencyPreferenceOrder', () => {
         },
         cEUR: {
           ...cEUR,
+          value: '0',
+        },
+        cREAL: {
+          ...cREAL,
           value: '0',
         },
       },

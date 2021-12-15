@@ -12,6 +12,7 @@ const feesInitialState: FeeState = {
     [NativeTokenId.CELO]: null,
     [NativeTokenId.cUSD]: null,
     [NativeTokenId.cEUR]: null,
+    [NativeTokenId.cREAL]: null,
   },
   estimates: null,
 }
