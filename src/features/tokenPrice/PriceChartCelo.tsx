@@ -12,6 +12,10 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Styles, Stylesheet } from 'src/styles/types'
 import { NativeTokenId } from 'src/tokens'
+import { logger } from 'src/utils/logger'
+import { sleep } from 'src/utils/promises'
+
+const DELAY_BEFORE_QUERYING = 2000
 
 interface PriceChartProps {
   stableTokenId: NativeTokenId
@@ -25,11 +29,17 @@ export function PriceChartCelo(props: PriceChartProps) {
 
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(
-      fetchTokenPriceActions.trigger({
-        baseCurrency: NativeTokenId.CELO,
+    // Hacking in a delay here b.c. blockscout is unreliable when two many
+    // queries are submitted too fast
+    sleep(DELAY_BEFORE_QUERYING)
+      .then(() => {
+        dispatch(
+          fetchTokenPriceActions.trigger({
+            baseCurrency: NativeTokenId.CELO,
+          })
+        )
       })
-    )
+      .catch((e) => logger.error('Error dispatching fetchTokenPrice trigger', e))
   }, [])
 
   const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)

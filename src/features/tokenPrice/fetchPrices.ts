@@ -27,7 +27,7 @@ import { call, put, select } from 'typed-redux-saga'
 
 const DEFAULT_HISTORY_NUM_DAYS = 7
 const SECONDS_PER_DAY = 86400
-const BLOCK_FETCHING_INTERVAL_SIZE = 90 // 1.5 minutes
+const BLOCK_FETCHING_INTERVAL_SIZE = 60 // 1 minutes
 const PAUSE_BETWEEN_FETCH_REQUESTS = 250 // 1/4 second
 const MAX_TIME_FROM_NOW_FOR_LOG = 600_000 // 10 minutes
 const MEDIAN_UPDATED_TOPIC_0 = '0xa9981ebfc3b766a742486e898f54959b050a66006dbce1a4155c1f84a08bcf41'
