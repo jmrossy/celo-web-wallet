@@ -5,7 +5,7 @@ import storage from 'redux-persist/lib/storage'
 import { SignerType } from 'src/blockchain/types'
 import { Balances } from 'src/features/wallet/types'
 import { isValidDerivationPath } from 'src/features/wallet/utils'
-import { CELO, cEUR, cUSD, Token } from 'src/tokens'
+import { CELO, cEUR, cREAL, cUSD, Token } from 'src/tokens'
 import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
 import { assert } from 'src/utils/validation'
 
@@ -51,6 +51,10 @@ export const walletInitialState: Wallet = {
       },
       cEUR: {
         ...cEUR,
+        value: '0',
+      },
+      cREAL: {
+        ...cREAL,
         value: '0',
       },
     },

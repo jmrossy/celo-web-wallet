@@ -22,8 +22,9 @@ export const MAX_COMMENT_CHAR_LENGTH = 70 // Chosen to match max length in Valor
 export const MAX_ACCOUNT_NAME_LENGTH = 50
 
 export const MAX_FEE_SIZE = '1000000000000000000' // 1 Token
-export const MAX_GAS_PRICE = '5000000000' // 5 Gwei
+export const MAX_GAS_PRICE = '500000000000' // 500 Gwei
 export const MAX_GAS_LIMIT = '10000000' // 10 million
+export const MIN_GAS_AMOUNT = '20000'
 
 export const MIN_EXCHANGE_RATE = 0.01 // 1<->100 ratio
 export const MAX_EXCHANGE_RATE = 100 // 1<->100 ratio

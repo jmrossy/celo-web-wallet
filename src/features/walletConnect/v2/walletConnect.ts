@@ -2,20 +2,25 @@ import 'src/polyfills/buffer' // Should be the first import
 import { EventChannel, eventChannel } from '@redux-saga/core'
 import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
-import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/client'
-import { ClientTypes, SessionTypes } from '@walletconnect/types'
-import { ERROR as WcError } from '@walletconnect/utils'
 import type { RootState } from 'src/app/rootReducer'
 import { config } from 'src/config'
 import {
-  SessionStatus,
-  WalletConnectMethods,
-  WalletConnectSession,
-} from 'src/features/walletConnect/types'
+  APP_METADATA,
+  SESSION_INIT_TIMEOUT,
+  SESSION_PROPOSAL_TIMEOUT,
+  SESSION_REQUEST_TIMEOUT,
+  SUPPORTED_CHAINS,
+} from 'src/features/walletConnect/config'
 import {
   handleWalletConnectRequest,
   validateRequestEvent,
-} from 'src/features/walletConnect/walletConnectReqHandler'
+} from 'src/features/walletConnect/requestHandler'
+import {
+  SessionStatus,
+  WalletConnectError,
+  WalletConnectMethod,
+  WalletConnectSession,
+} from 'src/features/walletConnect/types'
 import {
   approveWcRequest,
   approveWcSession,
@@ -34,27 +39,9 @@ import { logger } from 'src/utils/logger'
 import { withTimeout } from 'src/utils/timeout'
 import { errorToString } from 'src/utils/validation'
 import { call, cancelled, delay, fork, put, race, select, take } from 'typed-redux-saga'
-
-const APP_METADATA = {
-  name: 'CeloWallet.app',
-  description: `Celo Wallet for ${config.isElectron ? 'Desktop' : 'Web'}`,
-  url: 'https://celowallet.app',
-  icons: ['https://celowallet.app/static/icon.png'],
-}
-
-// alfajores, mainnet, baklava
-const SUPPORTED_CHAINS = [
-  'celo:44787',
-  'celo:42220',
-  'celo:62320',
-  'eip155:44787',
-  'eip155:42220',
-  'eip155:62320',
-]
-
-const SESSION_INIT_TIMEOUT = 15000 // 15 seconds
-const SESSION_PROPOSAL_TIMEOUT = 180000 // 3 minutes
-const SESSION_REQUEST_TIMEOUT = 300000 // 5 minutes
+import WalletConnectClient, { CLIENT_EVENTS } from 'wcv2/client'
+import type { ClientTypes, SessionTypes } from 'wcv2/types'
+import { ERROR as WcError, Error as WcErrorType } from 'wcv2/utils'
 
 // This is what actually interacts with the WC client
 // It initializes it, pairs it, and handles events
@@ -92,6 +79,9 @@ export function* runWalletConnectSession(uri: string) {
       }
       const { type, payload } = event
       logger.debug('Event from WalletConnect channel', type)
+      if (type === deleteWcSession.type) {
+        throw new Error('DApp deleted session')
+      }
       if (type === proposeWcSession.type) {
         logger.warn('Ignoring new session proposal while one is active')
       }
@@ -103,7 +93,7 @@ export function* runWalletConnectSession(uri: string) {
   } catch (error) {
     // Note, saga-quirk: errors from fork calls won't be caught here
     yield* put(failWcSession(errorToString(error)))
-    logger.error('Error during WalletConnect session', error)
+    logger.error('Error during WalletConnect V2 session', error)
   } finally {
     if (yield* cancelled()) {
       logger.debug('WalletConnect session cancelled before completion')
@@ -118,7 +108,7 @@ async function initClient(uri: string) {
   logger.info('Initializing WalletConnect')
   // Create new client
   const client = await WalletConnectClient.init({
-    relayProvider: config.walletConnectRelay,
+    relayProvider: config.walletConnectV2Relay,
     metadata: APP_METADATA,
     controller: true,
     logger: 'debug',
@@ -211,17 +201,21 @@ async function validateProposal(proposal: SessionTypes.Proposal, client: WalletC
     return false
   }
 
-  if (
-    proposal.permissions.blockchain.chains.find((chainId) => !SUPPORTED_CHAINS.includes(chainId))
-  ) {
-    logger.warn('Rejecting WalletConnect session: unsupported chain')
+  const unsupportedChain = proposal.permissions.blockchain.chains.find(
+    (chainId) => !SUPPORTED_CHAINS.includes(chainId)
+  )
+  if (unsupportedChain) {
+    logger.warn(`Rejecting WalletConnect session: unsupported chain ${unsupportedChain}`)
     await client.reject({ proposal, reason: WcError.UNSUPPORTED_CHAINS.format() })
     return false
   }
 
-  const supportedMethods = Object.values(WalletConnectMethods) as string[]
-  if (proposal.permissions.jsonrpc.methods.find((method) => !supportedMethods.includes(method))) {
-    logger.warn('Rejecting WalletConnect session: unsupported method')
+  const supportedMethods = Object.values(WalletConnectMethod) as string[]
+  const unsupportedMethod = proposal.permissions.jsonrpc.methods.find(
+    (method) => !supportedMethods.includes(method)
+  )
+  if (unsupportedMethod) {
+    logger.warn(`Rejecting WalletConnect session: unsupported method ${unsupportedMethod}`)
     await client.reject({
       proposal,
       reason: WcError.UNSUPPORTED_JSONRPC.format(),
@@ -278,7 +272,7 @@ function* handleRequestEvent(event: SessionTypes.RequestEvent, client: WalletCon
   logger.debug('WalletConnect session request received')
 
   try {
-    const isValid = yield* call(validateRequestEvent, event, client)
+    const isValid = yield* call(validateRequestEvent, event, client, denyRequest)
     if (!isValid) return // silently reject invalid requests
 
     yield* put(requestFromWc(event))
@@ -289,13 +283,72 @@ function* handleRequestEvent(event: SessionTypes.RequestEvent, client: WalletCon
       timeout: delay(SESSION_REQUEST_TIMEOUT),
     })
 
-    yield* call(handleWalletConnectRequest, event, client, !!approve)
+    yield* call(handleWalletConnectRequest, event, client, !!approve, approveRequest, denyRequest)
     if (timeout) {
       yield* put(failWcRequest('Request timed out, please try again'))
     }
   } catch (error) {
     logger.error('Error handling request event', error)
     yield* put(failWcRequest(errorToString(error)))
+  }
+}
+
+export function denyRequest(
+  event: SessionTypes.RequestEvent,
+  client: WalletConnectClient,
+  error: WalletConnectError
+) {
+  logger.debug('Denying WalletConnect request event', event.request.method, error)
+  return respond(event, client, undefined, toWcUtilsError(error))
+}
+
+export function approveRequest(
+  event: SessionTypes.RequestEvent,
+  client: WalletConnectClient,
+  result: any
+) {
+  logger.debug('Approving WalletConnect request event', event.request.method)
+  return respond(event, client, result)
+}
+
+function respond(
+  event: SessionTypes.RequestEvent,
+  client: WalletConnectClient,
+  result?: any,
+  error?: WcErrorType
+) {
+  const base = {
+    topic: event.topic,
+    response: {
+      id: event.request.id,
+      jsonrpc: event.request.jsonrpc,
+    },
+  }
+  let response
+  if (result) {
+    response = { ...base, response: { ...base.response, result } }
+  } else if (error) {
+    response = { ...base, response: { ...base.response, error: error.format() } }
+  } else {
+    throw new Error('Cannot respond without result or error')
+  }
+  return client.respond(response)
+}
+
+// Map from local error enum's to WC's official ones
+// Needed to avoid bundling unpleasantness when dealing with WC V1
+function toWcUtilsError(error: WalletConnectError): WcErrorType {
+  switch (error) {
+    case WalletConnectError.unsupportedJsonRpc:
+      return WcError.UNSUPPORTED_JSONRPC
+    case WalletConnectError.unsupportedChains:
+      return WcError.UNSUPPORTED_CHAINS
+    case WalletConnectError.missingOrInvalid:
+      return WcError.MISSING_OR_INVALID
+    case WalletConnectError.notApproved:
+      return WcError.NOT_APPROVED
+    default:
+      return WcError.UNKNOWN
   }
 }
 

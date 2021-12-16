@@ -14,9 +14,10 @@ See the [FAQ](FAQ.md) for more details about common questions.
 
 This wallet uses [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity). Current bundle hashes:
 
-* Main bundle: `bundle.js -> sha256-x9oGHUxFMH+grTV/yqpWYsWnVdmD00PPolTahdB4sUE=`
-* Optional Ledger bundle: `bundle-ledger.js -> sha256-ahGOG1h2KTAtylviHC6GYqCX9Pa2NUleoytU5knhB6E=`
-* Optional WalletConnect bundle: `bundle-walletconnect.js -> sha256-eGLzdWvYcl/9NmhqTvc7j8/jhWAwauOnaGL4wNMs44w=`
+* Main bundle: `bundle.js -> sha256-kVZnRwd7Qa095vApngR7IxDK53ZSFJB86RzMYRpfPSU=`
+* Optional Ledger bundle: `bundle-ledger.js -> sha256-pNndh3uDU7f3K3e4nu05OXTE3Bx3WRMeVtr95liXJTE=`
+* Optional WalletConnect v1 bundle: `bundle-walletconnectv1.js -> sha256-PImYY1hPF519ZjZx2Pei7QsZ7kJyMpdtJgRKHT52ekg=`
+* Optional WalletConnect v2 bundle: `bundle-walletconnectv2.js -> sha256-UHsf1l/tWhpHJk2NMbCH1l372Pm8JoGxLLQqCLnNaLI=`
 
 Advanced users can verify the source integrity by comparing the hashes in their page source to these values.
 
@@ -47,7 +48,7 @@ yarn electron:dev
 ## Contributing
 
 For small contributions such as bug fixes or style tweaks, please open a Pull Request.
-For new features, please create an issue to start a discussion on [Discord](https://discord.com/channels/600834479145353243/812471799585439794).
+For new features, please create an issue to start a discussion on [Discord](https://discord.gg/ht885KmG5A).
 
 ## License
 

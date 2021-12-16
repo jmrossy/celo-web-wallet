@@ -4,7 +4,7 @@ import { ImportAccountForm } from 'src/features/onboarding/import/ImportAccountF
 import { Font } from 'src/styles/fonts'
 
 export function AddImportScreen() {
-  const location: Location<any> = useLocation()
+  const location: Location = useLocation()
   const accountName = location?.state?.accountName
 
   const navigate = useNavigate()

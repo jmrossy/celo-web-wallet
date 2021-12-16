@@ -48,6 +48,7 @@ function getContractAbi(c: CeloContract) {
       return EscrowAbi
     case CeloContract.Exchange:
     case CeloContract.ExchangeEUR:
+    case CeloContract.ExchangeBRL:
       return ExchangeAbi
     case CeloContract.GoldToken:
       return GoldTokenAbi
@@ -59,6 +60,7 @@ function getContractAbi(c: CeloContract) {
       return SortedOraclesAbi
     case CeloContract.StableToken:
     case CeloContract.StableTokenEUR:
+    case CeloContract.StableTokenBRL:
       return StableTokenAbi
     case CeloContract.Validators:
       return ValidatorsAbi

@@ -1,15 +1,18 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
-import { BigNumberish } from 'ethers'
+import { BigNumber, BigNumberish } from 'ethers'
 import { getContractName } from 'src/blockchain/contracts'
+import { config } from 'src/config'
+import { MIN_GAS_AMOUNT } from 'src/consts'
 import {
   SessionStatus,
-  WalletConnectMethods,
+  WalletConnectMethod,
   WalletConnectSession,
   WalletConnectUriForm,
+  WalletConnectVersion,
 } from 'src/features/walletConnect/types'
 import { findTokenByAddress } from 'src/tokenList'
-import { CELO, NativeTokens, UnknownToken } from 'src/tokens'
-import { areAddressesEqual } from 'src/utils/addresses'
+import { CELO, NativeTokens, Token } from 'src/tokens'
+import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { trimToLength } from 'src/utils/string'
 import { ErrorState, invalidInput } from 'src/utils/validation'
@@ -23,6 +26,25 @@ export function validateWalletConnectForm(values: WalletConnectUriForm): ErrorSt
     return invalidInput('uri', 'Invalid WalletConnect URI')
   }
   return { isValid: true }
+}
+
+export function getWalletConnectVersion(uri: string): WalletConnectVersion | null {
+  if (/^wc:[a-z0-9-].*@1/.test(uri)) return 1
+  else if (/^wc:[a-z0-9].*@2/.test(uri)) return 2
+  else return null
+}
+
+export function clearWalletConnectStorage() {
+  try {
+    if (!localStorage) throw new Error('LocalStorage inaccessible')
+    for (const key of Object.keys(localStorage)) {
+      if (/^walletconnect.*/.test(key) || /^wc.*/.test(key)) {
+        localStorage.removeItem(key)
+      }
+    }
+  } catch (error) {
+    logger.warn('Error when clearing WalletConnect storage', error)
+  }
 }
 
 export function getPeerName(session: WalletConnectSession | null, trim = false) {
@@ -60,20 +82,20 @@ export function getPermissionList(session: WalletConnectSession | null) {
 
 export function rpcMethodToLabel(method: string) {
   switch (method) {
-    case WalletConnectMethods.accounts:
+    case WalletConnectMethod.accounts:
       return 'view accounts'
-    case WalletConnectMethods.computeSharedSecret:
+    case WalletConnectMethod.computeSharedSecret:
       return 'compute secrets'
-    case WalletConnectMethods.personalDecrypt:
+    case WalletConnectMethod.personalDecrypt:
       return 'decrypt data'
-    case WalletConnectMethods.personalSign:
-    case WalletConnectMethods.sign:
+    case WalletConnectMethod.personalSign:
+    case WalletConnectMethod.sign:
       return 'sign data'
-    case WalletConnectMethods.sendTransaction:
+    case WalletConnectMethod.sendTransaction:
       return 'send a transaction'
-    case WalletConnectMethods.signTransaction:
+    case WalletConnectMethod.signTransaction:
       return 'sign a transaction'
-    case WalletConnectMethods.signTypedData:
+    case WalletConnectMethod.signTypedData:
       return 'sign typed data'
     default:
       logger.warn('Unknown walletconnect rpc method', method)
@@ -95,12 +117,10 @@ export function identifyContractByAddress(address: string) {
   return null
 }
 
-export function identifyFeeToken(feeCurrency: string | null | undefined) {
+export function identifyFeeToken(feeCurrency: string | null | undefined): Token {
   if (!feeCurrency) return CELO
-  return (
-    Object.values(NativeTokens).find((t) => areAddressesEqual(t.address, feeCurrency)) ||
-    UnknownToken
-  )
+  const token = Object.values(NativeTokens).find((t) => areAddressesEqual(t.address, feeCurrency))
+  return token || CELO
 }
 
 // Ethers uses slightly different tx field names than web3 / celo sdk
@@ -110,5 +130,26 @@ export function translateTxFields(tx: CeloTransactionRequest & { gas?: BigNumber
   } else if (tx.gas) {
     const { gas, ...rest } = tx
     return { ...rest, gasLimit: gas }
-  } else throw new Error('Gas field missing in tx fields')
+  } else {
+    logger.debug('No gas field found in WalletConnect tx')
+    return tx
+  }
+}
+
+export function isValidTx(tx: CeloTransactionRequest & { gas?: BigNumberish }) {
+  try {
+    if (!tx) throw new Error('Tx missing')
+    if (!tx.to || !isValidAddress(tx.to)) throw new Error('Invalid to field')
+    if (!tx.from || !isValidAddress(tx.from)) throw new Error('Invalid from field')
+    if (tx.chainId && tx.chainId !== config.chainId) throw new Error('Invalid chain id')
+    if (tx.nonce && BigNumber.from(tx.nonce).lte(0)) throw new Error('Invalid nonce')
+    if (tx.gas && BigNumber.from(tx.gas).lte(MIN_GAS_AMOUNT)) throw new Error('Invalid gas')
+    if (tx.gasLimit && BigNumber.from(tx.gasLimit).lte(MIN_GAS_AMOUNT))
+      throw new Error('Invalid gasLimit')
+    if (tx.gasPrice && BigNumber.from(tx.gasPrice).lte(0)) throw new Error('Invalid gas price')
+    return true
+  } catch (error) {
+    logger.error('Error validating WalletConnect tx request', error, tx)
+    return false
+  }
 }

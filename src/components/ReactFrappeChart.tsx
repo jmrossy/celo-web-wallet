@@ -66,6 +66,7 @@ type Props = {
   valuesOverPoints?: 0 | 1
 }
 
+// eslint-disable-next-line react/display-name
 export const ReactFrappeChart = forwardRef((props: Props, parentRef) => {
   const ref = useRef<HTMLDivElement>(null)
   const chart = useRef<any>(null)

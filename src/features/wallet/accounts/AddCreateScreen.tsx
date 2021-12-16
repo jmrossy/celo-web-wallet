@@ -5,7 +5,7 @@ import { NewAccountForm } from 'src/features/onboarding/new/NewAccountForm'
 import { Font } from 'src/styles/fonts'
 
 export function AddCreateScreen() {
-  const location: Location<any> = useLocation()
+  const location: Location = useLocation()
   const accountName = location?.state?.accountName
 
   const navigate = useNavigate()

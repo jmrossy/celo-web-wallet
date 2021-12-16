@@ -97,7 +97,7 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
   if (lastBlockNumber) {
     txQueryUrl += `&startblock=${lastBlockNumber + 1}`
   }
-  const txListP = queryBlockscout<Array<BlockscoutTx>>(txQueryUrl)
+  const txList = await queryBlockscout<Array<BlockscoutTx>>(txQueryUrl)
 
   // The txlist query alone doesn't get all needed transactions
   // It excludes incoming token transfers so we need a second query to cover those
@@ -108,9 +108,7 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
   if (lastBlockNumber) {
     tokenTxQueryUrl += `&startblock=${lastBlockNumber + 1}`
   }
-  const tokenTxListP = queryBlockscout<Array<BlockscoutTokenTransfer>>(tokenTxQueryUrl)
-
-  const [txList, tokenTxList] = await Promise.all([txListP, tokenTxListP])
+  const tokenTxList = await queryBlockscout<Array<BlockscoutTokenTransfer>>(tokenTxQueryUrl)
 
   // Create a map of hash to txs
   const txMap = new Map<string, BlockscoutTx>()

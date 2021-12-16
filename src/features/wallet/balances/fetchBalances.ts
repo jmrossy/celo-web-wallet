@@ -72,6 +72,7 @@ async function fetchTokenBalances(
   }
 
   const tokenBalancesArr = await Promise.all(fetchPromises)
+  // Note, this ensures the balances have at least the default set of tokens
   const tokenBalances = { ...walletInitialState.balances.tokens }
   tokenBalancesArr.forEach((bal) => (tokenBalances[bal.id] = bal))
   return tokenBalances

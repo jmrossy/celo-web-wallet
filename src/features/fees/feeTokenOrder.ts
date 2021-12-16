@@ -3,7 +3,7 @@ import { Balances } from 'src/features/wallet/types'
 import { NativeTokenId } from 'src/tokens'
 
 // Decide which order to try gas fee payments in
-// Putting this in a separate file for now to faciliate testing
+// Putting this in a separate file for now to facilitate testing
 export function resolveTokenPreferenceOrder(
   balances: Balances,
   preferredToken: NativeTokenId = NativeTokenId.CELO,

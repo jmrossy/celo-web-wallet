@@ -21,12 +21,15 @@ import {
   validateBlockscoutLog,
 } from 'src/utils/blockscout'
 import { logger } from 'src/utils/logger'
+import { sleep } from 'src/utils/promises'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put, select } from 'typed-redux-saga'
 
 const DEFAULT_HISTORY_NUM_DAYS = 7
 const SECONDS_PER_DAY = 86400
-const BLOCK_FETCHING_INTERVAL_SIZE = 300 // 6 minutes
+const BLOCK_FETCHING_INTERVAL_SIZE = 60 // 1 minutes
+const PAUSE_BETWEEN_FETCH_REQUESTS = 250 // 1/4 second
+const MAX_TIME_FROM_NOW_FOR_LOG = 600_000 // 10 minutes
 const MEDIAN_UPDATED_TOPIC_0 = '0xa9981ebfc3b766a742486e898f54959b050a66006dbce1a4155c1f84a08bcf41'
 const EXPECTED_MIN_CELO_TO_STABLE = 0.1
 const EXPECTED_MAX_CELO_TO_STABLE = 100
@@ -86,6 +89,7 @@ async function fetchStableTokenPrices(numDays: number, oldPrices?: QuoteCurrency
       if (!priceUpdates[id]) priceUpdates[id] = []
       priceUpdates[id]!.push(price)
     }
+    await sleep(PAUSE_BETWEEN_FETCH_REQUESTS) // Brief pause to help avoid overloading blockscout and/or getting rate limited
   }
 
   const mergedPrices = mergePriceHistories(priceUpdates, oldPrices)
@@ -161,7 +165,7 @@ function parseBlockscoutOracleLogsForToken(
       }
 
       const timestamp = BigNumber.from(ensureLeading0x(log.timeStamp)).mul(1000)
-      if (timestamp.lte(0) || timestamp.gt(Date.now() + 600000)) {
+      if (timestamp.lte(0) || timestamp.gt(Date.now() + MAX_TIME_FROM_NOW_FOR_LOG)) {
         throw new Error(`Invalid timestamp: ${log.timeStamp}`)
       }
 

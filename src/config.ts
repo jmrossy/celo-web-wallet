@@ -5,6 +5,7 @@ export enum CeloContract {
   Escrow = 'Escrow',
   Exchange = 'Exchange',
   ExchangeEUR = 'ExchangeEUR',
+  ExchangeBRL = 'ExchangeBRL',
   GasPriceMinimum = 'GasPriceMinimum',
   GoldToken = 'GoldToken',
   Governance = 'Governance',
@@ -13,6 +14,7 @@ export enum CeloContract {
   SortedOracles = 'SortedOracles',
   StableToken = 'StableToken',
   StableTokenEUR = 'StableTokenEUR',
+  StableTokenBRL = 'StableTokenBRL',
   Validators = 'Validators',
 }
 
@@ -32,7 +34,7 @@ interface Config {
   jsonRpcUrlSecondary?: string
   gatewayFeeRecipient?: string
   blockscoutUrl: string
-  walletConnectRelay: string
+  walletConnectV2Relay: string
   discordUrl: string
   desktopUrls: {
     windows: string
@@ -60,8 +62,8 @@ const configMainnet: Config = {
   jsonRpcUrlSecondary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
-  walletConnectRelay: 'wss://relay.walletconnect.org',
-  discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
+  walletConnectV2Relay: 'wss://relay.walletconnect.org',
+  discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainId: 42220,
   contractAddresses: {
@@ -71,6 +73,7 @@ const configMainnet: Config = {
     [CeloContract.Escrow]: '0xf4Fa51472Ca8d72AF678975D9F8795A504E7ada5',
     [CeloContract.Exchange]: '0x67316300f17f063085Ca8bCa4bd3f7a5a3C66275',
     [CeloContract.ExchangeEUR]: '0xE383394B913d7302c49F794C7d3243c429d53D1d',
+    [CeloContract.ExchangeBRL]: '0x8f2cf9855C919AFAC8Bd2E7acEc0205ed568a4EA',
     [CeloContract.GasPriceMinimum]: '0xDfca3a8d7699D8bAfe656823AD60C17cb8270ECC',
     [CeloContract.GoldToken]: '0x471EcE3750Da237f93B8E339c536989b8978a438',
     [CeloContract.Governance]: '0xD533Ca259b330c7A88f74E000a3FaEa2d63B7972',
@@ -79,6 +82,7 @@ const configMainnet: Config = {
     [CeloContract.SortedOracles]: '0xefB84935239dAcdecF7c5bA76d8dE40b077B7b33',
     [CeloContract.StableToken]: '0x765DE816845861e75A25fCA122bb6898B8B1282a',
     [CeloContract.StableTokenEUR]: '0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73',
+    [CeloContract.StableTokenBRL]: '0xe8537a3d056DA446677B9E9d6c5dB704EaAb4787',
     [CeloContract.Validators]: '0xaEb865bCa93DdC8F47b8e29F40C5399cE34d0C58',
   },
 }
@@ -90,8 +94,8 @@ const configAlfajores: Config = {
   version,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
-  walletConnectRelay: 'wss://relay.walletconnect.org',
-  discordUrl: 'https://discord.com/channels/600834479145353243/812471799585439794',
+  walletConnectV2Relay: 'wss://relay.walletconnect.org',
+  discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainId: 44787,
   contractAddresses: {
@@ -101,6 +105,7 @@ const configAlfajores: Config = {
     [CeloContract.Escrow]: '0xb07E10c5837c282209c6B9B3DE0eDBeF16319a37',
     [CeloContract.Exchange]: '0x17bc3304F94c85618c46d0888aA937148007bD3C',
     [CeloContract.ExchangeEUR]: '0x997B494F17D3c49E66Fafb50F37A972d8Db9325B',
+    [CeloContract.ExchangeBRL]: '0xf391DcaF77360d39e566b93c8c0ceb7128fa1A08',
     [CeloContract.GasPriceMinimum]: '0xd0Bf87a5936ee17014a057143a494Dc5C5d51E5e',
     [CeloContract.GoldToken]: '0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9',
     [CeloContract.Governance]: '0xAA963FC97281d9632d96700aB62A4D1340F9a28a',
@@ -109,6 +114,7 @@ const configAlfajores: Config = {
     [CeloContract.SortedOracles]: '0xFdd8bD58115FfBf04e47411c1d228eCC45E93075',
     [CeloContract.StableToken]: '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1',
     [CeloContract.StableTokenEUR]: '0x10c892A6EC43a53E45D0B916B4b7D383B1b78C0F',
+    [CeloContract.StableTokenBRL]: '0xE4D517785D091D3c54818832dB6094bcc2744545',
     [CeloContract.Validators]: '0x9acF2A99914E083aD0d610672E93d14b0736BBCc',
   },
 }

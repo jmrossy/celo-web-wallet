@@ -5,7 +5,7 @@ import { LedgerImportForm } from 'src/features/onboarding/import/LedgerImportFor
 import { Font } from 'src/styles/fonts'
 
 export function AddLedgerScreen() {
-  const location: Location<any> = useLocation()
+  const location: Location = useLocation()
   const accountName = location?.state?.accountName
 
   const navigate = useNavigate()

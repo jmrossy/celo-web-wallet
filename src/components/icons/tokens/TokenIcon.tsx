@@ -1,11 +1,12 @@
 import { memo } from 'react'
 import CeloIcon from 'src/components/icons/tokens/CELO.svg'
 import cEURIcon from 'src/components/icons/tokens/cEUR.svg'
+import cREALIcon from 'src/components/icons/tokens/cREAL.svg'
 import cUSDIcon from 'src/components/icons/tokens/cUSD.svg'
 import { Box } from 'src/components/layout/Box'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
-import { CELO, cEUR, cUSD, Token } from 'src/tokens'
+import { CELO, cEUR, cREAL, cUSD, Token } from 'src/tokens'
 
 interface Props {
   token: Token
@@ -17,6 +18,7 @@ function _TokenIcon({ token, size }: Props) {
   if (token.id === CELO.id) icon = CeloIcon
   else if (token.id === cUSD.id) icon = cUSDIcon
   else if (token.id === cEUR.id) icon = cEURIcon
+  else if (token.id === cREAL.id) icon = cREALIcon
 
   const { fallbackImgSize, actualSize, fontSize } = sizeValues[size]
 

@@ -1,22 +1,28 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
-import type { SessionTypes } from '@walletconnect/types'
 import { BigNumber } from 'ethers'
-import { useState } from 'react'
-import {} from 'src/blockchain/contracts'
+import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Address } from 'src/components/Address'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { Box } from 'src/components/layout/Box'
 import { modalStyles } from 'src/components/modal/modalStyles'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { WalletConnectMethods } from 'src/features/walletConnect/types'
+import { NULL_ADDRESS } from 'src/consts'
+import { estimateFeeActions, estimateFeeSagaName } from 'src/features/fees/estimateFee'
+import { useFee } from 'src/features/fees/utils'
+import { TransactionType } from 'src/features/types'
+import { WalletConnectMethod } from 'src/features/walletConnect/types'
 import {
   identifyContractByAddress,
   identifyFeeToken,
   translateTxFields,
 } from 'src/features/walletConnect/utils'
+import { failWcRequest } from 'src/features/walletConnect/walletConnectSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { CELO } from 'src/tokens'
+import { CELO, NativeTokenId } from 'src/tokens'
+import { useSagaStatusNoModal } from 'src/utils/useSagaStatus'
+import type { SessionTypes } from 'wcv2/types'
 
 export function RequestDetails({
   requestEvent,
@@ -27,26 +33,26 @@ export function RequestDetails({
     throw new Error('WalletConnect request event is missing')
   }
   const { method, params } = requestEvent.request
-  if (method === WalletConnectMethods.accounts) {
+  if (method === WalletConnectMethod.accounts) {
     return <AccountsRequest />
   }
-  if (method === WalletConnectMethods.computeSharedSecret) {
+  if (method === WalletConnectMethod.computeSharedSecret) {
     return <div css={modalStyles.p}>Method not yet supported.</div>
   }
-  if (method === WalletConnectMethods.personalDecrypt) {
+  if (method === WalletConnectMethod.personalDecrypt) {
     return <div css={modalStyles.p}>Method not yet supported.</div>
   }
-  if (method === WalletConnectMethods.sign || method === WalletConnectMethods.personalSign) {
+  if (method === WalletConnectMethod.sign || method === WalletConnectMethod.personalSign) {
     return <SignRequest data={params} />
   }
   if (
-    method === WalletConnectMethods.sendTransaction ||
-    method === WalletConnectMethods.signTransaction
+    method === WalletConnectMethod.sendTransaction ||
+    method === WalletConnectMethod.signTransaction
   ) {
     const formattedTx = translateTxFields(params)
     return <TransactionRequest txRequest={formattedTx} />
   }
-  if (method === WalletConnectMethods.signTypedData) {
+  if (method === WalletConnectMethod.signTypedData) {
     return <div css={modalStyles.p}>Method not yet supported.</div>
   } else {
     throw new Error(`Unsupported WalletConnect method: ${method}`)
@@ -66,13 +72,33 @@ function AccountsRequest() {
 
 function TransactionRequest({ txRequest }: { txRequest: CeloTransactionRequest }) {
   const { to, value, gasPrice, gasLimit, feeCurrency, data } = txRequest
-  if (!to || !gasPrice || !gasLimit)
-    throw new Error('Cannot display invalid WalletConnect transaction request')
-
   const contractName = to ? identifyContractByAddress(to) : null
   const txValue = BigNumber.from(value ?? 0)
-  const feeEstimate = BigNumber.from(gasPrice).mul(gasLimit)
   const feeToken = identifyFeeToken(feeCurrency)
+  const gasPrepopulated = !!(gasPrice && gasLimit)
+
+  const dispatch = useDispatch()
+  useEffect(() => {
+    if (!gasPrepopulated) {
+      dispatch(
+        estimateFeeActions.trigger({
+          txs: [{ type: TransactionType.Other, tx: txRequest }],
+          preferredToken: feeToken.id as NativeTokenId,
+          forceGasEstimation: true,
+        })
+      )
+    }
+  }, [])
+
+  const computedFee = useFee(txValue.toString())
+  const feeAmount = gasPrepopulated
+    ? BigNumber.from(gasPrice).mul(gasLimit).toString()
+    : computedFee.feeAmount
+
+  const onFeeFailure = () => {
+    dispatch(failWcRequest('Unable to compute fee, the transaction may be invalid'))
+  }
+  useSagaStatusNoModal(estimateFeeSagaName, undefined, onFeeFailure)
 
   const [showData, setShowData] = useState(false)
   const onShowClick = () => {
@@ -84,7 +110,7 @@ function TransactionRequest({ txRequest }: { txRequest: CeloTransactionRequest }
       <Box align="center" justify="between" styles={style.txFieldRow}>
         <div css={style.txFieldLabel}>To:</div>
         <div css={style.txAddress}>
-          <Address address={to} />
+          <Address address={to || NULL_ADDRESS} />
         </div>
       </Box>
       {contractName && (
@@ -101,7 +127,12 @@ function TransactionRequest({ txRequest }: { txRequest: CeloTransactionRequest }
       )}
       <Box align="center" justify="between" styles={style.txFieldRow}>
         <div css={style.txFieldLabel}>Fee:</div>
-        <MoneyValue amountInWei={feeEstimate} token={feeToken} baseFontSize={1} />
+        {feeAmount ? (
+          <MoneyValue amountInWei={feeAmount} token={feeToken} baseFontSize={1} />
+        ) : (
+          // TODO a proper loader (need to update mocks)
+          <div>Loading...</div>
+        )}
       </Box>
       {data && (
         <Box align="center" justify="between" styles={style.txFieldRow}>

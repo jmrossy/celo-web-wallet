@@ -1,10 +1,10 @@
 import { createAction, createSlice } from '@reduxjs/toolkit'
-import type { SessionTypes } from '@walletconnect/types'
 import {
   SessionStatus,
   WalletConnectSession,
   WalletConnectStatus,
 } from 'src/features/walletConnect/types'
+import type { SessionTypes } from 'wcv2/types'
 
 export const initializeWcClient = createAction<string>('walletConnect/init')
 export const proposeWcSession = createAction<SessionTypes.Proposal>('walletConnect/proposeSession')

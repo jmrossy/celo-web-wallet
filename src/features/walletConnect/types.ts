@@ -1,4 +1,6 @@
-import type { SessionTypes } from '@walletconnect/types'
+import type { SessionTypes } from 'wcv2/types'
+
+export type WalletConnectVersion = 1 | 2
 
 export interface WalletConnectUriForm {
   uri: string
@@ -34,7 +36,7 @@ export interface SettledSession {
 
 export type WalletConnectSession = PendingSession | SettledSession
 
-export enum WalletConnectMethods {
+export enum WalletConnectMethod {
   accounts = 'eth_accounts',
   signTransaction = 'eth_signTransaction',
   sendTransaction = 'eth_sendTransaction',
@@ -43,4 +45,13 @@ export enum WalletConnectMethods {
   personalSign = 'personal_sign',
   personalDecrypt = 'personal_decrypt',
   computeSharedSecret = 'personal_computeSharedSecret',
+}
+
+// This is mostly a dupe of errors in the WCv2 error enum
+// But using a custom subset to avoid bundle issues
+export enum WalletConnectError {
+  unsupportedJsonRpc = 'unsupported_json_rpc',
+  unsupportedChains = 'unsupported_chains',
+  missingOrInvalid = 'missing_or_invalid',
+  notApproved = 'not_approved',
 }
