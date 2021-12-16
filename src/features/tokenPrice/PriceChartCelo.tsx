@@ -29,8 +29,8 @@ export function PriceChartCelo(props: PriceChartProps) {
 
   const dispatch = useDispatch()
   useEffect(() => {
-    // Hacking in a delay here b.c. blockscout is unreliable when two many
-    // queries are submitted too fast
+    // Hacking in a delay here b.c. blockscout is unreliable when
+    // many queries are submitted too fast (overlaps with feed fetch)
     sleep(DELAY_BEFORE_QUERYING)
       .then(() => {
         dispatch(
