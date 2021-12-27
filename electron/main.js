@@ -33,6 +33,25 @@ function createWindow() {
     },
   })
 
+  mainWindow.webContents.setZoomFactor(1.0)
+  mainWindow.webContents
+    .setVisualZoomLevelLimits(1, 10)
+    .catch((err) => console.log(err))
+
+  const zoomFunction = (win, event, zoomDirection) => {
+    const currentZoom = win.webContents.getZoomFactor()
+    if (zoomDirection === "in") {
+        win.webContents.setZoomFactor(currentZoom + 0.1)
+    }
+    if (zoomDirection === "out" && currentZoom > 0.2) {
+        win.webContents.setZoomFactor(currentZoom - 0.1)
+    }
+  }
+
+  mainWindow.webContents.on("zoom-changed", (event, zoomDirection) => {
+    zoomFunction(mainWindow, event, zoomDirection)
+  })
+
   mainWindow.removeMenu()
 
   // Open links in separate browser window
