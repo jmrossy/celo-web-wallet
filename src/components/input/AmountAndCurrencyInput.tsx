@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo } from 'react'
+import { ChangeEvent, useCallback, useMemo } from 'react'
 import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { SelectInput, SelectOption } from 'src/components/input/SelectInput'
@@ -51,23 +51,29 @@ export const AmountAndCurrencyInput = (props: Props) => {
     [tokens]
   )
 
-  const renderDropdownOption = (option: SelectOption) => (
-    <Box align="center">
-      <TokenIcon token={tokens[option.value]} size="s" />
-      <div css={style.tokenDropdownLabel}>{option.display}</div>
-    </Box>
-  )
-
-  const renderDropdownValue = (value: string) => {
-    const option = selectOptions.find((o) => o.display === value)
-    if (!option) return null
-    return (
+  const renderDropdownOption = useCallback(
+    (option: SelectOption) => (
       <Box align="center">
         <TokenIcon token={tokens[option.value]} size="s" />
-        <div css={{ ...Font.bold, ...style.tokenDropdownLabel }}>{value}</div>
+        <div css={style.tokenDropdownLabel}>{option.display}</div>
       </Box>
-    )
-  }
+    ),
+    [tokens]
+  )
+
+  const renderDropdownValue = useCallback(
+    (value: string) => {
+      const option = selectOptions.find((o) => o.display === value)
+      if (!option) return null
+      return (
+        <Box align="center">
+          <TokenIcon token={tokens[option.value]} size="s" />
+          <div css={{ ...Font.bold, ...style.tokenDropdownLabel }}>{value}</div>
+        </Box>
+      )
+    },
+    [selectOptions, tokens]
+  )
 
   const selectName = tokenInputName ?? 'tokenId'
 

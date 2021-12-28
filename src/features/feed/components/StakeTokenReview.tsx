@@ -13,8 +13,8 @@ import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/feed/components/TransactionPropertyGroup'
+import { txReviewStyles } from 'src/features/feed/components/txReviewStyles'
 import { StakeTokenTx } from 'src/features/types'
-import { Stylesheet } from 'src/styles/types'
 
 export function StakeTokenReview({ tx }: { tx: StakeTokenTx }) {
   const navigate = useNavigate()
@@ -38,7 +38,7 @@ export function StakeTokenReview({ tx }: { tx: StakeTokenTx }) {
     <TransactionPropertyGroup>
       <TransactionStatusProperty tx={tx} />
       <TransactionProperty label="Validator Group">
-        <div css={style.value}>
+        <div css={txReviewStyles.value}>
           <Address address={tx.groupAddress} />
           <Box direction="row" align="center" margin="1.1em 0 0 0">
             <Button size="xs" margin="0 1.2em 0 1px" onClick={onClickGroups}>
@@ -54,10 +54,4 @@ export function StakeTokenReview({ tx }: { tx: StakeTokenTx }) {
       <TransactionContractProperty tx={tx} />
     </TransactionPropertyGroup>
   )
-}
-
-const style: Stylesheet = {
-  value: {
-    marginTop: '1em',
-  },
 }
