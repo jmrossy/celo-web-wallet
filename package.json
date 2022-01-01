@@ -54,9 +54,9 @@
     "redux-saga": "^1.1.3",
     "typed-redux-saga": "^1.3.1",
     "wcv1/client": "npm:@walletconnect/client@1.6.6",
-    "wcv2/client": "npm:@walletconnect/client@2.0.0-beta.20.3",
-    "wcv2/types": "npm:@walletconnect/types@2.0.0-beta.20.3",
-    "wcv2/utils": "npm:@walletconnect/utils@2.0.0-beta.20.3"
+    "wcv2/client": "npm:@walletconnect/client@2.0.0-beta.21",
+    "wcv2/types": "npm:@walletconnect/types@2.0.0-beta.21",
+    "wcv2/utils": "npm:@walletconnect/utils@2.0.0-beta.21"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
@@ -98,10 +98,10 @@
   },
   "resolutions": {
     "pbkdf2": "^3.1.2",
-    "wcv2/client": "npm:@walletconnect/client@2.0.0-beta.20.3",
-    "wcv2/types": "npm:@walletconnect/types@2.0.0-beta.20.3",
-    "wcv2/utils": "npm:@walletconnect/utils@2.0.0-beta.20.3",
-    "wcv2/**/@walletconnect/types": "npm:@walletconnect/types@2.0.0-beta.20.3",
-    "wcv2/**/@walletconnect/utils": "npm:@walletconnect/utils@2.0.0-beta.20.3"
+    "wcv2/client": "npm:@walletconnect/client@2.0.0-beta.21",
+    "wcv2/types": "npm:@walletconnect/types@2.0.0-beta.21",
+    "wcv2/utils": "npm:@walletconnect/utils@2.0.0-beta.21",
+    "wcv2/**/@walletconnect/types": "npm:@walletconnect/types@2.0.0-beta.21",
+    "wcv2/**/@walletconnect/utils": "npm:@walletconnect/utils@2.0.0-beta.21"
   }
 }

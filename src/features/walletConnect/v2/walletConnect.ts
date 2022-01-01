@@ -108,7 +108,7 @@ async function initClient(uri: string) {
   logger.info('Initializing WalletConnect')
   // Create new client
   const client = await WalletConnectClient.init({
-    relayProvider: config.walletConnectV2Relay,
+    projectId: config.walletConnectV2ProjectId,
     metadata: APP_METADATA,
     controller: true,
     logger: 'debug',
