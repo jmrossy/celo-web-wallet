@@ -12,7 +12,7 @@ export function TransactionProperty(props: PropsWithChildren<{ label: string }>)
   return (
     <div css={style.property}>
       <div css={style.label}>{props.label}</div>
-      <div css={style.value}>{props.children}</div>
+      <div css={Font.body}>{props.children}</div>
     </div>
   )
 }
@@ -36,8 +36,5 @@ const style: Stylesheet = {
   label: {
     ...Font.label,
     marginBottom: '1em',
-  },
-  value: {
-    ...Font.body,
   },
 }

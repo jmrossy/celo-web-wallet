@@ -97,7 +97,11 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
 
   return (
     <Box direction="column" styles={fillWidth ? style.containerFill : undefined}>
-      <div css={fillWidth ? style.containerFill : style.container} onBlur={handleBlur}>
+      <div
+        css={fillWidth ? style.containerFill : style.container}
+        onBlur={handleBlur}
+        className="notranslate"
+      >
         {autoComplete ? (
           <>
             <input

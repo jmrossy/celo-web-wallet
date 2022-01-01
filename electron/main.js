@@ -36,9 +36,9 @@ function createWindow() {
   mainWindow.removeMenu()
 
   // Open links in separate browser window
-  mainWindow.webContents.on('new-window', (e, url) => {
-    e.preventDefault()
-    shell.openExternal(url)
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url)
+    return { action: 'deny' }
   })
 
   // Load the root page of the app

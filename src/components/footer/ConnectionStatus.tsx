@@ -86,9 +86,15 @@ export const ConnectionStatus = () => {
   return (
     <Box direction="column" align="center" styles={style.container}>
       <p css={{ color: `${summaryColor} !important` }}>{summary}</p>
-      <p>Node: {nodeUrl}</p>
-      <p>Last Block Number: {block}</p>
-      <p>Chain ID: {chainId}</p>
+      <p>
+        Node: <span className="notranslate">{nodeUrl}</span>
+      </p>
+      <p>
+        Last Block Number: <span className="notranslate">{block}</span>
+      </p>
+      <p>
+        Chain ID: <span className="notranslate">{chainId}</span>
+      </p>
     </Box>
   )
 }

@@ -8,6 +8,7 @@ import {
   TransactionProperty,
   TransactionPropertyGroup,
 } from 'src/features/feed/components/TransactionPropertyGroup'
+import { txReviewStyles } from 'src/features/feed/components/txReviewStyles'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
 import { EscrowTransaction, TokenTransfer } from 'src/features/types'
 import { useTokens } from 'src/features/wallet/hooks'
@@ -34,32 +35,37 @@ export function TokenTransferReview({ tx }: Props) {
     <TransactionPropertyGroup>
       <TransactionStatusProperty tx={tx} />
       <TransactionProperty label={addressLabel}>
-        <div css={style.value}>
+        <div css={txReviewStyles.value}>
           <Address address={address} buttonType="copy" />
           <Box align="center" margin="1.1em 0 0 0">
-            <Button size="xs" margin="0 1.2em 0 1px" width="8em" onClick={onClickSendButton}>
+            <Button
+              size="xs"
+              margin="0 1.2em 0 1px"
+              styles={txReviewStyles.actionButton}
+              onClick={onClickSendButton}
+            >
               Send Payment
             </Button>
-            <Button size="xs" width="8em" onClick={onClickAddContact}>
+            <Button size="xs" styles={txReviewStyles.actionButton} onClick={onClickAddContact}>
               Add Contact
             </Button>
           </Box>
         </div>
       </TransactionProperty>
       <TransactionProperty label="Amount">
-        <Box styles={style.value}>
+        <Box styles={txReviewStyles.value}>
           <span css={style.amountLabel}>{amountLabel}</span>
           <MoneyValue amountInWei={tx.value} token={getTokenById(tx.tokenId, tokens)} />
         </Box>
         {tx.isOutgoing && (
-          <Box styles={style.value}>
+          <Box styles={txReviewStyles.value}>
             <span css={style.amountLabel}>Fee: </span>
             <MoneyValue amountInWei={feeValue} token={feeCurrency} />
           </Box>
         )}
       </TransactionProperty>
       <TransactionProperty label="Comment">
-        <div css={[style.value, !tx.comment && { color: Color.textGrey }]}>
+        <div css={[txReviewStyles.value, !tx.comment && { color: Color.textGrey }]}>
           {tx.comment || 'No comment included'}
         </div>
       </TransactionProperty>
@@ -68,9 +74,6 @@ export function TokenTransferReview({ tx }: Props) {
 }
 
 const style: Stylesheet = {
-  value: {
-    marginTop: '1em',
-  },
   amountLabel: {
     display: 'inline-block',
     minWidth: '5em',

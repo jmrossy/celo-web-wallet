@@ -36,7 +36,7 @@ export interface ModalProps {
 
 export const ModalOkAction: ModalAction = {
   key: 'ok',
-  label: 'OK',
+  label: 'Okay',
   color: Color.primaryGreen,
 }
 
