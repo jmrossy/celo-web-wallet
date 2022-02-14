@@ -11,6 +11,8 @@ import {
   MAX_EXCHANGE_TOKEN_SIZE_LEDGER,
   MIN_EXCHANGE_RATE,
 } from 'src/consts'
+import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
+import { Balances } from 'src/features/balances/types'
 import { ExchangeTokenParams, SimpleExchangeRate } from 'src/features/exchange/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
@@ -18,11 +20,6 @@ import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
-import {
-  fetchBalancesActions,
-  fetchBalancesIfStale,
-} from 'src/features/wallet/balances/fetchBalances'
-import { Balances } from 'src/features/wallet/types'
 import { CELO, NativeTokenId, NativeTokens, Token } from 'src/tokens'
 import {
   fromWei,

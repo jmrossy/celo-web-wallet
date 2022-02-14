@@ -5,6 +5,7 @@ import { FixedSizeList } from 'react-window'
 import type { RootState } from 'src/app/rootReducer'
 import Nurture from 'src/components/icons/nurture.svg'
 import { Box } from 'src/components/layout/Box'
+import { useAreBalancesEmpty } from 'src/features/balances/hooks'
 import {
   FeedItem,
   FeedItemData,
@@ -12,7 +13,7 @@ import {
   FEED_ITEM_HEIGHT_NORMAL,
 } from 'src/features/feed/FeedItem'
 import { openTransaction } from 'src/features/feed/feedSlice'
-import { useAreBalancesEmpty, useTokens } from 'src/features/wallet/hooks'
+import { useTokens } from 'src/features/tokens/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'

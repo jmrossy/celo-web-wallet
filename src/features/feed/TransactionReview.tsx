@@ -13,8 +13,8 @@ import { TokenTransferReview } from 'src/features/feed/components/TokenTransferR
 import { TransactionProperty } from 'src/features/feed/components/TransactionPropertyGroup'
 import { openTransaction } from 'src/features/feed/feedSlice'
 import { getTransactionDescription } from 'src/features/feed/transactionDescription'
+import { useTokens } from 'src/features/tokens/hooks'
 import { CeloTransaction, TransactionType } from 'src/features/types'
-import { useTokens } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
@@ -63,6 +63,7 @@ export function TransactionReview() {
   )
 }
 
+// TODO
 function getContentByTxType(tx: CeloTransaction, tokens: Tokens) {
   const description = getTransactionDescription(tx, tokens, false)
 

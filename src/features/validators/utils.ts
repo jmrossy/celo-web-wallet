@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers'
+import { Balances } from 'src/features/balances/types'
 import { GroupVotes, StakeActionType, ValidatorGroup } from 'src/features/validators/types'
-import { Balances } from 'src/features/wallet/types'
 import { areAddressesEqual, shortenAddress } from 'src/utils/addresses'
 import { trimToLength } from 'src/utils/string'
 

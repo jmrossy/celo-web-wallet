@@ -5,6 +5,9 @@ import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCKED_GOLD_TO_VOTE, MIN_VOTE_AMOUNT, NULL_ADDRESS } from 'src/consts'
+import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
+import { selectVoterBalances } from 'src/features/balances/hooks'
+import { Balances } from 'src/features/balances/types'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -17,12 +20,7 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { getStakingMaxAmount } from 'src/features/validators/utils'
-import {
-  fetchBalancesActions,
-  fetchBalancesIfStale,
-} from 'src/features/wallet/balances/fetchBalances'
-import { selectVoterAccountAddress, selectVoterBalances } from 'src/features/wallet/hooks'
-import { Balances } from 'src/features/wallet/types'
+import { selectVoterAccountAddress } from 'src/features/wallet/hooks'
 import { CELO } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import {

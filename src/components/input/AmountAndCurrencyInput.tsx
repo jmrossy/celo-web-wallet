@@ -3,10 +3,10 @@ import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { SelectInput, SelectOption } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
-import { useTokens } from 'src/features/wallet/hooks'
+import { useTokens } from 'src/features/tokens/hooks'
+import { isNativeToken } from 'src/features/tokens/utils'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { isNativeToken } from 'src/tokens'
 import { ErrorState } from 'src/utils/validation'
 
 interface Props {
@@ -38,6 +38,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
     nativeTokensOnly,
   } = props
 
+  // TODO
   const tokens = useTokens()
 
   const selectOptions = useMemo(

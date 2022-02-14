@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { Balances } from 'src/features/wallet/types'
+import { Balances } from 'src/features/balances/types'
 
 export function getTotalCelo(balances: Balances) {
   const { locked, pendingBlocked, pendingFree } = balances.lockedCelo

@@ -18,6 +18,11 @@ export enum CeloContract {
   Validators = 'Validators',
 }
 
+export enum CeloChain {
+  Mainnet = 42220,
+  Alfajores = 44787,
+}
+
 // @ts-ignore Defined by webpack define plugin
 const debugMode = __DEBUG__ ?? false
 // @ts-ignore Defined by webpack define plugin

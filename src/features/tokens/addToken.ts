@@ -2,20 +2,19 @@ import { BigNumber, BigNumberish } from 'ethers'
 import type { RootState } from 'src/app/rootReducer'
 import { getTokenContract } from 'src/blockchain/contracts'
 import { config } from 'src/config'
-import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
-import { AddTokenParams, Balances } from 'src/features/wallet/types'
-import { hasToken } from 'src/features/wallet/utils'
-import { addToken as addTokenAction } from 'src/features/wallet/walletSlice'
-import { Color } from 'src/styles/Color'
-import { findTokenByAddress, findTokenById } from 'src/tokenList'
-import { CELO, Token } from 'src/tokens'
+import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
+import { findTokenByAddress } from 'src/features/tokens/tokenList'
+import { addToken as addTokenAction } from 'src/features/tokens/tokensSlice'
+import { AddTokenParams, TokenMap } from 'src/features/tokens/types'
+import { hasToken } from 'src/features/tokens/utils'
+import { Token } from 'src/tokens'
 import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
-export function validate(params: AddTokenParams, balances: Balances): ErrorState {
+export function validate(params: AddTokenParams, tokens: TokenMap): ErrorState {
   const { address } = params
   if (!address) {
     return invalidInput('address', 'Token address is required')
@@ -24,7 +23,7 @@ export function validate(params: AddTokenParams, balances: Balances): ErrorState
     logger.error(`Invalid token address: ${address}`)
     return invalidInput('address', 'Invalid token address')
   }
-  if (hasToken(balances, address)) {
+  if (hasToken(address, tokens)) {
     logger.error(`Token already exists in wallet: ${address}`)
     return invalidInput('address', 'Token already exists')
   }
@@ -32,8 +31,8 @@ export function validate(params: AddTokenParams, balances: Balances): ErrorState
 }
 
 function* addToken(params: AddTokenParams) {
-  const balances = yield* select((state: RootState) => state.wallet.balances)
-  validateOrThrow(() => validate(params, balances), 'Invalid Token')
+  const tokens = yield* select((state: RootState) => state.tokens.byAddress)
+  validateOrThrow(() => validate(params, tokens), 'Invalid Token')
 
   const newToken = yield* call(getTokenInfo, params.address)
   yield* put(addTokenAction(newToken))
@@ -41,21 +40,20 @@ function* addToken(params: AddTokenParams) {
   yield* put(fetchBalancesActions.trigger())
 }
 
-export function* addTokensById(ids: Set<string>) {
-  for (const id of ids) {
+export function* addTokensByAddress(addresses: Set<string>) {
+  for (const addr of addresses) {
     try {
-      const knownToken = findTokenById(id)
+      const knownToken = findTokenByAddress(addr)
       if (!knownToken) continue
-      const newToken = yield* call(getTokenInfo, knownToken.address, knownToken)
+      const newToken = yield* call(getTokenInfo, knownToken.address)
       yield* put(addTokenAction(newToken))
     } catch (error) {
-      logger.error(`Failed to add token ${id}`, error)
+      logger.error(`Failed to add token ${addr}`, error)
     }
   }
 }
 
-async function getTokenInfo(tokenAddress: string, knownToken?: Token): Promise<Token> {
-  knownToken = knownToken || findTokenByAddress(tokenAddress)
+async function getTokenInfo(tokenAddress: string): Promise<Token> {
   const contract = getTokenContract(tokenAddress)
   // Note this assumes the existence of decimals, symbols, and name methods,
   // which are technically optional. May revisit later
@@ -66,14 +64,10 @@ async function getTokenInfo(tokenAddress: string, knownToken?: Token): Promise<T
   const decimals = BigNumber.from(decimalsBN).toNumber()
   if (!symbol || typeof symbol !== 'string') throw new Error('Invalid token symbol')
   if (!name || typeof name !== 'string') throw new Error('Invalid token name')
-  if (decimals !== CELO.decimals) throw new Error('Invalid token decimals') // TODO only 18 is supported atm
+  if (decimals < 1 || decimals > 100) throw new Error('Invalid token decimals')
   return {
-    id: symbol,
     symbol: symbol.substring(0, 8),
     name,
-    color: knownToken?.color || Color.accentBlue,
-    minValue: CELO.minValue,
-    displayDecimals: CELO.displayDecimals,
     address: normalizeAddress(tokenAddress),
     decimals,
     chainId: config.chainId,

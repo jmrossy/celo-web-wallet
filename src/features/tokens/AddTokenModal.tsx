@@ -6,11 +6,11 @@ import { HelpText } from 'src/components/input/HelpText'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { modalStyles } from 'src/components/modal/modalStyles'
-import { addTokenActions, addTokenSagaName, validate } from 'src/features/wallet/balances/addToken'
-import { AddTokenParams } from 'src/features/wallet/types'
+import { addTokenActions, addTokenSagaName, validate } from 'src/features/tokens/addToken'
+import { getKnownErc20Tokens } from 'src/features/tokens/tokenList'
+import { AddTokenParams } from 'src/features/tokens/types'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
-import { getKnownErc20Tokens } from 'src/tokenList'
 import { shortenAddress } from 'src/utils/addresses'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -22,13 +22,13 @@ const initialValues: AddTokenParams = {
 
 export function AddTokenModal(props: { close: () => void }) {
   const dispatch = useDispatch()
-  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const tokens = useSelector((state: RootState) => state.tokens.byAddress)
 
   const onSubmit = (values: AddTokenParams) => {
     dispatch(addTokenActions.trigger(values))
   }
 
-  const validateForm = (values: AddTokenParams) => validate(values, balances)
+  const validateForm = (values: AddTokenParams) => validate(values, tokens)
 
   const { values, errors, handleChange, handleBlur, handleSubmit } = useCustomForm<AddTokenParams>(
     initialValues,
@@ -89,7 +89,7 @@ export function AddTokenModal(props: { close: () => void }) {
 
 function getSelectOptions() {
   return getKnownErc20Tokens().map((t) => {
-    const display = `${t.id} - ${shortenAddress(t.address, true)}`
+    const display = `${t.symbol} - ${shortenAddress(t.address, true)}`
     return {
       display,
       value: t.address,

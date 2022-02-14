@@ -3,6 +3,7 @@ import { CeloContract, config } from 'src/config'
 import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
 import { AbiInterfaceMap, BlockscoutTokenTransfer, BlockscoutTx } from 'src/features/feed/types'
 import { OrderedVoteValue } from 'src/features/governance/types'
+import { isNativeToken, isStableToken } from 'src/features/tokens/utils'
 import {
   CeloNativeTransferTx,
   CeloTokenApproveTx,
@@ -23,15 +24,7 @@ import {
   TokenTransaction,
   TransactionType,
 } from 'src/features/types'
-import {
-  CELO,
-  INativeTokens,
-  isNativeToken,
-  isStableToken,
-  NativeTokenId,
-  NativeTokens,
-  Token,
-} from 'src/tokens'
+import { CELO, INativeTokens, NativeTokenId, NativeTokens, Token } from 'src/tokens'
 import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 

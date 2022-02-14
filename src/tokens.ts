@@ -3,18 +3,18 @@ import { NULL_ADDRESS } from 'src/consts'
 import { Color } from 'src/styles/Color'
 
 export interface Token {
-  id: string
-  symbol: string // usually the same as id
+  // id: string
+  symbol: string
   name: string
-  color: string
-  minValue: number
-  displayDecimals: number
   address: string // contract address
-  decimals: number // TODO support decimals other than 18 (Issue #53)
   chainId: number
+  decimals?: number // TODO support decimals other than 18 (Issue #53)
+  color?: string
+  minValue?: number // TODO remove
+  displayDecimals?: number // TODO remove
   ticker?: string // for ledger, usually the same as id except cGLD
-  signature?: string
-  rawData?: string
+  // signature?: string
+  // rawData?: string
   exchangeAddress?: string // Mento contract for token
   sortOrder?: number // for order preference in balance lists
 }
@@ -41,7 +41,6 @@ export interface INativeTokens {
 
 export const NativeTokens: INativeTokens = {
   CELO: {
-    id: NativeTokenId.CELO,
     symbol: NativeTokenId.CELO,
     name: 'Celo Native',
     color: Color.primaryGold,
@@ -54,7 +53,6 @@ export const NativeTokens: INativeTokens = {
     sortOrder: 3,
   },
   cUSD: {
-    id: NativeTokenId.cUSD,
     symbol: NativeTokenId.cUSD,
     name: 'Celo Dollar',
     color: Color.primaryGreen,
@@ -67,7 +65,6 @@ export const NativeTokens: INativeTokens = {
     sortOrder: 1,
   },
   cEUR: {
-    id: NativeTokenId.cEUR,
     symbol: NativeTokenId.cEUR,
     name: 'Celo Euro',
     color: Color.primaryGreen,
@@ -80,7 +77,6 @@ export const NativeTokens: INativeTokens = {
     sortOrder: 2,
   },
   cREAL: {
-    id: NativeTokenId.cREAL,
     symbol: NativeTokenId.cREAL,
     name: 'Celo Brazilian Real',
     color: Color.primaryGreen,
@@ -94,8 +90,6 @@ export const NativeTokens: INativeTokens = {
   },
 }
 
-export type Tokens = INativeTokens & Record<string, Token>
-
 // Just re-export directly for convenient access
 export const CELO = NativeTokens.CELO
 export const cUSD = NativeTokens.cUSD
@@ -104,7 +98,6 @@ export const cREAL = NativeTokens.cREAL
 
 export const LockedCELO: Token = {
   ...CELO,
-  id: 'lockedCELO',
   symbol: 'Locked CELO',
   name: 'Locked CELO',
   address: config.contractAddresses.LockedGold,
@@ -112,7 +105,6 @@ export const LockedCELO: Token = {
 }
 
 export const UnknownToken: Token = {
-  id: 'unknown',
   symbol: 'unknown',
   name: 'Unknown Token',
   color: Color.textGrey,
@@ -121,17 +113,4 @@ export const UnknownToken: Token = {
   address: NULL_ADDRESS,
   decimals: 18,
   chainId: config.chainId,
-}
-
-export function isNativeToken(tokenId: string) {
-  return Object.keys(NativeTokens).includes(tokenId)
-}
-
-export function isStableToken(tokenId: string) {
-  return StableTokenIds.includes(tokenId as NativeTokenId)
-}
-
-export function getTokenById(id: string, tokens: Tokens) {
-  if (tokens[id]) return tokens[id]
-  else return UnknownToken
 }

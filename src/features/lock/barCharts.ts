@@ -1,7 +1,7 @@
 import { BigNumber, BigNumberish } from 'ethers'
+import { Balances } from 'src/features/balances/types'
 import { LockActionType, LockTokenParams, PendingWithdrawal } from 'src/features/lock/types'
 import { getTotalCelo, getTotalPendingCelo, hasPendingCelo } from 'src/features/lock/utils'
-import { Balances } from 'src/features/wallet/types'
 import { Color } from 'src/styles/Color'
 import { CELO } from 'src/tokens'
 import { fromWeiRounded } from 'src/utils/amount'

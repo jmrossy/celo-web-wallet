@@ -1,9 +1,7 @@
 import { LockedCeloBalances } from 'src/features/lock/types'
-import { NativeTokenId, Token, TokenWithBalance } from 'src/tokens'
+import { Token } from 'src/tokens'
 
-type NativeTokenBalances = { [t in NativeTokenId]: TokenWithBalance }
-
-export type TokenBalances = NativeTokenBalances & Record<string, TokenWithBalance> // token id to balance in wei
+export type TokenBalances = Record<string, string> // token address to balance in wei
 
 export interface Balances {
   // All balances are represented in wei
@@ -20,8 +18,4 @@ export interface BalanceTableRow {
   address: string
   token: Token
   onRemove?: (id: string) => void
-}
-
-export interface AddTokenParams {
-  address: string
 }

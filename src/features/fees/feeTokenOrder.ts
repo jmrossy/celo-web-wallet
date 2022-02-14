@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { Balances } from 'src/features/wallet/types'
+import { Balances } from 'src/features/balances/types'
 import { NativeTokenId } from 'src/tokens'
 
 // Decide which order to try gas fee payments in

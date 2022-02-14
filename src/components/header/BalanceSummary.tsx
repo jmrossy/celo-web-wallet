@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { useTokens } from 'src/features/wallet/hooks'
+import { useTokens } from 'src/features/tokens/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq, useWindowSize } from 'src/styles/mediaQueries'
@@ -16,6 +16,7 @@ export function BalanceSummary() {
   if (windowWidth && windowWidth > 550) numItems = 3
   if (windowWidth && windowWidth > 1024) numItems = 4
 
+  // TODO
   const tokens = useTokens()
 
   const { tokensToShow, hiddenTokens } = useMemo(() => {

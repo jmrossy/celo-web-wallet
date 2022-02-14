@@ -3,6 +3,8 @@ import type { RootState } from 'src/app/rootReducer'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
+import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
+import { Balances } from 'src/features/balances/types'
 import { addTransactions } from 'src/features/feed/feedSlice'
 import { isValidTransaction, parseTransaction } from 'src/features/feed/parseFeedTransaction'
 import {
@@ -11,11 +13,9 @@ import {
   BlockscoutTx,
   BlockscoutTxBase,
 } from 'src/features/feed/types'
+import { addTokensById } from 'src/features/tokens/addToken'
 import { TransactionMap, TransactionType } from 'src/features/types'
-import { addTokensById } from 'src/features/wallet/balances/addToken'
-import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { saveFeedData } from 'src/features/wallet/manager'
-import { Balances } from 'src/features/wallet/types'
 import { NativeTokens, StableTokenIds, Token } from 'src/tokens'
 import { normalizeAddress } from 'src/utils/addresses'
 import { queryBlockscout } from 'src/utils/blockscout'

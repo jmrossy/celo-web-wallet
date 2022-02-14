@@ -1,0 +1,358 @@
+[
+  {
+    "address": "0x00400FcbF0816bebB94654259de7273f4A05c762",
+    "name": "Poof",
+    "symbol": "POOF"
+  },
+  {
+    "address": "0x00Be915B9dCf56a3CBE739D9B9c202ca692409EC",
+    "name": "Ubeswap",
+    "symbol": "UBE"
+  },
+  {
+    "address": "0x035eE610693a29Cb77fD6eFBEb9d9d278703e145",
+    "name": "TrueFeedBack",
+    "symbol": "TFBX"
+  },
+  {
+    "address": "0x0a60c25Ef6021fC3B479914E6bcA7C03c18A97f1",
+    "name": "Stabilite USD",
+    "symbol": "stabilUSD"
+  },
+  {
+    "address": "0x0a7432cF27F1aE3825c313F3C81e7D3efD7639aB",
+    "name": "Optics v1 CRV",
+    "symbol": "CRVxV1"
+  },
+  {
+    "address": "0x122013fd7dF1C6F636a5bb8f03108E876548b455",
+    "name": "Optics v2 WETH",
+    "symbol": "WETH"
+  },
+  {
+    "address": "0x123ED050805E0998EBEf43671327139224218e50",
+    "name": "NetM Token",
+    "symbol": "NTMX"
+  },
+  {
+    "address": "0x173234922eB27d5138c5e481be9dF5261fAeD450",
+    "name": "Allbridge SOL",
+    "symbol": "SOL"
+  },
+  {
+    "address": "0x17700282592D6917F6A73D0bF8AcCf4D578c131e",
+    "name": "Moola",
+    "symbol": "MOO"
+  },
+  {
+    "address": "0x1a8Dbe5958c597a744Ba51763AbEBD3355996c3e",
+    "name": "Rewards CELO",
+    "symbol": "rCELO"
+  },
+  {
+    "address": "0x20677d4f3d0F08e735aB512393524A3CfCEb250C",
+    "name": "Ariswap",
+    "symbol": "ARI"
+  },
+  {
+    "address": "0x218c3c3D49d0E7B37aff0D8bB079de36Ae61A4c0",
+    "name": "Anyswap FTM",
+    "symbol": "FTM"
+  },
+  {
+    "address": "0x22401536505dd5d85F7d57f8B37172feDa8f499d",
+    "name": "CeloShiba",
+    "symbol": "cSHIBA",
+    "isExperimental": true
+  },
+  {
+    "address": "0x2879BFD5e7c4EF331384E908aaA3Bd3014b703fA",
+    "name": "Savings CELO",
+    "symbol": "sCELO"
+  },
+  {
+    "address": "0x29dFce9c22003A4999930382Fd00f9Fd6133Acd1",
+    "name": "Optics v2 SUSHI",
+    "symbol": "SUSHI"
+  },
+  {
+    "address": "0x2A3684e9Dc20B857375EA04235F2F7edBe818FA7",
+    "name": "Optics v1 USDC",
+    "symbol": "USDCxV1",
+    "decimals": 6,
+    "isExperimental": true
+  },
+  {
+    "address": "0x2DEf4285787d58a2f811AF24755A8150622f4361",
+    "name": "wrapped.com Ethereum",
+    "symbol": "cETH",
+    "logoFile": "asset_cETH.svg"
+  },
+  {
+    "address": "0x2E3487F967DF2Ebc2f236E16f8fCAeac7091324D",
+    "name": "Optics v2 WMATIC via Polygon",
+    "symbol": "WMATIC"
+  },
+  {
+    "address": "0x301a61D01A63c8D670c2B8a43f37d12eF181F997",
+    "name": "Poof CELO",
+    "symbol": "pCELO"
+  },
+  {
+    "address": "0x32A9FE697a32135BFd313a6Ac28792DaE4D9979d",
+    "name": "Celo Moss Carbon Credit",
+    "symbol": "cMCO2"
+  },
+  {
+    "address": "0x3aF556B48469D2398AB7BE1563a0cfd80ea4aC84",
+    "name": "Optics v1 WMATIC",
+    "symbol": "WMATICxV1"
+  },
+  {
+    "address": "0x452EF5a4bD00796e62E5e5758548e0dA6e8CCDF3",
+    "name": "CeloStarter",
+    "symbol": "cStar"
+  },
+  {
+    "address": "0x46c9757C5497c5B1f2eb73aE79b6B67D119B0B58",
+    "name": "impactMarket",
+    "symbol": "PACT"
+  },
+  {
+    "address": "0x471EcE3750Da237f93B8E339c536989b8978a438",
+    "name": "Celo",
+    "symbol": "CELO"
+  },
+  {
+    "address": "0x47264aE1Fc0c8e6418ebe78630718E11a07346A8",
+    "name": "Allbridge SBR",
+    "symbol": "SBR"
+  },
+  {
+    "address": "0x503681c68f03bbbCe48005DCD7b83ae8D4fD745C",
+    "name": "Optics v1 AAVE",
+    "symbol": "AAVExV1"
+  },
+  {
+    "address": "0x56072D4832642dB29225dA12d6Fd1290E4744682",
+    "name": "Poof v1 EUR",
+    "symbol": "pEURxV1"
+  },
+  {
+    "address": "0x64dEFa3544c695db8c535D289d843a189aa26b98",
+    "name": "Moola cUSD DEPRECATED",
+    "symbol": "mcUSDxOLD"
+  },
+  {
+    "address": "0x6e512BFC33be36F2666754E996ff103AD1680Cc9",
+    "name": "Allbridge",
+    "symbol": "ABR"
+  },
+  {
+    "address": "0x7037F7296B2fc7908de7b57a89efaa8319f0C500",
+    "name": "Moola CELO DEPRECATED",
+    "symbol": "mCELOxOLD"
+  },
+  {
+    "address": "0x73a210637f6F6B7005512677Ba6B3C96bb4AA44B",
+    "name": "Mobius DAO Token",
+    "symbol": "MOBI"
+  },
+  {
+    "address": "0x74c0C58B99b68cF16A717279AC2d056A34ba2bFe",
+    "name": "Source",
+    "symbol": "SOURCE"
+  },
+  {
+    "address": "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+    "name": "Celo Dollar",
+    "symbol": "cUSD"
+  },
+  {
+    "address": "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+    "name": "Staked Allbridge",
+    "symbol": "xABR"
+  },
+  {
+    "address": "0x7c64aD5F9804458B8c9F93f7300c15D55956Ac2a",
+    "name": "Symmetric",
+    "symbol": "SYMM"
+  },
+  {
+    "address": "0x7D00cd74FF385c955EA3d79e47BF06bD7386387D",
+    "name": "Moola CELO",
+    "symbol": "mCELO"
+  },
+  {
+    "address": "0x832F03bCeE999a577cb592948983E35C048B5Aa4",
+    "name": "Duniapay West African CFA franc",
+    "symbol": "cXOF"
+  },
+  {
+    "address": "0x88eeC49252c8cbc039DCdB394c0c2BA2f1637EA0",
+    "name": "Optics v2 USDT",
+    "symbol": "USDT",
+    "decimals": 6
+  },
+  {
+    "address": "0x8E3670FD7B0935d3FE832711deBFE13BB689b690",
+    "name": "Allbridge AVAX",
+    "symbol": "AVAX"
+  },
+  {
+    "address": "0x90Ca507a5D4458a4C6C6249d186b6dCb02a5BCCd",
+    "name": "Optics v2 DAI",
+    "symbol": "DAI"
+  },
+  {
+    "address": "0x918146359264C492BD6934071c6Bd31C854EDBc3",
+    "name": "Moola cUSD",
+    "symbol": "mcUSD"
+  },
+  {
+    "address": "0x93DB49bE12B864019dA9Cb147ba75cDC0506190e",
+    "name": "Moss USDC DEPRECATED",
+    "symbol": "cUSDC",
+    "isExperimental": true
+  },
+  {
+    "address": "0x94140c2eA9D208D8476cA4E3045254169791C59e",
+    "name": "Premio",
+    "symbol": "PREMIO"
+  },
+  {
+    "address": "0x9Ee153D4Fdf0E3222eFD092c442ebB21DFd346AC",
+    "name": "Marzipan Finance",
+    "symbol": "MZPN",
+    "isExperimental": true
+  },
+  {
+    "address": "0xA649325Aa7C5093d12D6F98EB4378deAe68CE23F",
+    "name": "Anyswap BNB",
+    "symbol": "BNB"
+  },
+  {
+    "address": "0xa81D9a2d29373777E4082d588958678a6Df5645c",
+    "name": "KnoxEdge",
+    "symbol": "KNX"
+  },
+  {
+    "address": "0xa8d0E6799FF3Fd19c6459bf02689aE09c4d78Ba7",
+    "name": "Moola cEUR DEPRECATED",
+    "symbol": "mcEURxOLD"
+  },
+  {
+    "address": "0xb020D981420744F6b0FedD22bB67cd37Ce18a1d5",
+    "name": "Optics v1 USDT",
+    "symbol": "USDTxV1",
+    "decimals": 6,
+    "isExperimental": true
+  },
+  {
+    "address": "0xB4aa2986622249B1F45eb93F28Cfca2b2606d809",
+    "name": "Poof v1 USD",
+    "symbol": "pUSDxV1"
+  },
+  {
+    "address": "0xBAAB46E28388d2779e6E31Fd00cF0e5Ad95E327B",
+    "name": "Optics v2 WBTC",
+    "symbol": "WBTC",
+    "decimals": 8
+  },
+  {
+    "address": "0xBe50a3013A1c94768A1ABb78c3cB79AB28fc1aCE",
+    "name": "Optics v1 WBTC",
+    "symbol": "WBTCxV1",
+    "decimals": 8,
+    "isExperimental": true
+  },
+  {
+    "address": "0xcFFfE0c89a779c09Df3DF5624f54cDf7EF5fDd5D",
+    "name": "Moss USDT DEPRECATED",
+    "symbol": "cUSDT",
+    "isExperimental": true
+  },
+  {
+    "address": "0xD15EC721C2A896512Ad29C671997DD68f9593226",
+    "name": "Optics v1 SUSHI",
+    "symbol": "SUSHIxV1",
+    "isExperimental": true
+  },
+  {
+    "address": "0xD629eb00dEced2a080B7EC630eF6aC117e614f1b",
+    "name": "wrapped.com Bitcoin",
+    "symbol": "cBTC"
+  },
+  {
+    "address": "0xD8761DD6c7cB54febD33adD699F5E4440b62E01B",
+    "name": "Poof EUR",
+    "symbol": "pEUR"
+  },
+  {
+    "address": "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73",
+    "name": "Celo Euro",
+    "symbol": "cEUR"
+  },
+  {
+    "address": "0xD90BBdf5904cb7d275c41f897495109B9A5adA58",
+    "name": "CeloDoge",
+    "symbol": "cDOGE",
+    "isExperimental": true
+  },
+  {
+    "address": "0xd954C4c006189d967507b8ba758605364eB660D2",
+    "name": "Sky Portal",
+    "symbol": "LAPIS",
+    "isExperimental": true
+  },
+  {
+    "address": "0xDB452CC669D3Ae454226AbF232Fe211bAfF2a1F9",
+    "name": "Duino-Coin on Celo",
+    "symbol": "celoDUCO",
+    "isExperimental": true
+  },
+  {
+    "address": "0xE273Ad7ee11dCfAA87383aD5977EE1504aC07568",
+    "name": "Moola cEUR",
+    "symbol": "mcEUR"
+  },
+  {
+    "address": "0xE4fE50cdD716522A56204352f00AA110F731932d",
+    "name": "Optics v1 DAI",
+    "symbol": "DAIxV1",
+    "isExperimental": true
+  },
+  {
+    "address": "0xE685d21b7B0FC7A248a6A8E03b8Db22d013Aa2eE",
+    "name": "Immortal",
+    "symbol": "IMMO",
+    "decimals": 9
+  },
+  {
+    "address": "0xE74AbF23E1Fdf7ACbec2F3a30a772eF77f1601E1",
+    "name": "Poof v1 CELO",
+    "symbol": "pCELOxV1"
+  },
+  {
+    "address": "0xe8537a3d056DA446677B9E9d6c5dB704EaAb4787",
+    "name": "Celo Real",
+    "symbol": "cREAL"
+  },
+  {
+    "address": "0xE919F65739c26a42616b7b8eedC6b5524d1e3aC4",
+    "name": "Optics v1 WETH",
+    "symbol": "WETHxV1",
+    "isExperimental": true
+  },
+  {
+    "address": "0xEadf4A7168A82D30Ba0619e64d5BCf5B30B45226",
+    "name": "Poof USD",
+    "symbol": "pUSD"
+  },
+  {
+    "address": "0xef4229c8c3250C675F21BCefa42f58EfbfF6002a",
+    "name": "Optics v2 USDC",
+    "symbol": "USDC",
+    "decimals": 6
+  }
+]

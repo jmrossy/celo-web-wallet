@@ -8,18 +8,16 @@ import {
   MAX_SEND_TOKEN_SIZE,
   MAX_SEND_TOKEN_SIZE_LEDGER,
 } from 'src/consts'
+import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
+import { Balances } from 'src/features/balances/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import { SendTokenParams } from 'src/features/send/types'
+import { isNativeToken } from 'src/features/tokens/utils'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
-import {
-  fetchBalancesActions,
-  fetchBalancesIfStale,
-} from 'src/features/wallet/balances/fetchBalances'
-import { Balances } from 'src/features/wallet/types'
-import { CELO, isNativeToken, Token } from 'src/tokens'
+import { CELO, Token } from 'src/tokens'
 import { isValidAddress } from 'src/utils/addresses'
 import {
   getAdjustedAmountFromBalances,

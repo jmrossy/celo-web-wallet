@@ -11,6 +11,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { Spinner } from 'src/components/Spinner'
+import { useVoterBalances } from 'src/features/balances/hooks'
 import {
   fetchProposalsActions,
   fetchProposalsSagaName,
@@ -26,7 +27,7 @@ import {
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
-import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/hooks'
+import { useIsVoteSignerAccount } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'

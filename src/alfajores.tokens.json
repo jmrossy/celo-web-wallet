@@ -1,0 +1,77 @@
+[
+  {
+    "address": "0x00400FcbF0816bebB94654259de7273f4A05c762",
+    "name": "Poof Governance Token",
+    "symbol": "POOF"
+  },
+  {
+    "address": "0x0D9B4311657003251d1eFa085e74f761185F271c",
+    "name": "Moola cEUR",
+    "symbol": "mcEUR"
+  },
+  {
+    "address": "0x10c892A6EC43a53E45D0B916B4b7D383B1b78C0F",
+    "name": "Celo Euro",
+    "symbol": "cEUR"
+  },
+  {
+    "address": "0x123ED050805E0998EBEf43671327139224218e50",
+    "name": "NetM Token",
+    "symbol": "NTMX"
+  },
+  {
+    "address": "0x17700282592D6917F6A73D0bF8AcCf4D578c131e",
+    "name": "Moola",
+    "symbol": "MOO"
+  },
+  {
+    "address": "0x32974C7335e649932b5766c5aE15595aFC269160",
+    "name": "Moola cEUR DEPRECATED",
+    "symbol": "mcEURxOLD"
+  },
+  {
+    "address": "0x3a0EA4e0806805527C750AB9b34382642448468D",
+    "name": "Moola cUSD",
+    "symbol": "mcUSD"
+  },
+  {
+    "address": "0x4d8BF8347600f5207bfdad57363fBa802C9C2031",
+    "name": "Marzipan Finance",
+    "symbol": "MZPN"
+  },
+  {
+    "address": "0x653cC2Cc0Be398614BAd5d5328336dc79281e246",
+    "name": "Moola CELO",
+    "symbol": "mCELO"
+  },
+  {
+    "address": "0x71DB38719f9113A36e14F409bAD4F07B58b4730b",
+    "name": "Moola cUSD DEPRECATED",
+    "symbol": "mcUSDxOLD"
+  },
+  {
+    "address": "0x86f61EB83e10e914fc6F321F5dD3c2dD4860a003",
+    "name": "Moola CELO DEPRECATED",
+    "symbol": "mCELOxOLD"
+  },
+  {
+    "address": "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1",
+    "name": "Celo Dollar",
+    "symbol": "cUSD"
+  },
+  {
+    "address": "0xb9B532e99DfEeb0ffB4D3EDB499f09375CF9Bf07",
+    "name": "Savings CELO",
+    "symbol": "sCELO"
+  },
+  {
+    "address": "0xBDeedCDA79BAbc4Eb509aB689895a3054461691e",
+    "name": "Rewards CELO",
+    "symbol": "rCELO"
+  },
+  {
+    "address": "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9",
+    "name": "Celo",
+    "symbol": "CELO"
+  }
+]

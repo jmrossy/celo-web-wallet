@@ -4,6 +4,9 @@ import { getContract } from 'src/blockchain/contracts'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
 import { MIN_LOCKED_GOLD_TO_VOTE } from 'src/consts'
+import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
+import { selectVoterBalances } from 'src/features/balances/hooks'
+import { Balances } from 'src/features/balances/types'
 import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { validateFeeEstimate } from 'src/features/fees/utils'
@@ -16,12 +19,6 @@ import {
 } from 'src/features/governance/types'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { GovernanceVoteTx, TransactionType } from 'src/features/types'
-import {
-  fetchBalancesActions,
-  fetchBalancesIfStale,
-} from 'src/features/wallet/balances/fetchBalances'
-import { selectVoterBalances } from 'src/features/wallet/hooks'
-import { Balances } from 'src/features/wallet/types'
 import { CELO } from 'src/tokens'
 import { validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'

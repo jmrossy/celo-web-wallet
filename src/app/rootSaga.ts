@@ -3,6 +3,12 @@ import { call, spawn } from 'redux-saga/effects'
 import { logoutActions, logoutReducer, logoutSaga, logoutSagaName } from 'src/app/logout/logout'
 import { initProvider } from 'src/blockchain/init'
 import {
+  fetchBalancesActions,
+  fetchBalancesReducer,
+  fetchBalancesSaga,
+  fetchBalancesSagaName,
+} from 'src/features/balances/fetchBalances'
+import {
   fetchExchangeRateActions,
   fetchExchangeRateReducer,
   fetchExchangeRateSaga,
@@ -63,6 +69,12 @@ import {
   fetchTokenPriceSagaName,
 } from 'src/features/tokenPrice/fetchPrices'
 import {
+  addTokenActions,
+  addTokenReducer,
+  addTokenSaga,
+  addTokenSagaName,
+} from 'src/features/tokens/addToken'
+import {
   fetchStakeHistoryActions,
   fetchStakeHistoryReducer,
   fetchStakeHistorySaga,
@@ -80,18 +92,6 @@ import {
   stakeTokenSaga,
   stakeTokenSagaName,
 } from 'src/features/validators/stakeToken'
-import {
-  addTokenActions,
-  addTokenReducer,
-  addTokenSaga,
-  addTokenSagaName,
-} from 'src/features/wallet/balances/addToken'
-import {
-  fetchBalancesActions,
-  fetchBalancesReducer,
-  fetchBalancesSaga,
-  fetchBalancesSagaName,
-} from 'src/features/wallet/balances/fetchBalances'
 import {
   editAccountActions,
   editAccountReducer,

@@ -10,8 +10,8 @@ import {
 } from 'src/features/feed/components/TransactionPropertyGroup'
 import { txReviewStyles } from 'src/features/feed/components/txReviewStyles'
 import { getFeeFromConfirmedTx } from 'src/features/fees/utils'
+import { useTokens } from 'src/features/tokens/hooks'
 import { EscrowTransaction, TokenTransfer } from 'src/features/types'
-import { useTokens } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 import { getTokenById } from 'src/tokens'
@@ -21,6 +21,7 @@ interface Props {
 }
 
 export function TokenTransferReview({ tx }: Props) {
+  // TODO
   const tokens = useTokens()
   const amountLabel = tx.isOutgoing ? 'Sent: ' : 'Received: '
   const addressLabel = tx.isOutgoing ? 'Sent To' : 'Received From'

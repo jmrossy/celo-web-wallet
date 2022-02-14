@@ -18,21 +18,23 @@ import {
   sendTokenActions,
   sendTokenSagaName,
 } from 'src/features/send/sendToken'
+import { useTokens } from 'src/features/tokens/hooks'
+import { isNativeToken } from 'src/features/tokens/utils'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
-import { useTokens } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { isNativeToken, NativeTokenId } from 'src/tokens'
+import { NativeTokenId } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 
 export function SendConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  // TODO
   const tokens = useTokens()
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
 

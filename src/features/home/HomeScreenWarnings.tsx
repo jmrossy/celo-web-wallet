@@ -8,12 +8,12 @@ import WarningIcon from 'src/components/icons/warning.svg'
 import { Notification } from 'src/components/Notification'
 import { config } from 'src/config'
 import { HIGH_VALUE_THRESHOLD } from 'src/consts'
+import { areBalancesEmpty, hasMinTokenBalance } from 'src/features/balances/utils'
 import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
 import {
   setBackupReminderDismissed,
   setHighValueWarningDismissed,
 } from 'src/features/settings/settingsSlice'
-import { areBalancesEmpty, hasMinTokenBalance } from 'src/features/wallet/utils'
 import { Color } from 'src/styles/Color'
 
 export function HomeScreenWarnings() {

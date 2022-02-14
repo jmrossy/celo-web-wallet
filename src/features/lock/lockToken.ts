@@ -6,6 +6,8 @@ import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCK_AMOUNT } from 'src/consts'
+import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
+import { Balances } from 'src/features/balances/types'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -18,11 +20,6 @@ import {
   createAccountRegisterTx,
   fetchAccountStatus,
 } from 'src/features/wallet/accounts/accountsContract'
-import {
-  fetchBalancesActions,
-  fetchBalancesIfStale,
-} from 'src/features/wallet/balances/fetchBalances'
-import { Balances } from 'src/features/wallet/types'
 import { setAccountIsRegistered } from 'src/features/wallet/walletSlice'
 import { CELO } from 'src/tokens'
 import {

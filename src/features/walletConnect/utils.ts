@@ -3,6 +3,7 @@ import { BigNumber, BigNumberish } from 'ethers'
 import { getContractName } from 'src/blockchain/contracts'
 import { config } from 'src/config'
 import { MIN_GAS_AMOUNT } from 'src/consts'
+import { findTokenByAddress } from 'src/features/tokens/tokenList'
 import {
   SessionStatus,
   WalletConnectMethod,
@@ -10,7 +11,6 @@ import {
   WalletConnectUriForm,
   WalletConnectVersion,
 } from 'src/features/walletConnect/types'
-import { findTokenByAddress } from 'src/tokenList'
 import { CELO, NativeTokens, Token } from 'src/tokens'
 import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'

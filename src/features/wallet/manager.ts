@@ -6,6 +6,7 @@ import { getProvider } from 'src/blockchain/provider'
 import { clearSigner, getSigner, setSigner } from 'src/blockchain/signer'
 import { SignerType } from 'src/blockchain/types'
 import { CELO_DERIVATION_PATH } from 'src/consts'
+import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
 import { resetFeed, setTransactions } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
@@ -17,7 +18,6 @@ import {
   setPasswordCache,
 } from 'src/features/password/password'
 import { resetValidatorForAccount } from 'src/features/validators/validatorsSlice'
-import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
 import {
   addAccount as addAccountToStorage,
