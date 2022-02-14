@@ -1,7 +1,6 @@
-import type { Location } from 'history'
 import { ChangeEvent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
@@ -24,6 +23,11 @@ import { isValidAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useLocationState } from 'src/utils/useLocationState'
+
+interface LocationState {
+  recipient?: string
+}
 
 interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
   amount: string
@@ -39,7 +43,7 @@ const initialValues: SendTokenForm = {
 export function SendFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
+  const locationState = useLocationState<LocationState>()
 
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
@@ -63,11 +67,11 @@ export function SendFormScreen() {
     setValues,
     resetValues,
     resetErrors,
-  } = useCustomForm<SendTokenForm>(getInitialValues(location, tx), onSubmit, validateForm)
+  } = useCustomForm<SendTokenForm>(getInitialValues(locationState, tx), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {
-    resetValues(getInitialValues(location, tx))
+    resetValues(getInitialValues(locationState, tx))
   }, [tx])
 
   const onPasteAddress = async () => {
@@ -178,8 +182,11 @@ export function SendFormScreen() {
   )
 }
 
-function getInitialValues(location: Location, tx: TxFlowTransaction | null): SendTokenForm {
-  const recipient = location?.state?.recipient
+function getInitialValues(
+  locationState: LocationState | null,
+  tx: TxFlowTransaction | null
+): SendTokenForm {
+  const recipient = locationState?.recipient
   const initialRecipient = recipient && isValidAddress(recipient) ? recipient : ''
   if (!tx || !tx.params || tx.type !== TxFlowType.Send) {
     return {

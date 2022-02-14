@@ -1,8 +1,7 @@
 import { BigNumber } from 'ethers'
-import type { Location } from 'history'
 import { ChangeEvent, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import type { RootState } from 'src/app/rootReducer'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
@@ -36,6 +35,12 @@ import { CELO } from 'src/tokens'
 import { isValidAddress, shortenAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useLocationState } from 'src/utils/useLocationState'
+
+interface LocationState {
+  groupAddress: string
+  action: StakeActionType
+}
 
 interface StakeTokenForm extends Omit<StakeTokenParams, 'amountInWei'> {
   amount: string
@@ -56,7 +61,8 @@ const radioBoxLabels = [
 export function StakeFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
+  const locationState = useLocationState<LocationState>()
+
   const tx = useSelector((state: RootState) => state.txFlow.transaction)
   const { balances, voterBalances } = useVoterBalances()
   const isVoteSignerAccount = useIsVoteSignerAccount()
@@ -81,14 +87,14 @@ export function StakeFormScreen() {
     resetValues,
     resetErrors,
   } = useCustomForm<StakeTokenForm>(
-    getInitialValues(location, tx, groupVotes),
+    getInitialValues(locationState, tx, groupVotes),
     onSubmit,
     validateForm
   )
 
   // Keep form in sync with tx state
   useEffect(() => {
-    const initialValues = getInitialValues(location, tx, groupVotes)
+    const initialValues = getInitialValues(locationState, tx, groupVotes)
     resetValues(initialValues)
     // Ensure we have the info needed otherwise send user back
     if (!groups || !groups.length) {
@@ -279,7 +285,7 @@ function HelpModal() {
 }
 
 function getInitialValues(
-  location: Location,
+  locationState: LocationState | null,
   tx: TxFlowTransaction | null,
   groupVotes: GroupVotes
 ): StakeTokenForm {
@@ -287,8 +293,8 @@ function getInitialValues(
     return amountFieldFromWei(tx.params)
   }
 
-  const initialAction = location?.state?.action ?? initialValues.action
-  const groupAddress = location?.state?.groupAddress
+  const initialAction = locationState?.action ?? initialValues.action
+  const groupAddress = locationState?.groupAddress
   const initialGroup =
     groupAddress && isValidAddress(groupAddress) ? groupAddress : initialValues.groupAddress
 
