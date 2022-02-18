@@ -3,7 +3,11 @@ import { CeloContract, config } from 'src/config'
 import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
 import { AbiInterfaceMap, BlockscoutTokenTransfer, BlockscoutTx } from 'src/features/feed/types'
 import { OrderedVoteValue } from 'src/features/governance/types'
-import { isNativeToken, isStableToken } from 'src/features/tokens/utils'
+import {
+  isNativeTokenAddress,
+  isStableToken,
+  isStableTokenAddress,
+} from 'src/features/tokens/utils'
 import {
   CeloNativeTransferTx,
   CeloTokenApproveTx,
@@ -24,7 +28,7 @@ import {
   TokenTransaction,
   TransactionType,
 } from 'src/features/types'
-import { CELO, INativeTokens, NativeTokenId, NativeTokens, Token } from 'src/tokens'
+import { CELO, INativeTokens, NativeTokens, Token } from 'src/tokens'
 import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
@@ -35,27 +39,22 @@ export function isValidTransaction(tx: BlockscoutTx) {
     logger.warn('Empty tx is invalid')
     return false
   }
-
   if (!tx.hash) {
     logger.warn(`Invalid tx; has no hash`)
     return false
   }
-
   if (!tx.to || !isValidAddress(tx.to)) {
     logger.warn(`tx ${tx.hash} has invalid to field`)
     return false
   }
-
   if (!tx.from || !isValidAddress(tx.from)) {
     logger.warn(`tx ${tx.hash} has invalid from field`)
     return false
   }
-
   if (!tx.blockNumber || BigNumber.from(tx.blockNumber).lte(0)) {
     logger.warn(`tx ${tx.hash} has invalid block number`)
     return false
   }
-
   return true
 }
 
@@ -71,14 +70,18 @@ function isValidTokenTransfer(tx: BlockscoutTokenTransfer) {
     logger.warn(`token transfer ${tx.hash} has no token symbol`)
     return false
   }
+  if (!tx.contractAddress || !isValidAddress(tx.contractAddress)) {
+    logger.warn(`token transfer ${tx.hash} has invalid contract address`)
+    return false
+  }
   return true
 }
 
 export function parseTransaction(
   tx: BlockscoutTx,
   address: string, // wallet address
-  tokens: Record<string, Token>, // address to token
-  exchanges: Record<string, Token>, // address to token
+  tokensByAddress: Record<string, Token>,
+  exchangesByAddress: Record<string, Token>,
   abiInterfaces: AbiInterfaceMap
 ): CeloTransaction | null {
   const to = normalizeAddress(tx.to)
@@ -89,23 +92,28 @@ export function parseTransaction(
     return null
   }
 
-  if (exchanges[to]) {
-    // if recipient was a known mento exchange
-    return parseExchangeTx(tx, address, exchanges[to], abiInterfaces[CeloContract.Exchange]!)
+  if (exchangesByAddress[to]) {
+    // If recipient was a known mento exchange
+    return parseExchangeTx(
+      tx,
+      address,
+      exchangesByAddress[to],
+      abiInterfaces[CeloContract.Exchange]!
+    )
   }
 
   if (areAddressesEqual(to, config.contractAddresses[CeloContract.GoldToken])) {
     return parseOutgoingTokenTx(tx, CELO, abiInterfaces[CeloContract.GoldToken]!)
   }
 
-  if (tokens[to]) {
-    // if recipient was a known token
-    // TODO confirm that all the StableToken ABI works well for all ERC20 tokens
-    return parseOutgoingTokenTx(tx, tokens[to], abiInterfaces[CeloContract.StableToken]!)
+  if (tokensByAddress[to]) {
+    // If recipient was a known token
+    // Note, using StableToken ABI as its a superset of ERC20 ABI
+    return parseOutgoingTokenTx(tx, tokensByAddress[to], abiInterfaces[CeloContract.StableToken]!)
   }
 
   if (areAddressesEqual(to, config.contractAddresses[CeloContract.Escrow])) {
-    return parseOutgoingEscrowTx(tx, address, tokens, abiInterfaces)
+    return parseOutgoingEscrowTx(tx, address, tokensByAddress, abiInterfaces)
   }
 
   if (areAddressesEqual(from, config.contractAddresses[CeloContract.Escrow])) {
@@ -125,7 +133,7 @@ export function parseTransaction(
   }
 
   if (tx.tokenTransfers && tx.tokenTransfers.length && !isTxInputEmpty(tx)) {
-    return parseTxWithTokenTransfers(tx, address, tokens, abiInterfaces)
+    return parseTxWithTokenTransfers(tx, address, abiInterfaces)
   }
 
   if (tx.value && BigNumber.from(tx.value).gt(0)) {
@@ -205,8 +213,8 @@ function parseTokenExchange(
   return {
     ...parseOtherTx(tx),
     type: TransactionType.TokenExchange,
-    fromTokenId: sellGold ? CELO.id : token.id,
-    toTokenId: sellGold ? token.id : CELO.id,
+    fromTokenId: sellGold ? CELO.address : token.address,
+    toTokenId: sellGold ? token.address : CELO.address,
     fromValue: BigNumber.from(sellAmount).toString(),
     toValue: BigNumber.from(toValue).toString(),
   }
@@ -257,12 +265,12 @@ function parseOutgoingTokenTransfer(
 
   const result = { ...parseOtherTx(tx), to, value: valueBn.toString(), comment, isOutgoing: true }
 
-  if (token.id === CELO.id) {
-    return { ...result, type: TransactionType.CeloTokenTransfer, tokenId: token.id }
-  } else if (isStableToken(token.id)) {
-    return { ...result, type: TransactionType.StableTokenTransfer, tokenId: token.id }
+  if (token.address === CELO.address) {
+    return { ...result, type: TransactionType.CeloTokenTransfer, tokenId: token.address }
+  } else if (isStableToken(token)) {
+    return { ...result, type: TransactionType.StableTokenTransfer, tokenId: token.address }
   } else {
-    return { ...result, type: TransactionType.OtherTokenTransfer, tokenId: token.id }
+    return { ...result, type: TransactionType.OtherTokenTransfer, tokenId: token.address }
   }
 }
 
@@ -279,19 +287,18 @@ function parseTokenApproveTx(
 
   const result = { ...parseOtherTx(tx), spender, approvedValue: approvedValueBn.toString() }
 
-  if (token.id === CELO.id) {
-    return { ...result, type: TransactionType.CeloTokenApprove, tokenId: token.id }
-  } else if (isStableToken(token.id)) {
-    return { ...result, type: TransactionType.StableTokenApprove, tokenId: token.id }
+  if (token.address === CELO.address) {
+    return { ...result, type: TransactionType.CeloTokenApprove, tokenId: token.address }
+  } else if (isStableToken(token)) {
+    return { ...result, type: TransactionType.StableTokenApprove, tokenId: token.address }
   } else {
-    return { ...result, type: TransactionType.OtherTokenApprove, tokenId: token.id }
+    return { ...result, type: TransactionType.OtherTokenApprove, tokenId: token.address }
   }
 }
 
 function parseTxWithTokenTransfers(
   tx: BlockscoutTx,
   address: string,
-  tokens: Record<string, Token>,
   abiInterfaces: AbiInterfaceMap
 ): StableTokenTransferTx | CeloTokenTransferTx | OtherTokenTransferTx | OtherTx | null {
   if (!tx.tokenTransfers || !tx.tokenTransfers.length) {
@@ -304,13 +311,13 @@ function parseTxWithTokenTransfers(
     let biggestTransfer = tx.tokenTransfers[0]
     for (const transfer of tx.tokenTransfers) {
       if (!isValidTokenTransfer(transfer)) continue
-      const tokenId = tokenSymbolToTokenId(transfer.tokenSymbol, tokens)
+      const tokenAddress = normalizeAddress(transfer.contractAddress)
       const transferValue = BigNumber.from(transfer.value)
-      if (!totals[tokenId]) totals[tokenId] = BigNumber.from(0)
+      if (!totals[tokenAddress]) totals[tokenAddress] = BigNumber.from(0)
       if (areAddressesEqual(transfer.to, address)) {
-        totals[tokenId] = totals[tokenId].add(transferValue)
+        totals[tokenAddress] = totals[tokenAddress].add(transferValue)
       } else if (areAddressesEqual(transfer.from, address)) {
-        totals[tokenId] = totals[tokenId].sub(transferValue)
+        totals[tokenAddress] = totals[tokenAddress].sub(transferValue)
       } else {
         continue
       }
@@ -320,24 +327,24 @@ function parseTxWithTokenTransfers(
     // This logic assumes the biggest transfer is the 'main' transfer that
     // should define the tx's token and properties
     // If this doesn't work well, manually parsing the tx data may work too
-    const tokenId = tokenSymbolToTokenId(biggestTransfer.tokenSymbol, tokens)
-    const comment = tryParseTransferComment(biggestTransfer, tokenId, abiInterfaces)
+    const tokenAddress = normalizeAddress(biggestTransfer.contractAddress)
+    const comment = tryParseTransferComment(biggestTransfer, tokenAddress, abiInterfaces)
 
     const result = {
       ...parseOtherTx(tx),
       from: biggestTransfer.from,
       to: biggestTransfer.to,
-      value: totals[tokenId].toString(),
+      value: totals[tokenAddress].toString(),
       comment,
       isOutgoing: false,
     }
 
-    if (tokenId === CELO.id) {
-      return { ...result, type: TransactionType.CeloTokenTransfer, tokenId }
-    } else if (isStableToken(tokenId)) {
-      return { ...result, type: TransactionType.StableTokenTransfer, tokenId }
+    if (tokenAddress === CELO.address) {
+      return { ...result, type: TransactionType.CeloTokenTransfer, tokenId: tokenAddress }
+    } else if (isStableTokenAddress(tokenAddress)) {
+      return { ...result, type: TransactionType.StableTokenTransfer, tokenId: tokenAddress }
     } else {
-      return { ...result, type: TransactionType.OtherTokenTransfer, tokenId }
+      return { ...result, type: TransactionType.OtherTokenTransfer, tokenId: tokenAddress }
     }
   } catch (error) {
     logger.error('Failed to parse tx with token transfers', error, tx)
@@ -363,7 +370,7 @@ function parseOutgoingEscrowTx(
     }
 
     if (name === 'withdraw') {
-      return parseEscrowWithdraw(tx, address, tokens, abiInterfaces)
+      return parseEscrowWithdraw(tx, address, abiInterfaces)
     }
 
     logger.warn(`Unsupported escrow method: ${name}`)
@@ -381,10 +388,10 @@ function parseOutgoingEscrowTransfer(
   value?: BigNumberish
 ): EscrowTransferTx {
   if (!tokenAddress || !value) {
-    throw new Error(`Escrow tx has invalid aruments: ${tokenAddress}, ${value}`)
+    throw new Error(`Escrow tx has invalid arguments: ${tokenAddress}, ${value}`)
   }
 
-  const token = tokens[tokenAddress]
+  const token = tokens[normalizeAddress(tokenAddress)]
   if (!token) {
     throw new Error(`No token found for address: ${tokenAddress}`)
   }
@@ -394,17 +401,16 @@ function parseOutgoingEscrowTransfer(
     type: TransactionType.EscrowTransfer,
     value: BigNumber.from(value).toString(),
     isOutgoing: true,
-    tokenId: token.id,
+    tokenId: token.address,
   }
 }
 
 function parseEscrowWithdraw(
   tx: BlockscoutTx,
   address: string,
-  tokens: Record<string, Token>,
   abiInterfaces: AbiInterfaceMap
 ): EscrowWithdrawTx {
-  const parsedTx = parseTxWithTokenTransfers(tx, address, tokens, abiInterfaces)
+  const parsedTx = parseTxWithTokenTransfers(tx, address, abiInterfaces)
 
   if (!parsedTx || parsedTx.type === TransactionType.Other) {
     throw new Error('Escrow withdrawal has no token transfers or could not be parsed')
@@ -530,16 +536,16 @@ function parseGovernanceTx(
 
 function tryParseTransferComment(
   tx: BlockscoutTokenTransfer,
-  tokenId: string,
+  tokenAddress: string,
   abiInterfaces: AbiInterfaceMap
 ): string | undefined {
   try {
     // Only supports native token contracts for now as transferWithComment
     // isn't in the ERC20 standard
-    if (!isNativeToken(tokenId)) return undefined
+    if (!isNativeTokenAddress(tokenAddress)) return undefined
 
     const abiInterface =
-      tokenId === CELO.id
+      tokenAddress === CELO.address
         ? abiInterfaces[CeloContract.GoldToken]
         : abiInterfaces[CeloContract.StableToken]
     const txDescription = abiInterface!.parseTransaction({ data: tx.input })
@@ -568,7 +574,7 @@ function parseNativeTransferTx(tx: BlockscoutTx, address: string): CeloNativeTra
     type: TransactionType.CeloNativeTransfer,
     isOutgoing: areAddressesEqual(tx.from, address),
     comment: undefined,
-    tokenId: CELO.id,
+    tokenId: CELO.address,
   }
 }
 
@@ -585,21 +591,21 @@ function parseOtherTx(tx: BlockscoutTx): OtherTx {
     timestamp: BigNumber.from(tx.timeStamp).toNumber(),
     gasPrice: tx.gasPrice,
     gasUsed: tx.gasUsed,
-    feeCurrency: tokenSymbolToTokenId(tx.feeCurrency) as NativeTokenId,
+    feeCurrency: tokenSymbolToAddress(tx.feeCurrency),
     gatewayFee: tx.gatewayFee,
     gatewayFeeRecipient: tx.gatewayFeeRecipient,
   }
 }
 
-function tokenSymbolToTokenId(
+function tokenSymbolToAddress(
   symbol: string | null | undefined,
   tokens: Record<string, Token> | INativeTokens = NativeTokens
 ): string {
-  if (!symbol || symbol.toLowerCase() === 'cgld') return CELO.id
-  for (const token of Object.values(tokens)) {
-    if (symbol.toLowerCase() === token.id.toLowerCase()) return token.id
+  if (!symbol || symbol.toLowerCase() === 'cgld') return CELO.address
+  for (const token of Object.values(tokens) as Token[]) {
+    if (symbol.toLowerCase() === token.symbol.toLowerCase()) return token.address
   }
-  return symbol
+  throw new Error(`No address found for token symbol ${symbol}`)
 }
 
 function isTxInputEmpty(tx: BlockscoutTx) {

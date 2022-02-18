@@ -15,10 +15,10 @@ interface Props {
 
 function _TokenIcon({ token, size }: Props) {
   let icon
-  if (token.id === CELO.id) icon = CeloIcon
-  else if (token.id === cUSD.id) icon = cUSDIcon
-  else if (token.id === cEUR.id) icon = cEURIcon
-  else if (token.id === cREAL.id) icon = cREALIcon
+  if (token.address === CELO.address) icon = CeloIcon
+  else if (token.address === cUSD.address) icon = cUSDIcon
+  else if (token.address === cEUR.address) icon = cEURIcon
+  else if (token.address === cREAL.address) icon = cREALIcon
 
   const { fallbackImgSize, actualSize, fontSize } = sizeValues[size]
 

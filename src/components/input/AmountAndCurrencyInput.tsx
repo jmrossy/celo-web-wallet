@@ -38,16 +38,15 @@ export const AmountAndCurrencyInput = (props: Props) => {
     nativeTokensOnly,
   } = props
 
-  // TODO
   const tokens = useTokens()
 
   const selectOptions = useMemo(
     () =>
       Object.values(tokens)
-        .filter((t) => (nativeTokensOnly ? isNativeToken(t.id) : true))
+        .filter((t) => (nativeTokensOnly ? isNativeToken(t) : true))
         .map((t) => ({
           display: t.symbol,
-          value: t.id,
+          value: t.address,
         })),
     [tokens]
   )

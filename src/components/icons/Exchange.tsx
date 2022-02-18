@@ -5,7 +5,7 @@ import { Color } from 'src/styles/Color'
 import { CELO, Token } from 'src/tokens'
 
 function _ExchangeIcon({ toToken }: { toToken: Token }) {
-  const backgroundColor = toToken.id === CELO.id ? Color.primaryGold : Color.primaryGreen
+  const backgroundColor = toToken.address === CELO.address ? Color.primaryGold : Color.primaryGreen
   return (
     <Box
       align="center"

@@ -20,7 +20,7 @@ import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
-import { CELO, NativeTokenId, NativeTokens, Token } from 'src/tokens'
+import { CELO, NativeTokens, Token } from 'src/tokens'
 import {
   fromWei,
   getAdjustedAmountFromBalances,
@@ -43,14 +43,14 @@ export function validate(
 ): ErrorState {
   let errors: ErrorState = { isValid: true }
   const { amountInWei, fromTokenId, toTokenId, feeEstimates, exchangeRate } = params
-  const fromToken = balances.tokens[fromTokenId]
-  const toToken = balances.tokens[toTokenId]
+  const fromToken = NativeTokens[fromTokenId]
+  const toToken = NativeTokens[toTokenId]
 
-  if (!Object.values(NativeTokenId).includes(fromTokenId) || !fromToken) {
+  if (!fromToken) {
     logger.error(`Invalid from token: ${fromTokenId}`)
     return invalidInput('fromTokenId', 'Invalid from currency')
   }
-  if (!Object.values(NativeTokenId).includes(toTokenId) || !toToken) {
+  if (!toToken) {
     logger.error(`Invalid to token: ${toTokenId}`)
     return invalidInput('toTokenId', 'Invalid to currency')
   }
@@ -135,13 +135,13 @@ function* exchangeToken(params: ExchangeTokenParams) {
 
   const fromToken = NativeTokens[fromTokenId]
   const toToken = NativeTokens[toTokenId]
-  const stableToken = fromToken.id === CELO.id ? toToken : fromToken
+  const stableToken = fromToken.address === CELO.address ? toToken : fromToken
   const fromTokenContract = getContractByAddress(fromToken.address)
-  if (!fromTokenContract) throw new Error(`No token contract found for ${fromToken.id}`)
+  if (!fromTokenContract) throw new Error(`No token contract found for ${fromToken.symbol}`)
   const exchangeAddress = stableToken.exchangeAddress
-  if (!exchangeAddress) throw new Error(`Token ${stableToken.id} has no known exchange address`)
+  if (!exchangeAddress) throw new Error(`Token ${stableToken.symbol} has no known exchange address`)
   const exchangeContract = getContractByAddress(exchangeAddress)
-  if (!exchangeContract) throw new Error(`No exchange contract found for ${stableToken.id}`)
+  if (!exchangeContract) throw new Error(`No exchange contract found for ${stableToken.symbol}`)
 
   // Need to account for case where user intends to exchange entire balance
   const adjustedAmount = getAdjustedAmountFromBalances(
@@ -211,7 +211,7 @@ async function createExchangeTx(
   const txRequest = await exchangeContract.populateTransaction.sell(
     amountInWei,
     minBuyAmount,
-    fromToken.id === CELO.id
+    fromToken.address === CELO.address
   )
 
   // For a smoother experience on Ledger, the approval and exchange txs
@@ -247,8 +247,8 @@ function getExchangePlaceholderTx(
   return {
     ...createPlaceholderForTx(txReceipt, amountInWei.toString(), feeEstimate),
     type: TransactionType.TokenExchange,
-    fromTokenId: fromToken.id,
-    toTokenId: toToken.id,
+    fromTokenId: fromToken.symbol,
+    toTokenId: toToken.symbol,
     fromValue: amountInWei.toString(),
     toValue: minBuyAmount.toString(),
   }

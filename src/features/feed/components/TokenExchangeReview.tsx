@@ -11,16 +11,16 @@ import {
 } from 'src/features/feed/components/TransactionPropertyGroup'
 import { txReviewStyles } from 'src/features/feed/components/txReviewStyles'
 import { useTokens } from 'src/features/tokens/hooks'
+import { getTokenById } from 'src/features/tokens/utils'
 import { TokenExchangeTx } from 'src/features/types'
 import { Stylesheet } from 'src/styles/types'
-import { CELO, getTokenById } from 'src/tokens'
+import { CELO } from 'src/tokens'
 
 interface Props {
   tx: TokenExchangeTx
 }
 
 export function TokenExchangeReview({ tx }: Props) {
-  // TODO
   const tokens = useTokens()
   const rate = computeToCeloRate(tx)
 

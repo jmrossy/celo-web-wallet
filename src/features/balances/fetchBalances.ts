@@ -9,9 +9,11 @@ import {
   setVoterBalances,
   updateBalances,
 } from 'src/features/balances/balancesSlice'
+import { Balances } from 'src/features/balances/types'
 import { areBalancesEmpty } from 'src/features/balances/utils'
 import { fetchLockedCeloStatus, fetchTotalLocked } from 'src/features/lock/fetchLockedStatus'
 import { LockedCeloBalances } from 'src/features/lock/types'
+import { TokenMap } from 'src/features/tokens/types'
 import { isNativeTokenAddress } from 'src/features/tokens/utils'
 import { fetchStakingBalances } from 'src/features/validators/fetchGroupVotes'
 import { fetchAccountStatus } from 'src/features/wallet/accounts/accountsContract'
@@ -19,7 +21,6 @@ import { CELO } from 'src/tokens'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { call, put, select } from 'typed-redux-saga'
-import { Balances, TokenBalances } from './types'
 
 // Fetch wallet balances and other frequently used data like votes
 // Essentially, fetch all the data that forms need to validate inputs
@@ -27,8 +28,8 @@ function* fetchBalances() {
   const address = yield* select((state: RootState) => state.wallet.address)
   if (!address) throw new Error('Cannot fetch balances before address is set')
 
-  const balances = yield* select((state: RootState) => state.balances.accountBalances)
-  const newTokenBalances = yield* call(fetchTokenBalances, address, balances.tokens)
+  const tokenAddrToToken = yield* select((state: RootState) => state.tokens.byAddress)
+  const tokenAddrToValue = yield* call(fetchTokenBalances, address, tokenAddrToToken)
 
   let lockedCelo: LockedCeloBalances
   if (config.isElectron) {
@@ -38,7 +39,7 @@ function* fetchBalances() {
     lockedCelo = { ...balancesInitialState.accountBalances.lockedCelo }
   }
 
-  const newBalances: Balances = { tokens: newTokenBalances, lockedCelo, lastUpdated: Date.now() }
+  const newBalances: Balances = { tokenAddrToValue, lockedCelo, lastUpdated: Date.now() }
   yield* put(updateBalances(newBalances))
 
   if (config.isElectron) {
@@ -60,9 +61,9 @@ export function* fetchBalancesIfStale() {
 
 async function fetchTokenBalances(
   address: string,
-  tokensBalances: TokenBalances
-): Promise<TokenBalances> {
-  const tokenAddrs = Object.keys(tokensBalances)
+  tokenMap: TokenMap
+): Promise<Record<string, string>> {
+  const tokenAddrs = Object.keys(tokenMap)
   // TODO may be good to batch here if token list is really long
   const fetchPromises: Promise<{ tokenAddress: string; value: string }>[] = []
   for (const tokenAddr of tokenAddrs) {
@@ -74,10 +75,10 @@ async function fetchTokenBalances(
     }
   }
 
-  const tokenBalances: TokenBalances = {}
+  const newTokenAddrToValue: Record<string, string> = {}
   const tokenBalancesArr = await Promise.all(fetchPromises)
-  tokenBalancesArr.forEach((bal) => (tokenBalances[bal.tokenAddress] = bal.value))
-  return tokenBalances
+  tokenBalancesArr.forEach((bal) => (newTokenAddrToValue[bal.tokenAddress] = bal.value))
+  return newTokenAddrToValue
 }
 
 // TODO Figure out why the balanceOf result is incorrect for GoldToken
@@ -107,7 +108,7 @@ function* fetchVoterBalances() {
   // Only the total locked is used for now so just fetching that bit
   const locked = yield* call(fetchTotalLocked, voteSignerFor)
   const voterBalances = {
-    tokens: {},
+    tokenAddrToValue: {},
     lockedCelo: {
       locked,
       pendingBlocked: '0',

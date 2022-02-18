@@ -1,13 +1,19 @@
 import { LockedCeloBalances } from 'src/features/lock/types'
-import { Token } from 'src/tokens'
+import { Token, TokenWithBalance } from 'src/tokens'
 
-export type TokenBalances = Record<string, string> // token address to balance in wei
+export type TokenBalances = Record<string, TokenWithBalance> // Token address to token with balance object
 
 export interface Balances {
   // All balances are represented in wei
-  tokens: TokenBalances
+  tokenAddrToValue: Record<string, string>
   lockedCelo: LockedCeloBalances
   lastUpdated: number | null
+}
+
+// It's convenient for the UI to have a single object with the tokens and
+// their balances values merged together.
+export interface BalancesWithTokens extends Balances {
+  tokens: TokenBalances // tokenAddrToToken but shortening because it's very commonly used
 }
 
 export interface BalanceTableRow {

@@ -11,7 +11,7 @@ interface BalancesState {
 
 export const balancesInitialState: BalancesState = {
   accountBalances: {
-    tokens: {},
+    tokenAddrToValue: {},
     lockedCelo: {
       locked: '0',
       pendingBlocked: '0',
@@ -27,8 +27,8 @@ const balancesSlice = createSlice({
   initialState: balancesInitialState,
   reducers: {
     updateBalances: (state, action: PayloadAction<Balances>) => {
-      const { tokens, lockedCelo, lastUpdated } = action.payload
-      assert(tokens && lockedCelo && lastUpdated, 'Invalid balance')
+      const { tokenAddrToValue, lockedCelo, lastUpdated } = action.payload
+      assert(tokenAddrToValue && lockedCelo && lastUpdated, 'Invalid balance')
       state.accountBalances = action.payload
     },
     setVoterBalances: (state, action: PayloadAction<Balances | null>) => {

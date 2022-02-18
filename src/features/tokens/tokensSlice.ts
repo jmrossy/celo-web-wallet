@@ -3,6 +3,7 @@ import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { TokenMap } from 'src/features/tokens/types'
 import { NativeTokens, Token } from 'src/tokens'
+import { normalizeAddress } from 'src/utils/addresses'
 import { assert } from 'src/utils/validation'
 
 interface TokensState {
@@ -24,7 +25,11 @@ const tokensSlice = createSlice({
   reducers: {
     addToken: (state, action: PayloadAction<Token>) => {
       const newToken = action.payload
-      assert(newToken && newToken.address, 'No new token provided')
+      assert(newToken, 'No new token provided')
+      assert(
+        newToken.address && newToken.address === normalizeAddress(newToken.address),
+        'No new token address invalid'
+      )
       assert(!state.byAddress[newToken.address], 'Token already exists')
       state.byAddress[newToken.address] = newToken
     },

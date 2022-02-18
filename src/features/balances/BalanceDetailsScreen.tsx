@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useDispatch } from 'react-redux'
 import { Address } from 'src/components/Address'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
@@ -13,11 +12,12 @@ import { useModal } from 'src/components/modal/useModal'
 import { Table, TableColumn } from 'src/components/table/Table'
 import { config } from 'src/config'
 import { fetchBalancesActions, fetchBalancesSagaName } from 'src/features/balances/fetchBalances'
-import { Balances, BalanceTableRow } from 'src/features/balances/types'
+import { useBalancesWithTokens } from 'src/features/balances/hooks'
+import { BalancesWithTokens, BalanceTableRow } from 'src/features/balances/types'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
 import { AddTokenModal } from 'src/features/tokens/AddTokenModal'
+import { removeToken } from 'src/features/tokens/tokensSlice'
 import { isNativeToken } from 'src/features/tokens/utils'
-import { removeToken } from 'src/features/wallet/walletSlice'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
@@ -76,7 +76,7 @@ export function BalanceDetailsScreen() {
 
   const isMobile = useIsMobile()
   const tableColumns = getTableColumns(isMobile, onClickAddress)
-  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const balances = useBalancesWithTokens()
   const data = useMemo(() => {
     return balancesToTableData(balances, onClickRemove)
   }, [balances])
@@ -162,7 +162,7 @@ function TokenAddressDetails({ row }: { row: BalanceTableRow }) {
 }
 
 function balancesToTableData(
-  balances: Balances,
+  balances: BalancesWithTokens,
   onRemove: (id: string) => void
 ): BalanceTableRow[] {
   const tableRows: BalanceTableRow[] = []
@@ -171,7 +171,7 @@ function balancesToTableData(
   const tokens = config.isElectron
     ? {
         ...balances.tokens,
-        lockedCELO: {
+        [LockedCELO.address]: {
           ...LockedCELO,
           value: getTotalLockedCelo(balances).toString(),
         },
@@ -179,9 +179,9 @@ function balancesToTableData(
     : balances.tokens
 
   for (const token of Object.values(tokens)) {
-    const isNative = isNativeToken(token.id) || token.id === LockedCELO.id
+    const isNative = isNativeToken(token) || token.address === LockedCELO.address
     tableRows.push({
-      id: token.id,
+      id: token.address,
       label: token.symbol,
       balance: parseFloat(fromWeiRounded(token.value, token)),
       balanceWei: token.value,

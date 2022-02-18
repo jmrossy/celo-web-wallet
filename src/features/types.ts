@@ -1,5 +1,4 @@
 import { VoteValue } from 'src/features/governance/types'
-import { NativeTokenId } from 'src/tokens'
 
 interface Transaction {
   type: TransactionType
@@ -12,7 +11,7 @@ interface Transaction {
   timestamp: number
   gasPrice: string
   gasUsed: string
-  feeCurrency?: NativeTokenId
+  feeCurrency?: string // native token address
   gatewayFee?: string
   gatewayFeeRecipient?: string
   inputData?: string
@@ -47,13 +46,13 @@ export enum TransactionType {
 interface TokenTransferTx extends Transaction {
   comment?: string
   isOutgoing: boolean
-  tokenId: string
+  tokenId: string // formerly symbol, now address
 }
 
 interface TokenApproveTx extends Transaction {
   approvedValue: string
   spender: string
-  tokenId: string
+  tokenId: string // formerly symbol, now address
 }
 
 export interface StableTokenTransferTx extends TokenTransferTx {
@@ -87,21 +86,21 @@ export interface OtherTokenApproveTx extends TokenApproveTx {
 export interface EscrowTransferTx extends Transaction {
   type: TransactionType.EscrowTransfer
   isOutgoing: true
-  tokenId: string
+  tokenId: string // formerly symbol, now address
   comment?: string
 }
 
 export interface EscrowWithdrawTx extends Transaction {
   type: TransactionType.EscrowWithdraw
-  tokenId: string
+  tokenId: string // formerly symbol, now address
   isOutgoing: false
   comment?: string
 }
 
 export interface TokenExchangeTx extends Transaction {
   type: TransactionType.TokenExchange
-  fromTokenId: string
-  toTokenId: string
+  fromTokenId: string // formerly symbol, now address
+  toTokenId: string // formerly symbol, now address
   fromValue: string
   toValue: string
 }

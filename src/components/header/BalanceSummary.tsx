@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
-import { useTokens } from 'src/features/tokens/hooks'
+import { useBalancesWithTokens } from 'src/features/balances/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq, useWindowSize } from 'src/styles/mediaQueries'
@@ -16,8 +16,8 @@ export function BalanceSummary() {
   if (windowWidth && windowWidth > 550) numItems = 3
   if (windowWidth && windowWidth > 1024) numItems = 4
 
-  // TODO
-  const tokens = useTokens()
+  const balances = useBalancesWithTokens()
+  const tokens = balances.tokens
 
   const { tokensToShow, hiddenTokens } = useMemo(() => {
     const sortedTokens = Object.values(tokens).sort((t1, t2) => {
@@ -29,7 +29,7 @@ export function BalanceSummary() {
       const t2Sort = t2.sortOrder ?? 1000
       if (t1Sort < t2Sort) return -1
       if (t1Sort > t2Sort) return 1
-      return t1.id < t2.id ? -1 : 1
+      return t1.symbol < t2.symbol ? -1 : 1
     })
     const totalTokens = sortedTokens.length
     if (totalTokens <= numItems) {
@@ -51,7 +51,7 @@ export function BalanceSummary() {
     <div css={style.balances} onClick={onBalanceClick}>
       {tokensToShow.map((t) => (
         <MoneyValue
-          key={`balance-summary-${t.id}`}
+          key={`balance-summary-${t.address}`}
           amountInWei={t.value}
           token={t}
           roundDownIfSmall={true}

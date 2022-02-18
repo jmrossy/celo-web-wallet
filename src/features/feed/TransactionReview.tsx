@@ -14,12 +14,12 @@ import { TransactionProperty } from 'src/features/feed/components/TransactionPro
 import { openTransaction } from 'src/features/feed/feedSlice'
 import { getTransactionDescription } from 'src/features/feed/transactionDescription'
 import { useTokens } from 'src/features/tokens/hooks'
+import { TokenMap } from 'src/features/tokens/types'
 import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { Tokens } from 'src/tokens'
 
 export function TransactionReview() {
   const navigate = useNavigate()
@@ -63,8 +63,7 @@ export function TransactionReview() {
   )
 }
 
-// TODO
-function getContentByTxType(tx: CeloTransaction, tokens: Tokens) {
+function getContentByTxType(tx: CeloTransaction, tokens: TokenMap) {
   const description = getTransactionDescription(tx, tokens, false)
 
   if (
