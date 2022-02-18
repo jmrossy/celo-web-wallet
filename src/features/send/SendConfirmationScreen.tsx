@@ -1,8 +1,7 @@
 import { BigNumber } from 'ethers'
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
@@ -19,7 +18,8 @@ import {
   sendTokenSagaName,
 } from 'src/features/send/sendToken'
 import { useTokens } from 'src/features/tokens/hooks'
-import { isNativeToken } from 'src/features/tokens/utils'
+import { isNativeTokenAddress } from 'src/features/tokens/utils'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -27,16 +27,14 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { NativeTokenId } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 
 export function SendConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  // TODO
   const tokens = useTokens()
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -44,14 +42,14 @@ export function SendConfirmationScreen() {
       navigate('/send')
       return
     }
-    const { tokenId, recipient, amountInWei } = tx.params
+    const { tokenAddress, recipient, amountInWei } = tx.params
     const type = getTokenTransferType(tx.params)
-    if (isNativeToken(tokenId)) {
-      const txToken = tokenId as NativeTokenId
+    if (isNativeTokenAddress(tokenAddress)) {
+      // TODO replace txToken with address
       dispatch(estimateFeeActions.trigger({ txs: [{ type }], txToken }))
     } else {
       // There are no gas pre-computes for non-native tokens, need to get real tx to estimate
-      const token = tokens[tokenId]
+      const token = tokens[tokenAddress]
       const txRequestP = createTransferTx(token, recipient, BigNumber.from(amountInWei))
       txRequestP
         .then((txRequest) =>
@@ -65,7 +63,7 @@ export function SendConfirmationScreen() {
 
   if (!tx || tx.type !== TxFlowType.Send) return null
   const params = tx.params
-  const txToken = tokens[params.tokenId]
+  const txToken = tokens[params.tokenAddress]
 
   const { amount, total, feeAmount, feeCurrency, feeEstimates } = useFee(params.amountInWei)
 

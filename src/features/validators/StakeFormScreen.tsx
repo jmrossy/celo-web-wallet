@@ -14,6 +14,7 @@ import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { StackedBarChart } from 'src/components/StackedBarChart'
 import { useVoterBalances } from 'src/features/balances/hooks'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { getResultChartData, getSummaryChartData } from 'src/features/validators/barCharts'
@@ -64,7 +65,7 @@ export function StakeFormScreen() {
   const navigate = useNavigate()
   const locationState = useLocationState<LocationState>()
 
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
   const { balances, voterBalances } = useVoterBalances()
   const isVoteSignerAccount = useIsVoteSignerAccount()
   const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)

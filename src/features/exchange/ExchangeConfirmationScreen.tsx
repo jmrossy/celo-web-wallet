@@ -13,6 +13,7 @@ import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -29,7 +30,7 @@ export function ExchangeConfirmationScreen() {
 
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const toCeloRates = useSelector((state: RootState) => state.exchange.toCeloRates)
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
 
   useEffect(() => {
     if (!tx || tx.type !== TxFlowType.Exchange) {

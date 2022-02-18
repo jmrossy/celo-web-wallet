@@ -3,7 +3,7 @@ import { FeeEstimate } from 'src/features/fees/types'
 export interface SendTokenParams {
   recipient: string
   amountInWei: string
-  tokenId: string
+  tokenAddress: string
   comment?: string
   feeEstimate?: FeeEstimate
 }

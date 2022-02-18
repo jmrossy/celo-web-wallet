@@ -24,6 +24,7 @@ import {
   VoteValue,
   voteValueToLabel,
 } from 'src/features/governance/types'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
@@ -60,7 +61,7 @@ export function GovernanceFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
   const { balances, voterBalances } = useVoterBalances()
   const isVoteSignerAccount = useIsVoteSignerAccount()
   const proposals = useSelector((state: RootState) => state.governance.proposals)

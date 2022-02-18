@@ -15,6 +15,7 @@ import { getResultChartData, getSummaryChartData } from 'src/features/lock/barCh
 import { validate } from 'src/features/lock/lockToken'
 import { lockActionLabel, LockActionType, LockTokenParams } from 'src/features/lock/types'
 import { getTotalUnlockedCelo } from 'src/features/lock/utils'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { Color } from 'src/styles/Color'
@@ -46,7 +47,7 @@ export function LockFormScreen() {
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
   const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
 
   const onSubmit = (values: LockTokenForm) => {
     dispatch(txFlowStarted({ type: TxFlowType.Lock, params: amountFieldToWei(values) }))

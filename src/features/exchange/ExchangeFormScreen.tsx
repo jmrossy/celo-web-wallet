@@ -14,6 +14,7 @@ import { ExchangeTokenParams } from 'src/features/exchange/types'
 import { useExchangeValues } from 'src/features/exchange/utils'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { isStableToken } from 'src/features/tokens/utils'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { Color } from 'src/styles/Color'
@@ -39,7 +40,7 @@ export function ExchangeFormScreen() {
   const navigate = useNavigate()
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const toCeloRates = useSelector((state: RootState) => state.exchange.toCeloRates)
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
 
   useEffect(() => {

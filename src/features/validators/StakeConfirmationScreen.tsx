@@ -12,6 +12,7 @@ import { useVoterBalances } from 'src/features/balances/hooks'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -34,7 +35,7 @@ export function StakeConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
   const { voterBalances } = useVoterBalances()
   const voterAddress = useVoterAccountAddress()
   const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)

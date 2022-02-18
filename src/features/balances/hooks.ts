@@ -7,6 +7,10 @@ import { TokenMap } from 'src/features/tokens/types'
 import { logger } from 'src/utils/logger'
 import { select } from 'typed-redux-saga'
 
+export function useBalances() {
+  return useSelector((state: RootState) => state.balances.accountBalances)
+}
+
 const balanceEmptySelector = createSelector(
   (s: RootState) => s.balances.accountBalances,
   (balances) => areBalancesEmpty(balances)

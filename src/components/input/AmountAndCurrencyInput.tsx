@@ -75,7 +75,8 @@ export const AmountAndCurrencyInput = (props: Props) => {
     [selectOptions, tokens]
   )
 
-  const selectName = tokenInputName ?? 'tokenId'
+  const selectName = tokenInputName ?? 'tokenAddress'
+  const numberInputName = amountName ?? 'amount'
 
   return (
     <Box justify="start" align="center">
@@ -96,14 +97,14 @@ export const AmountAndCurrencyInput = (props: Props) => {
       <NumberInput
         step="0.01"
         fillWidth={true}
-        name={amountName ?? 'amount'}
+        name={numberInputName}
         onChange={onAmountChange}
         onBlur={onAmountBlur}
         value={amountValue}
         placeholder="1.00"
         inputStyles={style.amount}
         disabled={inputDisabled}
-        {...errors[amountName ?? 'amount']}
+        {...errors[numberInputName]}
       />
     </Box>
   )

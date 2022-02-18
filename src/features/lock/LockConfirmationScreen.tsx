@@ -18,6 +18,7 @@ import {
   lockTokenSagaName,
 } from 'src/features/lock/lockToken'
 import { lockActionLabel } from 'src/features/lock/types'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -31,7 +32,7 @@ export function LockConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
   const balances = useSelector((state: RootState) => state.wallet.balances)
   const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
   const isAccountRegistered = useSelector((state: RootState) => state.wallet.account.isRegistered)

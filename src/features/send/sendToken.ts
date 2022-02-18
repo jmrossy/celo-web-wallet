@@ -14,7 +14,8 @@ import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import { SendTokenParams } from 'src/features/send/types'
-import { isNativeToken } from 'src/features/tokens/utils'
+import { TokenMap } from 'src/features/tokens/types'
+import { isNativeToken, isNativeTokenAddress } from 'src/features/tokens/utils'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenTransfer, TransactionType } from 'src/features/types'
 import { CELO, Token } from 'src/tokens'
@@ -32,16 +33,17 @@ import { call, put, select } from 'typed-redux-saga'
 export function validate(
   params: SendTokenParams,
   balances: Balances,
+  tokens: TokenMap,
   validateMaxAmount = true,
   validateFee = false
 ): ErrorState {
-  const { recipient, amountInWei, tokenId, comment, feeEstimate } = params
-  const token = balances.tokens[tokenId]
+  const { recipient, amountInWei, tokenAddress, comment, feeEstimate } = params
+  const token = tokens[tokenAddress]
   let errors: ErrorState = { isValid: true }
 
   if (!amountInWei) {
     errors = { ...errors, ...invalidInput('amount', 'Amount Missing') }
-  } else if (!tokenId || !token) {
+  } else if (!tokenAddress || !token) {
     errors = { ...errors, ...invalidInput('tokenId', 'Invalid Currency') }
   } else {
     const maxAmount = validateMaxAmount
@@ -77,7 +79,7 @@ export function validate(
   }
 
   if (comment) {
-    if (!isNativeToken(params.tokenId)) {
+    if (!isNativeToken(token)) {
       logger.error('Using comment for non-native token')
       errors = {
         ...errors,
@@ -110,11 +112,15 @@ export function validate(
 
 function* sendToken(params: SendTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
+  const tokens = yield* select((state: RootState) => state.tokens.byAddress)
   const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
 
-  validateOrThrow(() => validate(params, balances, txSizeLimitEnabled, true), 'Invalid transaction')
+  validateOrThrow(
+    () => validate(params, balances, tokens, txSizeLimitEnabled, true),
+    'Invalid transaction'
+  )
 
-  const { signedTx, type, token } = yield* call(createSendTx, params, balances)
+  const { signedTx, type, token } = yield* call(createSendTx, params, balances, tokens)
   yield* put(setNumSignatures(1))
 
   const txReceipt = yield* call(sendSignedTransaction, signedTx)
@@ -126,9 +132,9 @@ function* sendToken(params: SendTokenParams) {
   yield* put(fetchBalancesActions.trigger())
 }
 
-async function createSendTx(params: SendTokenParams, balances: Balances) {
-  const { recipient, amountInWei, tokenId, comment, feeEstimate } = params
-  const token = balances.tokens[tokenId]
+async function createSendTx(params: SendTokenParams, balances: Balances, tokens: TokenMap) {
+  const { recipient, amountInWei, tokenAddress, comment, feeEstimate } = params
+  const token = tokens[tokenAddress]
   if (!feeEstimate) throw new Error('Fee estimate is missing')
 
   // Need to account for case where user intends to send entire balance
@@ -137,17 +143,17 @@ async function createSendTx(params: SendTokenParams, balances: Balances) {
   const type = getTokenTransferType(params)
   const tx = await getTokenTransferTx(type, token, recipient, adjustedAmount, comment)
 
-  logger.info(`Signing tx to send ${amountInWei} ${token.id} to ${recipient}`)
+  logger.info(`Signing tx to send ${amountInWei} ${token.symbol} to ${recipient}`)
   const signedTx = await signTransaction(tx, feeEstimate)
   return { signedTx, type, token }
 }
 
 export function getTokenTransferType(params: SendTokenParams): TransactionType {
-  const { tokenId, comment } = params
-  if (tokenId === CELO.id) {
+  const { tokenAddress, comment } = params
+  if (tokenAddress === CELO.address) {
     if (!comment) return TransactionType.CeloNativeTransfer
     else return TransactionType.CeloTokenTransferWithComment
-  } else if (isNativeToken(tokenId)) {
+  } else if (isNativeTokenAddress(tokenAddress)) {
     if (!comment) return TransactionType.StableTokenTransfer
     else return TransactionType.StableTokenTransferWithComment
   } else {
@@ -191,12 +197,12 @@ function createNativeCeloTransferTx(recipient: string, amountInWei: BigNumber) {
 
 export function createTransferTx(token: Token, recipient: string, amountInWei: BigNumber) {
   let contract
-  if (isNativeToken(token.id)) {
+  if (isNativeToken(token)) {
     contract = getContractByAddress(token.address)
   } else {
     contract = getTokenContract(token.address)
   }
-  if (!contract) throw new Error(`No contract found for token ${token.id}`)
+  if (!contract) throw new Error(`No contract found for token ${token.address}`)
   return contract.populateTransaction.transfer(recipient, amountInWei)
 }
 
@@ -208,7 +214,7 @@ function createTransferWithCommentTx(
 ) {
   if (!comment) throw new Error('Attempting to use transferWithComment but comment is empty')
   const contract = getContractByAddress(token.address)
-  if (!contract) throw new Error(`No contract found for token ${token.id}`)
+  if (!contract) throw new Error(`No contract found for token ${token.address}`)
   return contract.populateTransaction.transferWithComment(recipient, amountInWei, comment)
 }
 
@@ -244,7 +250,7 @@ function getPlaceholderTx(
     isOutgoing: true,
     comment: params.comment,
     type: adjustedType,
-    tokenId: token.id,
+    tokenId: token.address,
   }
 }
 

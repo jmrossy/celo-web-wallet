@@ -10,10 +10,13 @@ import { SelectInput } from 'src/components/input/SelectInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useBalances } from 'src/features/balances/hooks'
 import { useContactsAndAccountsSelect } from 'src/features/contacts/hooks'
 import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
-import { isNativeToken } from 'src/features/tokens/utils'
+import { useTokens } from 'src/features/tokens/hooks'
+import { isNativeTokenAddress } from 'src/features/tokens/utils'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { Font } from 'src/styles/fonts'
@@ -36,7 +39,7 @@ interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
 const initialValues: SendTokenForm = {
   recipient: '',
   amount: '',
-  tokenId: '',
+  tokenAddress: '',
   comment: '',
 }
 
@@ -45,8 +48,9 @@ export function SendFormScreen() {
   const navigate = useNavigate()
   const locationState = useLocationState<LocationState>()
 
-  const balances = useSelector((state: RootState) => state.wallet.balances)
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const balances = useBalances()
+  const tokens = useTokens()
+  const tx = useFlowTransaction()
   const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
   const contactOptions = useContactsAndAccountsSelect()
 
@@ -56,7 +60,7 @@ export function SendFormScreen() {
   }
 
   const validateForm = (values: SendTokenForm) =>
-    validate(amountFieldToWei(values), balances, txSizeLimitEnabled)
+    validate(amountFieldToWei(values), balances, tokens, txSizeLimitEnabled)
 
   const {
     values,
@@ -81,17 +85,18 @@ export function SendFormScreen() {
   }
 
   const onUseMax = () => {
-    if (!values.tokenId) return
-    const tokenId = values.tokenId
-    const token = balances.tokens[tokenId]
-    const maxAmount = fromWeiRounded(token.value, token, true)
+    if (!values.tokenAddress) return
+    const tokenAddress = values.tokenAddress
+    const token = tokens[tokenAddress]
+    const balance = balances.tokenAddrToValue[tokenAddress]
+    const maxAmount = fromWeiRounded(balance, token, true)
     setValues({ ...values, amount: maxAmount })
     resetErrors()
   }
 
   const onTokenSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
-    const isNative = isNativeToken(value)
+    const isNative = isNativeTokenAddress(value)
     // Reset comment if token is not native
     const comment = isNative ? values.comment : ''
     setValues({ ...values, [name]: value, comment })
@@ -145,7 +150,7 @@ export function SendFormScreen() {
               </TextButton>
             </Box>
             <AmountAndCurrencyInput
-              tokenValue={values.tokenId}
+              tokenValue={values.tokenAddress}
               onTokenSelect={onTokenSelect}
               onTokenBlur={handleBlur}
               amountValue={values.amount}
@@ -168,7 +173,7 @@ export function SendFormScreen() {
               minHeight="4em"
               maxHeight="6em"
               fillWidth={true}
-              disabled={!isNativeToken(values.tokenId)}
+              disabled={!isNativeTokenAddress(values.tokenAddress)}
               {...errors['comment']}
             />
           </Box>

@@ -15,6 +15,7 @@ import {
   governanceVoteSagaName,
 } from 'src/features/governance/governanceVote'
 import { Proposal, voteValueToLabel } from 'src/features/governance/types'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -30,7 +31,7 @@ export function GovernanceConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
   const proposals = useSelector((state: RootState) => state.governance.proposals)
 
   useEffect(() => {

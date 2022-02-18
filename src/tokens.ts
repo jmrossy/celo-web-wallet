@@ -3,18 +3,12 @@ import { NULL_ADDRESS } from 'src/consts'
 import { Color } from 'src/styles/Color'
 
 export interface Token {
-  // id: string
   symbol: string
   name: string
   address: string // contract address
   chainId: number
   decimals?: number // TODO support decimals other than 18 (Issue #53)
   color?: string
-  minValue?: number // TODO remove
-  displayDecimals?: number // TODO remove
-  ticker?: string // for ledger, usually the same as id except cGLD
-  // signature?: string
-  // rawData?: string
   exchangeAddress?: string // Mento contract for token
   sortOrder?: number // for order preference in balance lists
 }
@@ -44,10 +38,7 @@ export const NativeTokens: INativeTokens = {
     symbol: NativeTokenId.CELO,
     name: 'Celo Native',
     color: Color.primaryGold,
-    minValue: 0.001,
-    displayDecimals: 3,
     address: config.contractAddresses.GoldToken,
-    ticker: 'cGLD',
     decimals: 18,
     chainId: config.chainId,
     sortOrder: 3,
@@ -56,8 +47,6 @@ export const NativeTokens: INativeTokens = {
     symbol: NativeTokenId.cUSD,
     name: 'Celo Dollar',
     color: Color.primaryGreen,
-    minValue: 0.01,
-    displayDecimals: 2,
     address: config.contractAddresses.StableToken,
     decimals: 18,
     chainId: config.chainId,
@@ -68,8 +57,6 @@ export const NativeTokens: INativeTokens = {
     symbol: NativeTokenId.cEUR,
     name: 'Celo Euro',
     color: Color.primaryGreen,
-    minValue: 0.01,
-    displayDecimals: 2,
     address: config.contractAddresses.StableTokenEUR,
     decimals: 18,
     chainId: config.chainId,
@@ -80,8 +67,6 @@ export const NativeTokens: INativeTokens = {
     symbol: NativeTokenId.cREAL,
     name: 'Celo Brazilian Real',
     color: Color.primaryGreen,
-    minValue: 0.01,
-    displayDecimals: 2,
     address: config.contractAddresses.StableTokenBRL,
     decimals: 18,
     chainId: config.chainId,
@@ -108,8 +93,6 @@ export const UnknownToken: Token = {
   symbol: 'unknown',
   name: 'Unknown Token',
   color: Color.textGrey,
-  minValue: 0.01,
-  displayDecimals: 2,
   address: NULL_ADDRESS,
   decimals: 18,
   chainId: config.chainId,
