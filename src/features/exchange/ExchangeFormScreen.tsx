@@ -9,6 +9,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { useBalances } from 'src/features/balances/hooks'
+import { getTokenBalance } from 'src/features/balances/utils'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
 import { validate } from 'src/features/exchange/exchangeToken'
 import { ExchangeTokenParams } from 'src/features/exchange/types'
@@ -92,7 +93,7 @@ export function ExchangeFormScreen() {
   const onUseMax = () => {
     const tokenAddress = values.fromTokenAddress
     const token = tokens[tokenAddress]
-    const balance = balances.tokenAddrToValue[tokenAddress]
+    const balance = getTokenBalance(balances, token)
     const maxAmount = fromWeiRounded(balance, token, true)
     setValues({ ...values, amount: maxAmount })
     resetErrors()

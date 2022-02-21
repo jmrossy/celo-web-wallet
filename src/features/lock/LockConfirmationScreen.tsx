@@ -8,6 +8,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { StackedBarChart } from 'src/components/StackedBarChart'
+import { useBalances } from 'src/features/balances/hooks'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
@@ -33,7 +34,7 @@ export function LockConfirmationScreen() {
   const navigate = useNavigate()
 
   const tx = useFlowTransaction()
-  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const balances = useBalances()
   const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
   const isAccountRegistered = useSelector((state: RootState) => state.wallet.account.isRegistered)
 

@@ -12,7 +12,7 @@ import { ChartDataColors, ChartDataColorsLighter, Color } from 'src/styles/Color
 import { CELO } from 'src/tokens'
 import { BigNumberMax, BigNumberMin, fromWeiRounded } from 'src/utils/amount'
 
-// Just for convinience / shortness cause this file has lots of conversions
+// Just for convenience / shortness cause this file has lots of conversions
 function fromWei(value: BigNumberish) {
   return parseFloat(fromWeiRounded(value, CELO, true))
 }

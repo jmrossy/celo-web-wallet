@@ -8,6 +8,7 @@ import { CeloContract } from 'src/config'
 import { MIN_LOCK_AMOUNT } from 'src/consts'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
 import { Balances } from 'src/features/balances/types'
+import { getTokenBalance } from 'src/features/balances/utils'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -76,7 +77,7 @@ export function validate(
   // Special case handling for locking whole balance
   if (action === LockActionType.Lock && !errors.amount) {
     const remainingAfterPending = BigNumber.from(amountInWei).sub(pendingFree).sub(pendingBlocked)
-    const celoBalance = balances.tokens.CELO.value
+    const celoBalance = getTokenBalance(balances, CELO)
     if (
       remainingAfterPending.gt(0) &&
       (remainingAfterPending.gte(celoBalance) ||
@@ -208,8 +209,8 @@ export function getLockActionTxPlan(
 
   if (action === LockActionType.Unlock) {
     // If only all three cases where this simple :)
-    const adjutedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, CELO)
-    return [{ type: TransactionType.UnlockCelo, amountInWei: adjutedAmount.toString() }]
+    const adjustedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, CELO)
+    return [{ type: TransactionType.UnlockCelo, amountInWei: adjustedAmount.toString() }]
   } else if (action === LockActionType.Lock) {
     const txs: LockTokenTxPlan = []
 

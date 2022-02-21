@@ -79,7 +79,7 @@ function* governanceVote(params: GovernanceVoteParams) {
   yield* put(setNumSignatures(1))
 
   const txReceipt = yield* call(sendSignedTransaction, signedTx)
-  logger.info(`Govervance vote hash received: ${txReceipt.transactionHash}`)
+  logger.info(`Governance vote hash received: ${txReceipt.transactionHash}`)
 
   const placeholderTx = getPlaceholderTx(params, txReceipt)
   yield* put(addPlaceholderTransaction(placeholderTx))

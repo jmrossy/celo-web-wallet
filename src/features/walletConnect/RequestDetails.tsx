@@ -20,7 +20,7 @@ import {
 import { failWcRequest } from 'src/features/walletConnect/walletConnectSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { CELO, NativeTokenId } from 'src/tokens'
+import { CELO } from 'src/tokens'
 import { useSagaStatusNoModal } from 'src/utils/useSagaStatus'
 import type { SessionTypes } from 'wcv2/types'
 
@@ -83,7 +83,7 @@ function TransactionRequest({ txRequest }: { txRequest: CeloTransactionRequest }
       dispatch(
         estimateFeeActions.trigger({
           txs: [{ type: TransactionType.Other, tx: txRequest }],
-          preferredToken: feeToken.id as NativeTokenId,
+          preferredToken: feeToken.address,
           forceGasEstimation: true,
         })
       )

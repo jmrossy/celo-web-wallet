@@ -42,7 +42,7 @@ export function HomeScreenWarnings() {
 
 export const selectHomeScreenWarnings = createSelector(
   (state: RootState) => state.settings,
-  (state: RootState) => state.wallet.balances,
+  (state: RootState) => state.balances.accountBalances,
   (state: RootState) => state.wallet.type,
   (settings, balances, type) => {
     if (!settings.backupReminderDismissed && !areBalancesEmpty(balances))

@@ -9,7 +9,8 @@ import { BigNumber } from 'ethers'
 import { getProvider } from 'src/blockchain/provider'
 import { getSigner } from 'src/blockchain/signer'
 import { FeeEstimate } from 'src/features/fees/types'
-import { NativeTokenId, NativeTokens } from 'src/tokens'
+import { CELO } from 'src/tokens'
+import { areAddressesEqual } from 'src/utils/addresses'
 
 export async function sendTransaction(tx: CeloTransactionRequest, feeEstimate?: FeeEstimate) {
   const signedTx = await signTransaction(tx, feeEstimate)
@@ -25,8 +26,8 @@ export async function signTransaction(tx: CeloTransactionRequest, feeEstimate?: 
     throw new Error('Fee estimate required to send tx')
   }
 
-  const { gasPrice, gasLimit, token } = feeEstimate
-  const feeCurrencyAddress = token === NativeTokenId.CELO ? undefined : NativeTokens[token].address
+  const { gasPrice, gasLimit, feeToken } = feeEstimate
+  const feeCurrencyAddress = areAddressesEqual(feeToken, CELO.address) ? undefined : feeToken
 
   const signedTx = await signer.signTransaction({
     ...tx,

@@ -11,6 +11,7 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { StackedBarChart } from 'src/components/StackedBarChart'
+import { useBalances } from 'src/features/balances/hooks'
 import { getResultChartData, getSummaryChartData } from 'src/features/lock/barCharts'
 import { validate } from 'src/features/lock/lockToken'
 import { lockActionLabel, LockActionType, LockTokenParams } from 'src/features/lock/types'
@@ -44,7 +45,7 @@ const radioBoxLabels = [
 export function LockFormScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const balances = useBalances()
   const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
   const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
   const tx = useFlowTransaction()

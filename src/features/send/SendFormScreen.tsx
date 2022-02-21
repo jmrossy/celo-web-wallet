@@ -11,6 +11,7 @@ import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useBalances } from 'src/features/balances/hooks'
+import { getTokenBalance } from 'src/features/balances/utils'
 import { useContactsAndAccountsSelect } from 'src/features/contacts/hooks'
 import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
@@ -88,7 +89,7 @@ export function SendFormScreen() {
     if (!values.tokenAddress) return
     const tokenAddress = values.tokenAddress
     const token = tokens[tokenAddress]
-    const balance = balances.tokenAddrToValue[tokenAddress]
+    const balance = getTokenBalance(balances, token)
     const maxAmount = fromWeiRounded(balance, token, true)
     setValues({ ...values, amount: maxAmount })
     resetErrors()
