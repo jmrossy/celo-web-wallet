@@ -24,8 +24,6 @@ export enum NativeTokenId {
   cREAL = 'cREAL',
 }
 
-export const StableTokenIds = [NativeTokenId.cUSD, NativeTokenId.cEUR, NativeTokenId.cREAL]
-
 export interface INativeTokens {
   CELO: Token
   cUSD: Token
@@ -80,6 +78,8 @@ export const CELO = NativeTokens.CELO
 export const cUSD = NativeTokens.cUSD
 export const cEUR = NativeTokens.cEUR
 export const cREAL = NativeTokens.cREAL
+
+export const StableTokens = [cUSD, cEUR, cREAL]
 
 export const LockedCELO: Token = {
   ...CELO,

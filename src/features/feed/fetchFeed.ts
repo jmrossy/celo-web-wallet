@@ -16,7 +16,7 @@ import { addTokensByAddress } from 'src/features/tokens/addToken'
 import { TokenMap } from 'src/features/tokens/types'
 import { TransactionMap, TransactionType } from 'src/features/types'
 import { saveFeedData } from 'src/features/wallet/manager'
-import { NativeTokens, StableTokenIds } from 'src/tokens'
+import { StableTokens } from 'src/tokens'
 import { queryBlockscout } from 'src/utils/blockscout'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
@@ -140,8 +140,7 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
 
 function getExchangeAddresses() {
   const exchangesByAddress: TokenMap = {} // Mento address to token info
-  for (const id of StableTokenIds) {
-    const token = NativeTokens[id]
+  for (const token of StableTokens) {
     if (token.exchangeAddress) {
       exchangesByAddress[token.exchangeAddress] = token
     }

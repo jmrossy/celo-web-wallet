@@ -18,9 +18,10 @@ import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
+import { TokenMap } from 'src/features/tokens/types'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
-import { CELO, NativeTokens, Token } from 'src/tokens'
+import { CELO, Token } from 'src/tokens'
 import {
   fromWei,
   getAdjustedAmountFromBalances,
@@ -37,21 +38,22 @@ import { call, put, select } from 'typed-redux-saga'
 export function validate(
   params: ExchangeTokenParams,
   balances: Balances,
+  tokens: TokenMap,
   validateMaxAmount = true,
   validateRate = false,
   validateFee = false
 ): ErrorState {
   let errors: ErrorState = { isValid: true }
-  const { amountInWei, fromTokenId, toTokenId, feeEstimates, exchangeRate } = params
-  const fromToken = NativeTokens[fromTokenId]
-  const toToken = NativeTokens[toTokenId]
+  const { amountInWei, fromTokenAddress, toTokenAddress, feeEstimates, exchangeRate } = params
+  const fromToken = tokens[fromTokenAddress]
+  const toToken = tokens[toTokenAddress]
 
   if (!fromToken) {
-    logger.error(`Invalid from token: ${fromTokenId}`)
+    logger.error(`Invalid from token: ${fromTokenAddress}`)
     return invalidInput('fromTokenId', 'Invalid from currency')
   }
   if (!toToken) {
-    logger.error(`Invalid to token: ${toTokenId}`)
+    logger.error(`Invalid to token: ${toTokenAddress}`)
     return invalidInput('toTokenId', 'Invalid to currency')
   }
 
@@ -120,21 +122,22 @@ export function validateExchangeRate(exchangeRate?: SimpleExchangeRate): ErrorSt
 
 function* exchangeToken(params: ExchangeTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
+  const tokens = yield* select((state: RootState) => state.tokens.byAddress)
   const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
 
   validateOrThrow(
-    () => validate(params, balances, txSizeLimitEnabled, true, true),
+    () => validate(params, balances, tokens, txSizeLimitEnabled, true, true),
     'Invalid transaction'
   )
 
-  const { amountInWei, fromTokenId, toTokenId, feeEstimates, exchangeRate } = params
-  logger.info(`Exchanging ${amountInWei} ${fromTokenId}`)
-
+  const { amountInWei, fromTokenAddress, toTokenAddress, feeEstimates, exchangeRate } = params
   if (feeEstimates?.length !== 2) throw new Error('Fee estimates not provided correctly')
   if (!exchangeRate) throw new Error('Exchange rate not provided correctly')
 
-  const fromToken = NativeTokens[fromTokenId]
-  const toToken = NativeTokens[toTokenId]
+  const fromToken = tokens[fromTokenAddress]
+  const toToken = tokens[toTokenAddress]
+  logger.info(`Exchanging ${amountInWei} ${fromToken.symbol}`)
+
   const stableToken = fromToken.address === CELO.address ? toToken : fromToken
   const fromTokenContract = getContractByAddress(fromToken.address)
   if (!fromTokenContract) throw new Error(`No token contract found for ${fromToken.symbol}`)

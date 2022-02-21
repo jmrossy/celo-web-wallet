@@ -7,12 +7,11 @@ import { MAX_TOKEN_PRICE_NUM_DAYS } from 'src/consts'
 import { updatePairPrices } from 'src/features/tokenPrice/tokenPriceSlice'
 import {
   PairPriceUpdate,
-  QuoteCurrency,
   QuoteCurrencyPriceHistory,
   TokenPricePoint,
 } from 'src/features/tokenPrice/types'
 import { findMissingPriceDays, mergePriceHistories } from 'src/features/tokenPrice/utils'
-import { NativeTokenId, NativeTokens, StableTokenIds } from 'src/tokens'
+import { CELO, StableTokens } from 'src/tokens'
 import { areAddressesEqual, ensureLeading0x } from 'src/utils/addresses'
 import { fromFixidity } from 'src/utils/amount'
 import {
@@ -35,7 +34,7 @@ const EXPECTED_MIN_CELO_TO_STABLE = 0.1
 const EXPECTED_MAX_CELO_TO_STABLE = 100
 
 interface FetchTokenPriceParams {
-  baseCurrency: NativeTokenId
+  baseCurrency: Address
   numDays?: number // 7 by default
 }
 
@@ -47,11 +46,11 @@ function* fetchTokenPrice(params: FetchTokenPriceParams) {
   if (numDays > MAX_TOKEN_PRICE_NUM_DAYS) {
     throw new Error(`Cannot retrieve prices for such a wide window: ${numDays}`)
   }
-  if (baseCurrency !== NativeTokenId.CELO) {
+  if (baseCurrency !== CELO.address) {
     throw new Error('Only CELO <-> Native currency is currently supported')
   }
 
-  const prices = yield* select((state: RootState) => state.tokenPrice.prices)
+  const prices = yield* select((state: RootState) => state.tokenPrice.byBaseAddress)
   const pairPriceUpdates = yield* call(fetchStableTokenPrices, numDays, prices[baseCurrency])
   if (pairPriceUpdates && pairPriceUpdates.length) {
     yield* put(updatePairPrices(pairPriceUpdates))
@@ -85,9 +84,9 @@ async function fetchStableTokenPrices(numDays: number, oldPrices?: QuoteCurrency
     const tokenToPrice = await tryFetchOracleLogs(fromBlock, toBlock, oracleContract)
     if (!tokenToPrice) continue
     // Prepends the new price point to each tokens history
-    for (const [id, price] of tokenToPrice) {
-      if (!priceUpdates[id]) priceUpdates[id] = []
-      priceUpdates[id]!.push(price)
+    for (const [address, price] of tokenToPrice) {
+      if (!priceUpdates[address]) priceUpdates[address] = []
+      priceUpdates[address]!.push(price)
     }
     await sleep(PAUSE_BETWEEN_FETCH_REQUESTS) // Brief pause to help avoid overloading blockscout and/or getting rate limited
   }
@@ -95,10 +94,9 @@ async function fetchStableTokenPrices(numDays: number, oldPrices?: QuoteCurrency
   const mergedPrices = mergePriceHistories(priceUpdates, oldPrices)
 
   const pairPriceUpdates: PairPriceUpdate[] = []
-  for (const key of Object.keys(mergedPrices)) {
-    const quoteCurrency = key as QuoteCurrency // TS limitation of Object.keys()
+  for (const quoteCurrency of Object.keys(mergedPrices)) {
     const prices = mergedPrices[quoteCurrency]!
-    pairPriceUpdates.push({ baseCurrency: NativeTokenId.CELO, quoteCurrency, prices })
+    pairPriceUpdates.push({ baseCurrency: CELO.address, quoteCurrency, prices })
   }
   return pairPriceUpdates
 }
@@ -119,19 +117,19 @@ function parseBlockscoutOracleLogs(
   oracleContract: Contract,
   minBlock: number
 ) {
-  const tokenToPrice = new Map<NativeTokenId, TokenPricePoint>()
-  for (const id of StableTokenIds) {
-    const tokenAddress = NativeTokens[id].address
+  const tokenAddrToPrice = new Map<Address, TokenPricePoint>()
+  for (const token of StableTokens) {
+    const tokenAddress = token.address
     const price = parseBlockscoutOracleLogsForToken(logs, oracleContract, tokenAddress, minBlock)
-    if (price) tokenToPrice.set(id, price)
+    if (price) tokenAddrToPrice.set(tokenAddress, price)
   }
-  return tokenToPrice
+  return tokenAddrToPrice
 }
 
 function parseBlockscoutOracleLogsForToken(
   logs: Array<BlockscoutTransactionLog>,
   oracleContract: Contract,
-  searchToken: string,
+  searchToken: Address,
   minBlock: number
 ): TokenPricePoint | null {
   if (!logs || !logs.length) throw new Error('No oracle logs found in time range')

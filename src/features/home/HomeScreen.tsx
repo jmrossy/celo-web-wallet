@@ -14,7 +14,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { NativeTokenId } from 'src/tokens'
+import { cUSD } from 'src/tokens'
 
 export function HomeScreen() {
   const isMobile = useIsMobile()
@@ -47,7 +47,7 @@ export function HomeScreen() {
               <label css={style.celoPriceLabel}>Celo Price</label>
             </Box>
 
-            <PriceChartCelo stableTokenId={NativeTokenId.cUSD} showHeaderPrice={true} />
+            <PriceChartCelo quoteTokenAddress={cUSD.address} showHeaderPrice={true} />
           </>
         )}
       </div>

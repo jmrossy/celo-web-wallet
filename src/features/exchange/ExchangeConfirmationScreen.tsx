@@ -13,6 +13,7 @@ import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
+import { useTokens } from 'src/features/tokens/hooks'
 import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
@@ -28,7 +29,7 @@ export function ExchangeConfirmationScreen() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const balances = useSelector((state: RootState) => state.wallet.balances)
+  const tokens = useTokens()
   const toCeloRates = useSelector((state: RootState) => state.exchange.toCeloRates)
   const tx = useFlowTransaction()
 
@@ -46,13 +47,13 @@ export function ExchangeConfirmationScreen() {
     )
 
     const approveType =
-      tx.params.fromTokenId === CELO.id
+      tx.params.fromTokenAddress === CELO.address
         ? TransactionType.CeloTokenApprove
         : TransactionType.StableTokenApprove
 
     dispatch(
       estimateFeeActions.trigger({
-        preferredToken: tx.params.fromTokenId,
+        preferredToken: tx.params.fromTokenAddress,
         txs: [{ type: approveType }, { type: TransactionType.TokenExchange }],
       })
     )
@@ -65,9 +66,9 @@ export function ExchangeConfirmationScreen() {
 
   const { from, to, rate } = useExchangeValues(
     params.amountInWei,
-    params.fromTokenId,
-    params.toTokenId,
-    balances,
+    params.fromTokenAddress,
+    params.toTokenAddress,
+    tokens,
     toCeloRates,
     true
   )

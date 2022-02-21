@@ -1,26 +1,29 @@
 import { BigNumber, BigNumberish, FixedNumber } from 'ethers'
 import { WEI_PER_UNIT } from 'src/consts'
 import { ToCeloRates } from 'src/features/exchange/types'
+import { TokenMap } from 'src/features/tokens/types'
 import { TokenExchangeTx } from 'src/features/types'
-import { CELO, cUSD, NativeTokenId, NativeTokens, Token } from 'src/tokens'
+import { CELO, cUSD, Token } from 'src/tokens'
 import { fromWei, toWei } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 
 export function useExchangeValues(
   fromAmount: number | string | null | undefined,
-  fromTokenId: string | null | undefined,
-  toTokenId: string | null | undefined,
+  fromTokenAddress: string | null | undefined,
+  toTokenAddress: string | null | undefined,
+  tokens: TokenMap,
   toCeloRates: ToCeloRates,
   isFromAmountWei: boolean
 ) {
   // Return some defaults when values are missing
-  if (!fromTokenId || !toTokenId || !toCeloRates) return getDefaultExchangeValues(cUSD, CELO)
+  if (!fromTokenAddress || !toTokenAddress || !toCeloRates)
+    return getDefaultExchangeValues(cUSD, CELO)
 
-  const fromToken = NativeTokens[fromTokenId as NativeTokenId] ?? cUSD
-  const toToken = NativeTokens[toTokenId as NativeTokenId] ?? CELO
+  const fromToken = tokens[fromTokenAddress] ?? cUSD
+  const toToken = tokens[toTokenAddress] ?? CELO
   const sellCelo = fromToken.address === CELO.address
-  const stableTokenId = sellCelo ? toTokenId : fromTokenId
-  const toCeloRate = toCeloRates[stableTokenId]
+  const stableTokenAddress = sellCelo ? toTokenAddress : fromTokenAddress
+  const toCeloRate = toCeloRates[stableTokenAddress]
   if (!toCeloRate) return getDefaultExchangeValues(fromToken, toToken)
 
   const { stableBucket, celoBucket, spread } = toCeloRate
@@ -136,7 +139,7 @@ export function computeToCeloRate(tx: TokenExchangeTx) {
   const defaultRate = {
     weiRate: '0',
     weiBasis: WEI_PER_UNIT,
-    otherTokenId: cUSD.symbol,
+    otherTokenId: cUSD.address,
   }
 
   if (!tx) return defaultRate
@@ -146,8 +149,9 @@ export function computeToCeloRate(tx: TokenExchangeTx) {
 
   if (!fromValue || !toValue) return defaultRate
 
-  const rate = tx.fromTokenId === CELO.symbol ? toValue / fromValue : fromValue / toValue
-  const otherTokenId = tx.fromTokenId === CELO.symbol ? tx.toTokenId : tx.fromTokenId
+  const sellCelo = tx.fromTokenId === CELO.symbol || tx.fromTokenId === CELO.address // Id used to be symbol, now address
+  const rate = sellCelo ? toValue / fromValue : fromValue / toValue
+  const otherTokenId = sellCelo ? tx.toTokenId : tx.fromTokenId
   return {
     weiRate: toWei(rate).toString(),
     weiBasis: WEI_PER_UNIT,
