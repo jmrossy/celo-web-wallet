@@ -45,8 +45,7 @@ export function SendConfirmationScreen() {
     const { tokenAddress, recipient, amountInWei } = tx.params
     const type = getTokenTransferType(tx.params)
     if (isNativeTokenAddress(tokenAddress)) {
-      // TODO replace txToken with address
-      dispatch(estimateFeeActions.trigger({ txs: [{ type }], txToken }))
+      dispatch(estimateFeeActions.trigger({ txs: [{ type }], txToken: tokenAddress }))
     } else {
       // There are no gas pre-computes for non-native tokens, need to get real tx to estimate
       const token = tokens[tokenAddress]

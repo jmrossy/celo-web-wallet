@@ -39,7 +39,7 @@ export const NativeTokens: INativeTokens = {
     address: config.contractAddresses.GoldToken,
     decimals: 18,
     chainId: config.chainId,
-    sortOrder: 3,
+    sortOrder: 10,
   },
   cUSD: {
     symbol: NativeTokenId.cUSD,
@@ -49,7 +49,7 @@ export const NativeTokens: INativeTokens = {
     decimals: 18,
     chainId: config.chainId,
     exchangeAddress: config.contractAddresses.Exchange,
-    sortOrder: 1,
+    sortOrder: 20,
   },
   cEUR: {
     symbol: NativeTokenId.cEUR,
@@ -59,7 +59,7 @@ export const NativeTokens: INativeTokens = {
     decimals: 18,
     chainId: config.chainId,
     exchangeAddress: config.contractAddresses.ExchangeEUR,
-    sortOrder: 2,
+    sortOrder: 30,
   },
   cREAL: {
     symbol: NativeTokenId.cREAL,
@@ -69,11 +69,11 @@ export const NativeTokens: INativeTokens = {
     decimals: 18,
     chainId: config.chainId,
     exchangeAddress: config.contractAddresses.ExchangeBRL,
-    sortOrder: 2,
+    sortOrder: 40,
   },
 }
 
-// Just re-export directly for convenient access
+// Re-exported directly for convenient access
 export const CELO = NativeTokens.CELO
 export const cUSD = NativeTokens.cUSD
 export const cEUR = NativeTokens.cEUR

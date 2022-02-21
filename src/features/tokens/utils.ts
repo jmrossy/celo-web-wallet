@@ -4,8 +4,13 @@ import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/a
 
 export function isNativeTokenAddress(addr: string) {
   return Object.values(NativeTokens)
-    .map((t) => t.address)
+    .map((t: Token) => t.address)
     .includes(normalizeAddress(addr))
+}
+
+export function getNativeToken(addr?: string | null): Token | null {
+  if (!addr) return null
+  return Object.values(NativeTokens).find((t: Token) => areAddressesEqual(t.address, addr)) || null
 }
 
 export function isNativeToken(token: Token) {

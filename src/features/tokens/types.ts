@@ -1,7 +1,7 @@
 import { Token } from 'src/tokens'
 
-export type TokenMap = Record<string, Token> // Address to Token
+export type TokenMap = Record<Address, Token>
 
 export interface AddTokenParams {
-  address: string
+  address: Address
 }

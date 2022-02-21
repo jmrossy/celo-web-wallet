@@ -1,9 +1,10 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
 import { getSigner } from 'src/blockchain/signer'
-import { isStableToken } from 'src/features/tokens/utils'
+import { isStableTokenAddress } from 'src/features/tokens/utils'
 import { TransactionType } from 'src/features/types'
-import { NativeTokenId } from 'src/tokens'
+import { CELO } from 'src/tokens'
+import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
 const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
@@ -33,47 +34,47 @@ const STABLE_TOKEN_GAS_MULTIPLIER = 5
 export async function estimateGas(
   type: TransactionType,
   tx?: CeloTransactionRequest,
-  feeCurrency?: NativeTokenId,
+  feeToken?: Address,
   forceEstimation?: boolean
 ) {
   if (forceEstimation || !PRECOMPUTED_GAS_ESTIMATES[type]) {
     if (!tx) throw new Error('Tx must be provided when forcing gas estimation')
-    logger.debug(`manually computing gas estimate for type: ${type}`)
-    return computeGasEstimate(tx, feeCurrency)
+    logger.debug(`Manually computing gas estimate for type: ${type}`)
+    return computeGasEstimate(tx, feeToken)
   }
 
   const gasLimit = BigNumber.from(PRECOMPUTED_GAS_ESTIMATES[type])
-  if (!feeCurrency || feeCurrency === NativeTokenId.CELO) {
-    logger.debug(`using CELO precompute gas for type: ${type}`)
+  if (!feeToken || areAddressesEqual(feeToken, CELO.address)) {
+    logger.debug(`Using CELO precompute gas for type: ${type}`)
     return gasLimit
-  } else if (isStableToken(feeCurrency)) {
+  } else if (isStableTokenAddress(feeToken)) {
     // TODO find a more scientific was to fix the gas estimation issue.
     // Since txs paid with cUSD also involve token transfers, the gas needed
     // is more than what estimateGas returns
     return gasLimit.mul(STABLE_TOKEN_GAS_MULTIPLIER)
   } else {
-    throw new Error(`Unsupported fee currency ${feeCurrency}`)
+    throw new Error(`Unsupported fee currency ${feeToken}`)
   }
 }
 
-async function computeGasEstimate(tx: CeloTransactionRequest, feeCurrency?: NativeTokenId) {
+async function computeGasEstimate(tx: CeloTransactionRequest, feeToken?: Address) {
   const signer = getSigner().signer
   const gasLimit = await signer.estimateGas(tx)
 
-  if (!feeCurrency || feeCurrency === NativeTokenId.CELO) {
+  if (!feeToken || areAddressesEqual(feeToken, CELO.address)) {
     return gasLimit.mul(CELO_GAS_MULTIPLIER)
-  } else if (isStableToken(feeCurrency)) {
+  } else if (isStableTokenAddress(feeToken)) {
     // TODO find a more scientific was to fix the gas estimation issue.
     // Since txs paid with cUSD also involve token transfers, the gas needed
     // is more than what estimateGas returns
     return gasLimit.mul(STABLE_TOKEN_GAS_MULTIPLIER)
   } else {
-    throw new Error(`Unsupported fee currency ${feeCurrency}`)
+    throw new Error(`Unsupported fee currency ${feeToken}`)
   }
 }
 
 // Do not use in production
-// Kept for convinence to compute the consts above
+// Kept for convenience to compute the consts above
 // export async function precomputeGasEstimates() {
 //   const signer = getSigner().signer
 

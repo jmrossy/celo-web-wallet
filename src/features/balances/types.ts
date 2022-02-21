@@ -1,11 +1,11 @@
 import { LockedCeloBalances } from 'src/features/lock/types'
 import { Token, TokenWithBalance } from 'src/tokens'
 
-export type TokenBalances = Record<string, TokenWithBalance> // Token address to token + balance
+export type TokenBalances = Record<Address, TokenWithBalance> // Token address to token + balance
 
 export interface Balances {
   // All balances are represented in wei
-  tokenAddrToValue: Record<string, string>
+  tokenAddrToValue: Record<Address, string>
   lockedCelo: LockedCeloBalances
   lastUpdated: number | null
 }
@@ -21,7 +21,7 @@ export interface BalanceTableRow {
   label: string
   balance: number
   balanceWei: string
-  address: string
+  address: Address
   token: Token
   onRemove?: (id: string) => void
 }

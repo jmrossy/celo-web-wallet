@@ -29,7 +29,7 @@ const balancesWithTokensSelector = createSelector(
   })
 )
 
-function getMergedTokenBalances(
+export function getMergedTokenBalances(
   addressToToken: TokenMap,
   tokenAddrToValue: Record<string, string>
 ): TokenBalances {
