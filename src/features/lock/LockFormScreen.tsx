@@ -1,7 +1,6 @@
 import { ChangeEvent, useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
@@ -43,11 +42,11 @@ const radioBoxLabels = [
 ]
 
 export function LockFormScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const balances = useBalances()
-  const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
-  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
+  const pendingWithdrawals = useAppSelector((state) => state.lock.pendingWithdrawals)
+  const groupVotes = useAppSelector((state) => state.validators.groupVotes)
   const tx = useFlowTransaction()
 
   const onSubmit = (values: LockTokenForm) => {

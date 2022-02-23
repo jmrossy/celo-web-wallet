@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { HrDivider } from 'src/components/HrDivider'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
@@ -21,8 +20,8 @@ export function HomeScreen() {
   const isWalletEmpty = useAreBalancesEmpty()
   const showGraph = !isMobile || isWalletEmpty
 
-  const isDismissed = useSelector((state: RootState) => state.settings.homeHeaderDismissed)
-  const dispatch = useDispatch()
+  const isDismissed = useAppSelector((state) => state.settings.homeHeaderDismissed)
+  const dispatch = useAppDispatch()
   const onClickDismiss = () => {
     dispatch(toggleHomeHeaderDismissed())
   }

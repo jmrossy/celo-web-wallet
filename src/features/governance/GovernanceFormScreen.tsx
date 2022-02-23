@@ -1,8 +1,7 @@
 import { BigNumber } from 'ethers'
 import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { TextLink } from 'src/components/buttons/TextLink'
 import { RadioBoxRow } from 'src/components/input/RadioBoxRow'
@@ -58,13 +57,13 @@ enum Status {
 }
 
 export function GovernanceFormScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const tx = useFlowTransaction()
   const { balances, voterBalances } = useVoterBalances()
   const isVoteSignerAccount = useIsVoteSignerAccount()
-  const proposals = useSelector((state: RootState) => state.governance.proposals)
+  const proposals = useAppSelector((state) => state.governance.proposals)
 
   useEffect(() => {
     dispatch(fetchProposalsActions.trigger({}))

@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import LockIcon from 'src/components/icons/lock_small.svg'
 import { Box } from 'src/components/layout/Box'
@@ -30,13 +29,13 @@ import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
 
 export function LockConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const tx = useFlowTransaction()
   const balances = useBalances()
-  const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
-  const isAccountRegistered = useSelector((state: RootState) => state.wallet.account.isRegistered)
+  const pendingWithdrawals = useAppSelector((state) => state.lock.pendingWithdrawals)
+  const isAccountRegistered = useAppSelector((state) => state.wallet.account.isRegistered)
 
   useEffect(() => {
     // Make sure we belong on this screen

@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { FixedSizeList } from 'react-window'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import Nurture from 'src/components/icons/nurture.svg'
 import { Box } from 'src/components/layout/Box'
 import { useAreBalancesEmpty } from 'src/features/balances/hooks'
@@ -29,12 +28,12 @@ let heightEstimate = 500
 export function TransactionFeed(props: { feedState?: FeedState }) {
   const feedState = props.feedState || 'normal'
 
-  const openTransactionHash = useSelector((s: RootState) => s.feed.openTransaction)
-  const transactions = useSelector((s: RootState) => s.feed.transactions)
+  const openTransactionHash = useAppSelector((s) => s.feed.openTransaction)
+  const transactions = useAppSelector((s) => s.feed.transactions)
   const isWalletEmpty = useAreBalancesEmpty()
   const tokens = useTokens()
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const onFeedItemClick = (hash: string) => {
     dispatch(openTransaction(hash))

@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers'
-import { useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppSelector } from 'src/app/hooks'
 import { MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
 import { FeeEstimate } from 'src/features/fees/types'
 import { getNativeToken, getNativeTokenById, isNativeTokenAddress } from 'src/features/tokens/utils'
@@ -68,7 +67,7 @@ export function getFeeFromConfirmedTx(tx: CeloTransaction) {
 
 // Gets fee from state and returns amount, fee, and total, all in wei
 export function useFee(amountInWei: string | null | undefined, txCount = 1) {
-  const feeEstimates = useSelector((state: RootState) => state.fees.estimates)
+  const feeEstimates = useAppSelector((state) => state.fees.estimates)
 
   if (!feeEstimates || !feeEstimates.length || !amountInWei) {
     return {

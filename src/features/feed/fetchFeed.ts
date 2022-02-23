@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
@@ -21,19 +21,19 @@ import { queryBlockscout } from 'src/utils/blockscout'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 const QUERY_DEBOUNCE_TIME = 2000 // 2 seconds
 
 function* fetchFeed() {
-  const address = yield* select((state: RootState) => state.wallet.address)
+  const address = yield* appSelect((state) => state.wallet.address)
   if (!address || !isSignerSet()) return
 
-  const lastUpdatedTime = yield* select((state: RootState) => state.feed.lastUpdatedTime)
+  const lastUpdatedTime = yield* appSelect((state) => state.feed.lastUpdatedTime)
   if (!isStale(lastUpdatedTime, QUERY_DEBOUNCE_TIME)) return
 
-  const lastBlockNumber = yield* select((state: RootState) => state.feed.lastBlockNumber)
-  const tokensByAddress = yield* select((state: RootState) => state.tokens.byAddress)
+  const lastBlockNumber = yield* appSelect((state) => state.feed.lastBlockNumber)
+  const tokensByAddress = yield* appSelect((state) => state.tokens.byAddress)
 
   const { newTransactions, newLastBlockNumber } = yield* call(
     doFetchFeed,

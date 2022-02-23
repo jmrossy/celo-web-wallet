@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers'
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
@@ -30,7 +30,7 @@ import { Stylesheet } from 'src/styles/types'
 import { logger } from 'src/utils/logger'
 
 export function SendConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const tokens = useTokens()

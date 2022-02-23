@@ -1,7 +1,6 @@
 import { css } from '@emotion/react'
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Box } from 'src/components/layout/Box'
 import { ReactFrappeChart } from 'src/components/ReactFrappeChart'
 import { WEI_PER_UNIT } from 'src/consts'
@@ -27,7 +26,7 @@ interface PriceChartProps {
 export function PriceChartCelo(props: PriceChartProps) {
   const { quoteTokenAddress, showHeaderPrice, containerCss, height } = props
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   useEffect(() => {
     // Hacking in a delay here b.c. blockscout is unreliable when
     // many queries are submitted too fast (overlaps with feed fetch)
@@ -42,8 +41,8 @@ export function PriceChartCelo(props: PriceChartProps) {
       .catch((e) => logger.error('Error dispatching fetchTokenPrice trigger', e))
   }, [])
 
-  const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)
-  const allPrices = useSelector((s: RootState) => s.tokenPrice.byBaseAddress)
+  const toCeloRates = useAppSelector((s) => s.exchange.toCeloRates)
+  const allPrices = useAppSelector((s) => s.tokenPrice.byBaseAddress)
   const celoPrices = allPrices[CELO.address]
   const stableTokenPrices = celoPrices ? celoPrices[quoteTokenAddress] : undefined
   const chartData = tokenPriceHistoryToChartData(stableTokenPrices)

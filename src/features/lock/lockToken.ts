@@ -1,5 +1,5 @@
 import { BigNumber, providers } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { getSigner } from 'src/blockchain/signer'
 import { signTransaction } from 'src/blockchain/transaction'
@@ -33,7 +33,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function validate(
   params: LockTokenParams,
@@ -124,9 +124,9 @@ function* lockToken(params: LockTokenParams) {
   const { amountInWei, action, feeEstimates } = params
 
   const balances = yield* call(fetchBalancesIfStale)
-  const pendingWithdrawals = yield* select((state: RootState) => state.lock.pendingWithdrawals)
-  const isAccountRegistered = yield* select((state: RootState) => state.wallet.account.isRegistered)
-  const groupVotes = yield* select((state: RootState) => state.validators.groupVotes)
+  const pendingWithdrawals = yield* appSelect((state) => state.lock.pendingWithdrawals)
+  const isAccountRegistered = yield* appSelect((state) => state.wallet.account.isRegistered)
+  const groupVotes = yield* appSelect((state) => state.validators.groupVotes)
 
   validateOrThrow(() => validate(params, balances, groupVotes, true), 'Invalid transaction')
 

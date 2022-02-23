@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
-import { shallowEqual, useDispatch, useSelector } from 'react-redux'
+import { shallowEqual } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { ButtonToggle } from 'src/components/buttons/ButtonToggle'
 import { HrDivider } from 'src/components/HrDivider'
@@ -41,7 +41,7 @@ const ALL_VALIDATORS = 'all'
 const CHART_HEIGHT = 200
 
 export function StakeRewardsScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   useEffect(() => {
     dispatch(fetchValidatorsActions.trigger({}))
     dispatch(fetchStakeHistoryActions.trigger())
@@ -58,12 +58,9 @@ export function StakeRewardsScreen() {
     setValidator(value)
   }
 
-  const groups = useSelector(
-    (state: RootState) => state.validators.validatorGroups.groups,
-    shallowEqual
-  )
-  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
-  const stakeEvents = useSelector((state: RootState) => state.validators.stakeEvents.events)
+  const groups = useAppSelector((state) => state.validators.validatorGroups.groups, shallowEqual)
+  const groupVotes = useAppSelector((state) => state.validators.groupVotes)
+  const stakeEvents = useAppSelector((state) => state.validators.stakeEvents.events)
 
   const selectOptions = useMemo(() => getSelectOptions(stakeEvents, groups), [stakeEvents, groups])
   const tableData = useMemo(() => {

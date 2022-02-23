@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
@@ -26,11 +25,11 @@ import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
 
 export function ExchangeConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const tokens = useTokens()
-  const toCeloRates = useSelector((state: RootState) => state.exchange.toCeloRates)
+  const toCeloRates = useAppSelector((state) => state.exchange.toCeloRates)
   const tx = useFlowTransaction()
 
   useEffect(() => {

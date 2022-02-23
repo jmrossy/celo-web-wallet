@@ -1,5 +1,5 @@
 import { BigNumber, providers } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
@@ -28,7 +28,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function validate(
   params: SendTokenParams,
@@ -112,8 +112,8 @@ export function validate(
 
 function* sendToken(params: SendTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
-  const tokens = yield* select((state: RootState) => state.tokens.byAddress)
-  const txSizeLimitEnabled = yield* select((state: RootState) => state.settings.txSizeLimitEnabled)
+  const tokens = yield* appSelect((state) => state.tokens.byAddress)
+  const txSizeLimitEnabled = yield* appSelect((state) => state.settings.txSizeLimitEnabled)
 
   validateOrThrow(
     () => validate(params, balances, tokens, txSizeLimitEnabled, true),

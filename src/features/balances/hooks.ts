@@ -1,18 +1,19 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
+import { useAppSelector } from 'src/app/hooks'
+import type { AppState } from 'src/app/store'
 import { BalancesWithTokens, TokenBalances } from 'src/features/balances/types'
 import { areBalancesEmpty } from 'src/features/balances/utils'
 import { TokenMap } from 'src/features/tokens/types'
 import { logger } from 'src/utils/logger'
-import { select } from 'typed-redux-saga'
 
 export function useBalances() {
-  return useSelector((state: RootState) => state.balances.accountBalances)
+  return useAppSelector((state) => state.balances.accountBalances)
 }
 
 const balanceEmptySelector = createSelector(
-  (s: RootState) => s.balances.accountBalances,
+  (s: AppState) => s.balances.accountBalances,
   (balances) => areBalancesEmpty(balances)
 )
 
@@ -21,8 +22,8 @@ export function useAreBalancesEmpty() {
 }
 
 const balancesWithTokensSelector = createSelector(
-  (s: RootState) => s.tokens.byAddress,
-  (s: RootState) => s.balances.accountBalances,
+  (s: AppState) => s.tokens.byAddress,
+  (s: AppState) => s.balances.accountBalances,
   (addressToToken, accountBalances) => ({
     ...accountBalances,
     tokens: getMergedTokenBalances(addressToToken, accountBalances.tokenAddrToValue),
@@ -56,15 +57,15 @@ export function useBalancesWithTokens(): BalancesWithTokens {
 
 // TODO make this return BalancesWithTokens?
 export function useVoterBalances() {
-  const account = useSelector((s: RootState) => s.wallet.account)
-  const { accountBalances, voterBalances } = useSelector((s: RootState) => s.balances)
+  const account = useAppSelector((s) => s.wallet.account)
+  const { accountBalances, voterBalances } = useAppSelector((s) => s.balances)
   if (account.voteSignerFor && voterBalances) return { balances: accountBalances, voterBalances }
   else return { balances: accountBalances, voterBalances: accountBalances }
 }
 
 // TODO make this return BalancesWithTokens?
 export function* selectVoterBalances() {
-  const { accountBalances, voterBalances } = yield* select((state: RootState) => state.balances)
+  const { accountBalances, voterBalances } = yield* appSelect((state) => state.balances)
   if (voterBalances) return { balances: accountBalances, voterBalances }
   else return { balances: accountBalances, voterBalances: accountBalances }
 }

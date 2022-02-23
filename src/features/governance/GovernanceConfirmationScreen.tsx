@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
@@ -28,11 +27,11 @@ import { Stylesheet } from 'src/styles/types'
 import { trimToLength } from 'src/utils/string'
 
 export function GovernanceConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const tx = useFlowTransaction()
-  const proposals = useSelector((state: RootState) => state.governance.proposals)
+  const proposals = useAppSelector((state) => state.governance.proposals)
 
   useEffect(() => {
     // Make sure we belong on this screen

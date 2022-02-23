@@ -1,6 +1,6 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
+import { logoutActions } from 'src/app/logout/logout'
 import { showLogoutModal } from 'src/app/logout/useLogoutModal'
-import type { RootState } from 'src/app/rootReducer'
 import { SignerType } from 'src/blockchain/types'
 import { Address } from 'src/components/Address'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
@@ -36,7 +36,7 @@ const initialValues: UnlockWalletParams = {
 }
 
 export function LoginScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onSubmit = (values: UnlockWalletParams) => {
     dispatch(unlockWalletActions.trigger(values))
   }
@@ -82,7 +82,7 @@ export function LoginScreen() {
       ],
     })
     if (answer && answer.key === 'logout') {
-      await showLogoutModal(showModalAsync, dispatch)
+      await showLogoutModal(showModalAsync, () => dispatch(logoutActions.trigger()))
     }
   }
 
@@ -179,7 +179,7 @@ export function LoginScreen() {
 }
 
 function useFormInitialValues(): UnlockWalletParams {
-  const { address: previousAddress, type: previousType } = useSelector((s: RootState) => s.wallet)
+  const { address: previousAddress, type: previousType } = useAppSelector((s) => s.wallet)
   return {
     ...initialValues,
     activeAddress: previousAddress || initialValues.activeAddress,

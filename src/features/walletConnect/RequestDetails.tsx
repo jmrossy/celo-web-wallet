@@ -1,7 +1,7 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useAppDispatch } from 'src/app/hooks'
 import { Address } from 'src/components/Address'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { Box } from 'src/components/layout/Box'
@@ -74,7 +74,7 @@ function TransactionRequest({ txRequest }: { txRequest: CeloTransactionRequest }
   const feeToken = getNativeToken(feeCurrency) || CELO
   const gasPrepopulated = !!(gasPrice && gasLimit)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   useEffect(() => {
     if (!gasPrepopulated) {
       dispatch(

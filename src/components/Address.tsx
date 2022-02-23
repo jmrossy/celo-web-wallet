@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { defaultButtonStyles } from 'src/components/buttons/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
 import QrCodeIcon from 'src/components/icons/qr_code.svg'
@@ -113,7 +113,7 @@ export function Address(props: Props) {
 }
 
 export function useSendToAddress(address: Address) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   return () => {
     dispatch(txFlowReset())

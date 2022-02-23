@@ -1,4 +1,4 @@
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
@@ -8,10 +8,10 @@ import { setAccountStatus } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function* fetchAccountStatus(force = false) {
-  const { address, account } = yield* select((state: RootState) => state.wallet)
+  const { address, account } = yield* appSelect((state) => state.wallet)
   if (!address) throw new Error('Cannot fetch account status before address is set')
 
   if (isStale(account.lastUpdated, ACCOUNT_STATUS_STALE_TIME) || force) {

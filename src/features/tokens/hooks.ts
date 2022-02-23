@@ -1,6 +1,5 @@
-import { useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppSelector } from 'src/app/hooks'
 
 export function useTokens() {
-  return useSelector((s: RootState) => s.tokens.byAddress)
+  return useAppSelector((s) => s.tokens.byAddress)
 }

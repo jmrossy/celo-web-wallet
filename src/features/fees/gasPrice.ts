@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getProvider } from 'src/blockchain/provider'
 import { GAS_PRICE_STALE_TIME } from 'src/consts'
 import { updateGasPrice } from 'src/features/fees/feeSlice'
@@ -7,10 +7,10 @@ import { isNativeTokenAddress } from 'src/features/tokens/utils'
 import { CELO } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function* fetchGasPriceIfStale(feeToken: Address) {
-  const gasPrices = yield* select((state: RootState) => state.fees.gasPrices)
+  const gasPrices = yield* appSelect((state) => state.fees.gasPrices)
   const gasPrice = gasPrices[feeToken]
 
   if (!gasPrice || isStale(gasPrice.lastUpdated, GAS_PRICE_STALE_TIME)) {

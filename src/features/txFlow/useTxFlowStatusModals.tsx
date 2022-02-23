@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { ModalOkAction } from 'src/components/modal/modal'
@@ -39,12 +38,12 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
     customSuccessModal,
   } = params
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const numSignatures = useSelector((state: RootState) => state.txFlow.numSignatures)
+  const numSignatures = useAppSelector((state) => state.txFlow.numSignatures)
 
-  const sagaState = useSelector((s: RootState) => s.saga[sagaName])
+  const sagaState = useAppSelector((s) => s.saga[sagaName])
   if (!sagaState) {
     throw new Error(`No saga state found, is sagaName valid? Name: ${sagaName}`)
   }

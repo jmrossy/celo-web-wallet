@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
@@ -14,10 +13,10 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 
 export function ContactsTable({ isMobile }: { isMobile: boolean }) {
-  const contacts = useSelector((s: RootState) => s.contacts.contacts)
+  const contacts = useAppSelector((s) => s.contacts.contacts)
 
   const { showModalAsync, showModalWithContent, closeModal } = useModal()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const onClickAdd = () => {
     showModalWithContent({

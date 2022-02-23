@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useDispatch } from 'react-redux'
+import { useAppDispatch } from 'src/app/hooks'
 import { Address } from 'src/components/Address'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
@@ -29,7 +29,7 @@ import { SagaStatus } from 'src/utils/saga'
 import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 export function BalanceDetailsScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const isMobile = useIsMobile()
   const balances = useBalancesWithTokens()
 

@@ -1,7 +1,7 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { getSigner } from 'src/blockchain/signer'
 import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
@@ -63,7 +63,7 @@ export function AddDeriveScreen() {
     }
   }, [])
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onSubmit = (values: DerivationPathFormValues) => {
     if (!account) return
     const derivationPath = toDerivationPath(values)

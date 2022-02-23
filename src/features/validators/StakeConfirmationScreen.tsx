@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import CubeIcon from 'src/components/icons/cube.svg'
 import { Box } from 'src/components/layout/Box'
@@ -32,14 +31,14 @@ import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
 
 export function StakeConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const tx = useFlowTransaction()
   const { voterBalances } = useVoterBalances()
   const voterAddress = useVoterAccountAddress()
-  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
-  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
+  const groups = useAppSelector((state) => state.validators.validatorGroups.groups)
+  const groupVotes = useAppSelector((state) => state.validators.groupVotes)
 
   useEffect(() => {
     // Make sure we belong on this screen

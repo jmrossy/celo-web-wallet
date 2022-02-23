@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { CopiableAddress } from 'src/components/buttons/CopiableAddress'
 import { RefreshButton } from 'src/components/buttons/RefreshButton'
@@ -29,7 +28,7 @@ import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 export function ExploreValidatorsScreen() {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(fetchValidatorsActions.trigger({}))
@@ -49,7 +48,7 @@ export function ExploreValidatorsScreen() {
     'Something went wrong when finding validators, sorry! Please try again later.'
   )
 
-  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
+  const groups = useAppSelector((state) => state.validators.validatorGroups.groups)
 
   const data = useMemo(() => {
     return validatorGroupsToTableData(groups)

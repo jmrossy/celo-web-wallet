@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { ClickToCopy } from 'src/components/buttons/ClickToCopy'
 import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
@@ -23,8 +22,8 @@ import { Stylesheet } from 'src/styles/types'
 
 export function TransactionReview() {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const { transactions, openTransaction: openTx } = useSelector((s: RootState) => s.feed)
+  const dispatch = useAppDispatch()
+  const { transactions, openTransaction: openTx } = useAppSelector((s) => s.feed)
   const tokens = useTokens()
 
   useEffect(() => {

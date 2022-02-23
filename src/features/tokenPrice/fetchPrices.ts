@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getLatestBlockDetails, getNumBlocksPerInterval } from 'src/blockchain/blocks'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
@@ -22,7 +22,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { sleep } from 'src/utils/promises'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 const DEFAULT_HISTORY_NUM_DAYS = 7
 const SECONDS_PER_DAY = 86400
@@ -50,7 +50,7 @@ function* fetchTokenPrice(params: FetchTokenPriceParams) {
     throw new Error('Only CELO <-> Native currency is currently supported')
   }
 
-  const prices = yield* select((state: RootState) => state.tokenPrice.byBaseAddress)
+  const prices = yield* appSelect((state) => state.tokenPrice.byBaseAddress)
   const pairPriceUpdates = yield* call(fetchStableTokenPrices, numDays, prices[baseCurrency])
   if (pairPriceUpdates && pairPriceUpdates.length) {
     yield* put(updatePairPrices(pairPriceUpdates))

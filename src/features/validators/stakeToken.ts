@@ -1,5 +1,5 @@
 import { BigNumber, providers } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan'
@@ -32,7 +32,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function validate(
   params: StakeTokenParams,
@@ -88,7 +88,7 @@ function* stakeToken(params: StakeTokenParams) {
   yield* call(fetchBalancesIfStale)
   const { balances, voterBalances } = yield* call(selectVoterBalances)
   const voterAddress = yield* call(selectVoterAccountAddress)
-  const { validatorGroups, groupVotes } = yield* select((state: RootState) => state.validators)
+  const { validatorGroups, groupVotes } = yield* appSelect((state) => state.validators)
 
   validateOrThrow(
     () => validate(params, balances, voterBalances, validatorGroups.groups, groupVotes, true),

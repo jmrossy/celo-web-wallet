@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { useDispatch } from 'react-redux'
+import { useAppDispatch } from 'src/app/hooks'
 import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { NumberInput } from 'src/components/input/NumberInput'
@@ -31,7 +31,7 @@ interface Props {
 }
 
 export function LedgerImportForm(props: Props) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const onSubmit = (values: ImportForm) => {
     const params: ImportAccountParams = {

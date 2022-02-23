@@ -1,6 +1,6 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
 import { utils, Wallet } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { clearContractCache } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { clearSigner, getSigner, setSigner } from 'src/blockchain/signer'
@@ -36,7 +36,7 @@ import { resetWallet, setAccount } from 'src/features/wallet/walletSlice'
 import { disconnectWcClient, resetWcClient } from 'src/features/walletConnect/walletConnectSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export interface LocalAccount {
   type: SignerType.Local
@@ -209,7 +209,7 @@ function* activateLedgerAccount(signer: LedgerSigner, accountAddress?: Address) 
 
 function* onAccountActivation(address: Address, derivationPath: string, type: SignerType) {
   // Grab the current address from the store (may have been loaded by persist)
-  const currentAddress = yield* select((state: RootState) => state.wallet.address)
+  const currentAddress = yield* appSelect((state) => state.wallet.address)
   yield* put(setAccount({ address, derivationPath, type }))
   yield* call(loadFeedData, address, currentAddress)
 
@@ -233,7 +233,7 @@ export function renameAccount(address: Address, newName: string) {
 }
 
 export function* removeAccount(address: Address) {
-  const currentAddress = yield* select((state: RootState) => state.wallet.address)
+  const currentAddress = yield* appSelect((state) => state.wallet.address)
   if (address === currentAddress)
     throw new Error('Cannot remove active account, please switch first.')
   const numAccounts = getAccounts().size
@@ -325,7 +325,7 @@ function* loadFeedData(nextAddress: Address, currentAddress?: Address | null) {
 }
 
 export function* saveFeedData(currentAddress: Address) {
-  const transactions = yield* select((s: RootState) => s.feed.transactions)
+  const transactions = yield* appSelect((s) => s.feed.transactions)
   if (transactions && Object.keys(transactions).length) {
     yield* call(setFeedDataForAccount, currentAddress, transactions)
   }

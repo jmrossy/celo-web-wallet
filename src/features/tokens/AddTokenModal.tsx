@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { HelpText } from 'src/components/input/HelpText'
 import { SelectInput } from 'src/components/input/SelectInput'
@@ -21,8 +20,8 @@ const initialValues: AddTokenParams = {
 }
 
 export function AddTokenModal(props: { close: () => void }) {
-  const dispatch = useDispatch()
-  const tokens = useSelector((state: RootState) => state.tokens.byAddress)
+  const dispatch = useAppDispatch()
+  const tokens = useAppSelector((state) => state.tokens.byAddress)
 
   const onSubmit = (values: AddTokenParams) => {
     dispatch(addTokenActions.trigger(values))

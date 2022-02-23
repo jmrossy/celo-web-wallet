@@ -1,6 +1,5 @@
-import { useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppSelector } from 'src/app/hooks'
 
 export function useFlowTransaction() {
-  return useSelector((state: RootState) => state.txFlow.transaction)
+  return useAppSelector((state) => state.txFlow.transaction)
 }

@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { AddressInput } from 'src/components/input/AddressInput'
 import { TextInput } from 'src/components/input/TextInput'
@@ -26,7 +25,7 @@ interface Props {
 }
 
 export function AddContactModal({ contacts, close, address }: Props) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onSubmit = (values: AddContactForm) => {
     const address = normalizeAddress(values.address.trim())
     dispatch(addContact({ address, name: values.name }))
@@ -86,7 +85,7 @@ function validateForm(values: AddContactForm, contacts: ContactMap): ErrorState 
 }
 
 export function useAddContactModal(address?: string) {
-  const contacts = useSelector((s: RootState) => s.contacts.contacts)
+  const contacts = useAppSelector((s) => s.contacts.contacts)
   const { showModalWithContent, closeModal } = useModal()
   return () => {
     showModalWithContent({

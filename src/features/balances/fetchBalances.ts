@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, Contract } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { config } from 'src/config'
@@ -20,15 +20,15 @@ import { fetchAccountStatus } from 'src/features/wallet/accounts/accountsContrac
 import { CELO } from 'src/tokens'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 // Fetch wallet balances and other frequently used data like votes
 // Essentially, fetch all the data that forms need to validate inputs
 function* fetchBalances() {
-  const address = yield* select((state: RootState) => state.wallet.address)
+  const address = yield* appSelect((state) => state.wallet.address)
   if (!address) throw new Error('Cannot fetch balances before address is set')
 
-  const tokenAddrToToken = yield* select((state: RootState) => state.tokens.byAddress)
+  const tokenAddrToToken = yield* appSelect((state) => state.tokens.byAddress)
   const tokenAddrToValue = yield* call(fetchTokenBalances, address, tokenAddrToToken)
 
   let lockedCelo: LockedCeloBalances
@@ -51,7 +51,7 @@ function* fetchBalances() {
 }
 
 export function* fetchBalancesIfStale() {
-  const balances = yield* select((state: RootState) => state.balances.accountBalances)
+  const balances = yield* appSelect((state) => state.balances.accountBalances)
   if (isStale(balances.lastUpdated, BALANCE_STALE_TIME) || areBalancesEmpty(balances)) {
     return yield* call(fetchBalances)
   } else {
@@ -102,7 +102,7 @@ async function fetchTokenBalance(address: Address, tokenAddress: Address) {
 }
 
 function* fetchVoterBalances() {
-  const voteSignerFor = yield* select((state: RootState) => state.wallet.account.voteSignerFor)
+  const voteSignerFor = yield* appSelect((state) => state.wallet.account.voteSignerFor)
   if (!voteSignerFor) return
 
   // Only the total locked is used for now so just fetching that bit

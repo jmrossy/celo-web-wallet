@@ -1,5 +1,5 @@
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
@@ -20,7 +20,7 @@ import { useSagaStatus } from 'src/utils/useSagaStatus'
 const initialValues = { value: '', newValue: '', valueConfirm: '' }
 
 export function ChangePasswordForm() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const onSubmit = (values: ChangePasswordParams) => {

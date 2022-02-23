@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { SignerType } from 'src/blockchain/types'
 import { Address } from 'src/components/Address'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
@@ -49,10 +49,10 @@ interface ModalProps {
 export function ChooseAccountModal({ close }: ModalProps) {
   const activeAddress = useWalletAddress()
   const accounts = useAccountList()
-  const [needsPasswordForAddr, setNeedsPassworForAddr] = useState<string | null>(null)
-  const dispatch = useDispatch()
+  const [needsPasswordForAddr, setNeedsPasswordForAddr] = useState<Address | null>(null)
+  const dispatch = useAppDispatch()
 
-  const onClickAddress = (addr: string) => {
+  const onClickAddress = (addr: Address) => {
     if (addr === activeAddress || !accounts) return
     const accountType = accounts.find((a) => a.address === addr)?.type
     if (!accountType) return
@@ -60,13 +60,13 @@ export function ChooseAccountModal({ close }: ModalProps) {
     if (hasPasswordCached() || accountType === SignerType.Ledger) {
       dispatch(switchAccountActions.trigger({ toAddress: addr }))
     } else if (hasPasswordedAccount()) {
-      setNeedsPassworForAddr(addr)
+      setNeedsPasswordForAddr(addr)
     }
   }
   const onSubmitPassword = (password: string) => {
     if (!needsPasswordForAddr) return
     dispatch(switchAccountActions.trigger({ toAddress: needsPasswordForAddr, password }))
-    setNeedsPassworForAddr(null)
+    setNeedsPasswordForAddr(null)
   }
 
   const sagaStatus = useSagaStatusNoModal(switchAccountSagaName, close)

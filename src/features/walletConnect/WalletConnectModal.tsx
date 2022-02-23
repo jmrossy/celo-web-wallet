@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { TextLink } from 'src/components/buttons/TextLink'
@@ -68,7 +67,7 @@ interface Props {
 }
 
 function WalletConnectModal({ close }: Props) {
-  const { status, session, request, error } = useSelector((s: RootState) => s.walletConnect)
+  const { status, session, request, error } = useAppSelector((s) => s.walletConnect)
 
   return (
     <>
@@ -96,7 +95,7 @@ function Icon() {
 }
 
 function ConnectionForm() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const onSubmit = () => {
     dispatch(initializeWcClient(values.uri))
@@ -176,7 +175,7 @@ function ReviewSession({ session }: { session: WalletConnectSession | null }) {
     throw new Error('Invalid WalletConnect session for review')
   }
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onClickApprove = () => {
     dispatch(approveWcSession())
   }
@@ -214,7 +213,7 @@ function ViewSession({ session, close }: { session: WalletConnectSession | null 
     throw new Error('Invalid WalletConnect session to view')
   }
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onClickOkay = () => {
     close()
   }
@@ -272,7 +271,7 @@ function ReviewRequest({
     throw new Error('Invalid WalletConnect request for review')
   }
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onClickApprove = () => {
     dispatch(approveWcRequest())
   }
@@ -321,7 +320,7 @@ function RequestComplete({ close }: Props) {
 }
 
 function RequestError({ message, close }: { message: string | null } & Props) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onClickDismiss = () => {
     dispatch(dismissWcRequest())
     close()
@@ -338,7 +337,7 @@ function RequestError({ message, close }: { message: string | null } & Props) {
 }
 
 function SessionError({ message, close }: { message: string | null } & Props) {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onClickDismiss = () => {
     dispatch(resetWcClient())
     close()

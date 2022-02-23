@@ -1,8 +1,7 @@
 import { BigNumber } from 'ethers'
 import { ChangeEvent, useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
@@ -61,15 +60,15 @@ const radioBoxLabels = [
 ]
 
 export function StakeFormScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const locationState = useLocationState<LocationState>()
 
   const tx = useFlowTransaction()
   const { balances, voterBalances } = useVoterBalances()
   const isVoteSignerAccount = useIsVoteSignerAccount()
-  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
-  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
+  const groups = useAppSelector((state) => state.validators.validatorGroups.groups)
+  const groupVotes = useAppSelector((state) => state.validators.groupVotes)
 
   const onSubmit = (values: StakeTokenForm) => {
     dispatch(txFlowStarted({ type: TxFlowType.Stake, params: amountFieldToWei(values) }))

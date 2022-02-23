@@ -1,7 +1,6 @@
 import { ChangeEvent, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { AmountAndCurrencyInput } from 'src/components/input/AmountAndCurrencyInput'
@@ -39,13 +38,13 @@ const initialValues: ExchangeTokenForm = {
 }
 
 export function ExchangeFormScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const balances = useBalances()
   const tokens = useTokens()
   const tx = useFlowTransaction()
-  const toCeloRates = useSelector((state: RootState) => state.exchange.toCeloRates)
-  const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
+  const toCeloRates = useAppSelector((state) => state.exchange.toCeloRates)
+  const txSizeLimitEnabled = useAppSelector((state) => state.settings.txSizeLimitEnabled)
 
   useEffect(() => {
     dispatch(fetchExchangeRateActions.trigger({ force: false }))

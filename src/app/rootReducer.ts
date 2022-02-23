@@ -32,5 +32,3 @@ export const rootReducer = combineReducers({
   txFlow: txFlowReducer,
   saga: monitoredSagaReducers,
 })
-
-export type RootState = ReturnType<typeof rootReducer>

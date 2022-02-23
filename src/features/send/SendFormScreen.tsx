@@ -1,7 +1,6 @@
 import { ChangeEvent, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import PasteIcon from 'src/components/icons/paste.svg'
@@ -45,14 +44,14 @@ const initialValues: SendTokenForm = {
 }
 
 export function SendFormScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const locationState = useLocationState<LocationState>()
 
   const balances = useBalances()
   const tokens = useTokens()
   const tx = useFlowTransaction()
-  const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
+  const txSizeLimitEnabled = useAppSelector((state) => state.settings.txSizeLimitEnabled)
   const contactOptions = useContactsAndAccountsSelect()
 
   const onSubmit = (values: SendTokenForm) => {

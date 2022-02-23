@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getTokenContract } from 'src/blockchain/contracts'
 import { config } from 'src/config'
 import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
@@ -12,7 +12,7 @@ import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function validate(params: AddTokenParams, tokens: TokenMap): ErrorState {
   const { address } = params
@@ -31,7 +31,7 @@ export function validate(params: AddTokenParams, tokens: TokenMap): ErrorState {
 }
 
 function* addToken(params: AddTokenParams) {
-  const tokens = yield* select((state: RootState) => state.tokens.byAddress)
+  const tokens = yield* appSelect((state) => state.tokens.byAddress)
   validateOrThrow(() => validate(params, tokens), 'Invalid Token')
 
   const newToken = yield* call(getTokenInfo, params.address)

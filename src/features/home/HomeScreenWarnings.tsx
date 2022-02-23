@@ -1,7 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch } from 'src/app/hooks'
+import type { AppState } from 'src/app/store'
 import { SignerType } from 'src/blockchain/types'
 import { TextButton } from 'src/components/buttons/TextButton'
 import WarningIcon from 'src/components/icons/warning.svg'
@@ -17,7 +18,7 @@ import {
 import { Color } from 'src/styles/Color'
 
 export function HomeScreenWarnings() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const warning = useSelector(selectHomeScreenWarnings)
 
   const onDismissWarning = (warning: string) => () => {
@@ -41,9 +42,9 @@ export function HomeScreenWarnings() {
 }
 
 export const selectHomeScreenWarnings = createSelector(
-  (state: RootState) => state.settings,
-  (state: RootState) => state.balances.accountBalances,
-  (state: RootState) => state.wallet.type,
+  (state: AppState) => state.settings,
+  (state: AppState) => state.balances.accountBalances,
+  (state: AppState) => state.wallet.type,
   (settings, balances, type) => {
     if (!settings.backupReminderDismissed && !areBalancesEmpty(balances))
       return {

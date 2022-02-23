@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { STAKE_EVENTS_STALE_TIME } from 'src/consts'
@@ -20,7 +20,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 //ValidatorGroupVoteActivated(address,address,uint256,uint256)
 const VOTE_ACTIVATED_TOPIC_0 = '0x45aac85f38083b18efe2d441a65b9c1ae177c78307cb5a5d4aec8f7dbcaeabfe'
@@ -28,8 +28,8 @@ const VOTE_ACTIVATED_TOPIC_0 = '0x45aac85f38083b18efe2d441a65b9c1ae177c78307cb5a
 const VOTE_REVOKED_TOPIC_0 = '0xae7458f8697a680da6be36406ea0b8f40164915ac9cc40c0dad05a2ff6e8c6a8'
 
 function* fetchStakeHistory() {
-  const { lastUpdatedTime, lastBlockNumber } = yield* select(
-    (state: RootState) => state.validators.stakeEvents
+  const { lastUpdatedTime, lastBlockNumber } = yield* appSelect(
+    (state) => state.validators.stakeEvents
   )
   const voterAccountAddress = yield* call(selectVoterAccountAddress)
 

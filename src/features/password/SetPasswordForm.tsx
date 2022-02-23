@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
@@ -50,7 +50,7 @@ export function SetPasswordForm(props: Props) {
     }
   }, [])
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onConfirm = (values: PasswordForm) => {
     if (!pendingAccount) return
     const params: ImportAccountParams = {

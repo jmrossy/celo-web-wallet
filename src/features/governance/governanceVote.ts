@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, providers } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
@@ -24,7 +24,7 @@ import { validateAmountWithFees } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function validate(
   params: GovernanceVoteParams,
@@ -68,7 +68,7 @@ export function validate(
 function* governanceVote(params: GovernanceVoteParams) {
   yield* call(fetchBalancesIfStale)
   const { balances, voterBalances } = yield* call(selectVoterBalances)
-  const proposals = yield* select((state: RootState) => state.governance.proposals)
+  const proposals = yield* appSelect((state) => state.governance.proposals)
 
   validateOrThrow(
     () => validate(params, balances, voterBalances, proposals, true),

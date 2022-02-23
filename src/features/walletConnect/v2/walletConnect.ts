@@ -1,8 +1,8 @@
-import 'src/polyfills/buffer' // Should be the first import
+import 'src/polyfills/buffer' // Must be the first import
 import { EventChannel, eventChannel } from '@redux-saga/core'
 import { call as rawCall } from '@redux-saga/core/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { config } from 'src/config'
 import {
   APP_METADATA,
@@ -38,7 +38,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { withTimeout } from 'src/utils/timeout'
 import { errorToString } from 'src/utils/validation'
-import { call, cancelled, delay, fork, put, race, select, take } from 'typed-redux-saga'
+import { call, cancelled, delay, fork, put, race, take } from 'typed-redux-saga'
 import WalletConnectClient, { CLIENT_EVENTS } from 'wcv2/client'
 import type { ClientTypes, SessionTypes } from 'wcv2/types'
 import { ERROR as WcError, Error as WcErrorType } from 'wcv2/utils'
@@ -186,7 +186,7 @@ function* handleSessionProposal(proposal: SessionTypes.Proposal, client: WalletC
 
   const decision = yield* take([approveWcSession.type, rejectWcSession.type])
   if (decision.type == approveWcSession.type) {
-    const address = yield* select((s: RootState) => s.wallet.address)
+    const address = yield* appSelect((s) => s.wallet.address)
     yield* call(approveClientSession, client, proposal, address)
   } else {
     yield* call(rejectClientSession, client, proposal, 'user denied')
@@ -360,7 +360,7 @@ function* closeClient(client: WalletConnectClient, channel: EventChannel<Payload
   }
   // Close the event channel to clean it up
   channel.close()
-  const session = yield* select((state: RootState) => state.walletConnect.session)
+  const session = yield* appSelect((state) => state.walletConnect.session)
   yield* call(disconnectClient, client, session)
   yield* put(disconnectWcClient())
 }

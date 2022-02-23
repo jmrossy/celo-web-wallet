@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContractByAddress } from 'src/blockchain/contracts'
 import { EXCHANGE_RATE_STALE_TIME, MAX_EXCHANGE_SPREAD } from 'src/consts'
 import { resetExchangeRates, setExchangeRates } from 'src/features/exchange/exchangeSlice'
@@ -8,7 +8,7 @@ import { StableTokens, Token } from 'src/tokens'
 import { fromFixidity } from 'src/utils/amount'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 interface FetchExchangeRateParams {
   force?: boolean // Fetch regardless of staleness
@@ -20,7 +20,7 @@ function* fetchExchangeRate({ force }: FetchExchangeRateParams) {
     yield* put(resetExchangeRates())
   }
 
-  const toCeloRates = yield* select((state: RootState) => state.exchange.toCeloRates)
+  const toCeloRates = yield* appSelect((state) => state.exchange.toCeloRates)
 
   if (areRatesStale(toCeloRates)) {
     const newToCeloRates: ToCeloRates = {}
