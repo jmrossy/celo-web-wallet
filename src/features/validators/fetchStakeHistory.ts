@@ -57,7 +57,7 @@ export const {
   actions: fetchStakeHistoryActions,
 } = createMonitoredSaga(fetchStakeHistory, 'fetchStakeHistory')
 
-async function fetchStakeEvents(accountAddress: string, lastBlockNumber: number | null) {
+async function fetchStakeEvents(accountAddress: Address, lastBlockNumber: number | null) {
   const electionContract = getContract(CeloContract.Election)
   const electionAddress = electionContract.address
   const fromBlock = lastBlockNumber ? lastBlockNumber + 1 : 5 // Not using block 0 here because of Blockscout bug with incorrect txs in low blocks
@@ -90,7 +90,7 @@ async function fetchStakeEvents(accountAddress: string, lastBlockNumber: number 
 function parseBlockscoutStakeLogs(
   logs: Array<BlockscoutTransactionLog>,
   electionContract: Contract,
-  accountAddress: string,
+  accountAddress: Address,
   minBlock: number,
   type: StakeEventType
 ): StakeEvent[] {
@@ -160,6 +160,6 @@ function parseBlockscoutStakeLogs(
   return stakeEvents
 }
 
-function getPaddedAddress(address: string) {
+function getPaddedAddress(address: Address) {
   return ensureLeading0x(trimLeading0x(address).padStart(64, '0'))
 }

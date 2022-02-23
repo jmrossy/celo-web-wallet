@@ -14,7 +14,7 @@ import { sleep } from 'src/utils/promises'
 // Based partly on https://github.com/ethers-io/ethers.js/blob/master/packages/hardware-wallets/src.ts/ledger.ts
 // But with customizations for the Celo network and for electron
 export class LedgerSigner extends Signer {
-  address: string | undefined
+  address: Address | undefined
 
   constructor(readonly provider: providers.Provider, readonly path: string) {
     super()

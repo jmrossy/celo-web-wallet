@@ -21,7 +21,7 @@ export function* fetchLockedCeloStatus() {
   return balances
 }
 
-async function _fetchLockedCeloStatus(address: string, isAccountRegistered: boolean) {
+async function _fetchLockedCeloStatus(address: Address, isAccountRegistered: boolean) {
   if (!isAccountRegistered) {
     logger.debug('Account not yet registered, skipping locked balance check')
     return {
@@ -78,7 +78,7 @@ async function _fetchLockedCeloStatus(address: string, isAccountRegistered: bool
   }
 }
 
-export async function fetchTotalLocked(address: string) {
+export async function fetchTotalLocked(address: Address) {
   const lockedGold = getContract(CeloContract.LockedGold)
   const lockedAmount = await lockedGold.getAccountTotalLockedGold(address)
   return BigNumber.from(lockedAmount).toString()

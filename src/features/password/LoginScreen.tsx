@@ -53,7 +53,7 @@ export function LoginScreen() {
   })
 
   const { isDropdownVisible, showDropdown, hideDropdown } = useDropdownBox()
-  const onSelectAddress = (address: string) => {
+  const onSelectAddress = (address: Address) => {
     const type = getAccountType(address, accounts)
     setValues({ ...values, activeAddress: address, type })
     hideDropdown()
@@ -187,7 +187,7 @@ function useFormInitialValues(): UnlockWalletParams {
   }
 }
 
-function getAccountType(address: string | null, accounts: StoredAccountData[] | null): SignerType {
+function getAccountType(address: Address | null, accounts: StoredAccountData[] | null): SignerType {
   if (!address || !accounts) return SignerType.Local
   const account = accounts.find((a) => a.address === address)
   if (!account) return SignerType.Local

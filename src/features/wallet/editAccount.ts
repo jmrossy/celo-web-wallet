@@ -12,7 +12,7 @@ export enum EditAccountAction {
 }
 
 export interface EditAccountParams {
-  address: string
+  address: Address
   action: EditAccountAction
   newName?: string
 }

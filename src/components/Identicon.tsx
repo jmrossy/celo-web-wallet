@@ -4,13 +4,13 @@ import { Styles } from 'src/styles/types'
 import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
 
 type Props = {
-  address: string
+  address: Address
   size?: number
   styles?: Styles
 }
 
 // This should match metamask: https://github.com/MetaMask/metamask-extension/blob/master/ui/helpers/utils/icon-factory.js#L84
-function addressToSeed(address: string) {
+function addressToSeed(address: Address) {
   const addrStub = normalizeAddress(address).slice(2, 10)
   return parseInt(addrStub, 16)
 }

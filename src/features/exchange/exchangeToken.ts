@@ -50,11 +50,11 @@ export function validate(
 
   if (!fromToken) {
     logger.error(`Invalid from token: ${fromTokenAddress}`)
-    return invalidInput('fromTokenId', 'Invalid from currency')
+    return invalidInput('fromTokenAddress', 'Invalid from currency')
   }
   if (!toToken) {
     logger.error(`Invalid to token: ${toTokenAddress}`)
-    return invalidInput('toTokenId', 'Invalid to currency')
+    return invalidInput('toTokenAddress', 'Invalid to currency')
   }
 
   if (!amountInWei) {
@@ -193,7 +193,7 @@ function* exchangeToken(params: ExchangeTokenParams) {
 async function createApproveTx(
   amountInWei: BigNumber,
   fromTokenContract: Contract,
-  exchangeContractAddress: string,
+  exchangeContractAddress: Address,
   feeEstimate: FeeEstimate
 ) {
   const txRequest = await fromTokenContract.populateTransaction.approve(
@@ -250,8 +250,8 @@ function getExchangePlaceholderTx(
   return {
     ...createPlaceholderForTx(txReceipt, amountInWei.toString(), feeEstimate),
     type: TransactionType.TokenExchange,
-    fromTokenId: fromToken.symbol,
-    toTokenId: toToken.symbol,
+    fromTokenId: fromToken.address,
+    toTokenId: toToken.address,
     fromValue: amountInWei.toString(),
     toValue: minBuyAmount.toString(),
   }

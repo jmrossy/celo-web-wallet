@@ -23,10 +23,10 @@ export function* fetchAccountStatus(force = false) {
   }
 }
 
-async function fetchAccountRegistrationStatus(address: string) {
+async function fetchAccountRegistrationStatus(address: Address) {
   const accounts = getContract(CeloContract.Accounts)
   const isRegistered: boolean = await accounts.isAccount(address)
-  let voteSignerFor: string | null
+  let voteSignerFor: Address | null
   if (isRegistered) {
     // Registered accounts can't be signers
     voteSignerFor = null
@@ -36,11 +36,11 @@ async function fetchAccountRegistrationStatus(address: string) {
   return { isRegistered, voteSignerFor, lastUpdated: Date.now() }
 }
 
-async function fetchVoteSignerAccount(address: string) {
+async function fetchVoteSignerAccount(address: Address) {
   try {
     const accounts = getContract(CeloContract.Accounts)
     // Throws if address isn't registered and isn't a signer
-    const mainAccount: string = await accounts.voteSignerToAccount(address)
+    const mainAccount: Address = await accounts.voteSignerToAccount(address)
     if (!mainAccount || !isValidAddress(mainAccount)) throw new Error('Invalid main account')
     if (areAddressesEqual(mainAccount, address)) return null
     else return mainAccount

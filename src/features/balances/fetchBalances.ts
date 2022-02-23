@@ -60,12 +60,12 @@ export function* fetchBalancesIfStale() {
 }
 
 async function fetchTokenBalances(
-  address: string,
+  address: Address,
   tokenMap: TokenMap
-): Promise<Record<string, string>> {
+): Promise<Record<Address, string>> {
   const tokenAddrs = Object.keys(tokenMap)
   // TODO may be good to batch here if token list is really long
-  const fetchPromises: Promise<{ tokenAddress: string; value: string }>[] = []
+  const fetchPromises: Promise<{ tokenAddress: Address; value: string }>[] = []
   for (const tokenAddr of tokenAddrs) {
     // logger.debug(`Fetching ${t.id} balance`)
     if (tokenAddr === CELO.address) {
@@ -75,7 +75,7 @@ async function fetchTokenBalances(
     }
   }
 
-  const newTokenAddrToValue: Record<string, string> = {}
+  const newTokenAddrToValue: Record<Address, string> = {}
   const tokenBalancesArr = await Promise.all(fetchPromises)
   tokenBalancesArr.forEach((bal) => (newTokenAddrToValue[bal.tokenAddress] = bal.value))
   return newTokenAddrToValue
@@ -83,13 +83,13 @@ async function fetchTokenBalances(
 
 // TODO Figure out why the balanceOf result is incorrect for GoldToken
 // Contractkit works around this in the same way, must be a low-level issue
-async function fetchCeloBalance(address: string) {
+async function fetchCeloBalance(address: Address) {
   const provider = getProvider()
   const balance = await provider.getBalance(address)
   return { tokenAddress: CELO.address, value: balance.toString() }
 }
 
-async function fetchTokenBalance(address: string, tokenAddress: string) {
+async function fetchTokenBalance(address: Address, tokenAddress: Address) {
   let contract: Contract | null
   if (isNativeTokenAddress(tokenAddress)) {
     contract = getContractByAddress(tokenAddress)

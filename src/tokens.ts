@@ -5,11 +5,11 @@ import { Color } from 'src/styles/Color'
 export interface Token {
   symbol: string
   name: string
-  address: string // contract address
+  address: Address // contract address
   chainId: number
   decimals?: number // TODO support decimals other than 18 (Issue #53)
   color?: string
-  exchangeAddress?: string // Mento contract for token
+  exchangeAddress?: Address // Mento contract for token
   sortOrder?: number // for order preference in balance lists
 }
 

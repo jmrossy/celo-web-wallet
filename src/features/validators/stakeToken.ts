@@ -116,8 +116,8 @@ function* stakeToken(params: StakeTokenParams) {
 interface StakeTokenTxPlanItem extends TxPlanItem {
   type: StakeTokenType
   amountInWei: string
-  groupAddress: string
-  voterAddress: string
+  groupAddress: Address
+  voterAddress: Address
 }
 
 type StakeTokenTxPlan = Array<StakeTokenTxPlanItem>
@@ -126,7 +126,7 @@ type StakeTokenTxPlan = Array<StakeTokenTxPlanItem>
 // This determines the ideal tx types and order
 export function getStakeActionTxPlan(
   params: StakeTokenParams,
-  voterAddress: string,
+  voterAddress: Address,
   voterBalances: Balances,
   currentVotes: GroupVotes
 ): StakeTokenTxPlan {
@@ -134,11 +134,11 @@ export function getStakeActionTxPlan(
 
   if (action === StakeActionType.Vote) {
     const maxAmount = getStakingMaxAmount(action, voterBalances, currentVotes, groupAddress)
-    const adjutedAmount = getAdjustedAmount(amountInWei, maxAmount, CELO)
+    const adjustedAmount = getAdjustedAmount(amountInWei, maxAmount, CELO)
     return [
       {
         type: TransactionType.ValidatorVoteCelo,
-        amountInWei: adjutedAmount.toString(),
+        amountInWei: adjustedAmount.toString(),
         groupAddress,
         voterAddress,
       },
@@ -260,7 +260,7 @@ async function findLesserAndGreaterAfterVote(
   targetGroup: string,
   voteWeight: BigNumber
 ): Promise<{ lesser: string; greater: string }> {
-  const currentVotes = await getElegibleGroupVotes()
+  const currentVotes = await getEligibleGroupVotes()
   const selectedGroup = currentVotes.find((votes) => areAddressesEqual(votes.address, targetGroup))
   const voteTotal = selectedGroup ? selectedGroup.votes.add(voteWeight) : voteWeight
   let greater = NULL_ADDRESS
@@ -281,7 +281,7 @@ async function findLesserAndGreaterAfterVote(
   return { lesser, greater }
 }
 
-async function getElegibleGroupVotes() {
+async function getEligibleGroupVotes() {
   const election = getContract(CeloContract.Election)
   const currentVotes: EligibleGroupsVotesRaw =
     await election.getTotalVotesForEligibleValidatorGroups()

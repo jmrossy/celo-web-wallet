@@ -9,7 +9,7 @@ import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 interface Props {
-  address: string
+  address: Address
   mnemonic?: string
   type?: SignerType
 }

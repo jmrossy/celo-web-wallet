@@ -26,6 +26,6 @@ export function getKnownErc20Tokens() {
   return erc20Tokens
 }
 
-export function findTokenByAddress(address: string) {
+export function findTokenByAddress(address: Address) {
   return getKnownErc20Tokens().find((t) => areAddressesEqual(t.address, address))
 }

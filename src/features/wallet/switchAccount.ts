@@ -6,7 +6,7 @@ import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, delay } from 'typed-redux-saga'
 
 export interface SwitchAccountParams {
-  toAddress: string
+  toAddress: Address
   password?: string
 }
 

@@ -33,7 +33,8 @@ export function getTokenById(id: string, tokens: TokenMap) {
     return getTokenBySymbol(id, tokens)
   }
 }
-
+// Note: tokenId used to be symbol but was changed to be
+// address, which is more robust. So this checks both.
 export function getNativeTokenById(id: string) {
   return getTokenById(id, NativeTokensByAddress)
 }

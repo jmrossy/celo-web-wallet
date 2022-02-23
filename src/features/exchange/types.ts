@@ -18,8 +18,8 @@ export interface SimpleExchangeRate {
 
 export interface ExchangeTokenParams {
   amountInWei: string
-  fromTokenAddress: string
-  toTokenAddress: string
+  fromTokenAddress: Address
+  toTokenAddress: Address
   exchangeRate?: SimpleExchangeRate
   feeEstimates?: FeeEstimate[]
 }

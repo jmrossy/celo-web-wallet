@@ -29,10 +29,10 @@ export function* fetchStakingBalances() {
   }
 }
 
-export async function fetchGroupVotes(accountAddress: string) {
+export async function fetchGroupVotes(accountAddress: Address) {
   const election = getContract(CeloContract.Election)
 
-  const groupAddrs: string[] = await election.getGroupsVotedForByAccount(accountAddress)
+  const groupAddrs: Address[] = await election.getGroupsVotedForByAccount(accountAddress)
   if (!groupAddrs.length) return {}
 
   const groupAddrsAndAccount = groupAddrs.map((a) => [a, accountAddress])
@@ -65,7 +65,7 @@ export async function fetchGroupVotes(accountAddress: string) {
   return votes
 }
 
-async function checkHasActivatable(groupVotes: GroupVotes, accountAddress: string) {
+async function checkHasActivatable(groupVotes: GroupVotes, accountAddress: Address) {
   const groupsWithPending = Object.keys(groupVotes).filter((groupAddr) =>
     BigNumber.from(groupVotes[groupAddr].pending).gt(0)
   )

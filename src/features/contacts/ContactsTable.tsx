@@ -94,7 +94,7 @@ function contactsToTableData(
 interface ContactTableRow {
   id: string
   name: string
-  address: string
+  address: Address
   onRemove?: (id: string) => void
 }
 

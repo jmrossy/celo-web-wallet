@@ -18,7 +18,7 @@ import { chunk, trimToLength } from 'src/utils/string'
 type ButtonType = 'send' | 'copy' | 'qrAndCopy'
 
 interface Props {
-  address: string
+  address: Address
   name?: string
   hideIdenticon?: boolean
   buttonType?: ButtonType
@@ -112,7 +112,7 @@ export function Address(props: Props) {
   )
 }
 
-export function useSendToAddress(address: string) {
+export function useSendToAddress(address: Address) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   return () => {

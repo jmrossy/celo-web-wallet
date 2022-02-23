@@ -64,7 +64,7 @@ export const {
 } = createMonitoredSaga(fetchFeed, 'fetchFeed')
 
 async function doFetchFeed(
-  address: string,
+  address: Address,
   tokensByAddress: TokenMap,
   lastBlockNumber: number | null
 ) {
@@ -94,7 +94,7 @@ async function doFetchFeed(
   return { newTransactions, newLastBlockNumber }
 }
 
-async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number | null) {
+async function fetchTxsFromBlockscout(address: Address, lastBlockNumber: number | null) {
   // TODO consider pagination here
 
   // First fetch the basic tx list, which includes outgoing token transfers
@@ -196,8 +196,8 @@ function copyTx(tx: BlockscoutTxBase): BlockscoutTx {
 
 function* addNewTokens(newTransactions: TransactionMap, tokensByAddress: TokenMap) {
   try {
-    const currentTokenAddrs = new Set<string>(Object.keys(tokensByAddress))
-    const newTokenAddrs = new Set<string>()
+    const currentTokenAddrs = new Set<Address>(Object.keys(tokensByAddress))
+    const newTokenAddrs = new Set<Address>()
     for (const tx of Object.values(newTransactions)) {
       if (
         (tx.type === TransactionType.OtherTokenTransfer ||

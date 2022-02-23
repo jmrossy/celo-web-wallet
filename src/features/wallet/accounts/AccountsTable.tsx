@@ -119,7 +119,7 @@ function accountsToTableData(
 interface AccountTableRow {
   id: string
   name: string
-  address: string
+  address: Address
   type: SignerType
   onRemove?: (id: string) => void
 }

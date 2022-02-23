@@ -16,13 +16,13 @@ import { ErrorState, invalidInput } from 'src/utils/validation'
 
 interface AddContactForm {
   name: string
-  address: string
+  address: Address
 }
 
 interface Props {
   contacts: ContactMap
   close: () => void
-  address?: string
+  address?: Address
 }
 
 export function AddContactModal({ contacts, close, address }: Props) {

@@ -8,7 +8,7 @@ import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
 export interface StoredAccountData {
-  address: string
+  address: Address
   name: string
   type: SignerType
   derivationPath: string
@@ -101,7 +101,7 @@ export function modifyAccounts(updatedAccountsData: StoredAccountsData) {
   }
 }
 
-export function removeAccount(address: string) {
+export function removeAccount(address: Address) {
   try {
     acquireLock()
     const accountsMetadata = getAccountsData()
@@ -160,7 +160,7 @@ function validateAccount(account: StoredAccountData) {
   if (locale && isValidMnemonicLocale(locale)) error('invalid mnemonic locale')
 }
 
-export async function getFeedDataForAccount(address: string) {
+export async function getFeedDataForAccount(address: Address) {
   try {
     const feedData = await getIdb<TransactionMap | undefined>(getFeedKey(address))
     return feedData || null
@@ -171,7 +171,7 @@ export async function getFeedDataForAccount(address: string) {
   }
 }
 
-export async function setFeedDataForAccount(address: string, feedData: TransactionMap) {
+export async function setFeedDataForAccount(address: Address, feedData: TransactionMap) {
   try {
     await setIdb(getFeedKey(address), feedData)
   } catch (error) {
@@ -180,7 +180,7 @@ export async function setFeedDataForAccount(address: string, feedData: Transacti
   }
 }
 
-export async function removeFeedDataForAccount(address: string) {
+export async function removeFeedDataForAccount(address: Address) {
   try {
     await delIdb(getFeedKey(address))
   } catch (error) {
@@ -199,7 +199,7 @@ export async function removeAllFeedData() {
   }
 }
 
-function getFeedKey(address: string) {
+function getFeedKey(address: Address) {
   return `feedData_${address}`
 }
 

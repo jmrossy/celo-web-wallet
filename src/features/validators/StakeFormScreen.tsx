@@ -40,7 +40,7 @@ import { useCustomForm } from 'src/utils/useCustomForm'
 import { useLocationState } from 'src/utils/useLocationState'
 
 interface LocationState {
-  groupAddress: string
+  groupAddress: Address
   action: StakeActionType
 }
 

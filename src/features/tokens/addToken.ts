@@ -53,7 +53,7 @@ export function* addTokensByAddress(addresses: Set<string>) {
   }
 }
 
-async function getTokenInfo(tokenAddress: string): Promise<Token> {
+async function getTokenInfo(tokenAddress: Address): Promise<Token> {
   const contract = getTokenContract(tokenAddress)
   // Note this assumes the existence of decimals, symbols, and name methods,
   // which are technically optional. May revisit later

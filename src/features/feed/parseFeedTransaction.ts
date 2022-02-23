@@ -568,7 +568,7 @@ function sanitizeComment(comment: string | undefined) {
   return comment
 }
 
-function parseNativeTransferTx(tx: BlockscoutTx, address: string): CeloNativeTransferTx {
+function parseNativeTransferTx(tx: BlockscoutTx, address: Address): CeloNativeTransferTx {
   return {
     ...parseOtherTx(tx),
     type: TransactionType.CeloNativeTransfer,

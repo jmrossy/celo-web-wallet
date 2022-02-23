@@ -11,7 +11,7 @@ import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
 import { call, put, select } from 'typed-redux-saga'
 
 export interface UnlockWalletParams {
-  activeAddress: string
+  activeAddress: Address
   type: SignerType
   password?: string
 }

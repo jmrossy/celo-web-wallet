@@ -10,7 +10,7 @@ import { assert } from 'src/utils/validation'
 interface Wallet {
   isConnected: boolean | null
   isUnlocked: boolean
-  address: string | null
+  address: Address | null
   derivationPath: string | null
   type: SignerType | null
   account: AccountStatus
@@ -19,7 +19,7 @@ interface Wallet {
 }
 
 interface SetAccountAction {
-  address: string
+  address: Address
   derivationPath: string
   type: SignerType
 }

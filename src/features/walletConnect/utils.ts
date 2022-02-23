@@ -104,7 +104,7 @@ export function rpcMethodToLabel(method: string) {
 
 // Search through all known addresses to identify a contract
 // TODO expand list via sourcify or other repos of contract info
-export function identifyContractByAddress(address: string) {
+export function identifyContractByAddress(address: Address) {
   // Check if it's a known core contract
   const coreContractName = getContractName(address)
   if (coreContractName) return coreContractName
