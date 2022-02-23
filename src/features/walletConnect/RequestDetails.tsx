@@ -10,13 +10,10 @@ import { MoneyValue } from 'src/components/MoneyValue'
 import { NULL_ADDRESS } from 'src/consts'
 import { estimateFeeActions, estimateFeeSagaName } from 'src/features/fees/estimateFee'
 import { useFee } from 'src/features/fees/utils'
+import { getNativeToken } from 'src/features/tokens/utils'
 import { TransactionType } from 'src/features/types'
 import { WalletConnectMethod } from 'src/features/walletConnect/types'
-import {
-  identifyContractByAddress,
-  identifyFeeToken,
-  translateTxFields,
-} from 'src/features/walletConnect/utils'
+import { identifyContractByAddress, translateTxFields } from 'src/features/walletConnect/utils'
 import { failWcRequest } from 'src/features/walletConnect/walletConnectSlice'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -74,7 +71,7 @@ function TransactionRequest({ txRequest }: { txRequest: CeloTransactionRequest }
   const { to, value, gasPrice, gasLimit, feeCurrency, data } = txRequest
   const contractName = to ? identifyContractByAddress(to) : null
   const txValue = BigNumber.from(value ?? 0)
-  const feeToken = identifyFeeToken(feeCurrency)
+  const feeToken = getNativeToken(feeCurrency) || CELO
   const gasPrepopulated = !!(gasPrice && gasLimit)
 
   const dispatch = useDispatch()

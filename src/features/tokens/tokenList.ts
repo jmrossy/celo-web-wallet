@@ -15,11 +15,10 @@ function loadErc20Tokens() {
   } else {
     throw new Error(`Unsupported chain for token data ${config.chainId}`)
   }
-  const parsed = JSON.parse(data) as Token[]
-  if (!parsed || !Array.isArray(parsed)) {
+  if (!data || !Array.isArray(data)) {
     throw new Error(`Invalid token data for ${config.chainId}`)
   }
-  erc20Tokens = parsed
+  erc20Tokens = data
 }
 
 export function getKnownErc20Tokens() {

@@ -4,7 +4,7 @@ import { CELO, cEUR, cREAL, cUSD, NativeTokens, Token } from 'src/tokens'
 
 describe('resolveCurrencyPreferenceOrder', () => {
   function getBaseBalances() {
-    return Object.values(NativeTokens).reduce<TokenBalances>((result, token: Token) => {
+    return NativeTokens.reduce<TokenBalances>((result, token: Token) => {
       result[token.address] = { ...token, value: '0' }
       return result
     }, {})

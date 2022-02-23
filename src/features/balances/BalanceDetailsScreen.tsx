@@ -30,6 +30,8 @@ import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 export function BalanceDetailsScreen() {
   const dispatch = useDispatch()
+  const isMobile = useIsMobile()
+  const balances = useBalancesWithTokens()
 
   useEffect(() => {
     dispatch(fetchBalancesActions.trigger())
@@ -56,9 +58,10 @@ export function BalanceDetailsScreen() {
       if (action.key === 'remove') dispatch(removeToken(id))
       closeModal()
     }
+    const tokenSymbol = balances.tokens[id].symbol
     showModal({
       head: 'Remove Token',
-      subHead: `Would you like to remove ${id}?`,
+      subHead: `Would you like to remove ${tokenSymbol}?`,
       body: 'Note, this will not affect your balance. It will only hide this token from your wallet.',
       actions,
       onActionClick,
@@ -74,10 +77,8 @@ export function BalanceDetailsScreen() {
     })
   }
 
-  const isMobile = useIsMobile()
   const tableColumns = getTableColumns(isMobile, onClickAddress)
-  const balances = useBalancesWithTokens()
-  const data = useMemo(() => {
+  const tableData = useMemo(() => {
     return balancesToTableData(balances, onClickRemove)
   }, [balances])
 
@@ -87,7 +88,7 @@ export function BalanceDetailsScreen() {
         <h1 css={style.h1}>Account Balance Details</h1>
         <Table<BalanceTableRow>
           columns={tableColumns}
-          data={data}
+          data={tableData}
           isLoading={status === SagaStatus.Started}
           initialSortBy="balance"
         />

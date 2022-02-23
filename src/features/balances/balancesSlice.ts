@@ -44,7 +44,7 @@ const balancesReducer = balancesSlice.reducer
 const persistConfig = {
   key: 'balances',
   storage: storage,
-  whitelist: ['balances'],
+  whitelist: ['accountBalances'],
 }
 
 export const persistedBalancesReducer = persistReducer<ReturnType<typeof balancesReducer>>(

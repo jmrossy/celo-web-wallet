@@ -9,7 +9,7 @@ export function resolveTokenPreferenceOrder(
   preferredToken: Address = CELO.address,
   txToken?: Address
 ) {
-  const nativeTokenSet = new Set<Address>(Object.values(NativeTokens).map((t) => t.address))
+  const nativeTokenSet = new Set<Address>(NativeTokens.map((t) => t.address))
 
   const sortedTokens = Object.values(tokenBalances).sort((t1, t2) => {
     const t1Value = BigNumber.from(t1.value)

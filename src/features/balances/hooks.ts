@@ -36,7 +36,7 @@ export function getMergedTokenBalances(
   const tokenAddresses = Object.keys(tokenAddrToValue)
   return tokenAddresses.reduce<TokenBalances>((result, addr) => {
     if (!addressToToken[addr]) {
-      logger.error('Token missing for balance for address', addr)
+      logger.warn('Token missing for balance for address', addr)
       return result
     } else {
       const token = addressToToken[addr]

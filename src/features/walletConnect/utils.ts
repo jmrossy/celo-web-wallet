@@ -11,8 +11,7 @@ import {
   WalletConnectUriForm,
   WalletConnectVersion,
 } from 'src/features/walletConnect/types'
-import { CELO, NativeTokens, Token } from 'src/tokens'
-import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
+import { isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { trimToLength } from 'src/utils/string'
 import { ErrorState, invalidInput } from 'src/utils/validation'
@@ -115,12 +114,6 @@ export function identifyContractByAddress(address: string) {
   if (token) return token.name
 
   return null
-}
-
-export function identifyFeeToken(feeCurrency: string | null | undefined): Token {
-  if (!feeCurrency) return CELO
-  const token = Object.values(NativeTokens).find((t) => areAddressesEqual(t.address, feeCurrency))
-  return token || CELO
 }
 
 // Ethers uses slightly different tx field names than web3 / celo sdk

@@ -28,7 +28,7 @@ import {
   TokenTransaction,
   TransactionType,
 } from 'src/features/types'
-import { CELO, INativeTokens, NativeTokens, Token } from 'src/tokens'
+import { CELO, NativeTokensByAddress, Token } from 'src/tokens'
 import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 
@@ -79,9 +79,9 @@ function isValidTokenTransfer(tx: BlockscoutTokenTransfer) {
 
 export function parseTransaction(
   tx: BlockscoutTx,
-  address: string, // wallet address
-  tokensByAddress: Record<string, Token>,
-  exchangesByAddress: Record<string, Token>,
+  address: Address, // wallet address
+  tokensByAddress: Record<Address, Token>,
+  exchangesByAddress: Record<Address, Token>,
   abiInterfaces: AbiInterfaceMap
 ): CeloTransaction | null {
   const to = normalizeAddress(tx.to)
@@ -145,7 +145,7 @@ export function parseTransaction(
 
 function parseExchangeTx(
   tx: BlockscoutTx,
-  address: string,
+  address: Address,
   token: Token,
   abiInterface: utils.Interface
 ): TokenExchangeTx | OtherTx {
@@ -173,7 +173,7 @@ function parseExchangeTx(
 
 function parseTokenExchange(
   tx: BlockscoutTx,
-  address: string,
+  address: Address,
   token: Token,
   sellAmount: BigNumberish | undefined,
   minBuyAmount: BigNumberish | undefined,
@@ -254,7 +254,7 @@ function parseOutgoingTokenTx(
 function parseOutgoingTokenTransfer(
   tx: BlockscoutTx,
   token: Token,
-  to: string,
+  to: Address,
   value: BigNumberish,
   comment: string | undefined
 ): StableTokenTransferTx | CeloTokenTransferTx | OtherTokenTransferTx {
@@ -277,7 +277,7 @@ function parseOutgoingTokenTransfer(
 function parseTokenApproveTx(
   tx: BlockscoutTx,
   token: Token,
-  spender: string,
+  spender: Address,
   approvedValue: BigNumberish
 ): StableTokenApproveTx | CeloTokenApproveTx | OtherTokenApproveTx {
   const approvedValueBn = BigNumber.from(approvedValue)
@@ -298,7 +298,7 @@ function parseTokenApproveTx(
 
 function parseTxWithTokenTransfers(
   tx: BlockscoutTx,
-  address: string,
+  address: Address,
   abiInterfaces: AbiInterfaceMap
 ): StableTokenTransferTx | CeloTokenTransferTx | OtherTokenTransferTx | OtherTx | null {
   if (!tx.tokenTransfers || !tx.tokenTransfers.length) {
@@ -307,7 +307,7 @@ function parseTxWithTokenTransfers(
   }
 
   try {
-    const totals: Record<string, BigNumber> = {} // token id to sum
+    const totals: Record<Address, BigNumber> = {} // token addr to sum
     let biggestTransfer = tx.tokenTransfers[0]
     for (const transfer of tx.tokenTransfers) {
       if (!isValidTokenTransfer(transfer)) continue
@@ -354,8 +354,8 @@ function parseTxWithTokenTransfers(
 
 function parseOutgoingEscrowTx(
   tx: BlockscoutTx,
-  address: string,
-  tokens: Record<string, Token>,
+  address: Address,
+  tokens: Record<Address, Token>,
   abiInterfaces: AbiInterfaceMap
 ): EscrowTransaction | OtherTx {
   try {
@@ -364,7 +364,7 @@ function parseOutgoingEscrowTx(
     const name = txDescription.name
 
     if (name === 'transfer') {
-      const tokenAddress: string | undefined = txDescription.args.token
+      const tokenAddress: Address | undefined = txDescription.args.token
       const value: BigNumberish | undefined = txDescription.args.value
       return parseOutgoingEscrowTransfer(tx, tokens, tokenAddress, value)
     }
@@ -383,8 +383,8 @@ function parseOutgoingEscrowTx(
 
 function parseOutgoingEscrowTransfer(
   tx: BlockscoutTx,
-  tokens: Record<string, Token>,
-  tokenAddress?: string,
+  tokens: Record<Address, Token>,
+  tokenAddress?: Address,
   value?: BigNumberish
 ): EscrowTransferTx {
   if (!tokenAddress || !value) {
@@ -407,7 +407,7 @@ function parseOutgoingEscrowTransfer(
 
 function parseEscrowWithdraw(
   tx: BlockscoutTx,
-  address: string,
+  address: Address,
   abiInterfaces: AbiInterfaceMap
 ): EscrowWithdrawTx {
   const parsedTx = parseTxWithTokenTransfers(tx, address, abiInterfaces)
@@ -536,7 +536,7 @@ function parseGovernanceTx(
 
 function tryParseTransferComment(
   tx: BlockscoutTokenTransfer,
-  tokenAddress: string,
+  tokenAddress: Address,
   abiInterfaces: AbiInterfaceMap
 ): string | undefined {
   try {
@@ -599,7 +599,7 @@ function parseOtherTx(tx: BlockscoutTx): OtherTx {
 
 function tokenSymbolToAddress(
   symbol: string | null | undefined,
-  tokens: Record<string, Token> | INativeTokens = NativeTokens
+  tokens: Record<Address, Token> = NativeTokensByAddress
 ): string {
   if (!symbol || symbol.toLowerCase() === 'cgld') return CELO.address
   for (const token of Object.values(tokens) as Token[]) {

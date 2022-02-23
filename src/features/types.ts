@@ -11,7 +11,7 @@ interface Transaction {
   timestamp: number
   gasPrice: string
   gasUsed: string
-  feeCurrency?: Address // native token address
+  feeCurrency?: Address // native token address, formerly token symbol
   gatewayFee?: string
   gatewayFeeRecipient?: Address
   inputData?: string

@@ -39,7 +39,7 @@ function _TokenIcon({ token, size }: Props) {
         height: actualSize,
         width: actualSize,
         borderRadius: '50%',
-        backgroundColor: token.color || Color.primaryGrey,
+        backgroundColor: token.color || Color.accentBlue,
       }}
     >
       <div

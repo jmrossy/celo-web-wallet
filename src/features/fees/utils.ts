@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import type { RootState } from 'src/app/rootReducer'
 import { MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
 import { FeeEstimate } from 'src/features/fees/types'
-import { getNativeToken, isNativeTokenAddress } from 'src/features/tokens/utils'
+import { getNativeToken, getNativeTokenById, isNativeTokenAddress } from 'src/features/tokens/utils'
 import { CeloTransaction } from 'src/features/types'
 import { CELO } from 'src/tokens'
 import { logger } from 'src/utils/logger'
@@ -62,7 +62,7 @@ export function getFeeFromConfirmedTx(tx: CeloTransaction) {
   const feeValue = BigNumber.from(tx.gasPrice)
     .mul(tx.gasUsed)
     .add(tx.gatewayFee ?? 0)
-  const feeCurrency = getNativeToken(tx.feeCurrency) ?? CELO
+  const feeCurrency = tx.feeCurrency ? getNativeTokenById(tx.feeCurrency) : CELO
   return { feeValue, feeCurrency }
 }
 

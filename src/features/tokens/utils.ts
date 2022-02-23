@@ -1,16 +1,15 @@
 import { TokenMap } from 'src/features/tokens/types'
-import { CELO, NativeTokens, Token, UnknownToken } from 'src/tokens'
+import { CELO, NativeTokensByAddress, Token, UnknownToken } from 'src/tokens'
 import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/addresses'
 
 export function isNativeTokenAddress(addr: string) {
-  return Object.values(NativeTokens)
-    .map((t: Token) => t.address)
-    .includes(normalizeAddress(addr))
+  if (!isValidAddress(addr)) return false
+  return !!NativeTokensByAddress[normalizeAddress(addr)]
 }
 
 export function getNativeToken(addr?: string | null): Token | null {
   if (!addr) return null
-  return Object.values(NativeTokens).find((t: Token) => areAddressesEqual(t.address, addr)) || null
+  return NativeTokensByAddress[normalizeAddress(addr)] ?? null
 }
 
 export function isNativeToken(token: Token) {
@@ -33,6 +32,10 @@ export function getTokenById(id: string, tokens: TokenMap) {
   } else {
     return getTokenBySymbol(id, tokens)
   }
+}
+
+export function getNativeTokenById(id: string) {
+  return getTokenById(id, NativeTokensByAddress)
 }
 
 export function getTokenByAddress(addr: string, tokens: TokenMap) {

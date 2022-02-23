@@ -17,68 +17,53 @@ export interface TokenWithBalance extends Token {
   value: string
 }
 
-export enum NativeTokenId {
-  CELO = 'CELO',
-  cUSD = 'cUSD',
-  cEUR = 'cEUR',
-  cREAL = 'cREAL',
+export const CELO = {
+  symbol: 'CELO',
+  name: 'Celo Native',
+  color: Color.primaryGold,
+  address: config.contractAddresses.GoldToken,
+  decimals: 18,
+  chainId: config.chainId,
+  sortOrder: 10,
+}
+export const cUSD = {
+  symbol: 'cUSD',
+  name: 'Celo Dollar',
+  color: Color.primaryGreen,
+  address: config.contractAddresses.StableToken,
+  decimals: 18,
+  chainId: config.chainId,
+  exchangeAddress: config.contractAddresses.Exchange,
+  sortOrder: 20,
+}
+export const cEUR = {
+  symbol: 'cEUR',
+  name: 'Celo Euro',
+  color: Color.primaryGreen,
+  address: config.contractAddresses.StableTokenEUR,
+  decimals: 18,
+  chainId: config.chainId,
+  exchangeAddress: config.contractAddresses.ExchangeEUR,
+  sortOrder: 30,
+}
+export const cREAL = {
+  symbol: 'cREAL',
+  name: 'Celo Brazilian Real',
+  color: Color.primaryGreen,
+  address: config.contractAddresses.StableTokenBRL,
+  decimals: 18,
+  chainId: config.chainId,
+  exchangeAddress: config.contractAddresses.ExchangeBRL,
+  sortOrder: 40,
 }
 
-export interface INativeTokens {
-  CELO: Token
-  cUSD: Token
-  cEUR: Token
-  cREAL: Token
+export const NativeTokens = [CELO, cUSD, cEUR, cREAL]
+export const NativeTokensByAddress: Record<Address, Token> = {
+  [CELO.address]: CELO,
+  [cUSD.address]: cUSD,
+  [cEUR.address]: cEUR,
+  [cREAL.address]: cREAL,
 }
-
-export const NativeTokens: INativeTokens = {
-  CELO: {
-    symbol: NativeTokenId.CELO,
-    name: 'Celo Native',
-    color: Color.primaryGold,
-    address: config.contractAddresses.GoldToken,
-    decimals: 18,
-    chainId: config.chainId,
-    sortOrder: 10,
-  },
-  cUSD: {
-    symbol: NativeTokenId.cUSD,
-    name: 'Celo Dollar',
-    color: Color.primaryGreen,
-    address: config.contractAddresses.StableToken,
-    decimals: 18,
-    chainId: config.chainId,
-    exchangeAddress: config.contractAddresses.Exchange,
-    sortOrder: 20,
-  },
-  cEUR: {
-    symbol: NativeTokenId.cEUR,
-    name: 'Celo Euro',
-    color: Color.primaryGreen,
-    address: config.contractAddresses.StableTokenEUR,
-    decimals: 18,
-    chainId: config.chainId,
-    exchangeAddress: config.contractAddresses.ExchangeEUR,
-    sortOrder: 30,
-  },
-  cREAL: {
-    symbol: NativeTokenId.cREAL,
-    name: 'Celo Brazilian Real',
-    color: Color.primaryGreen,
-    address: config.contractAddresses.StableTokenBRL,
-    decimals: 18,
-    chainId: config.chainId,
-    exchangeAddress: config.contractAddresses.ExchangeBRL,
-    sortOrder: 40,
-  },
-}
-
-// Re-exported directly for convenient access
-export const CELO = NativeTokens.CELO
-export const cUSD = NativeTokens.cUSD
-export const cEUR = NativeTokens.cEUR
-export const cREAL = NativeTokens.cREAL
-
 export const StableTokens = [cUSD, cEUR, cREAL]
 
 export const LockedCELO: Token = {

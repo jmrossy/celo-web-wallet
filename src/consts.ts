@@ -26,6 +26,9 @@ export const MAX_GAS_PRICE = '500000000000' // 500 Gwei
 export const MAX_GAS_LIMIT = '10000000' // 10 million
 export const MIN_GAS_AMOUNT = '20000'
 
+export const MIN_DISPLAY_VALUE = 0.001 // Round token values less than this
+export const DECIMALS_TO_DISPLAY = 3 // Show at most this many decimals
+
 export const MIN_EXCHANGE_RATE = 0.01 // 1<->100 ratio
 export const MAX_EXCHANGE_RATE = 100 // 1<->100 ratio
 export const MAX_EXCHANGE_LOSS = 0.015 // 1.5%

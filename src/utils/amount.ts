@@ -1,10 +1,11 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
-import { WEI_PER_UNIT } from 'src/consts'
+import { DECIMALS_TO_DISPLAY, MIN_DISPLAY_VALUE, WEI_PER_UNIT } from 'src/consts'
 import { Balances } from 'src/features/balances/types'
 import { getTokenBalance } from 'src/features/balances/utils'
 import { FeeEstimate } from 'src/features/fees/types'
 import { getTotalFee } from 'src/features/fees/utils'
 import { Token } from 'src/tokens'
+import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
@@ -46,7 +47,7 @@ export function validateAmount(
       if (areAmountsNearlyEqual(amountInWei, balance, token)) {
         logger.debug('Validation allowing amount that nearly equals balance')
       } else {
-        logger.warn(`Exceeds ${token.id} balance: ${amountInWei.toString()}`)
+        logger.warn(`Exceeds ${token.symbol} balance: ${amountInWei.toString()}`)
         return invalidInput('amount', 'Amount too big')
       }
     }
@@ -68,7 +69,7 @@ export function validateAmountWithFees(
 
   const { totalFee, feeCurrency } = getTotalFee(feeEstimates)
 
-  if (feeCurrency.id === txToken.id) {
+  if (areAddressesEqual(feeCurrency.address, txToken.address)) {
     const balance = getTokenBalance(balances, txToken)
     const amountWithFee = totalFee.add(txAmountInWei)
     if (amountWithFee.gt(balance)) {
@@ -92,7 +93,7 @@ export function validateAmountWithFees(
 
 // Get amount that is adjusted when user input is nearly the same as their balance
 export function getAdjustedAmountFromBalances(
-  _amountInWei: string,
+  _amountInWei: BigNumberish,
   txToken: Token,
   balances: Balances,
   feeEstimates: FeeEstimate[]
@@ -102,7 +103,7 @@ export function getAdjustedAmountFromBalances(
 
   if (areAmountsNearlyEqual(amountInWei, balance, txToken)) {
     const { totalFee, feeCurrency } = getTotalFee(feeEstimates)
-    if (txToken.id === feeCurrency.id) {
+    if (areAddressesEqual(txToken.address, feeCurrency.address)) {
       // TODO this still leaves a small bit in the account because
       // the static gas limit is higher than needed. Fix will require
       // computing exact gas, but that still doesn't work well for feeCurrency=cUSD
@@ -132,6 +133,7 @@ export function getAdjustedAmount(
   }
 }
 
+// TODO decimals
 // Checks if an amount is equal of nearly equal to balance within a small margin of error
 // Necessary because amounts in the UI are often rounded
 export function areAmountsNearlyEqual(
@@ -139,16 +141,18 @@ export function areAmountsNearlyEqual(
   amountInWei2: BigNumberish,
   token: Token
 ) {
-  const minValueWei = toWei(token.minValue)
+  const minValueWei = toWei(MIN_DISPLAY_VALUE)
   // Is difference btwn amount and balance less than min amount shown for token
   return amountInWei1.sub(amountInWei2).abs().lt(minValueWei)
 }
 
+// TODO decimals
 export function fromWei(value: BigNumberish | null | undefined): number {
   if (!value) return 0
   return parseFloat(utils.formatEther(value))
 }
 
+// TODO decimals
 // Similar to fromWei above but rounds to set number of decimals
 // with a minimum floor, configured per token
 export function fromWeiRounded(
@@ -158,9 +162,8 @@ export function fromWeiRounded(
 ): string {
   if (!value) return '0'
 
-  const { displayDecimals, minValue: _minValue } = token
-  const minValue = FixedNumber.from(`${_minValue}`) // FixedNumber throws error when given number for some reason
-  const bareMinValue = FixedNumber.from(`${_minValue / 5}`)
+  const minValue = FixedNumber.from(`${MIN_DISPLAY_VALUE}`) // FixedNumber throws error when given number for some reason
+  const bareMinValue = FixedNumber.from(`${MIN_DISPLAY_VALUE / 5}`)
 
   const amount = FixedNumber.from(utils.formatEther(value))
   if (amount.isZero()) return '0'
@@ -174,9 +177,10 @@ export function fromWeiRounded(
     return minValue.toString()
   }
 
-  return amount.round(displayDecimals).toString()
+  return amount.round(DECIMALS_TO_DISPLAY).toString()
 }
 
+// TODO decimals
 export function toWei(value: BigNumberish | null | undefined): BigNumber {
   if (!value) return BigNumber.from(0)
   const valueString = value.toString()
@@ -191,6 +195,7 @@ export function toWei(value: BigNumberish | null | undefined): BigNumber {
   }
 }
 
+// TODO decimals
 // Take an object with an amount field and convert it to amountInWei
 // Useful in converting for form <-> saga communication
 export function amountFieldToWei<T extends { amount: string }>(fields: T) {
@@ -208,6 +213,7 @@ export function amountFieldToWei<T extends { amount: string }>(fields: T) {
   }
 }
 
+// TODO decimals
 // Take an object with an amountInWei field and convert it amount (in 'ether')
 // Useful in converting for saga <-> form communication
 export function amountFieldFromWei<T extends { amountInWei: string }>(fields: T) {
