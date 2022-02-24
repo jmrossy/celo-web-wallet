@@ -22,7 +22,6 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { CELO } from 'src/tokens'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
@@ -81,7 +80,7 @@ export function LockFormScreen() {
     const { name, value } = event.target
     let autoSetAmount: string
     if (value === LockActionType.Withdraw) {
-      autoSetAmount = fromWeiRounded(balances.lockedCelo.pendingFree, CELO, true)
+      autoSetAmount = fromWeiRounded(balances.lockedCelo.pendingFree)
     } else {
       autoSetAmount = '0'
     }
@@ -93,11 +92,11 @@ export function LockFormScreen() {
     const { locked, pendingFree } = balances.lockedCelo
     let maxAmount = '0'
     if (values.action === LockActionType.Lock) {
-      maxAmount = fromWeiRounded(getTotalUnlockedCelo(balances), CELO, true)
+      maxAmount = fromWeiRounded(getTotalUnlockedCelo(balances))
     } else if (values.action === LockActionType.Unlock) {
-      maxAmount = fromWeiRounded(locked, CELO, true)
+      maxAmount = fromWeiRounded(locked)
     } else if (values.action === LockActionType.Withdraw) {
-      maxAmount = fromWeiRounded(pendingFree, CELO, true)
+      maxAmount = fromWeiRounded(pendingFree)
     }
     setValues({ ...values, amount: maxAmount })
     resetErrors()
@@ -137,7 +136,6 @@ export function LockFormScreen() {
               <label css={style.inputLabel}>Amount</label>
               <Box direction="row" align="center">
                 <NumberInput
-                  step="0.01"
                   width="11em"
                   margin="0 1.6em 0 0"
                   name="amount"

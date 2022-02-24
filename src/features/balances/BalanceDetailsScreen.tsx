@@ -184,7 +184,7 @@ function balancesToTableData(
     tableRows.push({
       id: token.address,
       label: token.symbol,
-      balance: parseFloat(fromWeiRounded(token.value, token)),
+      balance: parseFloat(fromWeiRounded(token.value, token.decimals, false)),
       balanceWei: token.value,
       address: token.address,
       token,

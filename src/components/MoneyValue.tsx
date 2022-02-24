@@ -36,10 +36,10 @@ export function MoneyValue(props: MoneyValueProps) {
     iconSize,
   } = props
 
-  const { symbol: tokenSymbol, color } = token
+  const { symbol: tokenSymbol, color, decimals } = token
   const fontStyles = getFonts(baseFontSize, fontWeight, symbolType)
 
-  const formattedAmount = fromWeiRounded(amountInWei, token, roundDownIfSmall)
+  const formattedAmount = fromWeiRounded(amountInWei, decimals, roundDownIfSmall ?? false)
   const isZero = formattedAmount === '0'
 
   return (

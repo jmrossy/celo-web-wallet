@@ -6,5 +6,5 @@ interface Props extends TextInputProps {
 }
 
 export function NumberInput(props: PropsWithChildren<Props>) {
-  return <TextInput {...props} type="number" />
+  return <TextInput {...props} type="number" step={props.step ?? 'any'} />
 }

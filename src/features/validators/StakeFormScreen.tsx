@@ -32,7 +32,6 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { CELO } from 'src/tokens'
 import { isValidAddress, shortenAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
@@ -123,7 +122,7 @@ export function StakeFormScreen() {
         groupVotes,
         values.groupAddress
       )
-      autoSetAmount = fromWeiRounded(maxAmount, CELO, true)
+      autoSetAmount = fromWeiRounded(maxAmount)
     } else {
       autoSetAmount = '0'
     }
@@ -138,7 +137,7 @@ export function StakeFormScreen() {
       groupVotes,
       values.groupAddress
     )
-    setValues({ ...values, amount: fromWeiRounded(maxAmount, CELO, true) })
+    setValues({ ...values, amount: fromWeiRounded(maxAmount) })
     resetErrors()
   }
 
@@ -197,7 +196,6 @@ export function StakeFormScreen() {
               <label css={style.inputLabel}>Amount</label>
               <Box direction="row" align="center">
                 <NumberInput
-                  step="0.01"
                   width="12em"
                   margin="0 1.6em 0 0"
                   name="amount"
@@ -302,7 +300,7 @@ function getInitialValues(
   // Auto use pending when defaulting to activate
   const initialAmount =
     groupAddress && groupVotes[groupAddress] && initialAction === StakeActionType.Activate
-      ? fromWeiRounded(groupVotes[groupAddress].pending, CELO, true)
+      ? fromWeiRounded(groupVotes[groupAddress].pending)
       : initialValues.amount
 
   return {

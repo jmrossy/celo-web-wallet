@@ -13,6 +13,7 @@ export const MAX_NUM_ELECTABLE_VALIDATORS = 100
 
 export const STALE_TOKEN_PRICE_TIME = 900000 // 15 minutes
 export const MAX_TOKEN_PRICE_NUM_DAYS = 14 // 14 days
+export const STANDARD_TOKEN_DECIMALS = 18 // Same as Ether and most ERC20s
 
 export const MAX_SEND_TOKEN_SIZE = '100000000000000000000' // 100 Tokens
 export const MAX_EXCHANGE_TOKEN_SIZE = '100000000000000000000' // 100 Tokens

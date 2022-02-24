@@ -7,7 +7,7 @@ export interface Token {
   name: string
   address: Address // contract address
   chainId: number
-  decimals?: number // TODO support decimals other than 18 (Issue #53)
+  decimals?: number
   color?: string
   exchangeAddress?: Address // Mento contract for token
   sortOrder?: number // for order preference in balance lists

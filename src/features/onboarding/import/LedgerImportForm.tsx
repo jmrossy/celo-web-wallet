@@ -70,6 +70,7 @@ export function LedgerImportForm(props: Props) {
         <Box direction="row" align="center" justify="center" styles={style.inputContainer}>
           <label css={style.inputLabel}>Address Index</label>
           <NumberInput
+            step="1"
             name="index"
             value={values.index.toString()}
             onChange={handleChange}

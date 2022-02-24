@@ -15,6 +15,7 @@ import { useContactsAndAccountsSelect } from 'src/features/contacts/hooks'
 import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
 import { useTokens } from 'src/features/tokens/hooks'
+import { TokenMap } from 'src/features/tokens/types'
 import { isNativeTokenAddress } from 'src/features/tokens/utils'
 import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
@@ -54,13 +55,16 @@ export function SendFormScreen() {
   const txSizeLimitEnabled = useAppSelector((state) => state.settings.txSizeLimitEnabled)
   const contactOptions = useContactsAndAccountsSelect()
 
-  const onSubmit = (values: SendTokenForm) => {
-    dispatch(txFlowStarted({ type: TxFlowType.Send, params: amountFieldToWei(values) }))
-    navigate('/send-review')
-  }
+  const getInitialFormValues = () => getInitialValues(locationState, tx, tokens)
+  const formatFormValues = (values: SendTokenForm) => getFormattedValues(values, tokens)
 
   const validateForm = (values: SendTokenForm) =>
-    validate(amountFieldToWei(values), balances, tokens, txSizeLimitEnabled)
+    validate(formatFormValues(values), balances, tokens, txSizeLimitEnabled)
+
+  const onSubmit = (values: SendTokenForm) => {
+    dispatch(txFlowStarted({ type: TxFlowType.Send, params: formatFormValues(values) }))
+    navigate('/send-review')
+  }
 
   const {
     values,
@@ -71,11 +75,11 @@ export function SendFormScreen() {
     setValues,
     resetValues,
     resetErrors,
-  } = useCustomForm<SendTokenForm>(getInitialValues(locationState, tx), onSubmit, validateForm)
+  } = useCustomForm<SendTokenForm>(getInitialFormValues(), onSubmit, validateForm)
 
   // Keep form in sync with tx state
   useEffect(() => {
-    resetValues(getInitialValues(locationState, tx))
+    resetValues(getInitialFormValues())
   }, [tx])
 
   const onPasteAddress = async () => {
@@ -89,7 +93,7 @@ export function SendFormScreen() {
     const tokenAddress = values.tokenAddress
     const token = tokens[tokenAddress]
     const balance = getTokenBalance(balances, token)
-    const maxAmount = fromWeiRounded(balance, token, true)
+    const maxAmount = fromWeiRounded(balance, token.decimals)
     setValues({ ...values, amount: maxAmount })
     resetErrors()
   }
@@ -189,7 +193,8 @@ export function SendFormScreen() {
 
 function getInitialValues(
   locationState: LocationState | null,
-  tx: TxFlowTransaction | null
+  tx: TxFlowTransaction | null,
+  tokens: TokenMap
 ): SendTokenForm {
   const recipient = locationState?.recipient
   const initialRecipient = recipient && isValidAddress(recipient) ? recipient : ''
@@ -199,8 +204,14 @@ function getInitialValues(
       recipient: initialRecipient,
     }
   } else {
-    return amountFieldFromWei(tx.params)
+    const token = tokens[tx.params.tokenAddress]
+    return amountFieldFromWei(tx.params, token?.decimals)
   }
+}
+
+function getFormattedValues(values: SendTokenForm, tokens: TokenMap): SendTokenParams {
+  const token = tokens[values.tokenAddress]
+  return amountFieldToWei(values, token?.decimals)
 }
 
 const style: Stylesheet = {

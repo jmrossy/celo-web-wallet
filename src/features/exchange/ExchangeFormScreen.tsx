@@ -93,7 +93,7 @@ export function ExchangeFormScreen() {
     const tokenAddress = values.fromTokenAddress
     const token = tokens[tokenAddress]
     const balance = getTokenBalance(balances, token)
-    const maxAmount = fromWeiRounded(balance, token, true)
+    const maxAmount = fromWeiRounded(balance, token.decimals)
     setValues({ ...values, amount: maxAmount })
     resetErrors()
   }
@@ -109,7 +109,7 @@ export function ExchangeFormScreen() {
   const stableTokenAddress =
     values.fromTokenAddress === CELO.address ? values.toTokenAddress : values.fromTokenAddress
   const stableToken = tokens[stableTokenAddress]
-  const toAmount = fromWeiRounded(to.weiAmount, to.token, true)
+  const toAmount = fromWeiRounded(to.weiAmount, to.token.decimals)
 
   return (
     <ScreenContentFrame>

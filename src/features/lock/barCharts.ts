@@ -9,7 +9,7 @@ import { fromWeiRounded } from 'src/utils/amount'
 
 // Just for convenience / shortness cause this file has lots of conversions
 function fromWei(value: BigNumberish) {
-  return parseFloat(fromWeiRounded(value, CELO, true))
+  return parseFloat(fromWeiRounded(value))
 }
 
 export function getSummaryChartData(balances: Balances, pendingWithdrawals: PendingWithdrawal[]) {

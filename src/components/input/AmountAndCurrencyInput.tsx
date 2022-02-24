@@ -95,7 +95,6 @@ export const AmountAndCurrencyInput = (props: Props) => {
         {...errors[selectName]}
       />
       <NumberInput
-        step="0.01"
         fillWidth={true}
         name={numberInputName}
         onChange={onAmountChange}

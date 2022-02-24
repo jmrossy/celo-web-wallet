@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, FixedNumber, utils } from 'ethers'
-import { DECIMALS_TO_DISPLAY, MIN_DISPLAY_VALUE, WEI_PER_UNIT } from 'src/consts'
+import { DECIMALS_TO_DISPLAY, MIN_DISPLAY_VALUE, STANDARD_TOKEN_DECIMALS } from 'src/consts'
 import { Balances } from 'src/features/balances/types'
 import { getTokenBalance } from 'src/features/balances/utils'
 import { FeeEstimate } from 'src/features/fees/types'
@@ -9,9 +9,9 @@ import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
-export function range(length: number, start = 0, step = 1) {
+export function range(max: number, start = 0) {
   const range = []
-  for (let i = start; i < length; i += step) {
+  for (let i = start; i < max; i += 1) {
     range.push(i)
   }
   return range
@@ -133,7 +133,6 @@ export function getAdjustedAmount(
   }
 }
 
-// TODO decimals
 // Checks if an amount is equal of nearly equal to balance within a small margin of error
 // Necessary because amounts in the UI are often rounded
 export function areAmountsNearlyEqual(
@@ -141,31 +140,34 @@ export function areAmountsNearlyEqual(
   amountInWei2: BigNumberish,
   token: Token
 ) {
-  const minValueWei = toWei(MIN_DISPLAY_VALUE)
+  const minValueWei = toWei(MIN_DISPLAY_VALUE, token.decimals)
   // Is difference btwn amount and balance less than min amount shown for token
   return amountInWei1.sub(amountInWei2).abs().lt(minValueWei)
 }
 
-// TODO decimals
-export function fromWei(value: BigNumberish | null | undefined): number {
+export function fromWei(
+  value: BigNumberish | null | undefined,
+  decimals = STANDARD_TOKEN_DECIMALS
+): number {
   if (!value) return 0
-  return parseFloat(utils.formatEther(value))
+  const valueString = value.toString().trim()
+  return parseFloat(utils.formatUnits(valueString, decimals))
 }
 
-// TODO decimals
 // Similar to fromWei above but rounds to set number of decimals
 // with a minimum floor, configured per token
 export function fromWeiRounded(
   value: BigNumberish | null | undefined,
-  token: Token,
-  roundDownIfSmall = false
+  decimals = STANDARD_TOKEN_DECIMALS,
+  roundDownIfSmall = true
 ): string {
   if (!value) return '0'
 
   const minValue = FixedNumber.from(`${MIN_DISPLAY_VALUE}`) // FixedNumber throws error when given number for some reason
   const bareMinValue = FixedNumber.from(`${MIN_DISPLAY_VALUE / 5}`)
 
-  const amount = FixedNumber.from(utils.formatEther(value))
+  const valueString = value.toString().trim()
+  const amount = FixedNumber.from(utils.formatUnits(valueString, decimals))
   if (amount.isZero()) return '0'
 
   // If amount is less than min value
@@ -180,29 +182,30 @@ export function fromWeiRounded(
   return amount.round(DECIMALS_TO_DISPLAY).toString()
 }
 
-// TODO decimals
-export function toWei(value: BigNumberish | null | undefined): BigNumber {
+export function toWei(
+  value: BigNumberish | null | undefined,
+  decimals = STANDARD_TOKEN_DECIMALS
+): BigNumber {
   if (!value) return BigNumber.from(0)
-  const valueString = value.toString()
+  const valueString = value.toString().trim()
   const components = valueString.split('.')
   if (components.length === 1) {
-    return utils.parseEther(valueString)
+    return utils.parseUnits(valueString, decimals)
   } else if (components.length === 2) {
-    const trimmedFraction = components[1].substring(0, WEI_PER_UNIT.length - 1)
-    return utils.parseEther(`${components[0]}.${trimmedFraction}`)
+    const trimmedFraction = components[1].substring(0, decimals)
+    return utils.parseUnits(`${components[0]}.${trimmedFraction}`, decimals)
   } else {
     throw new Error(`Cannot convert ${valueString} to wei`)
   }
 }
 
-// TODO decimals
 // Take an object with an amount field and convert it to amountInWei
 // Useful in converting for form <-> saga communication
-export function amountFieldToWei<T extends { amount: string }>(fields: T) {
+export function amountFieldToWei<T extends { amount: string }>(fields: T, decimals?: number) {
   try {
     return {
       ...fields,
-      amountInWei: toWei(fields.amount).toString(),
+      amountInWei: toWei(fields.amount, decimals).toString(),
     }
   } catch (error) {
     logger.warn('Error converting amount to wei', error)
@@ -213,14 +216,16 @@ export function amountFieldToWei<T extends { amount: string }>(fields: T) {
   }
 }
 
-// TODO decimals
 // Take an object with an amountInWei field and convert it amount (in 'ether')
 // Useful in converting for saga <-> form communication
-export function amountFieldFromWei<T extends { amountInWei: string }>(fields: T) {
+export function amountFieldFromWei<T extends { amountInWei: string }>(
+  fields: T,
+  decimals?: number
+) {
   try {
     return {
       ...fields,
-      amount: fromWei(fields.amountInWei).toString(),
+      amount: fromWei(fields.amountInWei, decimals).toString(),
     }
   } catch (error) {
     logger.warn('Error converting amount from wei', error)
