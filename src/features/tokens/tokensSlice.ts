@@ -7,10 +7,12 @@ import { normalizeAddress } from 'src/utils/addresses'
 import { assert } from 'src/utils/validation'
 
 interface TokensState {
+  isMigrated: boolean // Have the tokens been migrated from previous home in walletSlice
   byAddress: TokenMap
 }
 
 const initialState: TokensState = {
+  isMigrated: false,
   byAddress: NativeTokensByAddress,
 }
 
@@ -18,6 +20,9 @@ const tokensSlice = createSlice({
   name: 'tokens',
   initialState,
   reducers: {
+    markMigrated: (state) => {
+      state.isMigrated = true
+    },
     addToken: (state, action: PayloadAction<Token>) => {
       const newToken = action.payload
       assert(newToken, 'No new token provided')
@@ -38,13 +43,13 @@ const tokensSlice = createSlice({
   },
 })
 
-export const { addToken, removeToken, resetTokens } = tokensSlice.actions
+export const { markMigrated, addToken, removeToken, resetTokens } = tokensSlice.actions
 const tokenReducer = tokensSlice.reducer
 
 const persistConfig = {
   key: 'tokens',
   storage: storage,
-  whitelist: ['byAddress'],
+  whitelist: ['isMigrated', 'byAddress'],
 }
 
 export const persistedTokensReducer = persistReducer<ReturnType<typeof tokenReducer>>(

@@ -13,6 +13,7 @@ import { Balances } from 'src/features/balances/types'
 import { areBalancesEmpty } from 'src/features/balances/utils'
 import { fetchLockedCeloStatus, fetchTotalLocked } from 'src/features/lock/fetchLockedStatus'
 import { LockedCeloBalances } from 'src/features/lock/types'
+import { getMigratedTokens } from 'src/features/tokens/migration'
 import { TokenMap } from 'src/features/tokens/types'
 import { isNativeTokenAddress } from 'src/features/tokens/utils'
 import { fetchStakingBalances } from 'src/features/validators/fetchGroupVotes'
@@ -28,7 +29,7 @@ function* fetchBalances() {
   const address = yield* appSelect((state) => state.wallet.address)
   if (!address) throw new Error('Cannot fetch balances before address is set')
 
-  const tokenAddrToToken = yield* appSelect((state) => state.tokens.byAddress)
+  const tokenAddrToToken = yield* call(getMigratedTokens)
   const tokenAddrToValue = yield* call(fetchTokenBalances, address, tokenAddrToToken)
 
   let lockedCelo: LockedCeloBalances

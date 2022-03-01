@@ -14,6 +14,7 @@ interface Wallet {
   derivationPath: string | null
   type: SignerType | null
   account: AccountStatus
+  // Note, balances used to live here but was moved to its own slice
 }
 
 interface SetAccountAction {
@@ -60,8 +61,6 @@ const walletSlice = createSlice({
       state.derivationPath = derivationPath
       state.type = type
       state.account = walletInitialState.account
-      // state.voterBalances = walletInitialState.voterBalances
-      // state.balances = walletInitialState.balances
     },
     setAccountStatus: (state, action: PayloadAction<AccountStatus>) => {
       state.account = action.payload
@@ -105,7 +104,7 @@ const persistConfig = {
   key: 'wallet',
   storage: storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['address', 'balances', 'type', 'derivationPath', 'secretType', 'account'], //we don't want to persist everything in the wallet store
+  whitelist: ['address', 'balances', 'type', 'derivationPath', 'secretType', 'account'],
   version: 0, // -1 is default
   migrate: createMigrate(migrations),
 }
