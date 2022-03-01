@@ -14,8 +14,6 @@ interface Wallet {
   derivationPath: string | null
   type: SignerType | null
   account: AccountStatus
-  // balances: Balances | null // Deprecated, do not use (TODO cleanup)
-  // voterBalances: Balances | null // Deprecated, do not use (TODO cleanup)
 }
 
 interface SetAccountAction {
@@ -42,8 +40,6 @@ export const walletInitialState: Wallet = {
     voteSignerFor: null,
     lastUpdated: null,
   },
-  // balances: null, // Deprecated, do not use (TODO cleanup)
-  // voterBalances: null, // Deprecated, do not use (TODO cleanup)
 }
 
 const walletSlice = createSlice({

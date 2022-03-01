@@ -19,7 +19,8 @@ import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
 
 export function WalletConnectStatusBox() {
-  const { address, isUnlocked } = useAccountLockStatus()
+  const isUnlocked = useAccountLockStatus()
+  const address = useAppSelector((s) => s.wallet.address)
   const status = useAppSelector((s) => s.walletConnect.status)
   const session = useAppSelector((s) => s.walletConnect.session)
 

@@ -53,5 +53,5 @@ export function useAccountLockStatus() {
     (hasPasswordCached() || type === SignerType.Ledger)
   )
 
-  return { address, type, isUnlocked }
+  return isUnlocked
 }

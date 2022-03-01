@@ -315,8 +315,6 @@ function* loadFeedData(nextAddress: Address, currentAddress?: Address | null) {
       logger.debug('No feed data found in storage. Resetting feed')
       yield* put(resetFeed())
     }
-
-    clearV1FeedData()
   } catch (error) {
     // Since feed data is not critical, swallow errors
     logger.error('Error loading feed data. Resetting feed', error)
@@ -328,17 +326,5 @@ export function* saveFeedData(currentAddress: Address) {
   const transactions = yield* appSelect((s) => s.feed.transactions)
   if (transactions && Object.keys(transactions).length) {
     yield* call(setFeedDataForAccount, currentAddress, transactions)
-  }
-}
-
-// Not essential just a bit of cleanup
-// Since feed data is no longer stored in localstorage
-// remove it to free up that space
-// TODO: Can be safely removed after roughly 2021/09/01
-function clearV1FeedData() {
-  try {
-    localStorage && localStorage.removeItem('persist:feed')
-  } catch (error) {
-    logger.warn('Error when removing v1 feed data, not critical')
   }
 }

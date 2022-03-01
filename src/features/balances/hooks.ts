@@ -55,7 +55,6 @@ export function useBalancesWithTokens(): BalancesWithTokens {
   return useSelector(balancesWithTokensSelector)
 }
 
-// TODO make this return BalancesWithTokens?
 export function useVoterBalances() {
   const account = useAppSelector((s) => s.wallet.account)
   const { accountBalances, voterBalances } = useAppSelector((s) => s.balances)
@@ -63,7 +62,6 @@ export function useVoterBalances() {
   else return { balances: accountBalances, voterBalances: accountBalances }
 }
 
-// TODO make this return BalancesWithTokens?
 export function* selectVoterBalances() {
   const { accountBalances, voterBalances } = yield* appSelect((state) => state.balances)
   if (voterBalances) return { balances: accountBalances, voterBalances }
