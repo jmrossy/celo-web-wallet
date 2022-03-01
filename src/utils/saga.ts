@@ -44,7 +44,7 @@ export interface SagaActions {
   cancel: PayloadActionCreator<any>
   progress: PayloadActionCreator<any>
   error: PayloadActionCreator<any>
-  reset: PayloadActionCreator<any>
+  reset: PayloadActionCreator<void>
 }
 
 export interface SagaState {

@@ -152,7 +152,7 @@ export function LockConfirmationScreen() {
             margin="0 2em 0 0"
             color={Color.primaryWhite}
             onClick={onGoBack}
-            disabled={isWorking || !feeAmount}
+            disabled={isWorking}
           >
             Back
           </Button>

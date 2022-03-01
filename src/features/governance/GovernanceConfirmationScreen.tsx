@@ -120,7 +120,7 @@ export function GovernanceConfirmationScreen() {
             size="m"
             color={Color.primaryWhite}
             onClick={onGoBack}
-            disabled={isWorking || !feeAmount}
+            disabled={isWorking}
             margin="0 2em 0 0"
             width="5em"
           >
