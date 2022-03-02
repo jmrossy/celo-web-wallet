@@ -26,10 +26,12 @@ export function* getMigratedTokens() {
 
 function* migrateOldTokenData() {
   try {
+    logger.info('Attempting to migrate old token data')
     // Need to ignore state type as balances no longer exists on walletSlice type
     const balances = yield* select((state: any) => state.wallet.balances)
     const tokenMap = balances?.tokens
     if (tokenMap && typeof tokenMap === 'object') {
+      logger.info('Found valid old token data')
       const tokens = Object.values(tokenMap) as Token[]
       const addresses = tokens
         .map((t) => normalizeAddress(t.address))
@@ -37,6 +39,7 @@ function* migrateOldTokenData() {
       const addressSet = new Set(addresses)
       yield* call(addTokensByAddress, addressSet)
     }
+    logger.info('Done migrating old token data')
   } catch (error) {
     // Not an essential operation so simply proceed if it fails
     logger.error('Error migrating old token data', error)

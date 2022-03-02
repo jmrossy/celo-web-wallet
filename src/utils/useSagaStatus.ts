@@ -53,7 +53,7 @@ function _useSagaStatus(
 
   useEffect(() => {
     if (status === SagaStatus.Success) {
-      if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
+      if (resetSagaOnSuccess) dispatch(saga.actions.reset())
       if (onSuccess) onSuccess()
     } else if (status === SagaStatus.Failure) {
       if (onFailure) onFailure()
@@ -62,7 +62,7 @@ function _useSagaStatus(
 
   useEffect(() => {
     return () => {
-      if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
+      if (resetSagaOnSuccess) dispatch(saga.actions.reset())
     }
   }, [])
 

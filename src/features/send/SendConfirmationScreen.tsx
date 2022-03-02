@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from 'src/app/hooks'
 import { Address } from 'src/components/Address'
 import { Button } from 'src/components/buttons/Button'
+import { HrDivider } from 'src/components/HrDivider'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -65,6 +66,8 @@ export function SendConfirmationScreen() {
   const txToken = tokens[params.tokenAddress]
 
   const { amount, total, feeAmount, feeCurrency, feeEstimates } = useFee(params.amountInWei)
+  // Only show total if it's relevant b.c. fee currency and token match
+  const showTotal = feeCurrency?.address === params.tokenAddress
 
   const onGoBack = () => {
     dispatch(sendTokenActions.reset())
@@ -114,12 +117,7 @@ export function SendConfirmationScreen() {
           </Box>
         </Box>
 
-        <Box
-          direction="row"
-          styles={{ ...style.inputRow, ...style.bottomBorder }}
-          align="end"
-          justify="between"
-        >
+        <Box direction="row" styles={style.inputRow} align="end" justify="between">
           <Box
             direction="row"
             justify="between"
@@ -146,12 +144,22 @@ export function SendConfirmationScreen() {
           )}
         </Box>
 
-        <Box direction="row" styles={style.inputRow} justify="between">
-          <label css={[style.labelCol, style.totalLabel]}>Total</label>
-          <Box justify="end" align="end" styles={style.valueCol}>
-            <MoneyValue amountInWei={total} token={txToken} baseFontSize={1.2} fontWeight={500} />
-          </Box>
-        </Box>
+        {showTotal && (
+          <>
+            <HrDivider styles={style.inputRow} />
+            <Box direction="row" styles={style.inputRow} justify="between">
+              <label css={[style.labelCol, style.totalLabel]}>Total</label>
+              <Box justify="end" align="end" styles={style.valueCol}>
+                <MoneyValue
+                  amountInWei={total}
+                  token={txToken}
+                  baseFontSize={1.2}
+                  fontWeight={500}
+                />
+              </Box>
+            </Box>
+          </>
+        )}
 
         <Box direction="row" justify="between" margin="3em 0 0 0">
           <Button
@@ -188,7 +196,7 @@ const style: Stylesheet = {
   inputRow: {
     marginBottom: '1.4em',
     [mq[1200]]: {
-      marginBottom: '1.6em',
+      marginBottom: '2em',
     },
   },
   labelCol: {
@@ -213,9 +221,5 @@ const style: Stylesheet = {
     fontSize: '1.2em',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-  },
-  bottomBorder: {
-    paddingBottom: '1.25em',
-    borderBottom: `1px solid ${Color.borderMedium}`,
   },
 }

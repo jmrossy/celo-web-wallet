@@ -41,10 +41,15 @@ function* addToken(params: AddTokenParams) {
 }
 
 export function* addTokensByAddress(addresses: Set<string>) {
+  if (!addresses?.size) return
+  logger.info('Attempting to add tokens by address', addresses.size)
   for (const addr of addresses) {
     try {
       const knownToken = findTokenByAddress(addr)
-      if (!knownToken) continue
+      if (!knownToken) {
+        logger.debug('Ignoring unknown token with address', addr)
+        continue
+      }
       const newToken = yield* call(getTokenInfo, knownToken.address)
       yield* put(addTokenAction(newToken))
     } catch (error) {

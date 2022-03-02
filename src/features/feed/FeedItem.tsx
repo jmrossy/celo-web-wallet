@@ -190,6 +190,7 @@ const style: Stylesheet = {
   },
   currency: {
     ...Font.subtitle,
+    color: Color.accentBlue, // Default to blue unless token specifies a color
     marginTop: '0.4em',
   },
 }

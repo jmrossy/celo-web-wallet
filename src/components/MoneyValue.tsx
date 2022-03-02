@@ -1,6 +1,7 @@
 import { BigNumberish } from 'ethers'
 import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { Box } from 'src/components/layout/Box'
+import { Color } from 'src/styles/Color'
 import { Styles } from 'src/styles/types'
 import { Token } from 'src/tokens'
 import { fromWeiRounded } from 'src/utils/amount'
@@ -37,7 +38,7 @@ export function MoneyValue(props: MoneyValueProps) {
   } = props
 
   const { symbol: tokenSymbol, color, decimals } = token
-  const fontStyles = getFonts(baseFontSize, fontWeight, symbolType)
+  const fontStyles = getFonts(baseFontSize, fontWeight, symbolType, color)
 
   const formattedAmount = fromWeiRounded(amountInWei, decimals, roundDownIfSmall ?? false)
   const isZero = formattedAmount === '0'
@@ -51,7 +52,7 @@ export function MoneyValue(props: MoneyValueProps) {
     >
       {!!sign && !isZero && <span css={fontStyles.amount}>{sign}</span>}
       {(!symbolType || symbolType === 'text') && (
-        <span css={{ ...fontStyles.symbol, color, ...symbolCss }}>{tokenSymbol}</span>
+        <span css={{ ...fontStyles.symbol, ...symbolCss }}>{tokenSymbol}</span>
       )}
       {symbolType === 'icon' && <TokenIcon token={token} size={iconSize ?? 's'} />}
       <span css={{ ...fontStyles.amount, ...amountCss }}>{formattedAmount}</span>
@@ -59,9 +60,10 @@ export function MoneyValue(props: MoneyValueProps) {
   )
 }
 
-const getFonts = (baseSize?: number, weight?: number, symbol?: string) => {
+const getFonts = (baseSize?: number, weight?: number, symbol?: string, color?: string) => {
   return {
     symbol: {
+      color: color ?? Color.accentBlue, // Default to blue unless token specifies a color
       fontSize: baseSize ? `${baseSize * 0.8}em` : '0.8em',
       fontWeight: weight ?? 500,
     },
