@@ -221,6 +221,11 @@
     "symbol": "PREMIO"
   },
   {
+    "address": "0x9802d866fdE4563d088a6619F7CeF82C0B991A55",
+    "name": "Moola cREAL",
+    "symbol": "mcREAL"
+  },
+  {
     "address": "0x9Ee153D4Fdf0E3222eFD092c442ebB21DFd346AC",
     "name": "Marzipan Finance",
     "symbol": "MZPN",
