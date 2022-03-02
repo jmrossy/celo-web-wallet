@@ -130,7 +130,7 @@ export function SendConfirmationScreen() {
           </Box>
           {feeAmount && feeCurrency ? (
             <Box justify="end" align="end" styles={style.valueCol}>
-              <label>+</label>
+              {showTotal && <label>+</label>}
               <MoneyValue
                 amountInWei={feeAmount}
                 token={feeCurrency}
