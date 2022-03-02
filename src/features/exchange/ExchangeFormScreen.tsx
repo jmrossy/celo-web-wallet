@@ -14,7 +14,6 @@ import { validate } from 'src/features/exchange/exchangeToken'
 import { ExchangeTokenParams } from 'src/features/exchange/types'
 import { useExchangeValues } from 'src/features/exchange/utils'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
-import { useTokens } from 'src/features/tokens/hooks'
 import { isStableTokenAddress } from 'src/features/tokens/utils'
 import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
@@ -23,7 +22,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { CELO, cUSD } from 'src/tokens'
+import { CELO, cUSD, NativeTokensByAddress } from 'src/tokens'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
 
@@ -41,10 +40,10 @@ export function ExchangeFormScreen() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const balances = useBalances()
-  const tokens = useTokens()
   const tx = useFlowTransaction()
   const toCeloRates = useAppSelector((state) => state.exchange.toCeloRates)
   const txSizeLimitEnabled = useAppSelector((state) => state.settings.txSizeLimitEnabled)
+  const tokens = NativeTokensByAddress
 
   useEffect(() => {
     dispatch(fetchExchangeRateActions.trigger({ force: false }))

@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
-import { useAppDispatch, useAppSelector } from 'src/app/hooks'
+import { useAppDispatch } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { HelpText } from 'src/components/input/HelpText'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { modalStyles } from 'src/components/modal/modalStyles'
 import { addTokenActions, addTokenSagaName, validate } from 'src/features/tokens/addToken'
+import { useTokens } from 'src/features/tokens/hooks'
 import { getKnownErc20Tokens } from 'src/features/tokens/tokenList'
 import { AddTokenParams } from 'src/features/tokens/types'
 import { Color } from 'src/styles/Color'
@@ -21,7 +22,7 @@ const initialValues: AddTokenParams = {
 
 export function AddTokenModal(props: { close: () => void }) {
   const dispatch = useAppDispatch()
-  const tokens = useAppSelector((state) => state.tokens.byAddress)
+  const tokens = useTokens()
 
   const onSubmit = (values: AddTokenParams) => {
     dispatch(addTokenActions.trigger(values))

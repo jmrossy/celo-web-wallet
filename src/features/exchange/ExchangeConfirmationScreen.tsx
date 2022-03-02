@@ -12,7 +12,6 @@ import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
-import { useTokens } from 'src/features/tokens/hooks'
 import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
@@ -22,13 +21,12 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { CELO } from 'src/tokens'
+import { CELO, NativeTokensByAddress } from 'src/tokens'
 
 export function ExchangeConfirmationScreen() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const tokens = useTokens()
   const toCeloRates = useAppSelector((state) => state.exchange.toCeloRates)
   const tx = useFlowTransaction()
 
@@ -67,7 +65,7 @@ export function ExchangeConfirmationScreen() {
     params.amountInWei,
     params.fromTokenAddress,
     params.toTokenAddress,
-    tokens,
+    NativeTokensByAddress,
     toCeloRates,
     true
   )

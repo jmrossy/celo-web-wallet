@@ -1,8 +1,8 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import { appSelect } from 'src/app/appSelect'
 import { getTokenContract } from 'src/blockchain/contracts'
 import { config } from 'src/config'
 import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
+import { selectTokens } from 'src/features/tokens/hooks'
 import { findTokenByAddress } from 'src/features/tokens/tokenList'
 import { addToken as addTokenAction } from 'src/features/tokens/tokensSlice'
 import { AddTokenParams, TokenMap } from 'src/features/tokens/types'
@@ -31,7 +31,7 @@ export function validate(params: AddTokenParams, tokens: TokenMap): ErrorState {
 }
 
 function* addToken(params: AddTokenParams) {
-  const tokens = yield* appSelect((state) => state.tokens.byAddress)
+  const tokens = yield* selectTokens()
   validateOrThrow(() => validate(params, tokens), 'Invalid Token')
 
   const newToken = yield* call(getTokenInfo, params.address)

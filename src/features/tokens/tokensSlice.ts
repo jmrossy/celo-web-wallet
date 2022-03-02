@@ -8,12 +8,12 @@ import { assert } from 'src/utils/validation'
 
 interface TokensState {
   isMigrated: boolean // Have the tokens been migrated from previous home in walletSlice
-  byAddress: TokenMap
+  byAddress: TokenMap // Note, only custom added tokens get stored here
 }
 
 const initialState: TokensState = {
   isMigrated: false,
-  byAddress: NativeTokensByAddress,
+  byAddress: {},
 }
 
 const tokensSlice = createSlice({
@@ -26,12 +26,11 @@ const tokensSlice = createSlice({
     addToken: (state, action: PayloadAction<Token>) => {
       const newToken = action.payload
       assert(newToken, 'No new token provided')
-      assert(
-        newToken.address && newToken.address === normalizeAddress(newToken.address),
-        'No new token address invalid'
-      )
-      assert(!state.byAddress[newToken.address], 'Token already exists')
-      state.byAddress[newToken.address] = newToken
+      const addr = newToken.address
+      assert(addr && addr === normalizeAddress(addr), 'No new token address invalid')
+      assert(!state.byAddress[addr], 'Token already exists')
+      assert(!NativeTokensByAddress[addr], 'Cannot add native tokens')
+      state.byAddress[addr] = newToken
     },
     removeToken: (state, action: PayloadAction<string>) => {
       const tokenAddr = action.payload

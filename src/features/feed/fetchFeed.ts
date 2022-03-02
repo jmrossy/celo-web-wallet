@@ -13,6 +13,7 @@ import {
   BlockscoutTxBase,
 } from 'src/features/feed/types'
 import { addTokensByAddress } from 'src/features/tokens/addToken'
+import { selectTokens } from 'src/features/tokens/hooks'
 import { TokenMap } from 'src/features/tokens/types'
 import { TransactionMap, TransactionType } from 'src/features/types'
 import { saveFeedData } from 'src/features/wallet/manager'
@@ -33,7 +34,7 @@ function* fetchFeed() {
   if (!isStale(lastUpdatedTime, QUERY_DEBOUNCE_TIME)) return
 
   const lastBlockNumber = yield* appSelect((state) => state.feed.lastBlockNumber)
-  const tokensByAddress = yield* appSelect((state) => state.tokens.byAddress)
+  const tokensByAddress = yield* selectTokens()
 
   const { newTransactions, newLastBlockNumber } = yield* call(
     doFetchFeed,

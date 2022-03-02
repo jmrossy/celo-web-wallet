@@ -6,6 +6,7 @@ import type { AppState } from 'src/app/store'
 import { BalancesWithTokens, TokenBalances } from 'src/features/balances/types'
 import { areBalancesEmpty } from 'src/features/balances/utils'
 import { TokenMap } from 'src/features/tokens/types'
+import { NativeTokensByAddress } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 
 export function useBalances() {
@@ -24,10 +25,13 @@ export function useAreBalancesEmpty() {
 const balancesWithTokensSelector = createSelector(
   (s: AppState) => s.tokens.byAddress,
   (s: AppState) => s.balances.accountBalances,
-  (addressToToken, accountBalances) => ({
-    ...accountBalances,
-    tokenAddrToToken: getMergedTokenBalances(addressToToken, accountBalances.tokenAddrToValue),
-  })
+  (customTokens, accountBalances) => {
+    const allTokens = { ...customTokens, ...NativeTokensByAddress }
+    return {
+      ...accountBalances,
+      tokenAddrToToken: getMergedTokenBalances(allTokens, accountBalances.tokenAddrToValue),
+    }
+  }
 )
 
 export function getMergedTokenBalances(

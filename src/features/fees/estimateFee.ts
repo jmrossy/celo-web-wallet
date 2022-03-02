@@ -1,6 +1,5 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
 import { BigNumber } from 'ethers'
-import { appSelect } from 'src/app/appSelect'
 import { fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
 import { getMergedTokenBalances } from 'src/features/balances/hooks'
 import { estimateGas } from 'src/features/fees/estimateGas'
@@ -8,6 +7,7 @@ import { setFeeEstimate } from 'src/features/fees/feeSlice'
 import { resolveTokenPreferenceOrder } from 'src/features/fees/feeTokenOrder'
 import { fetchGasPriceIfStale } from 'src/features/fees/gasPrice'
 import { FeeEstimate } from 'src/features/fees/types'
+import { selectTokens } from 'src/features/tokens/hooks'
 import { TransactionType } from 'src/features/types'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { call, put } from 'typed-redux-saga'
@@ -24,7 +24,7 @@ function* estimateFee(params: EstimateFeeParams) {
   yield* put(setFeeEstimate(null))
 
   const balances = yield* call(fetchBalancesIfStale)
-  const tokens = yield* appSelect((state) => state.tokens.byAddress)
+  const tokens = yield* selectTokens()
   const tokenBalances = getMergedTokenBalances(tokens, balances.tokenAddrToValue)
 
   const { txs, forceGasEstimation: force, preferredToken, txToken } = params

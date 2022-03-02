@@ -1,5 +1,6 @@
 import { appSelect } from 'src/app/appSelect'
 import { addTokensByAddress } from 'src/features/tokens/addToken'
+import { selectTokens } from 'src/features/tokens/hooks'
 import { markMigrated } from 'src/features/tokens/tokensSlice'
 import { isNativeTokenAddress } from 'src/features/tokens/utils'
 import { Token } from 'src/tokens'
@@ -13,13 +14,14 @@ import { call, put, select } from 'typed-redux-saga'
 // To avoid users needing to re-add their custom tokens, this attempts to migrate old state
 // TODO this whole thing can be safely removed after around 2022/12/31
 export function* getMigratedTokens() {
-  const { isMigrated, byAddress } = yield* appSelect((state) => state.tokens)
+  const isMigrated = yield* appSelect((state) => state.tokens.isMigrated)
   if (isMigrated) {
-    return byAddress
+    const tokens = yield* selectTokens()
+    return tokens
   } else {
     yield* call(migrateOldTokenData)
     // Select again to get latest updates
-    const tokens = yield* appSelect((state) => state.tokens.byAddress)
+    const tokens = yield* selectTokens()
     return tokens
   }
 }

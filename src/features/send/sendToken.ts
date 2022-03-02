@@ -14,6 +14,7 @@ import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { validateFeeEstimate } from 'src/features/fees/utils'
 import { SendTokenParams } from 'src/features/send/types'
+import { selectTokens } from 'src/features/tokens/hooks'
 import { TokenMap } from 'src/features/tokens/types'
 import { isNativeToken, isNativeTokenAddress } from 'src/features/tokens/utils'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
@@ -112,7 +113,7 @@ export function validate(
 
 function* sendToken(params: SendTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
-  const tokens = yield* appSelect((state) => state.tokens.byAddress)
+  const tokens = yield* selectTokens()
   const txSizeLimitEnabled = yield* appSelect((state) => state.settings.txSizeLimitEnabled)
 
   validateOrThrow(

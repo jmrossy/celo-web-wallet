@@ -21,7 +21,7 @@ import { validateFeeEstimates } from 'src/features/fees/utils'
 import { TokenMap } from 'src/features/tokens/types'
 import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
 import { TokenExchangeTx, TransactionType } from 'src/features/types'
-import { CELO, Token } from 'src/tokens'
+import { CELO, NativeTokensByAddress, Token } from 'src/tokens'
 import {
   fromWei,
   getAdjustedAmountFromBalances,
@@ -122,7 +122,7 @@ export function validateExchangeRate(exchangeRate?: SimpleExchangeRate): ErrorSt
 
 function* exchangeToken(params: ExchangeTokenParams) {
   const balances = yield* call(fetchBalancesIfStale)
-  const tokens = yield* appSelect((state) => state.tokens.byAddress)
+  const tokens = NativeTokensByAddress
   const txSizeLimitEnabled = yield* appSelect((state) => state.settings.txSizeLimitEnabled)
 
   validateOrThrow(
