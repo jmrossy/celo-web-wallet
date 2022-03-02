@@ -17,7 +17,7 @@ export function BalanceSummary() {
   if (windowWidth && windowWidth > 1024) numItems = 4
 
   const balances = useBalancesWithTokens()
-  const tokens = balances.tokens
+  const tokens = balances.tokenAddrToToken
 
   const { tokensToShow, hiddenTokens } = useMemo(() => {
     const sortedTokens = Object.values(tokens).sort((t1, t2) => {

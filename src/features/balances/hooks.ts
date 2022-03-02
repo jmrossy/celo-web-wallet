@@ -26,7 +26,7 @@ const balancesWithTokensSelector = createSelector(
   (s: AppState) => s.balances.accountBalances,
   (addressToToken, accountBalances) => ({
     ...accountBalances,
-    tokens: getMergedTokenBalances(addressToToken, accountBalances.tokenAddrToValue),
+    tokenAddrToToken: getMergedTokenBalances(addressToToken, accountBalances.tokenAddrToValue),
   })
 )
 

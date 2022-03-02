@@ -13,7 +13,7 @@ export interface Balances {
 // It's convenient for the UI to have a single object with the tokens and
 // their balances values merged together.
 export interface BalancesWithTokens extends Balances {
-  tokens: TokenBalances // tokenAddrToToken but shortening because it's very commonly used
+  tokenAddrToToken: TokenBalances
 }
 
 export interface BalanceTableRow {

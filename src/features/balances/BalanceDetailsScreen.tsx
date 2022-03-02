@@ -58,7 +58,7 @@ export function BalanceDetailsScreen() {
       if (action.key === 'remove') dispatch(removeToken(id))
       closeModal()
     }
-    const tokenSymbol = balances.tokens[id].symbol
+    const tokenSymbol = balances.tokenAddrToToken[id].symbol
     showModal({
       head: 'Remove Token',
       subHead: `Would you like to remove ${tokenSymbol}?`,
@@ -171,13 +171,13 @@ function balancesToTableData(
   // Only show Locked CELO on desktop for now
   const tokens = config.isElectron
     ? {
-        ...balances.tokens,
+        ...balances.tokenAddrToToken,
         [LockedCELO.address]: {
           ...LockedCELO,
           value: getTotalLockedCelo(balances).toString(),
         },
       }
-    : balances.tokens
+    : balances.tokenAddrToToken
 
   for (const token of Object.values(tokens)) {
     const isNative = isNativeToken(token) || token.address === LockedCELO.address
