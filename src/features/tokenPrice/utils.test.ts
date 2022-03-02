@@ -1,4 +1,4 @@
-import { STALE_TOKEN_PRICE_TIME } from 'src/consts'
+import { TOKEN_PRICE_STALE_TIME } from 'src/consts'
 import { QuoteCurrencyPriceHistory } from 'src/features/tokenPrice/types'
 import { findMissingPriceDays, mergePriceHistories } from 'src/features/tokenPrice/utils'
 import { nowMinusDays } from 'src/test/time'
@@ -39,7 +39,7 @@ describe('finds missing days', () => {
   it('Excludes stale from today', () => {
     const prices: QuoteCurrencyPriceHistory = {
       [cUSD.address]: [
-        { timestamp: Date.now() - STALE_TOKEN_PRICE_TIME * 1.5, price: 1.0 },
+        { timestamp: Date.now() - TOKEN_PRICE_STALE_TIME * 1.5, price: 1.0 },
         pricePoint(1, 1.1),
         pricePoint(2, 1.2),
       ],

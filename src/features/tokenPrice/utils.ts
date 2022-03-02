@@ -1,4 +1,4 @@
-import { MAX_TOKEN_PRICE_NUM_DAYS, STALE_TOKEN_PRICE_TIME } from 'src/consts'
+import { MAX_TOKEN_PRICE_NUM_DAYS, TOKEN_PRICE_STALE_TIME } from 'src/consts'
 import { QuoteCurrencyPriceHistory, TokenPriceHistory } from 'src/features/tokenPrice/types'
 import { cUSD } from 'src/tokens'
 import { ChartData, DataValue, dateToChartLabel, prepareChartData } from 'src/utils/charts'
@@ -54,7 +54,7 @@ export function findMissingPriceDays(numDays: number, prices?: QuoteCurrencyPric
       const pDate = new Date(p.timestamp).getDate()
       // This check is to exclude prices from today that are older than STALE_TOKEN_PRICE_TIME
       // This forces re-fetching of today's prices to keep the data up to date
-      if (pDate !== now.getDate() || now.getTime() - p.timestamp < STALE_TOKEN_PRICE_TIME) {
+      if (pDate !== now.getDate() || now.getTime() - p.timestamp < TOKEN_PRICE_STALE_TIME) {
         daysInData.set(pDate, true)
       }
     }
