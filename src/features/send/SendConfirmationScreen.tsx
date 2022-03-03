@@ -195,6 +195,9 @@ const style: Stylesheet = {
   },
   inputRow: {
     marginBottom: '1.4em',
+    [mq[1024]]: {
+      marginBottom: '1.7em',
+    },
     [mq[1200]]: {
       marginBottom: '2em',
     },
