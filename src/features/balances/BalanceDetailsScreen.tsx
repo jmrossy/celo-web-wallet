@@ -14,6 +14,7 @@ import { config } from 'src/config'
 import { fetchBalancesActions, fetchBalancesSagaName } from 'src/features/balances/fetchBalances'
 import { useBalancesWithTokens } from 'src/features/balances/hooks'
 import { BalancesWithTokens, BalanceTableRow } from 'src/features/balances/types'
+import { getSortedTokenBalances } from 'src/features/balances/utils'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
 import { AddTokenModal } from 'src/features/tokens/AddTokenModal'
 import { removeToken } from 'src/features/tokens/tokensSlice'
@@ -169,7 +170,7 @@ function balancesToTableData(
   const tableRows: BalanceTableRow[] = []
 
   // Only show Locked CELO on desktop for now
-  const tokens = config.isElectron
+  const tokenBalances = config.isElectron
     ? {
         ...balances.tokenAddrToToken,
         [LockedCELO.address]: {
@@ -179,7 +180,9 @@ function balancesToTableData(
       }
     : balances.tokenAddrToToken
 
-  for (const token of Object.values(tokens)) {
+  const sortedTokens = getSortedTokenBalances(tokenBalances)
+
+  for (const token of sortedTokens) {
     const isNative = isNativeToken(token) || token.address === LockedCELO.address
     tableRows.push({
       id: token.address,
@@ -191,7 +194,6 @@ function balancesToTableData(
       onRemove: !isNative ? onRemove : undefined,
     })
   }
-
   return tableRows
 }
 

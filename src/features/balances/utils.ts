@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers'
-import { Balances } from 'src/features/balances/types'
+import { Balances, TokenBalances } from 'src/features/balances/types'
 import { Token } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 
@@ -31,4 +31,18 @@ export function getTokenBalance(balances: Balances, token: Token) {
     return '0'
   }
   return balance
+}
+
+export function getSortedTokenBalances(tokenBalances: TokenBalances) {
+  return Object.values(tokenBalances).sort((t1, t2) => {
+    const t1Value = BigNumber.from(t1.value)
+    const t2Value = BigNumber.from(t2.value)
+    if (t1Value.gt(t2Value)) return -1
+    if (t1Value.lt(t2Value)) return 1
+    const t1Sort = t1.sortOrder ?? 1000
+    const t2Sort = t2.sortOrder ?? 1000
+    if (t1Sort < t2Sort) return -1
+    if (t1Sort > t2Sort) return 1
+    return t1.symbol < t2.symbol ? -1 : 1
+  })
 }

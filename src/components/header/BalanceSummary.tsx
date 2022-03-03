@@ -1,10 +1,10 @@
-import { BigNumber } from 'ethers'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { useBalancesWithTokens } from 'src/features/balances/hooks'
+import { getSortedTokenBalances } from 'src/features/balances/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq, useWindowSize } from 'src/styles/mediaQueries'
@@ -20,17 +20,7 @@ export function BalanceSummary() {
   const tokens = balances.tokenAddrToToken
 
   const { tokensToShow, hiddenTokens } = useMemo(() => {
-    const sortedTokens = Object.values(tokens).sort((t1, t2) => {
-      const t1Value = BigNumber.from(t1.value)
-      const t2Value = BigNumber.from(t2.value)
-      if (t1Value.gt(t2Value)) return -1
-      if (t1Value.lt(t2Value)) return 1
-      const t1Sort = t1.sortOrder ?? 1000
-      const t2Sort = t2.sortOrder ?? 1000
-      if (t1Sort < t2Sort) return -1
-      if (t1Sort > t2Sort) return 1
-      return t1.symbol < t2.symbol ? -1 : 1
-    })
+    const sortedTokens = getSortedTokenBalances(tokens)
     const totalTokens = sortedTokens.length
     if (totalTokens <= numItems) {
       return { tokensToShow: sortedTokens, hiddenTokens: 0 }

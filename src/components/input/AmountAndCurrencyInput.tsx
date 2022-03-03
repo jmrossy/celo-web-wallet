@@ -43,6 +43,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
   const selectOptions = useMemo(
     () =>
       Object.values(tokens)
+        .sort((a, b) => (a.symbol.toLowerCase() < b.symbol.toLowerCase() ? -1 : 1))
         .filter((t) => (nativeTokensOnly ? isNativeToken(t) : true))
         .map((t) => ({
           display: t.symbol,
