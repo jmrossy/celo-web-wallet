@@ -12,8 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
         # os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [windows-2019, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
         run: yarn config set network-timeout 1800000 -g
 
       - name: Install dependencies
-        run: yarn
+        run: yarn --frozen-lockfile
 
       - name: Run linter
         run:  yarn lint
@@ -41,7 +41,7 @@ jobs:
         run: ./scripts/build.sh -n Mainnet -e
 
       # Mac builds on Github are very flaky, disabling for now as they're easy to make locally anyway
-      # - name: Build on Mac 
+      # - name: Build on Mac
       #   run: yarn electron-builder --mac --publish never
       #   env:
       #     CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
@@ -49,7 +49,7 @@ jobs:
       #   if: runner.os == 'macOS'
 
       - name: Build on Windows
-        run: yarn electron-builder --win --publish never
+        run: yarn electron-builder --win --publish never || yarn electron-builder --win --publish never
         env:
           CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
