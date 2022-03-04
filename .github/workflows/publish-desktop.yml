@@ -19,15 +19,14 @@ jobs:
         run: yarn config set network-timeout 600000 -g
 
       - name: Install dependencies
-        run: yarn
+        run: yarn --frozen-lockfile
 
       - name: Run linter
         run:  yarn lint
 
-      # TODO re-enable
-      # - name: Run test
-      #   shell: bash
-      #   run:  yarn test
+      - name: Run test
+        shell: bash
+        run:  yarn test
 
       - name: Build with webpack for electron
         shell: bash
