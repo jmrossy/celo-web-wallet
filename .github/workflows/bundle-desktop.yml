@@ -5,6 +5,7 @@ on:
       - staging
       - production
       - desktop
+      - disable-multi-dl
   workflow_dispatch:
 
 jobs:
@@ -53,6 +54,7 @@ jobs:
         env:
           CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+          DISABLE_MULTIPART_DOWNLOADING: "true"
         if: runner.os == 'Windows'
 
       - name: Install deps for Linux
