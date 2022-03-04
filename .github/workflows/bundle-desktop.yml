@@ -5,7 +5,6 @@ on:
       - staging
       - production
       - desktop
-      - disable-multi-dl
   workflow_dispatch:
 
 jobs:
@@ -45,8 +44,9 @@ jobs:
       # - name: Build on Mac
       #   run: yarn electron-builder --mac --publish never
       #   env:
-      #     CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+      #     CSC_LINK: ${{ secrets.MAC_CSC_LINK2 }}
       #     CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+      #     DISABLE_MULTIPART_DOWNLOADING: true
       #   if: runner.os == 'macOS'
 
       - name: Build on Windows
@@ -55,7 +55,6 @@ jobs:
           CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK2 }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
           DISABLE_MULTIPART_DOWNLOADING: true
-          DEBUG: electron-builder
         if: runner.os == 'Windows'
 
       - name: Install deps for Linux
