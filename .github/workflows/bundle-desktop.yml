@@ -50,7 +50,7 @@ jobs:
       #   if: runner.os == 'macOS'
 
       - name: Build on Windows
-        run: yarn electron-builder --win --publish never
+        run: yarn electron-builder --win --publish never || yarn electron-builder --win --publish never
         env:
           CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}

@@ -3,7 +3,7 @@ on: workflow_dispatch
 
 jobs:
   build-and-publish:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
         run: ./scripts/build.sh -n Mainnet -e
 
       - name: Build on Windows
-        run: yarn electron-builder --win --publish always
+        run: yarn electron-builder --win --publish always || yarn electron-builder --win --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}

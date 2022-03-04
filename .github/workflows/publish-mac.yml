@@ -23,7 +23,7 @@ jobs:
         run: ./scripts/build.sh -n Mainnet -e
 
       - name: Build on Mac 
-        run: yarn electron-builder --mac --publish always
+        run: yarn electron-builder --mac --publish always || yarn electron-builder --mac --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
