@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
-        if: runner.os !== 'Windows'
+        if: runner.os != 'Windows'
 
       - name: Install dependencies Windows
         run: |
