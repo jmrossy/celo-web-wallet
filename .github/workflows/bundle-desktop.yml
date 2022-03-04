@@ -55,6 +55,7 @@ jobs:
           CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
           DISABLE_MULTIPART_DOWNLOADING: true
+          DEBUG: electron-builder
         if: runner.os == 'Windows'
 
       - name: Install deps for Linux
