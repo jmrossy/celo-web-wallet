@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { ButtonToggle } from 'src/components/buttons/ButtonToggle'
@@ -52,7 +52,7 @@ export function ImportAccountForm(props: Props) {
     setMode(index === 0 ? 'simple' : 'advanced')
   }
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const { showErrorModal } = useModal()
   const showPasswordModal = useEnterPasswordModal()
   const onSubmit = (values: ImportFormValues) => {

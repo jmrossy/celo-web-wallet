@@ -3,10 +3,10 @@ import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { NumberInput } from 'src/components/input/NumberInput'
 import { SelectInput, SelectOption } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
-import { useTokens } from 'src/features/wallet/hooks'
+import { useTokens } from 'src/features/tokens/hooks'
+import { isNativeToken } from 'src/features/tokens/utils'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { isNativeToken } from 'src/tokens'
 import { ErrorState } from 'src/utils/validation'
 
 interface Props {
@@ -43,10 +43,11 @@ export const AmountAndCurrencyInput = (props: Props) => {
   const selectOptions = useMemo(
     () =>
       Object.values(tokens)
-        .filter((t) => (nativeTokensOnly ? isNativeToken(t.id) : true))
+        .sort((a, b) => (a.symbol.toLowerCase() < b.symbol.toLowerCase() ? -1 : 1))
+        .filter((t) => (nativeTokensOnly ? isNativeToken(t) : true))
         .map((t) => ({
           display: t.symbol,
-          value: t.id,
+          value: t.address,
         })),
     [tokens]
   )
@@ -75,7 +76,8 @@ export const AmountAndCurrencyInput = (props: Props) => {
     [selectOptions, tokens]
   )
 
-  const selectName = tokenInputName ?? 'tokenId'
+  const selectName = tokenInputName ?? 'tokenAddress'
+  const numberInputName = amountName ?? 'amount'
 
   return (
     <Box justify="start" align="center">
@@ -94,16 +96,15 @@ export const AmountAndCurrencyInput = (props: Props) => {
         {...errors[selectName]}
       />
       <NumberInput
-        step="0.01"
         fillWidth={true}
-        name={amountName ?? 'amount'}
+        name={numberInputName}
         onChange={onAmountChange}
         onBlur={onAmountBlur}
         value={amountValue}
         placeholder="1.00"
         inputStyles={style.amount}
         disabled={inputDisabled}
-        {...errors[amountName ?? 'amount']}
+        {...errors[numberInputName]}
       />
     </Box>
   )

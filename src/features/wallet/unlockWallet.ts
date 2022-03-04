@@ -1,4 +1,4 @@
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { SignerType } from 'src/blockchain/types'
 import { CELO_DERIVATION_PATH } from 'src/consts'
 import { setBackupReminderDismissed } from 'src/features/settings/settingsSlice'
@@ -8,10 +8,10 @@ import { isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export interface UnlockWalletParams {
-  activeAddress: string
+  activeAddress: Address
   type: SignerType
   password?: string
 }
@@ -44,7 +44,7 @@ function* unlockWallet(params: UnlockWalletParams) {
 function* migrateV1Account(params: UnlockWalletParams) {
   logger.info('No accounts found, checking if v1 account should be migrated')
 
-  const { address, derivationPath, type } = yield* select((s: RootState) => s.wallet)
+  const { address, derivationPath, type } = yield* appSelect((s) => s.wallet)
 
   if (hasAccount_v1()) {
     logger.info('v1 account found in storage')

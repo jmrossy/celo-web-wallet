@@ -1,16 +1,17 @@
 import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import CubeIcon from 'src/components/icons/cube.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { StackedBarChart } from 'src/components/StackedBarChart'
+import { useVoterBalances } from 'src/features/balances/hooks'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -22,7 +23,7 @@ import {
 } from 'src/features/validators/stakeToken'
 import { stakeActionLabel, StakeActionType } from 'src/features/validators/types'
 import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
-import { useVoterAccountAddress, useVoterBalances } from 'src/features/wallet/hooks'
+import { useVoterAccountAddress } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -30,14 +31,14 @@ import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
 
 export function StakeConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const tx = useFlowTransaction()
   const { voterBalances } = useVoterBalances()
   const voterAddress = useVoterAccountAddress()
-  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
-  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
+  const groups = useAppSelector((state) => state.validators.validatorGroups.groups)
+  const groupVotes = useAppSelector((state) => state.validators.groupVotes)
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -160,7 +161,7 @@ export function StakeConfirmationScreen() {
             size="m"
             color={Color.primaryWhite}
             onClick={onGoBack}
-            disabled={isWorking || !feeAmount}
+            disabled={isWorking}
             margin="0 2em 0 0"
             width="5em"
           >

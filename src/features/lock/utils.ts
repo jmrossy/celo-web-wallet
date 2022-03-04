@@ -1,15 +1,17 @@
 import { BigNumber } from 'ethers'
-import { Balances } from 'src/features/wallet/types'
+import { Balances } from 'src/features/balances/types'
+import { getTokenBalance } from 'src/features/balances/utils'
+import { CELO } from 'src/tokens'
 
 export function getTotalCelo(balances: Balances) {
   const { locked, pendingBlocked, pendingFree } = balances.lockedCelo
-  const celoBalance = balances.tokens.CELO.value
+  const celoBalance = getTokenBalance(balances, CELO)
   return BigNumber.from(celoBalance).add(locked).add(pendingBlocked).add(pendingFree)
 }
 
 export function getTotalUnlockedCelo(balances: Balances) {
   const { pendingBlocked, pendingFree } = balances.lockedCelo
-  const celoBalance = balances.tokens.CELO.value
+  const celoBalance = getTokenBalance(balances, CELO)
   return BigNumber.from(celoBalance).add(pendingBlocked).add(pendingFree)
 }
 

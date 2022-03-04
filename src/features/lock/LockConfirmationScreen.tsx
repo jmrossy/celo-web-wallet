@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import LockIcon from 'src/components/icons/lock_small.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { StackedBarChart } from 'src/components/StackedBarChart'
+import { useBalances } from 'src/features/balances/hooks'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
@@ -18,6 +18,7 @@ import {
   lockTokenSagaName,
 } from 'src/features/lock/lockToken'
 import { lockActionLabel } from 'src/features/lock/types'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -28,13 +29,13 @@ import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
 
 export function LockConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
-  const balances = useSelector((state: RootState) => state.wallet.balances)
-  const pendingWithdrawals = useSelector((state: RootState) => state.lock.pendingWithdrawals)
-  const isAccountRegistered = useSelector((state: RootState) => state.wallet.account.isRegistered)
+  const tx = useFlowTransaction()
+  const balances = useBalances()
+  const pendingWithdrawals = useAppSelector((state) => state.lock.pendingWithdrawals)
+  const isAccountRegistered = useAppSelector((state) => state.wallet.account.isRegistered)
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -151,7 +152,7 @@ export function LockConfirmationScreen() {
             margin="0 2em 0 0"
             color={Color.primaryWhite}
             onClick={onGoBack}
-            disabled={isWorking || !feeAmount}
+            disabled={isWorking}
           >
             Back
           </Button>

@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { batchCall } from 'src/blockchain/batchCall'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
@@ -19,7 +19,7 @@ import { updateValidatorGroups } from 'src/features/validators/validatorsSlice'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 interface ValidatorRaw {
   ecdsaPublicKey: string
@@ -34,9 +34,7 @@ interface FetchValidatorsParams {
 }
 
 function* fetchValidators({ force }: FetchValidatorsParams) {
-  const { groups, lastUpdated } = yield* select(
-    (state: RootState) => state.validators.validatorGroups
-  )
+  const { groups, lastUpdated } = yield* appSelect((state) => state.validators.validatorGroups)
 
   if (force || !groups.length || !lastUpdated || isStale(lastUpdated, VALIDATOR_LIST_STALE_TIME)) {
     const validatorGroups = yield* call(fetchValidatorGroupInfo)

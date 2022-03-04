@@ -1,7 +1,7 @@
 import { utils } from 'ethers'
 import { logger } from 'src/utils/logger'
 
-export function isValidAddress(address: string) {
+export function isValidAddress(address: Address) {
   // Need to catch because ethers' isAddress throws in some cases (bad checksum)
   try {
     const isValid = address && utils.isAddress(address)
@@ -12,7 +12,7 @@ export function isValidAddress(address: string) {
   }
 }
 
-export function validateAddress(address: string, context: string) {
+export function validateAddress(address: Address, context: string) {
   if (!isValidAddress(address)) {
     const errorMsg = `Invalid addresses for ${context}: ${address}`
     logger.error(errorMsg)
@@ -20,22 +20,22 @@ export function validateAddress(address: string, context: string) {
   }
 }
 
-export function normalizeAddress(address: string) {
+export function normalizeAddress(address: Address) {
   validateAddress(address, 'normalize')
   return utils.getAddress(address)
 }
 
-export function shortenAddress(address: string, elipsis?: boolean, capitalize?: boolean) {
+export function shortenAddress(address: Address, elipsis?: boolean, capitalize?: boolean) {
   validateAddress(address, 'shorten')
   const shortened = normalizeAddress(address).substr(0, 8) + (elipsis ? '...' : '')
   return capitalize ? capitalizeAddress(shortened) : shortened
 }
 
-export function capitalizeAddress(address: string) {
+export function capitalizeAddress(address: Address) {
   return '0x' + address.substring(2).toUpperCase()
 }
 
-export function areAddressesEqual(a1: string, a2: string) {
+export function areAddressesEqual(a1: Address, a2: Address) {
   validateAddress(a1, 'compare')
   validateAddress(a2, 'compare')
   return utils.getAddress(a1) === utils.getAddress(a2)

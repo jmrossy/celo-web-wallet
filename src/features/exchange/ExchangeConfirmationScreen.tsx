@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import { Box } from 'src/components/layout/Box'
@@ -13,6 +12,7 @@ import { useExchangeValues } from 'src/features/exchange/utils'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -21,15 +21,14 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { CELO } from 'src/tokens'
+import { CELO, NativeTokensByAddress } from 'src/tokens'
 
 export function ExchangeConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const balances = useSelector((state: RootState) => state.wallet.balances)
-  const toCeloRates = useSelector((state: RootState) => state.exchange.toCeloRates)
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const toCeloRates = useAppSelector((state) => state.exchange.toCeloRates)
+  const tx = useFlowTransaction()
 
   useEffect(() => {
     if (!tx || tx.type !== TxFlowType.Exchange) {
@@ -45,13 +44,13 @@ export function ExchangeConfirmationScreen() {
     )
 
     const approveType =
-      tx.params.fromTokenId === CELO.id
+      tx.params.fromTokenAddress === CELO.address
         ? TransactionType.CeloTokenApprove
         : TransactionType.StableTokenApprove
 
     dispatch(
       estimateFeeActions.trigger({
-        preferredToken: tx.params.fromTokenId,
+        preferredToken: tx.params.fromTokenAddress,
         txs: [{ type: approveType }, { type: TransactionType.TokenExchange }],
       })
     )
@@ -64,9 +63,9 @@ export function ExchangeConfirmationScreen() {
 
   const { from, to, rate } = useExchangeValues(
     params.amountInWei,
-    params.fromTokenId,
-    params.toTokenId,
-    balances,
+    params.fromTokenAddress,
+    params.toTokenAddress,
+    NativeTokensByAddress,
     toCeloRates,
     true
   )

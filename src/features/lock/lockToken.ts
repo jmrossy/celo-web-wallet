@@ -1,11 +1,14 @@
 import { BigNumber, providers } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { getSigner } from 'src/blockchain/signer'
 import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCK_AMOUNT } from 'src/consts'
+import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
+import { Balances } from 'src/features/balances/types'
+import { getTokenBalance } from 'src/features/balances/utils'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -18,11 +21,6 @@ import {
   createAccountRegisterTx,
   fetchAccountStatus,
 } from 'src/features/wallet/accounts/accountsContract'
-import {
-  fetchBalancesActions,
-  fetchBalancesIfStale,
-} from 'src/features/wallet/balances/fetchBalances'
-import { Balances } from 'src/features/wallet/types'
 import { setAccountIsRegistered } from 'src/features/wallet/walletSlice'
 import { CELO } from 'src/tokens'
 import {
@@ -35,7 +33,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function validate(
   params: LockTokenParams,
@@ -79,7 +77,7 @@ export function validate(
   // Special case handling for locking whole balance
   if (action === LockActionType.Lock && !errors.amount) {
     const remainingAfterPending = BigNumber.from(amountInWei).sub(pendingFree).sub(pendingBlocked)
-    const celoBalance = balances.tokens.CELO.value
+    const celoBalance = getTokenBalance(balances, CELO)
     if (
       remainingAfterPending.gt(0) &&
       (remainingAfterPending.gte(celoBalance) ||
@@ -126,9 +124,9 @@ function* lockToken(params: LockTokenParams) {
   const { amountInWei, action, feeEstimates } = params
 
   const balances = yield* call(fetchBalancesIfStale)
-  const pendingWithdrawals = yield* select((state: RootState) => state.lock.pendingWithdrawals)
-  const isAccountRegistered = yield* select((state: RootState) => state.wallet.account.isRegistered)
-  const groupVotes = yield* select((state: RootState) => state.validators.groupVotes)
+  const pendingWithdrawals = yield* appSelect((state) => state.lock.pendingWithdrawals)
+  const isAccountRegistered = yield* appSelect((state) => state.wallet.account.isRegistered)
+  const groupVotes = yield* appSelect((state) => state.validators.groupVotes)
 
   validateOrThrow(() => validate(params, balances, groupVotes, true), 'Invalid transaction')
 
@@ -211,8 +209,8 @@ export function getLockActionTxPlan(
 
   if (action === LockActionType.Unlock) {
     // If only all three cases where this simple :)
-    const adjutedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, CELO)
-    return [{ type: TransactionType.UnlockCelo, amountInWei: adjutedAmount.toString() }]
+    const adjustedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, CELO)
+    return [{ type: TransactionType.UnlockCelo, amountInWei: adjustedAmount.toString() }]
   } else if (action === LockActionType.Lock) {
     const txs: LockTokenTxPlan = []
 

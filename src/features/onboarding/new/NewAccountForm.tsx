@@ -1,7 +1,7 @@
 import { Wallet } from 'ethers'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { useModal } from 'src/components/modal/useModal'
@@ -43,7 +43,7 @@ export function NewAccountForm(props: Props) {
     }, 1000)
   }, [])
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const showPasswordModal = useEnterPasswordModal()
   const onClickContinue = () => {
     if (!account) return

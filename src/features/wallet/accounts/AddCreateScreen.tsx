@@ -1,12 +1,16 @@
-import type { Location } from 'history'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Box } from 'src/components/layout/Box'
 import { NewAccountForm } from 'src/features/onboarding/new/NewAccountForm'
 import { Font } from 'src/styles/fonts'
+import { useLocationState } from 'src/utils/useLocationState'
+
+interface LocationState {
+  accountName?: string
+}
 
 export function AddCreateScreen() {
-  const location: Location = useLocation()
-  const accountName = location?.state?.accountName
+  const locationState = useLocationState<LocationState>()
+  const accountName = locationState?.accountName
 
   const navigate = useNavigate()
   const navigateToSetPin = () => {

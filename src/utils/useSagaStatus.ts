@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { useModal } from 'src/components/modal/useModal'
 import { SagaStatus } from 'src/utils/saga'
@@ -39,8 +38,8 @@ function _useSagaStatus(
   onSuccess?: () => void,
   onFailure?: () => void
 ) {
-  const dispatch = useDispatch()
-  const sagaState = useSelector((s: RootState) => s.saga[sagaName])
+  const dispatch = useAppDispatch()
+  const sagaState = useAppSelector((s) => s.saga[sagaName])
   if (!sagaState) {
     throw new Error(`No saga state found, is sagaName valid? Name: ${sagaName}`)
   }
@@ -54,7 +53,7 @@ function _useSagaStatus(
 
   useEffect(() => {
     if (status === SagaStatus.Success) {
-      if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
+      if (resetSagaOnSuccess) dispatch(saga.actions.reset())
       if (onSuccess) onSuccess()
     } else if (status === SagaStatus.Failure) {
       if (onFailure) onFailure()
@@ -63,7 +62,7 @@ function _useSagaStatus(
 
   useEffect(() => {
     return () => {
-      if (resetSagaOnSuccess) dispatch(saga.actions.reset(null))
+      if (resetSagaOnSuccess) dispatch(saga.actions.reset())
     }
   }, [])
 

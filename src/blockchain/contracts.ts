@@ -29,7 +29,7 @@ export function getContract(c: CeloContract) {
 }
 
 // Search for token contract by address
-export function getTokenContract(tokenAddress: string) {
+export function getTokenContract(tokenAddress: Address) {
   const cachedContract = tokenContractCache[tokenAddress]
   if (cachedContract) return cachedContract
   const signer = getSigner().signer
@@ -70,14 +70,14 @@ function getContractAbi(c: CeloContract) {
 }
 
 // Search for core contract by address
-export function getContractByAddress(address: string): Contract | null {
+export function getContractByAddress(address: Address): Contract | null {
   const name = getContractName(address)
   if (name) return getContract(name)
   else return null
 }
 
 // Search for core contract name by address
-export function getContractName(address: string): CeloContract | null {
+export function getContractName(address: Address): CeloContract | null {
   if (!address) return null
   const contractNames = Object.keys(config.contractAddresses) as Array<CeloContract> // Object.keys loses types
   for (const name of contractNames) {

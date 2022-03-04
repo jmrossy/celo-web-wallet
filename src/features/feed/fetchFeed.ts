@@ -1,8 +1,9 @@
 import { BigNumber } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { isSignerSet } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
+import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
 import { addTransactions } from 'src/features/feed/feedSlice'
 import { isValidTransaction, parseTransaction } from 'src/features/feed/parseFeedTransaction'
 import {
@@ -11,34 +12,34 @@ import {
   BlockscoutTx,
   BlockscoutTxBase,
 } from 'src/features/feed/types'
+import { addTokensByAddress } from 'src/features/tokens/addToken'
+import { selectTokens } from 'src/features/tokens/hooks'
+import { TokenMap } from 'src/features/tokens/types'
 import { TransactionMap, TransactionType } from 'src/features/types'
-import { addTokensById } from 'src/features/wallet/balances/addToken'
-import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { saveFeedData } from 'src/features/wallet/manager'
-import { Balances } from 'src/features/wallet/types'
-import { NativeTokens, StableTokenIds, Token } from 'src/tokens'
-import { normalizeAddress } from 'src/utils/addresses'
+import { StableTokens } from 'src/tokens'
 import { queryBlockscout } from 'src/utils/blockscout'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 const QUERY_DEBOUNCE_TIME = 2000 // 2 seconds
 
 function* fetchFeed() {
-  const { address, balances } = yield* select((state: RootState) => state.wallet)
-  const lastUpdatedTime = yield* select((state: RootState) => state.feed.lastUpdatedTime)
-  const lastBlockNumber = yield* select((state: RootState) => state.feed.lastBlockNumber)
-
+  const address = yield* appSelect((state) => state.wallet.address)
   if (!address || !isSignerSet()) return
 
+  const lastUpdatedTime = yield* appSelect((state) => state.feed.lastUpdatedTime)
   if (!isStale(lastUpdatedTime, QUERY_DEBOUNCE_TIME)) return
+
+  const lastBlockNumber = yield* appSelect((state) => state.feed.lastBlockNumber)
+  const tokensByAddress = yield* selectTokens()
 
   const { newTransactions, newLastBlockNumber } = yield* call(
     doFetchFeed,
     address,
-    balances,
+    tokensByAddress,
     lastBlockNumber
   )
   yield* put(
@@ -52,7 +53,7 @@ function* fetchFeed() {
   if (!Object.keys(newTransactions).length) return
 
   yield* call(saveFeedData, address)
-  yield* call(addNewTokens, newTransactions, balances)
+  yield* call(addNewTokens, newTransactions, tokensByAddress)
   yield* put(fetchBalancesActions.trigger())
 }
 
@@ -63,10 +64,15 @@ export const {
   actions: fetchFeedActions,
 } = createMonitoredSaga(fetchFeed, 'fetchFeed')
 
-async function doFetchFeed(address: string, balances: Balances, lastBlockNumber: number | null) {
+async function doFetchFeed(
+  address: Address,
+  tokensByAddress: TokenMap,
+  lastBlockNumber: number | null
+) {
   const txList = await fetchTxsFromBlockscout(address, lastBlockNumber)
+
+  const exchangesByAddress = getExchangeAddresses()
   const abiInterfaces = getAbiInterfacesForParsing()
-  const { tokensByAddress, exchangesByAddress } = getTokenInfoForParsing(balances)
 
   const newTransactions: TransactionMap = {}
   let newLastBlockNumber = lastBlockNumber || 0
@@ -89,7 +95,7 @@ async function doFetchFeed(address: string, balances: Balances, lastBlockNumber:
   return { newTransactions, newLastBlockNumber }
 }
 
-async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number | null) {
+async function fetchTxsFromBlockscout(address: Address, lastBlockNumber: number | null) {
   // TODO consider pagination here
 
   // First fetch the basic tx list, which includes outgoing token transfers
@@ -133,19 +139,14 @@ async function fetchTxsFromBlockscout(address: string, lastBlockNumber: number |
   return txMap.values()
 }
 
-function getTokenInfoForParsing(balances: Balances) {
-  const tokensByAddress: Record<string, Token> = {} // Map of address to token info
-  for (const t of Object.values(balances.tokens)) {
-    tokensByAddress[normalizeAddress(t.address)] = t
-  }
-  const exchangesByAddress: Record<string, Token> = {} // Mento address to token info
-  for (const id of StableTokenIds) {
-    const token = NativeTokens[id]
+function getExchangeAddresses() {
+  const exchangesByAddress: TokenMap = {} // Mento address to token info
+  for (const token of StableTokens) {
     if (token.exchangeAddress) {
       exchangesByAddress[token.exchangeAddress] = token
     }
   }
-  return { tokensByAddress, exchangesByAddress }
+  return exchangesByAddress
 }
 
 function getAbiInterfacesForParsing(): AbiInterfaceMap {
@@ -194,20 +195,20 @@ function copyTx(tx: BlockscoutTxBase): BlockscoutTx {
   }
 }
 
-function* addNewTokens(newTransactions: TransactionMap, balances: Balances) {
+function* addNewTokens(newTransactions: TransactionMap, tokensByAddress: TokenMap) {
   try {
-    const currentTokenIds = new Set<string>(Object.values(balances.tokens).map((t) => t.id))
-    const newTokenIds = new Set<string>()
+    const currentTokenAddrs = new Set<Address>(Object.keys(tokensByAddress))
+    const newTokenAddrs = new Set<Address>()
     for (const tx of Object.values(newTransactions)) {
       if (
         (tx.type === TransactionType.OtherTokenTransfer ||
           tx.type === TransactionType.OtherTokenApprove) &&
-        !currentTokenIds.has(tx.tokenId)
+        !currentTokenAddrs.has(tx.tokenId) // Note: tokenId is address
       ) {
-        newTokenIds.add(tx.tokenId)
+        newTokenAddrs.add(tx.tokenId)
       }
     }
-    yield* call(addTokensById, newTokenIds)
+    yield* call(addTokensByAddress, newTokenAddrs)
   } catch (error) {
     // Not an essential function, don't propagate errors
     logger.error('Error when finding and adding new tokens from feed', error)

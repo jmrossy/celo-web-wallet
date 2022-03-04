@@ -1,11 +1,15 @@
-import type { Location } from 'history'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ImportAccountForm } from 'src/features/onboarding/import/ImportAccountForm'
 import { Font } from 'src/styles/fonts'
+import { useLocationState } from 'src/utils/useLocationState'
+
+interface LocationState {
+  accountName?: string
+}
 
 export function AddImportScreen() {
-  const location: Location = useLocation()
-  const accountName = location?.state?.accountName
+  const locationState = useLocationState<LocationState>()
+  const accountName = locationState?.accountName
 
   const navigate = useNavigate()
   const navigateToSetPin = () => {

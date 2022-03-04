@@ -1,16 +1,16 @@
 import { BigNumber } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { CeloContract } from 'src/config'
 import { setPendingWithdrawals } from 'src/features/lock/lockSlice'
 import { PendingWithdrawal } from 'src/features/lock/types'
 import { logger } from 'src/utils/logger'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 type PendingWithdrawalsRaw = [string[], string[]] // values and times
 
 export function* fetchLockedCeloStatus() {
-  const { address, account } = yield* select((state: RootState) => state.wallet)
+  const { address, account } = yield* appSelect((state) => state.wallet)
   if (!address) throw new Error('Cannot fetch locked celo status before address is set')
   const { balances, pendingWithdrawals } = yield* call(
     _fetchLockedCeloStatus,
@@ -21,7 +21,7 @@ export function* fetchLockedCeloStatus() {
   return balances
 }
 
-async function _fetchLockedCeloStatus(address: string, isAccountRegistered: boolean) {
+async function _fetchLockedCeloStatus(address: Address, isAccountRegistered: boolean) {
   if (!isAccountRegistered) {
     logger.debug('Account not yet registered, skipping locked balance check')
     return {
@@ -78,7 +78,7 @@ async function _fetchLockedCeloStatus(address: string, isAccountRegistered: bool
   }
 }
 
-export async function fetchTotalLocked(address: string) {
+export async function fetchTotalLocked(address: Address) {
   const lockedGold = getContract(CeloContract.LockedGold)
   const lockedAmount = await lockedGold.getAccountTotalLockedGold(address)
   return BigNumber.from(lockedAmount).toString()

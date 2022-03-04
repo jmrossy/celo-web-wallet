@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch } from 'src/app/hooks'
 import { Address } from 'src/components/Address'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
@@ -12,26 +11,28 @@ import { modalStyles } from 'src/components/modal/modalStyles'
 import { useModal } from 'src/components/modal/useModal'
 import { Table, TableColumn } from 'src/components/table/Table'
 import { config } from 'src/config'
+import { fetchBalancesActions, fetchBalancesSagaName } from 'src/features/balances/fetchBalances'
+import { useBalancesWithTokens } from 'src/features/balances/hooks'
+import { BalancesWithTokens, BalanceTableRow } from 'src/features/balances/types'
+import { getSortedTokenBalances } from 'src/features/balances/utils'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
-import { AddTokenModal } from 'src/features/wallet/balances/AddTokenModal'
-import {
-  fetchBalancesActions,
-  fetchBalancesSagaName,
-} from 'src/features/wallet/balances/fetchBalances'
-import { Balances, BalanceTableRow } from 'src/features/wallet/types'
-import { removeToken } from 'src/features/wallet/walletSlice'
+import { AddTokenModal } from 'src/features/tokens/AddTokenModal'
+import { removeToken } from 'src/features/tokens/tokensSlice'
+import { isNativeToken } from 'src/features/tokens/utils'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { isNativeToken, LockedCELO } from 'src/tokens'
+import { LockedCELO } from 'src/tokens'
 import { shortenAddress } from 'src/utils/addresses'
 import { fromWeiRounded } from 'src/utils/amount'
 import { SagaStatus } from 'src/utils/saga'
 import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 export function BalanceDetailsScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
+  const isMobile = useIsMobile()
+  const balances = useBalancesWithTokens()
 
   useEffect(() => {
     dispatch(fetchBalancesActions.trigger())
@@ -58,9 +59,10 @@ export function BalanceDetailsScreen() {
       if (action.key === 'remove') dispatch(removeToken(id))
       closeModal()
     }
+    const tokenSymbol = balances.tokenAddrToToken[id].symbol
     showModal({
       head: 'Remove Token',
-      subHead: `Would you like to remove ${id}?`,
+      subHead: `Would you like to remove ${tokenSymbol}?`,
       body: 'Note, this will not affect your balance. It will only hide this token from your wallet.',
       actions,
       onActionClick,
@@ -76,10 +78,8 @@ export function BalanceDetailsScreen() {
     })
   }
 
-  const isMobile = useIsMobile()
   const tableColumns = getTableColumns(isMobile, onClickAddress)
-  const balances = useSelector((state: RootState) => state.wallet.balances)
-  const data = useMemo(() => {
+  const tableData = useMemo(() => {
     return balancesToTableData(balances, onClickRemove)
   }, [balances])
 
@@ -89,7 +89,7 @@ export function BalanceDetailsScreen() {
         <h1 css={style.h1}>Account Balance Details</h1>
         <Table<BalanceTableRow>
           columns={tableColumns}
-          data={data}
+          data={tableData}
           isLoading={status === SagaStatus.Started}
           initialSortBy="balance"
         />
@@ -164,35 +164,36 @@ function TokenAddressDetails({ row }: { row: BalanceTableRow }) {
 }
 
 function balancesToTableData(
-  balances: Balances,
+  balances: BalancesWithTokens,
   onRemove: (id: string) => void
 ): BalanceTableRow[] {
   const tableRows: BalanceTableRow[] = []
 
   // Only show Locked CELO on desktop for now
-  const tokens = config.isElectron
+  const tokenBalances = config.isElectron
     ? {
-        ...balances.tokens,
-        lockedCELO: {
+        ...balances.tokenAddrToToken,
+        [LockedCELO.address]: {
           ...LockedCELO,
           value: getTotalLockedCelo(balances).toString(),
         },
       }
-    : balances.tokens
+    : balances.tokenAddrToToken
 
-  for (const token of Object.values(tokens)) {
-    const isNative = isNativeToken(token.id) || token.id === LockedCELO.id
+  const sortedTokens = getSortedTokenBalances(tokenBalances)
+
+  for (const token of sortedTokens) {
+    const isNative = isNativeToken(token) || token.address === LockedCELO.address
     tableRows.push({
-      id: token.id,
+      id: token.address,
       label: token.symbol,
-      balance: parseFloat(fromWeiRounded(token.value, token)),
+      balance: parseFloat(fromWeiRounded(token.value, token.decimals, false)),
       balanceWei: token.value,
       address: token.address,
       token,
       onRemove: !isNative ? onRemove : undefined,
     })
   }
-
   return tableRows
 }
 

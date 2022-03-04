@@ -1,7 +1,6 @@
 import { css } from '@emotion/react'
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Box } from 'src/components/layout/Box'
 import { ReactFrappeChart } from 'src/components/ReactFrappeChart'
 import { WEI_PER_UNIT } from 'src/consts'
@@ -11,23 +10,23 @@ import { findPriceForDay, tokenPriceHistoryToChartData } from 'src/features/toke
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Styles, Stylesheet } from 'src/styles/types'
-import { NativeTokenId } from 'src/tokens'
+import { CELO, cUSD } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 import { sleep } from 'src/utils/promises'
 
 const DELAY_BEFORE_QUERYING = 2000
 
 interface PriceChartProps {
-  stableTokenId: NativeTokenId
+  quoteTokenAddress: Address
   showHeaderPrice: boolean
   containerCss?: Styles
   height?: number
 }
 
 export function PriceChartCelo(props: PriceChartProps) {
-  const { stableTokenId, showHeaderPrice, containerCss, height } = props
+  const { quoteTokenAddress, showHeaderPrice, containerCss, height } = props
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   useEffect(() => {
     // Hacking in a delay here b.c. blockscout is unreliable when
     // many queries are submitted too fast (overlaps with feed fetch)
@@ -35,22 +34,22 @@ export function PriceChartCelo(props: PriceChartProps) {
       .then(() => {
         dispatch(
           fetchTokenPriceActions.trigger({
-            baseCurrency: NativeTokenId.CELO,
+            baseCurrency: CELO.address,
           })
         )
       })
       .catch((e) => logger.error('Error dispatching fetchTokenPrice trigger', e))
   }, [])
 
-  const toCeloRates = useSelector((s: RootState) => s.exchange.toCeloRates)
-  const allPrices = useSelector((s: RootState) => s.tokenPrice.prices)
-  const celoPrices = allPrices[NativeTokenId.CELO]
-  const stableTokenPrices = celoPrices ? celoPrices[stableTokenId] : undefined
+  const toCeloRates = useAppSelector((s) => s.exchange.toCeloRates)
+  const allPrices = useAppSelector((s) => s.tokenPrice.byBaseAddress)
+  const celoPrices = allPrices[CELO.address]
+  const stableTokenPrices = celoPrices ? celoPrices[quoteTokenAddress] : undefined
   const chartData = tokenPriceHistoryToChartData(stableTokenPrices)
 
   let headerRate: number | null = null
   if (showHeaderPrice) {
-    const cUsdToCelo = toCeloRates[NativeTokenId.cUSD]
+    const cUsdToCelo = toCeloRates[cUSD.address]
     const celoToCUsdRate = cUsdToCelo
       ? calcSimpleExchangeRate(
           WEI_PER_UNIT,

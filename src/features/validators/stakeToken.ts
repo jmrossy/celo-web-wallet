@@ -1,10 +1,13 @@
 import { BigNumber, providers } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { signTransaction } from 'src/blockchain/transaction'
 import { executeTxPlan, TxPlanExecutor, TxPlanItem } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCKED_GOLD_TO_VOTE, MIN_VOTE_AMOUNT, NULL_ADDRESS } from 'src/consts'
+import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
+import { selectVoterBalances } from 'src/features/balances/hooks'
+import { Balances } from 'src/features/balances/types'
 import { createPlaceholderForTx } from 'src/features/feed/placeholder'
 import { FeeEstimate } from 'src/features/fees/types'
 import { validateFeeEstimates } from 'src/features/fees/utils'
@@ -17,12 +20,7 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { getStakingMaxAmount } from 'src/features/validators/utils'
-import {
-  fetchBalancesActions,
-  fetchBalancesIfStale,
-} from 'src/features/wallet/balances/fetchBalances'
-import { selectVoterAccountAddress, selectVoterBalances } from 'src/features/wallet/hooks'
-import { Balances } from 'src/features/wallet/types'
+import { selectVoterAccountAddress } from 'src/features/wallet/hooks'
 import { CELO } from 'src/tokens'
 import { areAddressesEqual } from 'src/utils/addresses'
 import {
@@ -34,7 +32,7 @@ import {
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
 import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function validate(
   params: StakeTokenParams,
@@ -90,7 +88,7 @@ function* stakeToken(params: StakeTokenParams) {
   yield* call(fetchBalancesIfStale)
   const { balances, voterBalances } = yield* call(selectVoterBalances)
   const voterAddress = yield* call(selectVoterAccountAddress)
-  const { validatorGroups, groupVotes } = yield* select((state: RootState) => state.validators)
+  const { validatorGroups, groupVotes } = yield* appSelect((state) => state.validators)
 
   validateOrThrow(
     () => validate(params, balances, voterBalances, validatorGroups.groups, groupVotes, true),
@@ -118,8 +116,8 @@ function* stakeToken(params: StakeTokenParams) {
 interface StakeTokenTxPlanItem extends TxPlanItem {
   type: StakeTokenType
   amountInWei: string
-  groupAddress: string
-  voterAddress: string
+  groupAddress: Address
+  voterAddress: Address
 }
 
 type StakeTokenTxPlan = Array<StakeTokenTxPlanItem>
@@ -128,7 +126,7 @@ type StakeTokenTxPlan = Array<StakeTokenTxPlanItem>
 // This determines the ideal tx types and order
 export function getStakeActionTxPlan(
   params: StakeTokenParams,
-  voterAddress: string,
+  voterAddress: Address,
   voterBalances: Balances,
   currentVotes: GroupVotes
 ): StakeTokenTxPlan {
@@ -136,11 +134,11 @@ export function getStakeActionTxPlan(
 
   if (action === StakeActionType.Vote) {
     const maxAmount = getStakingMaxAmount(action, voterBalances, currentVotes, groupAddress)
-    const adjutedAmount = getAdjustedAmount(amountInWei, maxAmount, CELO)
+    const adjustedAmount = getAdjustedAmount(amountInWei, maxAmount, CELO)
     return [
       {
         type: TransactionType.ValidatorVoteCelo,
-        amountInWei: adjutedAmount.toString(),
+        amountInWei: adjustedAmount.toString(),
         groupAddress,
         voterAddress,
       },
@@ -262,7 +260,7 @@ async function findLesserAndGreaterAfterVote(
   targetGroup: string,
   voteWeight: BigNumber
 ): Promise<{ lesser: string; greater: string }> {
-  const currentVotes = await getElegibleGroupVotes()
+  const currentVotes = await getEligibleGroupVotes()
   const selectedGroup = currentVotes.find((votes) => areAddressesEqual(votes.address, targetGroup))
   const voteTotal = selectedGroup ? selectedGroup.votes.add(voteWeight) : voteWeight
   let greater = NULL_ADDRESS
@@ -283,7 +281,7 @@ async function findLesserAndGreaterAfterVote(
   return { lesser, greater }
 }
 
-async function getElegibleGroupVotes() {
+async function getEligibleGroupVotes() {
   const election = getContract(CeloContract.Election)
   const currentVotes: EligibleGroupsVotesRaw =
     await election.getTotalVotesForEligibleValidatorGroups()

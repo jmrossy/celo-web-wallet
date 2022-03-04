@@ -1,7 +1,6 @@
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { useLogoutModal } from 'src/app/logout/useLogoutModal'
-import type { RootState } from 'src/app/rootReducer'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { SwitchButton } from 'src/components/buttons/SwitchButton'
 import { HrDivider } from 'src/components/HrDivider'
@@ -21,8 +20,8 @@ import { Stylesheet } from 'src/styles/types'
 import { fromWei } from 'src/utils/amount'
 
 export function SettingsScreen() {
-  const txSizeLimitEnabled = useSelector((state: RootState) => state.settings.txSizeLimitEnabled)
-  const dispatch = useDispatch()
+  const txSizeLimitEnabled = useAppSelector((state) => state.settings.txSizeLimitEnabled)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const onClickViewAccount = () => {

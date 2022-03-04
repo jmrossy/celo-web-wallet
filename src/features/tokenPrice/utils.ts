@@ -1,10 +1,6 @@
-import { MAX_TOKEN_PRICE_NUM_DAYS, STALE_TOKEN_PRICE_TIME } from 'src/consts'
-import {
-  QuoteCurrency,
-  QuoteCurrencyPriceHistory,
-  TokenPriceHistory,
-} from 'src/features/tokenPrice/types'
-import { NativeTokenId } from 'src/tokens'
+import { MAX_TOKEN_PRICE_NUM_DAYS, TOKEN_PRICE_STALE_TIME } from 'src/consts'
+import { QuoteCurrencyPriceHistory, TokenPriceHistory } from 'src/features/tokenPrice/types'
+import { cUSD } from 'src/tokens'
 import { ChartData, DataValue, dateToChartLabel, prepareChartData } from 'src/utils/charts'
 import { areDatesSameDay } from 'src/utils/time'
 
@@ -51,14 +47,14 @@ export function findPriceForDay(prices: TokenPriceHistory | undefined, date: Dat
 export function findMissingPriceDays(numDays: number, prices?: QuoteCurrencyPriceHistory) {
   const now = new Date()
   const daysInData = new Map<number, boolean>()
-  // This assumes if day's price for cusd exists, they all do
+  // This assumes if day's price for cUSD exists, they all do
   // Should be true because all returned in the same blockscout query
-  if (prices && prices[NativeTokenId.cUSD]) {
-    for (const p of prices[NativeTokenId.cUSD]!) {
+  if (prices && prices[cUSD.address]) {
+    for (const p of prices[cUSD.address]!) {
       const pDate = new Date(p.timestamp).getDate()
       // This check is to exclude prices from today that are older than STALE_TOKEN_PRICE_TIME
       // This forces re-fetching of today's prices to keep the data up to date
-      if (pDate !== now.getDate() || now.getTime() - p.timestamp < STALE_TOKEN_PRICE_TIME) {
+      if (pDate !== now.getDate() || now.getTime() - p.timestamp < TOKEN_PRICE_STALE_TIME) {
         daysInData.set(pDate, true)
       }
     }
@@ -82,8 +78,11 @@ export function mergePriceHistories(
 ) {
   const minTimestamp = Date.now() - MAX_TOKEN_PRICE_NUM_DAYS * 86400 * 1000
   const mergedPrices: QuoteCurrencyPriceHistory = {}
-  for (const key of Object.keys(NativeTokenId)) {
-    const quoteCurrency = key as QuoteCurrency // TS limitation of Object.keys()
+  const quoteCurrencies = new Set<Address>([
+    ...Object.keys(newCurrencyToPrices),
+    ...Object.keys(oldCurrencyToPrices),
+  ])
+  for (const quoteCurrency of quoteCurrencies) {
     const newPrices = newCurrencyToPrices[quoteCurrency] || []
     const oldPrices = oldCurrencyToPrices[quoteCurrency] || []
     // Clear out stale data older than MAX_HISTORY_NUM_DAYS

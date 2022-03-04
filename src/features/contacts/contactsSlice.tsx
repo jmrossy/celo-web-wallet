@@ -28,7 +28,7 @@ const contactsSlice = createSlice({
       }
       state.contacts = { ...state.contacts, [address]: newContact }
     },
-    removeContact: (state, action: PayloadAction<string>) => {
+    removeContact: (state, action: PayloadAction<Address>) => {
       const address = action.payload
       if (!state.contacts[address]) {
         logger.warn('No contact found for address:', address)
@@ -36,7 +36,7 @@ const contactsSlice = createSlice({
       }
       delete state.contacts[address]
     },
-    renameContact: (state, action: PayloadAction<{ address: string; newName: string }>) => {
+    renameContact: (state, action: PayloadAction<{ address: Address; newName: string }>) => {
       const { address, newName } = action.payload
       if (!state.contacts[address]) {
         logger.warn('No contact found for address:', address)

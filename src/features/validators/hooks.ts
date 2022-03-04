@@ -1,13 +1,12 @@
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { StakeActionType } from 'src/features/validators/types'
 import { dismissActivatableReminder } from 'src/features/validators/validatorsSlice'
 
 export function useVoteActivationCheck() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const hasActivatable = useSelector((state: RootState) => state.validators.hasActivatable)
+  const hasActivatable = useAppSelector((state) => state.validators.hasActivatable)
   const showActivateModal =
     hasActivatable.status &&
     hasActivatable.groupAddresses.length &&

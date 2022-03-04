@@ -1,11 +1,12 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
 import { utils, Wallet } from 'ethers'
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { clearContractCache } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { clearSigner, getSigner, setSigner } from 'src/blockchain/signer'
 import { SignerType } from 'src/blockchain/types'
 import { CELO_DERIVATION_PATH } from 'src/consts'
+import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
 import { resetFeed, setTransactions } from 'src/features/feed/feedSlice'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
 import { LedgerSigner } from 'src/features/ledger/LedgerSigner'
@@ -17,7 +18,6 @@ import {
   setPasswordCache,
 } from 'src/features/password/password'
 import { resetValidatorForAccount } from 'src/features/validators/validatorsSlice'
-import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { decryptMnemonic, encryptMnemonic } from 'src/features/wallet/encryption'
 import {
   addAccount as addAccountToStorage,
@@ -36,7 +36,7 @@ import { resetWallet, setAccount } from 'src/features/wallet/walletSlice'
 import { disconnectWcClient, resetWcClient } from 'src/features/walletConnect/walletConnectSlice'
 import { areAddressesEqual } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export interface LocalAccount {
   type: SignerType.Local
@@ -49,11 +49,11 @@ export interface LocalAccount {
 export interface LedgerAccount {
   type: SignerType.Ledger
   derivationPath: string
-  address?: string
+  address?: Address
   name?: string
 }
 
-const accountListCache: Map<string, StoredAccountData> = new Map()
+const accountListCache: Map<Address, StoredAccountData> = new Map()
 
 export function getAccounts() {
   if (accountListCache.size <= 0) {
@@ -83,7 +83,7 @@ export function getDefaultNewAccountName() {
   return `Account ${getAccounts().size + 1}`
 }
 
-export function* loadAccount(address: string, password?: string) {
+export function* loadAccount(address: Address, password?: string) {
   const accounts = getAccounts()
   const activeAccount = accounts.get(address)
   if (!activeAccount) throw new Error(`No account found with address ${address}`)
@@ -112,7 +112,7 @@ function* loadLocalAccount(account: StoredAccountData, password?: string) {
 
   const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
   if (!areAddressesEqual(wallet.address, account.address))
-    throw new Error('Address from menmonic does not match desired address')
+    throw new Error('Address from mnemonic does not match desired address')
 
   if (!hasPasswordCached()) setPasswordCache(password)
   yield* call(activateLocalAccount, wallet)
@@ -197,7 +197,7 @@ function* activateLocalAccount(ethersWallet: Wallet) {
   yield* call(onAccountActivation, celoWallet.address, celoWallet.mnemonic.path, SignerType.Local)
 }
 
-function* activateLedgerAccount(signer: LedgerSigner, accountAddress?: string) {
+function* activateLedgerAccount(signer: LedgerSigner, accountAddress?: Address) {
   const signerAddress = signer.address
   if (!signerAddress) throw new Error('LedgerSigner not properly initialized')
   if (accountAddress && !areAddressesEqual(signerAddress, accountAddress)) {
@@ -207,9 +207,9 @@ function* activateLedgerAccount(signer: LedgerSigner, accountAddress?: string) {
   yield* call(onAccountActivation, signerAddress, signer.path, SignerType.Ledger)
 }
 
-function* onAccountActivation(address: string, derivationPath: string, type: SignerType) {
+function* onAccountActivation(address: Address, derivationPath: string, type: SignerType) {
   // Grab the current address from the store (may have been loaded by persist)
-  const currentAddress = yield* select((state: RootState) => state.wallet.address)
+  const currentAddress = yield* appSelect((state) => state.wallet.address)
   yield* put(setAccount({ address, derivationPath, type }))
   yield* call(loadFeedData, address, currentAddress)
 
@@ -225,15 +225,15 @@ function* onAccountActivation(address: string, derivationPath: string, type: Sig
   yield* put(fetchFeedActions.trigger())
 }
 
-export function renameAccount(address: string, newName: string) {
+export function renameAccount(address: Address, newName: string) {
   const accountData = accountListCache.get(address)
   if (!accountData) throw new Error(`Account ${address} not found in account list cache`)
   accountData.name = newName
   modifyAccountsInStorage([accountData])
 }
 
-export function* removeAccount(address: string) {
-  const currentAddress = yield* select((state: RootState) => state.wallet.address)
+export function* removeAccount(address: Address) {
+  const currentAddress = yield* appSelect((state) => state.wallet.address)
   if (address === currentAddress)
     throw new Error('Cannot remove active account, please switch first.')
   const numAccounts = getAccounts().size
@@ -295,7 +295,7 @@ export function* removeAllAccounts() {
   yield* put(resetWallet())
 }
 
-function* loadFeedData(nextAddress: string, currentAddress?: string | null) {
+function* loadFeedData(nextAddress: Address, currentAddress?: Address | null) {
   try {
     // Save current address' data
     if (currentAddress && !areAddressesEqual(nextAddress, currentAddress)) {
@@ -315,8 +315,6 @@ function* loadFeedData(nextAddress: string, currentAddress?: string | null) {
       logger.debug('No feed data found in storage. Resetting feed')
       yield* put(resetFeed())
     }
-
-    clearV1FeedData()
   } catch (error) {
     // Since feed data is not critical, swallow errors
     logger.error('Error loading feed data. Resetting feed', error)
@@ -324,21 +322,9 @@ function* loadFeedData(nextAddress: string, currentAddress?: string | null) {
   }
 }
 
-export function* saveFeedData(currentAddress: string) {
-  const transactions = yield* select((s: RootState) => s.feed.transactions)
+export function* saveFeedData(currentAddress: Address) {
+  const transactions = yield* appSelect((s) => s.feed.transactions)
   if (transactions && Object.keys(transactions).length) {
     yield* call(setFeedDataForAccount, currentAddress, transactions)
-  }
-}
-
-// Not essential just a bit of cleanup
-// Since feed data is no longer stored in localstorage
-// remove it to free up that space
-// TODO: Can be safely removed after roughly 2021/09/01
-function clearV1FeedData() {
-  try {
-    localStorage && localStorage.removeItem('persist:feed')
-  } catch (error) {
-    logger.warn('Error when removing v1 feed data, not critical')
   }
 }

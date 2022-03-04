@@ -1,4 +1,4 @@
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { signTransaction } from 'src/blockchain/transaction'
 import { CeloContract } from 'src/config'
@@ -8,10 +8,10 @@ import { setAccountStatus } from 'src/features/wallet/walletSlice'
 import { areAddressesEqual, isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
 import { isStale } from 'src/utils/time'
-import { call, put, select } from 'typed-redux-saga'
+import { call, put } from 'typed-redux-saga'
 
 export function* fetchAccountStatus(force = false) {
-  const { address, account } = yield* select((state: RootState) => state.wallet)
+  const { address, account } = yield* appSelect((state) => state.wallet)
   if (!address) throw new Error('Cannot fetch account status before address is set')
 
   if (isStale(account.lastUpdated, ACCOUNT_STATUS_STALE_TIME) || force) {
@@ -23,10 +23,10 @@ export function* fetchAccountStatus(force = false) {
   }
 }
 
-async function fetchAccountRegistrationStatus(address: string) {
+async function fetchAccountRegistrationStatus(address: Address) {
   const accounts = getContract(CeloContract.Accounts)
   const isRegistered: boolean = await accounts.isAccount(address)
-  let voteSignerFor: string | null
+  let voteSignerFor: Address | null
   if (isRegistered) {
     // Registered accounts can't be signers
     voteSignerFor = null
@@ -36,11 +36,11 @@ async function fetchAccountRegistrationStatus(address: string) {
   return { isRegistered, voteSignerFor, lastUpdated: Date.now() }
 }
 
-async function fetchVoteSignerAccount(address: string) {
+async function fetchVoteSignerAccount(address: Address) {
   try {
     const accounts = getContract(CeloContract.Accounts)
     // Throws if address isn't registered and isn't a signer
-    const mainAccount: string = await accounts.voteSignerToAccount(address)
+    const mainAccount: Address = await accounts.voteSignerToAccount(address)
     if (!mainAccount || !isValidAddress(mainAccount)) throw new Error('Invalid main account')
     if (areAddressesEqual(mainAccount, address)) return null
     else return mainAccount

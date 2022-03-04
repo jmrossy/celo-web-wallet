@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
@@ -15,6 +14,7 @@ import {
   governanceVoteSagaName,
 } from 'src/features/governance/governanceVote'
 import { Proposal, voteValueToLabel } from 'src/features/governance/types'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowCanceled } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowType } from 'src/features/txFlow/types'
 import { useTxFlowStatusModals } from 'src/features/txFlow/useTxFlowStatusModals'
@@ -27,11 +27,11 @@ import { Stylesheet } from 'src/styles/types'
 import { trimToLength } from 'src/utils/string'
 
 export function GovernanceConfirmationScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
-  const proposals = useSelector((state: RootState) => state.governance.proposals)
+  const tx = useFlowTransaction()
+  const proposals = useAppSelector((state) => state.governance.proposals)
 
   useEffect(() => {
     // Make sure we belong on this screen
@@ -120,7 +120,7 @@ export function GovernanceConfirmationScreen() {
             size="m"
             color={Color.primaryWhite}
             onClick={onGoBack}
-            disabled={isWorking || !feeAmount}
+            disabled={isWorking}
             margin="0 2em 0 0"
             width="5em"
           >

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { Box } from 'src/components/layout/Box'
@@ -25,7 +25,7 @@ export function AccountsTable({ isMobile }: { isMobile: boolean }) {
   const accounts = useAccountList(undefined, refetchList)
 
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const { showModalAsync, showModalWithContent, closeModal } = useModal()
 
   const onClickAdd = () => {
@@ -119,7 +119,7 @@ function accountsToTableData(
 interface AccountTableRow {
   id: string
   name: string
-  address: string
+  address: Address
   type: SignerType
   onRemove?: (id: string) => void
 }

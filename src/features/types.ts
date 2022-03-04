@@ -1,20 +1,19 @@
 import { VoteValue } from 'src/features/governance/types'
-import { NativeTokenId } from 'src/tokens'
 
 interface Transaction {
   type: TransactionType
   hash: string
-  from: string
-  to: string
+  from: Address
+  to: Address
   value: string
   blockNumber: number
   nonce: number
   timestamp: number
   gasPrice: string
   gasUsed: string
-  feeCurrency?: NativeTokenId
+  feeCurrency?: Address // native token address, formerly token symbol
   gatewayFee?: string
-  gatewayFeeRecipient?: string
+  gatewayFeeRecipient?: Address
   inputData?: string
 }
 
@@ -47,13 +46,13 @@ export enum TransactionType {
 interface TokenTransferTx extends Transaction {
   comment?: string
   isOutgoing: boolean
-  tokenId: string
+  tokenId: Address // formerly symbol, now address
 }
 
 interface TokenApproveTx extends Transaction {
   approvedValue: string
-  spender: string
-  tokenId: string
+  spender: Address
+  tokenId: Address // formerly symbol, now address
 }
 
 export interface StableTokenTransferTx extends TokenTransferTx {
@@ -87,21 +86,21 @@ export interface OtherTokenApproveTx extends TokenApproveTx {
 export interface EscrowTransferTx extends Transaction {
   type: TransactionType.EscrowTransfer
   isOutgoing: true
-  tokenId: string
+  tokenId: Address // formerly symbol, now address
   comment?: string
 }
 
 export interface EscrowWithdrawTx extends Transaction {
   type: TransactionType.EscrowWithdraw
-  tokenId: string
+  tokenId: Address // formerly symbol, now address
   isOutgoing: false
   comment?: string
 }
 
 export interface TokenExchangeTx extends Transaction {
   type: TransactionType.TokenExchange
-  fromTokenId: string
-  toTokenId: string
+  fromTokenId: Address // formerly symbol, now address
+  toTokenId: Address // formerly symbol, now address
   fromValue: string
   toValue: string
 }
@@ -125,7 +124,7 @@ export type StakeTokenType =
 
 export interface StakeTokenTx extends Transaction {
   type: StakeTokenType
-  groupAddress: string
+  groupAddress: Address
 }
 
 export interface GovernanceVoteTx extends Transaction {

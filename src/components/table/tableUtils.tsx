@@ -6,7 +6,7 @@ import { Box } from 'src/components/layout/Box'
 import { Stylesheet } from 'src/styles/types'
 import { trimToLength } from 'src/utils/string'
 
-export function createAddressField<P extends { address: string }>(isMobile: boolean) {
+export function createAddressField<P extends { address: Address }>(isMobile: boolean) {
   const renderer = (row: P) => (
     <CopiableAddress address={row.address} length={isMobile ? 'short' : 'full'} />
   )
@@ -17,7 +17,7 @@ export function createAddressField<P extends { address: string }>(isMobile: bool
   }
 }
 
-export function createAddressNameField<P extends { address: string; name: string }>(
+export function createAddressNameField<P extends { address: Address; name: string }>(
   onClickEdit: (row: P) => void,
   maxLength = 22
 ) {

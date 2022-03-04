@@ -1,14 +1,14 @@
 import { ipcRenderer } from 'electron'
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
 import { Dispatch } from 'redux'
+import { useAppDispatch } from 'src/app/hooks'
 import { validateWalletConnectForm } from 'src/features/walletConnect/utils'
 import { initializeWcClient } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
 import { trimSlashes } from 'src/utils/string'
 
 export function useDeepLinkHandler() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   useEffect(() => {
     const deepLink = ipcRenderer.sendSync('get-app-deeplink')
     if (deepLink) handleDeepLink(deepLink, dispatch)

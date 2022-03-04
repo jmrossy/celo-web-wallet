@@ -1,5 +1,6 @@
 import { BigNumber, BigNumberish } from 'ethers'
 import { BARCHART_MIN_SHOW_AMOUNT } from 'src/consts'
+import { Balances } from 'src/features/balances/types'
 import {
   GroupVotes,
   StakeActionType,
@@ -7,14 +8,12 @@ import {
   ValidatorGroup,
 } from 'src/features/validators/types'
 import { findValidatorGroupName, getStakingMaxAmount } from 'src/features/validators/utils'
-import { Balances } from 'src/features/wallet/types'
 import { ChartDataColors, ChartDataColorsLighter, Color } from 'src/styles/Color'
-import { CELO } from 'src/tokens'
 import { BigNumberMax, BigNumberMin, fromWeiRounded } from 'src/utils/amount'
 
-// Just for convinience / shortness cause this file has lots of conversions
+// Just for convenience / shortness cause this file has lots of conversions
 function fromWei(value: BigNumberish) {
-  return parseFloat(fromWeiRounded(value, CELO, true))
+  return parseFloat(fromWeiRounded(value))
 }
 
 export function getSummaryChartData(

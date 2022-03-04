@@ -1,8 +1,7 @@
 import { CeloWallet } from '@celo-tools/celo-ethers-wrapper'
-import type { Location } from 'history'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { getSigner } from 'src/blockchain/signer'
 import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
@@ -27,14 +26,19 @@ import { Font } from 'src/styles/fonts'
 import { logger } from 'src/utils/logger'
 import { SagaStatus } from 'src/utils/saga'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useLocationState } from 'src/utils/useLocationState'
 import { useSagaStatus } from 'src/utils/useSagaStatus'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
+interface LocationState {
+  accountName?: string
+}
+
 export function AddDeriveScreen() {
   const [account, setAccount] = useState<CeloWallet | null>(null)
-  const location: Location = useLocation()
-  const accountName = location?.state?.accountName
   const navigate = useNavigate()
+  const locationState = useLocationState<LocationState>()
+  const accountName = locationState?.accountName
   const { showModal, closeModal } = useModal()
 
   useEffect(() => {
@@ -59,7 +63,7 @@ export function AddDeriveScreen() {
     }
   }, [])
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const onSubmit = (values: DerivationPathFormValues) => {
     if (!account) return
     const derivationPath = toDerivationPath(values)

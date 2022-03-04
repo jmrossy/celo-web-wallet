@@ -1,9 +1,7 @@
 import { BigNumber } from 'ethers'
-import type { Location } from 'history'
 import { ChangeEvent, useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
 import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
@@ -14,6 +12,8 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useNavHintModal } from 'src/components/modal/useNavHintModal'
 import { StackedBarChart } from 'src/components/StackedBarChart'
+import { useVoterBalances } from 'src/features/balances/hooks'
+import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { getResultChartData, getSummaryChartData } from 'src/features/validators/barCharts'
@@ -27,15 +27,20 @@ import {
 } from 'src/features/validators/types'
 import { getStakingMaxAmount, getValidatorGroupName } from 'src/features/validators/utils'
 import { VotingForBanner } from 'src/features/wallet/accounts/VotingForBanner'
-import { useIsVoteSignerAccount, useVoterBalances } from 'src/features/wallet/hooks'
+import { useIsVoteSignerAccount } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { CELO } from 'src/tokens'
 import { isValidAddress, shortenAddress } from 'src/utils/addresses'
 import { amountFieldFromWei, amountFieldToWei, fromWeiRounded } from 'src/utils/amount'
 import { useCustomForm } from 'src/utils/useCustomForm'
+import { useLocationState } from 'src/utils/useLocationState'
+
+interface LocationState {
+  groupAddress: Address
+  action: StakeActionType
+}
 
 interface StakeTokenForm extends Omit<StakeTokenParams, 'amountInWei'> {
   amount: string
@@ -54,14 +59,15 @@ const radioBoxLabels = [
 ]
 
 export function StakeFormScreen() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
-  const tx = useSelector((state: RootState) => state.txFlow.transaction)
+  const locationState = useLocationState<LocationState>()
+
+  const tx = useFlowTransaction()
   const { balances, voterBalances } = useVoterBalances()
   const isVoteSignerAccount = useIsVoteSignerAccount()
-  const groups = useSelector((state: RootState) => state.validators.validatorGroups.groups)
-  const groupVotes = useSelector((state: RootState) => state.validators.groupVotes)
+  const groups = useAppSelector((state) => state.validators.validatorGroups.groups)
+  const groupVotes = useAppSelector((state) => state.validators.groupVotes)
 
   const onSubmit = (values: StakeTokenForm) => {
     dispatch(txFlowStarted({ type: TxFlowType.Stake, params: amountFieldToWei(values) }))
@@ -81,14 +87,14 @@ export function StakeFormScreen() {
     resetValues,
     resetErrors,
   } = useCustomForm<StakeTokenForm>(
-    getInitialValues(location, tx, groupVotes),
+    getInitialValues(locationState, tx, groupVotes),
     onSubmit,
     validateForm
   )
 
   // Keep form in sync with tx state
   useEffect(() => {
-    const initialValues = getInitialValues(location, tx, groupVotes)
+    const initialValues = getInitialValues(locationState, tx, groupVotes)
     resetValues(initialValues)
     // Ensure we have the info needed otherwise send user back
     if (!groups || !groups.length) {
@@ -116,7 +122,7 @@ export function StakeFormScreen() {
         groupVotes,
         values.groupAddress
       )
-      autoSetAmount = fromWeiRounded(maxAmount, CELO, true)
+      autoSetAmount = fromWeiRounded(maxAmount)
     } else {
       autoSetAmount = '0'
     }
@@ -131,7 +137,7 @@ export function StakeFormScreen() {
       groupVotes,
       values.groupAddress
     )
-    setValues({ ...values, amount: fromWeiRounded(maxAmount, CELO, true) })
+    setValues({ ...values, amount: fromWeiRounded(maxAmount) })
     resetErrors()
   }
 
@@ -190,7 +196,6 @@ export function StakeFormScreen() {
               <label css={style.inputLabel}>Amount</label>
               <Box direction="row" align="center">
                 <NumberInput
-                  step="0.01"
                   width="12em"
                   margin="0 1.6em 0 0"
                   name="amount"
@@ -279,7 +284,7 @@ function HelpModal() {
 }
 
 function getInitialValues(
-  location: Location,
+  locationState: LocationState | null,
   tx: TxFlowTransaction | null,
   groupVotes: GroupVotes
 ): StakeTokenForm {
@@ -287,15 +292,15 @@ function getInitialValues(
     return amountFieldFromWei(tx.params)
   }
 
-  const initialAction = location?.state?.action ?? initialValues.action
-  const groupAddress = location?.state?.groupAddress
+  const initialAction = locationState?.action ?? initialValues.action
+  const groupAddress = locationState?.groupAddress
   const initialGroup =
     groupAddress && isValidAddress(groupAddress) ? groupAddress : initialValues.groupAddress
 
   // Auto use pending when defaulting to activate
   const initialAmount =
     groupAddress && groupVotes[groupAddress] && initialAction === StakeActionType.Activate
-      ? fromWeiRounded(groupVotes[groupAddress].pending, CELO, true)
+      ? fromWeiRounded(groupVotes[groupAddress].pending)
       : initialValues.amount
 
   return {

@@ -13,7 +13,7 @@ import { RAMP_PROJECT_ID } from 'src/consts'
 
 export function useFundWalletModal() {
   const { showModalWithContent } = useModal()
-  return (address: string) => {
+  return (address: Address) => {
     showModalWithContent({
       head: 'Where to buy Celo',
       content: <FundWalletModal address={address} />,
@@ -22,7 +22,7 @@ export function useFundWalletModal() {
   }
 }
 
-export function FundWalletModal({ address }: { address: string }) {
+export function FundWalletModal({ address }: { address: Address }) {
   const bigLinks = [
     {
       url: `https://buy.ramp.network/?hostAppName=CeloWallet&hostLogoUrl=https%3A%2F%2Fcelowallet.app%2Fstatic%2Ficon.png&defaultAsset=CELO&userAddress=${address}&hostApiKey=${RAMP_PROJECT_ID}`,

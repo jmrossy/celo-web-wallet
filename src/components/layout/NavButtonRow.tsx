@@ -1,5 +1,5 @@
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import BarChartIcon from 'src/components/icons/chart_bar_small.svg'
 import { ChevronIcon } from 'src/components/icons/Chevron'
@@ -30,7 +30,7 @@ interface Props {
 
 export function NavButtonRow({ mobile, disabled }: Props) {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const address = useWalletAddress()
   const showQrModal = useAddressQrCodeModal()
   const showWalletConnectModal = useWalletConnectModal()

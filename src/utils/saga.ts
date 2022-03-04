@@ -1,7 +1,7 @@
 import { createAction, createReducer, PayloadActionCreator } from '@reduxjs/toolkit'
 import { call, delay, Effect, put, race, take } from 'redux-saga/effects'
+import { logger } from 'src/utils/logger'
 import { errorToString } from 'src/utils/validation'
-import { logger } from './logger'
 
 /**
  * A convenience utility to create a saga and trigger action
@@ -44,7 +44,7 @@ export interface SagaActions {
   cancel: PayloadActionCreator<any>
   progress: PayloadActionCreator<any>
   error: PayloadActionCreator<any>
-  reset: PayloadActionCreator<any>
+  reset: PayloadActionCreator<void>
 }
 
 export interface SagaState {

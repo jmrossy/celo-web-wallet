@@ -3,7 +3,7 @@ import { Styles } from 'src/styles/types'
 import { capitalizeAddress, shortenAddress } from 'src/utils/addresses'
 
 interface ButtonProps {
-  address: string
+  address: Address
   length: 'short' | 'full'
   styles?: Styles
 }

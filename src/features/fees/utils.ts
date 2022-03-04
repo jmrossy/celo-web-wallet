@@ -1,10 +1,10 @@
 import { BigNumber } from 'ethers'
-import { useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppSelector } from 'src/app/hooks'
 import { MAX_FEE_SIZE, MAX_GAS_LIMIT, MAX_GAS_PRICE } from 'src/consts'
 import { FeeEstimate } from 'src/features/fees/types'
+import { getNativeToken, getNativeTokenById, isNativeTokenAddress } from 'src/features/tokens/utils'
 import { CeloTransaction } from 'src/features/types'
-import { NativeTokenId, NativeTokens } from 'src/tokens'
+import { CELO } from 'src/tokens'
 import { logger } from 'src/utils/logger'
 import { ErrorState, invalidInput } from 'src/utils/validation'
 
@@ -13,10 +13,10 @@ export function validateFeeEstimate(estimate: FeeEstimate | undefined | null): E
     return invalidInput('fee', 'No fee set')
   }
 
-  const { gasPrice, gasLimit, fee, token } = estimate
+  const { gasPrice, gasLimit, fee, feeToken } = estimate
 
-  if (!Object.values(NativeTokenId).includes(token)) {
-    logger.error(`Invalid fee currency: ${token}`)
+  if (!isNativeTokenAddress(feeToken)) {
+    logger.error(`Invalid fee currency: ${feeToken}`)
     return invalidInput('fee', 'Invalid fee currency')
   }
 
@@ -61,13 +61,13 @@ export function getFeeFromConfirmedTx(tx: CeloTransaction) {
   const feeValue = BigNumber.from(tx.gasPrice)
     .mul(tx.gasUsed)
     .add(tx.gatewayFee ?? 0)
-  const feeCurrency = NativeTokens[tx.feeCurrency ?? NativeTokenId.CELO]
+  const feeCurrency = tx.feeCurrency ? getNativeTokenById(tx.feeCurrency) : CELO
   return { feeValue, feeCurrency }
 }
 
 // Gets fee from state and returns amount, fee, and total, all in wei
 export function useFee(amountInWei: string | null | undefined, txCount = 1) {
-  const feeEstimates = useSelector((state: RootState) => state.fees.estimates)
+  const feeEstimates = useAppSelector((state) => state.fees.estimates)
 
   if (!feeEstimates || !feeEstimates.length || !amountInWei) {
     return {
@@ -82,7 +82,7 @@ export function useFee(amountInWei: string | null | undefined, txCount = 1) {
   let total = BigNumber.from(amountInWei)
   let feeAmount = BigNumber.from(0)
   // Assumes all estimates use the same currency
-  const feeCurrency = NativeTokens[feeEstimates[0].token]
+  const feeCurrency = getNativeToken(feeEstimates[0].feeToken) ?? CELO
   for (let i = 0; i < txCount; i++) {
     const estimate = feeEstimates[i]
     if (!estimate) {
@@ -109,7 +109,7 @@ export function getTotalFee(feeEstimates: FeeEstimate[]) {
     BigNumber.from(0)
   )
   // Assumes all estimates use the same currency
-  const feeCurrency = NativeTokens[feeEstimates[0].token]
+  const feeCurrency = getNativeToken(feeEstimates[0].feeToken) ?? CELO
   return {
     totalFee,
     feeCurrency,

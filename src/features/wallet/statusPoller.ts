@@ -1,14 +1,14 @@
+import { appSelect } from 'src/app/appSelect'
 import { logoutSagaName } from 'src/app/logout/logout'
-import type { RootState } from 'src/app/rootReducer'
 import { isSignerSet } from 'src/blockchain/signer'
 import { STATUS_POLLER_DELAY } from 'src/consts'
+import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
 import { fetchFeedActions } from 'src/features/feed/fetchFeed'
-import { fetchBalancesActions } from 'src/features/wallet/balances/fetchBalances'
 import { importAccountSagaName } from 'src/features/wallet/importAccount'
 import { switchAccountSagaName } from 'src/features/wallet/switchAccount'
 import { unlockWalletSagaName } from 'src/features/wallet/unlockWallet'
 import { SagaState, SagaStatus } from 'src/utils/saga'
-import { delay, put, select } from 'typed-redux-saga'
+import { delay, put } from 'typed-redux-saga'
 
 // If any of these is running while poller would have fetched, skip
 const SAGA_EXCLUSION_LIST = [
@@ -24,7 +24,7 @@ export function* walletStatusPoller() {
   while (true) {
     yield* delay(STATUS_POLLER_DELAY)
     if (!isSignerSet()) continue
-    const monitoredSagaStates = yield* select((s: RootState) => s.saga)
+    const monitoredSagaStates = yield* appSelect((s) => s.saga)
     if (isExcludedSagaRunning(monitoredSagaStates)) continue
     yield* put(fetchFeedActions.trigger())
     if (i === 2) yield* put(fetchBalancesActions.trigger())

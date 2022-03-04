@@ -1,7 +1,6 @@
 import { FeeEstimate } from 'src/features/fees/types'
-import { NativeTokenId } from 'src/tokens'
 
-export type ToCeloRates = Record<string, ExchangeRate> // token id to token<->CELO rate
+export type ToCeloRates = Record<string, ExchangeRate> // token address to token<->CELO rate
 
 // Raw Mento chain data from an Exchange contract
 export interface ExchangeRate {
@@ -19,8 +18,8 @@ export interface SimpleExchangeRate {
 
 export interface ExchangeTokenParams {
   amountInWei: string
-  fromTokenId: NativeTokenId
-  toTokenId: NativeTokenId
+  fromTokenAddress: Address
+  toTokenAddress: Address
   exchangeRate?: SimpleExchangeRate
   feeEstimates?: FeeEstimate[]
 }

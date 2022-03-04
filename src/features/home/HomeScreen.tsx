@@ -1,28 +1,27 @@
-import { useDispatch, useSelector } from 'react-redux'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { HrDivider } from 'src/components/HrDivider'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useAreBalancesEmpty } from 'src/features/balances/hooks'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
 import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
 import { useVoteActivationCheck } from 'src/features/validators/hooks'
-import { useAreBalancesEmpty } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { NativeTokenId } from 'src/tokens'
+import { cUSD } from 'src/tokens'
 
 export function HomeScreen() {
   const isMobile = useIsMobile()
   const isWalletEmpty = useAreBalancesEmpty()
   const showGraph = !isMobile || isWalletEmpty
 
-  const isDismissed = useSelector((state: RootState) => state.settings.homeHeaderDismissed)
-  const dispatch = useDispatch()
+  const isDismissed = useAppSelector((state) => state.settings.homeHeaderDismissed)
+  const dispatch = useAppDispatch()
   const onClickDismiss = () => {
     dispatch(toggleHomeHeaderDismissed())
   }
@@ -47,7 +46,7 @@ export function HomeScreen() {
               <label css={style.celoPriceLabel}>Celo Price</label>
             </Box>
 
-            <PriceChartCelo stableTokenId={NativeTokenId.cUSD} showHeaderPrice={true} />
+            <PriceChartCelo quoteTokenAddress={cUSD.address} showHeaderPrice={true} />
           </>
         )}
       </div>

@@ -1,6 +1,6 @@
 export interface Contact {
-  address: string
+  address: Address
   name: string
 }
 
-export type ContactMap = Record<string, Contact> // address to contact
+export type ContactMap = Record<Address, Contact>

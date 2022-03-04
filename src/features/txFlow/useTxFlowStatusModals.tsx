@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { RootState } from 'src/app/rootReducer'
+import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { monitoredSagas } from 'src/app/rootSaga'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { ModalOkAction } from 'src/components/modal/modal'
 import { useModal } from 'src/components/modal/useModal'
+import { estimateFeeActions, estimateFeeSagaName } from 'src/features/fees/estimateFee'
 import { SignatureRequiredModal } from 'src/features/ledger/animation/SignatureRequiredModal'
 import { txFlowFailed, txFlowSent } from 'src/features/txFlow/txFlowSlice'
 import { SagaStatus } from 'src/utils/saga'
@@ -39,20 +39,20 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
     customSuccessModal,
   } = params
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const numSignatures = useSelector((state: RootState) => state.txFlow.numSignatures)
+  const numSignatures = useAppSelector((state) => state.txFlow.numSignatures)
 
-  const sagaState = useSelector((s: RootState) => s.saga[sagaName])
-  if (!sagaState) {
-    throw new Error(`No saga state found, is sagaName valid? Name: ${sagaName}`)
-  }
   const saga = monitoredSagas[sagaName]
-  if (!saga) {
-    throw new Error(`No saga found, is sagaName valid? Name: ${sagaName}`)
-  }
+  if (!saga) throw new Error(`No saga found, is sagaName valid? Name: ${sagaName}`)
+  const sagaState = useAppSelector((s) => s.saga[sagaName])
+  if (!sagaState) throw new Error(`No saga state found, is sagaName valid? Name: ${sagaName}`)
   const { status: sagaStatus, error: sagaError } = sagaState
+
+  // Also check fee status so errors from fee calculation can be surfaced as well
+  const feeSagaState = useAppSelector((s) => s.saga[estimateFeeSagaName])
+  const feeSagaStatus = feeSagaState.status
 
   const { showLoadingModal, showSuccessModal, showErrorModal, showModalWithContent } = useModal()
 
@@ -79,15 +79,28 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
     } else {
       showSuccessModal(successTitle, successMsg)
     }
-    dispatch(saga.actions.reset(null))
+    dispatch(saga.actions.reset())
+    dispatch(estimateFeeActions.reset())
     dispatch(txFlowSent())
     navigate('/')
   }
 
   const onFailure = (error: string | undefined) => {
     showErrorModal(errorTitle, errorMsg || 'Something went wrong, sorry! Please try again.', error)
-    dispatch(saga.actions.reset(null))
+    dispatch(saga.actions.reset())
+    dispatch(estimateFeeActions.reset())
     dispatch(txFlowFailed(error ?? null))
+  }
+
+  const onFeeFailure = () => {
+    showErrorModal(
+      'Fee Estimation Failed',
+      undefined,
+      'This transaction may be invalid or you may lack the funds to complete it.'
+    )
+    dispatch(saga.actions.reset())
+    dispatch(estimateFeeActions.reset())
+    dispatch(txFlowFailed('Fee estimation failed'))
   }
 
   useEffect(() => {
@@ -98,8 +111,10 @@ export function useTxFlowStatusModals(params: TxFlowStatusModalsParams) {
       onSuccess()
     } else if (sagaStatus === SagaStatus.Failure) {
       onFailure(sagaError?.toString())
+    } else if (feeSagaStatus === SagaStatus.Failure) {
+      onFeeFailure()
     }
-  }, [sagaStatus, sagaError, numSignatures, signaturesNeeded])
+  }, [sagaStatus, sagaError, feeSagaStatus, numSignatures, signaturesNeeded])
 
-  return { status, isWorking: sagaStatus === SagaStatus.Started }
+  return { status: sagaStatus, isWorking: sagaStatus === SagaStatus.Started }
 }

@@ -4,11 +4,13 @@ import { Identicon } from 'src/components/Identicon'
 import { Box } from 'src/components/layout/Box'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { getTransactionDescription } from 'src/features/feed/transactionDescription'
+import { TokenMap } from 'src/features/tokens/types'
+import { getTokenById } from 'src/features/tokens/utils'
 import { CeloTransaction, TransactionType } from 'src/features/types'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
-import { CELO, getTokenById, Token, Tokens } from 'src/tokens'
+import { CELO, Token } from 'src/tokens'
 
 export const FEED_ITEM_HEIGHT_NORMAL = 70
 export const FEED_ITEM_HEIGHT_COMPACT = 65
@@ -21,7 +23,7 @@ interface FeedItemProps {
 
 export interface FeedItemData {
   tx: CeloTransaction
-  tokens: Tokens
+  tokens: TokenMap
   isOpen: boolean
   onClick: (hash: string) => void
   itemSize: number
@@ -85,7 +87,7 @@ export function FeedItem(props: FeedItemProps) {
   )
 }
 
-function getContentByTxType(tx: CeloTransaction, tokens: Tokens): FeedItemContent {
+function getContentByTxType(tx: CeloTransaction, tokens: TokenMap): FeedItemContent {
   const defaultContent = {
     icon: <Identicon address={tx.to} />,
     description: getTransactionDescription(tx, tokens),
@@ -188,6 +190,7 @@ const style: Stylesheet = {
   },
   currency: {
     ...Font.subtitle,
+    color: Color.accentBlue, // Default to blue unless token specifies a color
     marginTop: '0.4em',
   },
 }

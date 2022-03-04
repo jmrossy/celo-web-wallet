@@ -1,18 +1,18 @@
-import { useDispatch } from 'react-redux'
-import type { Dispatch } from 'redux'
+import { useAppDispatch } from 'src/app/hooks'
 import { logoutActions } from 'src/app/logout/logout'
 import { showModalFunctionAsync, useModal } from 'src/components/modal/useModal'
 import { Color } from 'src/styles/Color'
 
 export function useLogoutModal() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const { showModalAsync } = useModal()
-  return () => showLogoutModal(showModalAsync, dispatch)
+  const triggerLogout = () => dispatch(logoutActions.trigger())
+  return () => showLogoutModal(showModalAsync, triggerLogout)
 }
 
 export async function showLogoutModal(
   showModalAsync: showModalFunctionAsync,
-  dispatch: Dispatch<any>
+  triggerLogout: () => void
 ) {
   const answer = await showModalAsync({
     head: 'WALLET RESET WARNING',
@@ -24,6 +24,6 @@ export async function showLogoutModal(
     ],
   })
   if (answer && answer.key === 'logout') {
-    dispatch(logoutActions.trigger())
+    triggerLogout()
   }
 }

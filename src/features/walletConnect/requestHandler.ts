@@ -1,4 +1,4 @@
-import type { RootState } from 'src/app/rootReducer'
+import { appSelect } from 'src/app/appSelect'
 import { getSigner } from 'src/blockchain/signer'
 import { sendSignedTransaction } from 'src/blockchain/transaction'
 import { config } from 'src/config'
@@ -7,7 +7,7 @@ import { WalletConnectError, WalletConnectMethod } from 'src/features/walletConn
 import { isValidTx, translateTxFields } from 'src/features/walletConnect/utils'
 import { completeWcRequest, dismissWcRequest } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
-import { call, delay, put, select } from 'typed-redux-saga'
+import { call, delay, put } from 'typed-redux-saga'
 import type { SessionTypes } from 'wcv2/types'
 
 export type ApproveHandler = (
@@ -116,7 +116,7 @@ function* getAccounts(
   approveRequest: ApproveHandler
 ) {
   logger.debug('Responding accounts for WalletConnect request')
-  const address = yield* select((s: RootState) => s.wallet.address)
+  const address = yield* appSelect((s) => s.wallet.address)
   return approveRequest(event, client, [address])
 }
 
