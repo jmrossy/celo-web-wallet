@@ -26,7 +26,8 @@ jobs:
         run: yarn electron-builder --mac --publish always || yarn electron-builder --mac --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK2 }}
           CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          DISABLE_MULTIPART_DOWNLOADING: true

@@ -26,5 +26,6 @@ jobs:
         run: yarn electron-builder --win --publish always || yarn electron-builder --win --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
+          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK2 }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+          DISABLE_MULTIPART_DOWNLOADING: true
