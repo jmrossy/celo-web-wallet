@@ -13,7 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        # os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -54,12 +55,13 @@ jobs:
         shell: bash
         run: ./scripts/build.sh -n Mainnet -e
 
-      - name: Build on Mac
-        run: yarn electron-builder --mac --publish never
-        env:
-          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
-        if: runner.os == 'macOS'
+      # Mac builds on Github are very flaky, disabling for now as they're easy to make locally anyway
+      # - name: Build on Mac
+      #   run: yarn electron-builder --mac --publish never
+      #   env:
+      #     CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+      #     CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+      #   if: runner.os == 'macOS'
 
       - name: Build on Windows
         run: yarn electron-builder --win --publish never
