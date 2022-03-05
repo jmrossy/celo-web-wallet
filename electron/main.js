@@ -47,7 +47,7 @@ function createWindow() {
   mainWindow.webContents.on('zoom-changed', (event, zoomDirection) => {
     const currentZoom = mainWindow.webContents.getZoomFactor()
     if (zoomDirection === 'in') {
-      win.webContents.setZoomFactor(currentZoom + 0.1)
+      mainWindow.webContents.setZoomFactor(currentZoom + 0.1)
     }
     if (zoomDirection === 'out' && currentZoom > 0.2) {
       mainWindow.webContents.setZoomFactor(currentZoom - 0.1)
