@@ -14,10 +14,10 @@ See the [FAQ](FAQ.md) for more details about common questions.
 
 This wallet uses [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity). Current bundle hashes:
 
-* Main bundle: `bundle.js -> sha256-Vlmkh0SLeXw2psAh+j1DsE3/6mzaFMoeLej0O3w9XQo=`
-* Optional Ledger bundle: `bundle-ledger.js -> sha256-pNndh3uDU7f3K3e4nu05OXTE3Bx3WRMeVtr95liXJTE=`
-* Optional WalletConnect v1 bundle: `bundle-walletconnectv1.js -> sha256-PImYY1hPF519ZjZx2Pei7QsZ7kJyMpdtJgRKHT52ekg=`
-* Optional WalletConnect v2 bundle: `bundle-walletconnectv2.js -> sha256-UHsf1l/tWhpHJk2NMbCH1l372Pm8JoGxLLQqCLnNaLI=`
+* Main bundle: `bundle.js -> sha256-LnXrWC+pSsRWsbkgRbMv/X8Lq5A+HYDBCmR3SaysyHg=`
+* Optional Ledger bundle: `bundle-ledger.js -> sha256-+FX8DwM1uK0jLUQ+1AMyfNJChN5nbPnBqs6lixztF6s=`
+* Optional WalletConnect v1 bundle: `bundle-walletconnectv1.js -> sha256-drWkNcYufDCGAFcjfOsETtWH8H1ODgV4fEcd1ktfA2o=`
+* Optional WalletConnect v2 bundle: `bundle-walletconnectv2.js -> sha256-FijbSmdr+Dyizc5+HDlB8vI6tLPxyYhiHI36dCYmOCI=`
 
 Advanced users can verify the source integrity by comparing the hashes in their page source to these values.
 
