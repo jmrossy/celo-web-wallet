@@ -1,10 +1,12 @@
-export const WEI_PER_UNIT = '1000000000000000000' // 1 Celo or Ether
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const MNEMONIC_LENGTH_MIN = 12
 export const MNEMONIC_LENGTH_MAX = 24
 export const ETHEREUM_DERIVATION_PATH = "m/44'/60'/0'/0"
 export const CELO_DERIVATION_PATH = "m/44'/52752'/0'/0"
 export const DERIVATION_PATH_MAX_INDEX = 1000000
+export const PLACEHOLDER_MNEMONIC =
+  'wage bitter silk coin door shine orphan quote witness ticket venture undo grief sense write limit famous always wage pink fresh gold carpet adult'
+export const CELO_LEDGER_APP_MIN_VERSION = '1.0.3' // Only allow this ledger app versions or newer
 
 export const AVG_BLOCK_TIMES = 5000 // 5 seconds
 export const CONNECTION_CHECK_INTERVAL = 15000 // 15 seconds
@@ -12,6 +14,7 @@ export const STALE_BLOCK_TIME = 20000 // 20 seconds
 export const STATUS_POLLER_DELAY = 10000 // 10 seconds
 export const MAX_TOKEN_PRICE_NUM_DAYS = 14 // 14 days
 
+export const WEI_PER_UNIT = '1000000000000000000' // 1 Celo or Ether
 export const MIN_DISPLAY_VALUE = 0.001 // Round token values less than this
 export const DECIMALS_TO_DISPLAY = 3 // Show at most this many decimals
 export const STANDARD_TOKEN_DECIMALS = 18 // Same as Ether and most ERC20s
@@ -52,14 +55,9 @@ export const STAKE_EVENTS_STALE_TIME = 10000 // 10 seconds
 export const PROPOSAL_LIST_STALE_TIME = 60000 // 1 minutes
 export const TOKEN_PRICE_STALE_TIME = 900000 // 15 minutes
 
-export const PLACEHOLDER_MNEMONIC =
-  'wage bitter silk coin door shine orphan quote witness ticket venture undo grief sense write limit famous always wage pink fresh gold carpet adult'
-
-export const CELO_LEDGER_APP_MIN_VERSION = '1.0.3' // Only allow this ledger app versions or newer
-
-export const DONATION_ADDRESS = '0xE3791A4a231D026c9567BEDbAb977617f2900383' // for receiving donations
-
 export const GOVERNANCE_GITHUB_BASEURL =
   'https://api.github.com/repos/celo-org/governance/contents/CGPs/'
+export const ALCHEMY_UNSTOPPABLE_BASEURL = 'https://unstoppabledomains.g.alchemy.com/domains/'
 
+export const DONATION_ADDRESS = '0xE3791A4a231D026c9567BEDbAb977617f2900383' // for receiving donations
 export const RAMP_PROJECT_ID = 'jg2gy6y7o35np2w7npw9jnszaz962z3dxhpso4hq'

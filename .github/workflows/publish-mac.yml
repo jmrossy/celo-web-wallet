@@ -21,6 +21,9 @@ jobs:
       - name: Build with webpack for electron
         shell: bash
         run: ./scripts/build.sh -n Mainnet -e
+        env:
+          ALCHEMY_KEY: ${{ secrets.ALCHEMY_KEY }}
+          WALLET_CONNECT_KEY: ${{ secrets.WALLET_CONNECT_KEY }}
 
       - name: Build on Mac 
         run: yarn electron-builder --mac --publish always || yarn electron-builder --mac --publish always

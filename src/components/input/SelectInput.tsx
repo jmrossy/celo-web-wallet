@@ -1,4 +1,11 @@
-import { ChangeEvent, PropsWithChildren, ReactElement, useEffect, useState } from 'react'
+import {
+  ChangeEvent,
+  InputHTMLAttributes,
+  PropsWithChildren,
+  ReactElement,
+  useEffect,
+  useState,
+} from 'react'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
@@ -15,23 +22,26 @@ export type SelectOptions = Array<SelectOption>
 export interface SelectInputProps {
   name: string
   autoComplete: boolean
+  value: string | undefined
+  options: SelectOptions
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
+  onBlur?: (event: ChangeEvent<HTMLInputElement>) => void
+  placeholder?: string
+  disabled?: boolean
+  error?: boolean
+  helpText?: string
+  allowRawOption?: boolean // user's raw input sets value
+  maxOptions?: number // max number of suggestions to show
+  hideChevron?: boolean
   width?: string | number // mandatory unless fillWidth is set
   fillWidth?: boolean
   height?: string | number // defaults to 40
-  value: string | undefined
-  options: SelectOptions
-  maxOptions?: number // max number of suggestions to show
-  allowRawOption?: boolean // user's raw input sets value
-  onBlur?: (event: ChangeEvent<HTMLInputElement>) => void
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void
-  error?: boolean
-  helpText?: string
-  placeholder?: string
-  disabled?: boolean
   inputStyles?: Styles
-  renderDropdownOption?: (o: SelectOption) => ReactElement
-  renderDropdownValue?: (v: string) => ReactElement | null
-  hideChevron?: boolean
+  renderInputField?: (
+    props: InputHTMLAttributes<HTMLInputElement> & { styles: Styles }
+  ) => ReactElement // custom renderer for a input component
+  renderSelectValue?: (v: string) => ReactElement | null // custom renderer for a selected value in faux input
+  renderDropdownOption?: (o: SelectOption) => ReactElement // custom renderer for dropdown line item
 }
 
 export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
@@ -40,18 +50,19 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
     autoComplete,
     value,
     options,
-    maxOptions,
-    allowRawOption,
-    onBlur,
     onChange,
-    helpText,
+    onBlur,
     placeholder,
     disabled,
-    inputStyles,
-    fillWidth,
-    renderDropdownOption,
-    renderDropdownValue,
+    helpText,
+    allowRawOption,
+    maxOptions,
     hideChevron,
+    fillWidth,
+    inputStyles,
+    renderInputField,
+    renderDropdownOption,
+    renderSelectValue,
   } = props
 
   const initialInput = allowRawOption ? value : getDisplayValue(options, value)
@@ -102,7 +113,7 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
         onBlur={handleBlur}
         className="notranslate"
       >
-        {autoComplete ? (
+        {autoComplete && !renderInputField && (
           <>
             <input
               type="text"
@@ -112,9 +123,9 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
               onClick={handleClick}
               onFocus={handleClick}
               onChange={handleChange}
-              autoComplete="off"
               placeholder={placeholder}
               disabled={disabled}
+              autoComplete="off" // Disable browser's autocomplete
             ></input>
             {!hideChevron && (
               <div css={style.chevronContainer}>
@@ -122,10 +133,26 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
               </div>
             )}
           </>
-        ) : (
+        )}
+
+        {autoComplete &&
+          !!renderInputField &&
+          renderInputField({
+            name,
+            value: inputValue,
+            onClick: handleClick,
+            onFocus: handleClick,
+            onChange: handleChange,
+            placeholder,
+            disabled,
+            styles: formattedInputStyle,
+            autoComplete: 'off', // // Disable browser's autocomplete
+          })}
+
+        {!autoComplete && (
           // Tab index is required here to workaround a browser bug
           <div css={formattedInputStyle} onClick={handleClick} tabIndex={0}>
-            {(renderDropdownValue ? renderDropdownValue(inputValue) : inputValue) || placeholder}
+            {(renderSelectValue ? renderSelectValue(inputValue) : inputValue) || placeholder}
             {!hideChevron && (
               <div css={style.chevronContainer}>
                 <ChevronIcon direction="s" height="8px" width="12px" />

@@ -30,16 +30,21 @@ const isElectron = __IS_ELECTRON__ ?? false
 // const isElectron = true
 // @ts-ignore Defined by webpack define plugin
 const version = __VERSION__ || null
+// @ts-ignore Defined by webpack define plugin
+const alchemyApiKey = __ALCHEMY_KEY__ || null
+// @ts-ignore Defined by webpack define plugin
+const walletConnectV2ProjectId = __WALLET_CONNECT_KEY__ || null
 
 interface Config {
   debug: boolean
   isElectron: boolean
   version: string | null
+  alchemyApiKey: string | null
+  walletConnectV2ProjectId: string | null
   jsonRpcUrlPrimary: string
   jsonRpcUrlSecondary?: string
   gatewayFeeRecipient?: string
   blockscoutUrl: string
-  walletConnectV2ProjectId?: string
   discordUrl: string
   desktopUrls: {
     windows: string
@@ -63,11 +68,12 @@ const configMainnet: Config = {
   debug: debugMode,
   isElectron,
   version,
+  alchemyApiKey,
+  walletConnectV2ProjectId,
   jsonRpcUrlPrimary: 'https://node.celowallet.app',
   jsonRpcUrlSecondary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
-  walletConnectV2ProjectId: 'a98dc66ddc2368f25c077dd5d5c8af1b',
   discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainId: 42220,
@@ -97,6 +103,8 @@ const configAlfajores: Config = {
   debug: true,
   isElectron,
   version,
+  alchemyApiKey,
+  walletConnectV2ProjectId,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   discordUrl: 'https://discord.gg/ht885KmG5A',

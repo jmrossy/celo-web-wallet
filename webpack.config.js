@@ -8,6 +8,12 @@ const ESLintPlugin = require('eslint-webpack-plugin')
 const isDevelopment = process.env.NODE_ENV === 'development'
 const isProduction = process.env.NODE_ENV === 'production'
 const targetElectron = process.env.BUILD_TARGET === 'electron'
+const alchemyApiKey = process.env.ALCHEMY_KEY
+const walletConnectKey = process.env.WALLET_CONNECT_KEY
+
+if (isProduction && (!alchemyApiKey || !walletConnectKey)) {
+  throw new Error('Alchemy and WalletConnect key env vars must be set')
+}
 
 console.log(`Building with webpack. isProduction:${isProduction}, targetElectron:${targetElectron}`)
 
@@ -131,6 +137,8 @@ const config = {
       __VERSION__: JSON.stringify(packageJson.version),
       __DEBUG__: isDevelopment,
       __IS_ELECTRON__: targetElectron,
+      __ALCHEMY_KEY__: alchemyApiKey,
+      __WALLET_CONNECT_KEY__: walletConnectKey,
     }),
     // Bundle analyzer, don't leave enabled
     // new BundleAnalyzerPlugin(),

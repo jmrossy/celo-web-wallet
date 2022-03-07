@@ -12,6 +12,7 @@ import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useBalances } from 'src/features/balances/hooks'
 import { getTokenBalance } from 'src/features/balances/utils'
 import { useContactsAndAccountsSelect } from 'src/features/contacts/hooks'
+import { useDomainResolver } from 'src/features/send/domainResolution'
 import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
 import { useTokens } from 'src/features/tokens/hooks'
@@ -52,14 +53,13 @@ export function SendFormScreen() {
   const balances = useBalances()
   const tokens = useTokens()
   const tx = useFlowTransaction()
-  const txSizeLimitEnabled = useAppSelector((state) => state.settings.txSizeLimitEnabled)
+  const limitEnabled = useAppSelector((state) => state.settings.txSizeLimitEnabled)
   const contactOptions = useContactsAndAccountsSelect()
 
   const getInitialFormValues = () => getInitialValues(locationState, tx, tokens)
   const formatFormValues = (values: SendTokenForm) => getFormattedValues(values, tokens)
-
   const validateForm = (values: SendTokenForm) =>
-    validate(formatFormValues(values), balances, tokens, txSizeLimitEnabled)
+    validate(formatFormValues(values), balances, tokens, limitEnabled)
 
   const onSubmit = (values: SendTokenForm) => {
     dispatch(txFlowStarted({ type: TxFlowType.Send, params: formatFormValues(values) }))
@@ -81,6 +81,15 @@ export function SendFormScreen() {
   useEffect(() => {
     resetValues(getInitialFormValues())
   }, [tx])
+
+  const {
+    result: resolvedAddress,
+    loading: resolverLoading,
+    error: resolverError,
+  } = useDomainResolver(values.recipient)
+  console.log('resolvedAddress', resolvedAddress)
+  console.log('resolverLoading', resolverLoading)
+  console.log('resolverError', resolverError)
 
   const onPasteAddress = async () => {
     const value = await tryClipboardGet()
@@ -119,15 +128,16 @@ export function SendFormScreen() {
               <SelectInput
                 name="recipient"
                 autoComplete={true}
-                fillWidth={true}
-                onChange={handleChange}
-                onBlur={handleBlur}
                 value={values.recipient}
                 options={contactOptions}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                // renderInputField={} TODO
+                placeholder="0x123 or contact"
                 maxOptions={4}
                 allowRawOption={true}
-                placeholder="0x123 or contact"
                 hideChevron={true}
+                fillWidth={true}
                 {...errors['recipient']}
               />
               {isClipboardReadSupported() ? (
