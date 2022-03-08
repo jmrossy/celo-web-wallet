@@ -53,6 +53,8 @@ interface Config {
   }
   chainId: number
   contractAddresses: Record<CeloContract, string>
+  nomspaceRegistry: string
+  ensCoinTypeValue?: number
 }
 
 const desktopUrls = {
@@ -96,6 +98,8 @@ const configMainnet: Config = {
     [CeloContract.StableTokenBRL]: '0xe8537a3d056DA446677B9E9d6c5dB704EaAb4787',
     [CeloContract.Validators]: '0xaEb865bCa93DdC8F47b8e29F40C5399cE34d0C58',
   },
+  nomspaceRegistry: '0x3DE51c3960400A0F752d3492652Ae4A0b2A36FB3',
+  ensCoinTypeValue: 2147525868, // https://github.com/ensdomains/address-encoder/issues/329
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -129,6 +133,7 @@ const configAlfajores: Config = {
     [CeloContract.StableTokenBRL]: '0xE4D517785D091D3c54818832dB6094bcc2744545',
     [CeloContract.Validators]: '0x9acF2A99914E083aD0d610672E93d14b0736BBCc',
   },
+  nomspaceRegistry: '0x40cd4db228e9c172dA64513D0e874d009486A9a9',
 }
 
 export const config = Object.freeze(configMainnet)

@@ -1,31 +1,57 @@
-// import { parseENSAddress } from 'src/features/send/domainResolution'
+import { DomainNameType, findDomainNameType } from 'src/features/send/domainResolution'
 
-// describe('parseENSAddress', () => {
-//   it('test cases', () => {
-//     expect(parseENSAddress('hello.eth')).toEqual({ ensName: 'hello.eth', ensPath: undefined })
-//     expect(parseENSAddress('hello.eth/')).toEqual({ ensName: 'hello.eth', ensPath: '/' })
-//     expect(parseENSAddress('hello.world.eth/')).toEqual({
-//       ensName: 'hello.world.eth',
-//       ensPath: '/',
-//     })
-//     expect(parseENSAddress('hello.world.eth/abcdef')).toEqual({
-//       ensName: 'hello.world.eth',
-//       ensPath: '/abcdef',
-//     })
-//     expect(parseENSAddress('abso.lutely')).toEqual(undefined)
-//     expect(parseENSAddress('abso.lutely.eth')).toEqual({
-//       ensName: 'abso.lutely.eth',
-//       ensPath: undefined,
-//     })
-//     expect(parseENSAddress('eth')).toEqual(undefined)
-//     expect(parseENSAddress('eth/hello-world')).toEqual(undefined)
-//     expect(parseENSAddress('hello-world.eth')).toEqual({
-//       ensName: 'hello-world.eth',
-//       ensPath: undefined,
-//     })
-//     expect(parseENSAddress('-prefix-dash.eth')).toEqual(undefined)
-//     expect(parseENSAddress('suffix-dash-.eth')).toEqual(undefined)
-//     expect(parseENSAddress('it.eth')).toEqual({ ensName: 'it.eth', ensPath: undefined })
-//     expect(parseENSAddress('only-single--dash.eth')).toEqual(undefined)
-//   })
-// })
+describe('findDomainNameType', () => {
+  it('Ignores non-domains', () => {
+    expect(findDomainNameType('0x123')).toEqual(null)
+    expect(findDomainNameType('123')).toEqual(null)
+    expect(findDomainNameType('0x35b74Ed5038bf0488Ff33bD9819b9D12D10A7560')).toEqual(null)
+    expect(findDomainNameType('hello.')).toEqual(null)
+    expect(findDomainNameType('eth')).toEqual(null)
+    expect(findDomainNameType('nom')).toEqual(null)
+    expect(findDomainNameType('crypto')).toEqual(null)
+    expect(findDomainNameType('eth.')).toEqual(null)
+    expect(findDomainNameType('nom.')).toEqual(null)
+    expect(findDomainNameType('crypto.')).toEqual(null)
+  })
+  it('finds ENS', () => {
+    expect(findDomainNameType('hello.eth')).toEqual(DomainNameType.ENS)
+    expect(findDomainNameType('hello.eth/')).toEqual(null)
+    expect(findDomainNameType('hello.world.eth/')).toEqual(null)
+    expect(findDomainNameType('hello.world.eth/abcdef')).toEqual(null)
+    expect(findDomainNameType('center-dash.eth')).toEqual(DomainNameType.ENS)
+    expect(findDomainNameType('-prefix-dash.eth')).toEqual(null)
+    expect(findDomainNameType('suffix-dash-.eth')).toEqual(null)
+    expect(findDomainNameType('only-single--dash.eth')).toEqual(null)
+    expect(findDomainNameType('hello$.eth')).toEqual(null)
+  })
+  it('finds nomspace', () => {
+    expect(findDomainNameType('hello.nom')).toEqual(DomainNameType.NOMSPACE)
+    expect(findDomainNameType('hello.nom/')).toEqual(null)
+    expect(findDomainNameType('hello.world.nom/')).toEqual(null)
+    expect(findDomainNameType('hello.world.nom/abcdef')).toEqual(null)
+    expect(findDomainNameType('center-dash.nom')).toEqual(DomainNameType.NOMSPACE)
+    expect(findDomainNameType('-prefix-dash.nom')).toEqual(null)
+    expect(findDomainNameType('suffix-dash-.nom')).toEqual(null)
+    expect(findDomainNameType('only-single--dash.nom')).toEqual(null)
+    expect(findDomainNameType('hello$.nom')).toEqual(null)
+  })
+  it('finds unstoppable', () => {
+    expect(findDomainNameType('hello.crypto')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.crypto/')).toEqual(null)
+    expect(findDomainNameType('hello.world.crypto/')).toEqual(null)
+    expect(findDomainNameType('hello.world.crypto/abcdef')).toEqual(null)
+    expect(findDomainNameType('center-dash.crypto')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('-prefix-dash.crypto')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('suffix-dash-.crypto')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('double-single--dash.crypto')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.zil')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.nft')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.blockchain')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.bitcoin')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.coin')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.wallet')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.888')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello.x')).toEqual(DomainNameType.UNSTOPPABLE)
+    expect(findDomainNameType('hello$.x')).toEqual(null)
+  })
+})

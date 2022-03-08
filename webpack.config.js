@@ -137,8 +137,8 @@ const config = {
       __VERSION__: JSON.stringify(packageJson.version),
       __DEBUG__: isDevelopment,
       __IS_ELECTRON__: targetElectron,
-      __ALCHEMY_KEY__: alchemyApiKey,
-      __WALLET_CONNECT_KEY__: walletConnectKey,
+      __ALCHEMY_KEY__: JSON.stringify(alchemyApiKey),
+      __WALLET_CONNECT_KEY__: JSON.stringify(walletConnectKey),
     }),
     // Bundle analyzer, don't leave enabled
     // new BundleAnalyzerPlugin(),

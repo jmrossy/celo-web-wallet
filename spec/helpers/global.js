@@ -1,6 +1,8 @@
 global.__DEBUG__ = true
 global.__IS_ELECTRON__ = false
 global.__VERSION__ = '1.0.0'
+global.__ALCHEMY_KEY__ = 'fakeKey'
+global.__WALLET_CONNECT_KEY__ = 'fakeKey'
 global.fetch = require('node-fetch')
 
 var localStorage = {}

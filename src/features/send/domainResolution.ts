@@ -1,4 +1,6 @@
+import { providers } from 'ethers'
 import { useEffect, useState } from 'react'
+import { getProvider } from 'src/blockchain/provider'
 import { config } from 'src/config'
 import { ALCHEMY_UNSTOPPABLE_BASEURL } from 'src/consts'
 import { isValidAddress } from 'src/utils/addresses'
@@ -15,7 +17,7 @@ export enum DomainNameType {
 const ENS_REGEX = /^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+eth$/
 const NOMSPACE_REGEX = /^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+nom$/
 const UNSTOPPABLE_REGEX =
-  /^([a-zA-Z0-9-]+\.)+(zil|crypto|nft|blockchain|bitcoin|coin|wallet|888|dao|x)?$/
+  /^([a-zA-Z0-9-]+\.)+(zil|crypto|nft|blockchain|bitcoin|coin|wallet|888|dao|x)$/
 
 const resolutionCache: Record<DomainNameType, Record<string, Address | null>> = {
   [DomainNameType.ENS]: {},
@@ -102,18 +104,31 @@ async function resolveDomainName(value: string, type: DomainNameType): Promise<A
 
 async function resolveEnsName(value: string) {
   logger.debug('Attempting to resolve ens domain', value)
-  // TODO
-  return ''
+  const apiKey = config.alchemyApiKey
+  if (!apiKey) throw new Error('Alchemy API key is missing')
+  // Homestead is what Ethers calls Eth Mainnet
+  const ethProvider = new providers.AlchemyProvider('homestead', apiKey)
+  const resolver = await ethProvider.getResolver(value)
+  if (!resolver) return null
+  const coinType = config.ensCoinTypeValue
+  if (!coinType) return null
+  // TODO this throws error due to unknown coin type
+  const address = await resolver.getAddress(coinType)
+  if (address && isValidAddress(address)) return address
+  else return null
 }
 
 async function resolveNomspaceName(value: string) {
   logger.debug('Attempting to resolve nomspace domain', value)
-  // TODO
-  return ''
+  const provider = getProvider()
+  const address = await provider.resolveName(value)
+  if (address && isValidAddress(address)) return address
+  else return null
 }
 
 interface UnstoppableResponse {
   records: Record<string, Address>
+  meta: Record<string, string>
 }
 
 async function resolveUnstoppableName(value: string) {
@@ -133,6 +148,7 @@ async function resolveUnstoppableName(value: string) {
   if (!response.ok) {
     throw new Error(`Fetch response not okay: ${response.status}`)
   }
+
   const json = (await response.json()) as UnstoppableResponse
   if (!json.records) {
     const responseText = await response.text()
