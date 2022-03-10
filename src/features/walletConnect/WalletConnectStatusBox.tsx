@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Fade } from 'src/components/animation/Fade'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
-import CloseIcon from 'src/components/icons/close.svg'
+import { XIcon } from 'src/components/icons/X'
 import { Box } from 'src/components/layout/Box'
 import { useAccountLockStatus } from 'src/features/password/password'
 import { WalletConnectStatus } from 'src/features/walletConnect/types'
@@ -119,7 +119,7 @@ export function WalletConnectStatusBox() {
             )}
           </Box>
           <button onClick={onClickDisconnect} title="Disconnect" css={style.closeButton}>
-            <img src={CloseIcon} css={style.closeIcon} alt="Close" />
+            <XIcon styles={style.closeIcon} />
           </button>
         </Box>
       </Fade>

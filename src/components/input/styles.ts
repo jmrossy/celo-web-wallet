@@ -9,7 +9,7 @@ export const sharedInputStyles: Styles = {
     borderColor: Color.borderActive,
   },
   '::placeholder': {
-    color: Color.borderInactive,
+    color: Color.textPlaceholder,
     opacity: 1 /* Firefox */,
   },
   ':disabled': {

@@ -164,7 +164,7 @@ const style: Stylesheet = {
   closeButton: {
     position: 'relative',
     top: 2,
-    img: {
+    svg: {
       filter: 'brightness(0) invert(1)',
     },
     ':hover': {

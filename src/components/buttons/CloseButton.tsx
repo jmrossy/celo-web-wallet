@@ -2,16 +2,15 @@ import {
   TransparentIconButton,
   TransparentIconButtonProps,
 } from 'src/components/buttons/TransparentIconButton'
-import CloseIcon from 'src/components/icons/close.svg'
+import { XIcon } from 'src/components/icons/X'
 
 export function CloseButton(props: Omit<TransparentIconButtonProps, 'icon'>) {
   const { onClick, styles, iconStyles, margin, title, color } = props
 
   return (
     <TransparentIconButton
-      icon={CloseIcon}
+      icon={<XIcon styles={iconStyles} />}
       styles={styles}
-      iconStyles={iconStyles}
       color={color}
       margin={margin}
       onClick={onClick}

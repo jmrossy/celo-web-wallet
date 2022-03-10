@@ -10,6 +10,7 @@ export enum Color {
   accentBlue = '#6A9EDC',
 
   textGrey = '#818181',
+  textPlaceholder = '#CCCCCC',
   textError = '#E53935',
   textWarning = '#F3C335',
 

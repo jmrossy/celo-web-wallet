@@ -1,8 +1,8 @@
-import { providers } from 'ethers'
+import { BigNumber, providers, utils } from 'ethers'
 import { useEffect, useState } from 'react'
 import { getProvider } from 'src/blockchain/provider'
 import { config } from 'src/config'
-import { ALCHEMY_UNSTOPPABLE_BASEURL } from 'src/consts'
+import { ALCHEMY_UNSTOPPABLE_BASEURL, NULL_ADDRESS } from 'src/consts'
 import { isValidAddress } from 'src/utils/addresses'
 import { useDebounce } from 'src/utils/debounce'
 import { logger } from 'src/utils/logger'
@@ -33,7 +33,13 @@ export function findDomainNameType(value: string) {
   return null
 }
 
-export function useDomainResolver(value: string) {
+export interface DomainResolverStatus {
+  result: Address | null
+  loading: boolean
+  error: boolean
+}
+
+export function useDomainResolver(value: string): DomainResolverStatus {
   const { debouncedValue, isDebouncing } = useDebounce(value)
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null)
   const [isResolving, setIsResolving] = useState<boolean>(false)
@@ -50,8 +56,7 @@ export function useDomainResolver(value: string) {
       return
     }
 
-    // Note, null means resolved to nothing but lookup was successful
-    if (resolutionCache[domainType][debouncedValue] !== undefined) {
+    if (resolutionCache[domainType][debouncedValue]) {
       setResolvedAddress(resolutionCache[domainType][debouncedValue])
       setIsResolving(false)
       setIsError(false)
@@ -63,7 +68,7 @@ export function useDomainResolver(value: string) {
     setIsError(false)
 
     resolveDomainName(debouncedValue, domainType)
-      .then((address: Address | null) => {
+      .then((address: Address) => {
         resolutionCache[domainType][debouncedValue] = address
         setResolvedAddress(address)
         setIsResolving(false)
@@ -78,12 +83,12 @@ export function useDomainResolver(value: string) {
 
   return {
     result: resolvedAddress,
-    loading: isDebouncing || isResolving,
+    loading: isResolving,
     error: isError,
   }
 }
 
-async function resolveDomainName(value: string, type: DomainNameType): Promise<Address | null> {
+async function resolveDomainName(value: string, type: DomainNameType): Promise<Address> {
   try {
     let address: Address | null = null
     if (type === DomainNameType.ENS) {
@@ -95,7 +100,11 @@ async function resolveDomainName(value: string, type: DomainNameType): Promise<A
     } else {
       throw new Error(`Unsupported domain name type ${type}`)
     }
-    return address
+
+    if (address) return address
+    // If no errors encountered but could not find valid address
+    // then return NULL_ADDRESS to represent nothing found
+    else return NULL_ADDRESS
   } catch (error) {
     logger.error('Error resolving domain name', error, value, type)
     throw new Error('Error resolving domain name')
@@ -112,8 +121,12 @@ async function resolveEnsName(value: string) {
   if (!resolver) return null
   const coinType = config.ensCoinTypeValue
   if (!coinType) return null
-  // TODO this throws error due to unknown coin type
-  const address = await resolver.getAddress(coinType)
+  // Note, not using the resolver's getAddress method because it's limited to certain coins
+  // https://github.com/ethers-io/ethers.js/discussions/2773
+  const encodedCoinType = utils.hexZeroPad(BigNumber.from(coinType).toHexString(), 32)
+  const hexBytes = await resolver._fetchBytes('0xf1cb7e06', encodedCoinType)
+  if (hexBytes == null || hexBytes === '0x') return null
+  const address = ethProvider.formatter.address(hexBytes)
   if (address && isValidAddress(address)) return address
   else return null
 }
@@ -143,7 +156,7 @@ async function resolveUnstoppableName(value: string) {
         Authorization: `Bearer ${apiKey}`,
       },
     },
-    2000
+    5000
   )
   if (!response.ok) {
     throw new Error(`Fetch response not okay: ${response.status}`)

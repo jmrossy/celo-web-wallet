@@ -1,11 +1,4 @@
-import {
-  ChangeEvent,
-  InputHTMLAttributes,
-  PropsWithChildren,
-  ReactElement,
-  useEffect,
-  useState,
-} from 'react'
+import { ChangeEvent, PropsWithChildren, ReactElement, useEffect, useState } from 'react'
 import { ChevronIcon } from 'src/components/icons/Chevron'
 import { HelpText } from 'src/components/input/HelpText'
 import { getSharedInputStyles } from 'src/components/input/styles'
@@ -37,9 +30,6 @@ export interface SelectInputProps {
   fillWidth?: boolean
   height?: string | number // defaults to 40
   inputStyles?: Styles
-  renderInputField?: (
-    props: InputHTMLAttributes<HTMLInputElement> & { styles: Styles }
-  ) => ReactElement // custom renderer for a input component
   renderSelectValue?: (v: string) => ReactElement | null // custom renderer for a selected value in faux input
   renderDropdownOption?: (o: SelectOption) => ReactElement // custom renderer for dropdown line item
 }
@@ -60,7 +50,6 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
     hideChevron,
     fillWidth,
     inputStyles,
-    renderInputField,
     renderDropdownOption,
     renderSelectValue,
   } = props
@@ -113,7 +102,7 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
         onBlur={handleBlur}
         className="notranslate"
       >
-        {autoComplete && !renderInputField && (
+        {autoComplete && (
           <>
             <input
               type="text"
@@ -134,20 +123,6 @@ export function SelectInput(props: PropsWithChildren<SelectInputProps>) {
             )}
           </>
         )}
-
-        {autoComplete &&
-          !!renderInputField &&
-          renderInputField({
-            name,
-            value: inputValue,
-            onClick: handleClick,
-            onFocus: handleClick,
-            onChange: handleChange,
-            placeholder,
-            disabled,
-            styles: formattedInputStyle,
-            autoComplete: 'off', // // Disable browser's autocomplete
-          })}
 
         {!autoComplete && (
           // Tab index is required here to workaround a browser bug

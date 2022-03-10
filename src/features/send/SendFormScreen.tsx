@@ -3,16 +3,20 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
 import { TextButton } from 'src/components/buttons/TextButton'
+import { TextLink } from 'src/components/buttons/TextLink'
+import { BasicHelpIconModal, HelpIcon } from 'src/components/icons/HelpIcon'
 import PasteIcon from 'src/components/icons/paste.svg'
 import { AmountAndCurrencyInput } from 'src/components/input/AmountAndCurrencyInput'
 import { SelectInput } from 'src/components/input/SelectInput'
 import { TextArea } from 'src/components/input/TextArea'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { NULL_ADDRESS } from 'src/consts'
 import { useBalances } from 'src/features/balances/hooks'
 import { getTokenBalance } from 'src/features/balances/utils'
 import { useContactsAndAccountsSelect } from 'src/features/contacts/hooks'
 import { useDomainResolver } from 'src/features/send/domainResolution'
+import { DomainResolverStatus } from 'src/features/send/DomainResolutionStatus'
 import { validate } from 'src/features/send/sendToken'
 import { SendTokenParams } from 'src/features/send/types'
 import { useTokens } from 'src/features/tokens/hooks'
@@ -21,6 +25,7 @@ import { isNativeTokenAddress } from 'src/features/tokens/utils'
 import { useFlowTransaction } from 'src/features/txFlow/hooks'
 import { txFlowStarted } from 'src/features/txFlow/txFlowSlice'
 import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
+import { flex } from 'src/styles/flex'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -35,11 +40,13 @@ interface LocationState {
 }
 
 interface SendTokenForm extends Omit<SendTokenParams, 'amountInWei'> {
-  amount: string
+  amount: string // Amount in units (not wei)
+  resolvedAddress: string // Address from domain resolution
 }
 
 const initialValues: SendTokenForm = {
   recipient: '',
+  resolvedAddress: '',
   amount: '',
   tokenAddress: '',
   comment: '',
@@ -87,9 +94,15 @@ export function SendFormScreen() {
     loading: resolverLoading,
     error: resolverError,
   } = useDomainResolver(values.recipient)
-  console.log('resolvedAddress', resolvedAddress)
-  console.log('resolverLoading', resolverLoading)
-  console.log('resolverError', resolverError)
+
+  // Inject resolvedAddress into form values
+  useEffect(() => {
+    if (resolvedAddress && resolvedAddress !== NULL_ADDRESS) {
+      setValues({ ...values, resolvedAddress })
+    } else {
+      setValues({ ...values, resolvedAddress: '' })
+    }
+  }, [resolvedAddress])
 
   const onPasteAddress = async () => {
     const value = await tryClipboardGet()
@@ -120,26 +133,35 @@ export function SendFormScreen() {
     <ScreenContentFrame>
       <div css={style.content}>
         <form onSubmit={handleSubmit}>
-          <h1 css={Font.h2Green}>Send Payment</h1>
+          <h1 css={Font.h2Green}>
+            Send Payment <HelpButton />
+          </h1>
 
           <Box direction="column" margin="0 0 2em 0">
             <label css={style.inputLabel}>Recipient</label>
             <Box direction="row" justify="start" align="end">
-              <SelectInput
-                name="recipient"
-                autoComplete={true}
-                value={values.recipient}
-                options={contactOptions}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                // renderInputField={} TODO
-                placeholder="0x123 or contact"
-                maxOptions={4}
-                allowRawOption={true}
-                hideChevron={true}
-                fillWidth={true}
-                {...errors['recipient']}
-              />
+              <Box relative styles={flex.fill}>
+                <SelectInput
+                  name="recipient"
+                  autoComplete={true}
+                  value={values.recipient}
+                  options={contactOptions}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="Address, contact, or domain name"
+                  maxOptions={4}
+                  allowRawOption={true}
+                  hideChevron={true}
+                  fillWidth={true}
+                  {...errors['recipient']}
+                />
+                <DomainResolverStatus
+                  result={resolvedAddress}
+                  loading={resolverLoading}
+                  error={resolverError}
+                  styles={style.domainStatusIcon}
+                />
+              </Box>
               {isClipboardReadSupported() ? (
                 <Button
                   size="icon"
@@ -215,13 +237,49 @@ function getInitialValues(
     }
   } else {
     const token = tokens[tx.params.tokenAddress]
-    return amountFieldFromWei(tx.params, token?.decimals)
+    return {
+      ...amountFieldFromWei(tx.params, token?.decimals),
+      resolvedAddress: '',
+    }
   }
 }
 
 function getFormattedValues(values: SendTokenForm, tokens: TokenMap): SendTokenParams {
   const token = tokens[values.tokenAddress]
-  return amountFieldToWei(values, token?.decimals)
+  const recipient = isValidAddress(values.resolvedAddress)
+    ? values.resolvedAddress
+    : values.recipient
+  return {
+    ...amountFieldToWei(values, token?.decimals),
+    recipient,
+  }
+}
+
+function HelpButton() {
+  return (
+    <HelpIcon
+      width="1em"
+      modal={{ head: 'About Transfers', content: <HelpModal /> }}
+      margin="0 0 0 0.4em"
+    />
+  )
+}
+
+function HelpModal() {
+  return (
+    <BasicHelpIconModal>
+      <p>
+        You can transfer any token on the Celo network. Tokens can be native currencies (like cUSD)
+        or custom ones (like UBE).
+      </p>
+      <p>
+        To set the recipient, input an address (0x123...) or a domain name. Names can be from{' '}
+        <TextLink link="https://unstoppabledomains.com">Unstoppable Domains</TextLink>,{' '}
+        <TextLink link="https://app.ens.domains">ENS</TextLink>, or{' '}
+        <TextLink link="https://nom.space">Nomspace</TextLink>.
+      </p>
+    </BasicHelpIconModal>
+  )
 }
 
 const style: Stylesheet = {
@@ -239,6 +297,13 @@ const style: Stylesheet = {
   inputLabel: {
     ...Font.inputLabel,
     marginBottom: '0.5em',
+  },
+  domainStatusIcon: {
+    position: 'absolute',
+    height: '1.2em',
+    width: '1.2em',
+    top: '30%',
+    right: '0.6em',
   },
   copyIcon: {
     height: '1em',

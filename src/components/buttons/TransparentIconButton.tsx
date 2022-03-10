@@ -1,29 +1,39 @@
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { Styles } from 'src/styles/types'
 
 export interface TransparentIconButtonProps {
   icon: string | ReactElement
   onClick: () => void
-  styles?: Styles
-  iconStyles?: Styles
-  margin?: string | number
   title?: string
+  margin?: string | number
   color?: 'light' | 'dark'
+  opacity?: number
+  styles?: Styles // button style overrides
+  iconStyles?: Styles // img style overrides
 }
 
 export function TransparentIconButton(props: TransparentIconButtonProps) {
-  const { icon, onClick, styles, iconStyles, margin, title, color } = props
-  const primaryStyle = color === 'light' ? defaultStyleLight : defaultStyle
+  const { icon, onClick, title, margin, color, opacity, styles, iconStyles } = props
+
+  const buttonStyle = useMemo(() => {
+    const defaults = color === 'light' ? defaultStyleLight : defaultStyle
+    return {
+      ...defaults,
+      opacity: opacity ?? defaults.opacity,
+      margin,
+      ...styles,
+    }
+  }, [margin, color, opacity, styles])
 
   return (
-    <button css={{ ...primaryStyle, margin, ...styles }} onClick={onClick} title={title}>
+    <button css={buttonStyle} onClick={onClick} title={title} type="button">
       {typeof icon === 'string' ? <img src={icon} css={iconStyles} /> : icon}
     </button>
   )
 }
 
-const base: Styles = {
+const baseStyle: Styles = {
   ...transparentButtonStyles,
   display: 'flex',
   alignItems: 'center',
@@ -31,7 +41,7 @@ const base: Styles = {
 }
 
 const defaultStyle: Styles = {
-  ...base,
+  ...baseStyle,
   opacity: 0.9,
   ':hover': {
     filter: 'brightness(2.5)',
@@ -42,7 +52,8 @@ const defaultStyle: Styles = {
 }
 
 const defaultStyleLight: Styles = {
-  ...base,
+  ...baseStyle,
+  opacity: 1,
   filter: 'brightness(6)',
   ':hover': {
     filter: 'brightness(5)',
