@@ -1,7 +1,12 @@
 import { PropsWithChildren, useEffect, useState } from 'react'
 
-export function Fade(props: PropsWithChildren<{ show: boolean }>) {
-  const { show, children } = props
+interface Props {
+  show: boolean
+  duration?: string
+}
+
+export function Fade(props: PropsWithChildren<Props>) {
+  const { show, duration, children } = props
   const [render, setRender] = useState(show)
 
   useEffect(() => {
@@ -15,7 +20,7 @@ export function Fade(props: PropsWithChildren<{ show: boolean }>) {
   return render ? (
     <div
       css={{
-        animation: `${show ? 'fadeIn' : 'fadeOut'} 1s`,
+        animation: `${show ? 'fadeIn' : 'fadeOut'} ${duration ?? '1s'}`,
         position: 'relative',
       }}
       onAnimationEnd={onAnimationEnd}

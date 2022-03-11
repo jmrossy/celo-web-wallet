@@ -115,7 +115,7 @@ export const App = () => {
 
             <Route path="change-pin" element={<ChangePasswordScreen />} />
 
-            {/* To faciliatate testing */}
+            {/* To facilitate testing */}
             {/* <Route path="/dev/home" element={<HomeScreen />} />
             <Route path="/dev/modals" element={<ModalTestScreen />} />
             <Route path="/dev/tools" element={<DevTools />} /> */}

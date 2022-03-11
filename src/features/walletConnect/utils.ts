@@ -69,7 +69,7 @@ export function getExpiryTime(session: WalletConnectSession | null) {
   let time
   if (session?.status === SessionStatus.Pending) time = session.data.ttl
   if (session?.status === SessionStatus.Settled) time = session.data.expiry
-  return time ? new Date(time * 1000).toLocaleString() : 'Unknown time'
+  return time && typeof time === 'number' ? new Date(time * 1000).toLocaleString() : null
 }
 
 export function getPermissionList(session: WalletConnectSession | null) {
