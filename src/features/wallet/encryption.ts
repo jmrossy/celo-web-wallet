@@ -14,7 +14,7 @@ export async function encryptMnemonic(mnemonic: string, password: string) {
     const ciphertext = await encrypt(encryptionKey, mnemonic)
     return ciphertext
   } catch (error) {
-    // Excluding error message in case it contains senstive data
+    // Excluding error message in case it contains sensitive data
     logger.error('Error encrypting mnemonic')
     throw new Error('Cannot encrypt seed phrase')
   }
@@ -31,7 +31,7 @@ export async function decryptMnemonic(ciphertext: string, password: string) {
     const mnemonic = await decrypt(encryptionKey, ciphertext)
     return mnemonic
   } catch (error) {
-    // Excluding error message in case it contains senstive data
+    // Excluding error message in case it contains sensitive data
     logger.error('Error decrypting mnemonic')
     throw new Error('Cannot decrypt seed phrase')
   }

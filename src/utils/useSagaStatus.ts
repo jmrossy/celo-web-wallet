@@ -14,10 +14,17 @@ export function useSagaStatus(
   resetSagaOnSuccess = true
 ) {
   const { showErrorModal } = useModal()
-  const onFailure = useCallback(() => {
-    showErrorModal(errorTitle, errorMsg || 'Something went wrong, sorry! Please try again.', error)
-  }, [showErrorModal])
-  const { status, error } = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess, onFailure)
+  const onFailure = useCallback(
+    (sagaError?: unknown) => {
+      showErrorModal(
+        errorTitle,
+        errorMsg || 'Something went wrong, sorry! Please try again.',
+        sagaError
+      )
+    },
+    [showErrorModal]
+  )
+  const { status } = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess, onFailure)
   return status
 }
 
@@ -36,7 +43,7 @@ function _useSagaStatus(
   sagaName: string,
   resetSagaOnSuccess: boolean,
   onSuccess?: () => void,
-  onFailure?: () => void
+  onFailure?: (error?: unknown) => void
 ) {
   const dispatch = useAppDispatch()
   const sagaState = useAppSelector((s) => s.saga[sagaName])
@@ -56,7 +63,7 @@ function _useSagaStatus(
       if (resetSagaOnSuccess) dispatch(saga.actions.reset())
       if (onSuccess) onSuccess()
     } else if (status === SagaStatus.Failure) {
-      if (onFailure) onFailure()
+      if (onFailure) onFailure(error)
     }
   }, [status, error])
 
