@@ -24,11 +24,11 @@ export function StackedBarChart(props: Props) {
     <div>
       <Box direction="row" align="center" styles={{ ...style.container, width }}>
         {data.map((d, i) => {
-          const width = Math.round((d.value / total.value) * 100) + '%'
+          const barWidth = Math.round((d.value / total.value) * 100) + '%'
           return (
             <div
               key={`stacked-bar-area-${i}`}
-              css={{ ...style.element, width, background: d.color }}
+              css={{ ...style.element, width: barWidth, background: d.color }}
             ></div>
           )
         })}

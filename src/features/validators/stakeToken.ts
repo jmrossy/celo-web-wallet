@@ -22,7 +22,7 @@ import {
 import { getStakingMaxAmount } from 'src/features/validators/utils'
 import { selectVoterAccountAddress } from 'src/features/wallet/hooks'
 import { CELO } from 'src/tokens'
-import { areAddressesEqual } from 'src/utils/addresses'
+import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import {
   BigNumberMin,
   getAdjustedAmount,
@@ -45,8 +45,16 @@ export function validate(
   const { amountInWei, groupAddress, action, feeEstimates } = params
   let errors: ErrorState = { isValid: true }
 
-  if (!groupAddress || groups.findIndex((g) => g.address === groupAddress) < 0) {
-    errors = { ...errors, ...invalidInput('groupAddress', 'Invalid Validator Group') }
+  if (!groupAddress) {
+    errors = { ...errors, ...invalidInput('groupAddress', 'Validator Group Required') }
+  } else if (!isValidAddress(groupAddress)) {
+    errors = { ...errors, ...invalidInput('groupAddress', 'Invalid Group Address') }
+  } else {
+    const formattedAddress = normalizeAddress(groupAddress)
+    const isAddressUnknown = groups.findIndex((g) => g.address === formattedAddress) < 0
+    if (action !== StakeActionType.Revoke && isAddressUnknown) {
+      errors = { ...errors, ...invalidInput('groupAddress', 'Invalid Validator Group') }
+    }
   }
 
   if (!Object.values(StakeActionType).includes(action)) {
@@ -130,7 +138,8 @@ export function getStakeActionTxPlan(
   voterBalances: Balances,
   currentVotes: GroupVotes
 ): StakeTokenTxPlan {
-  const { action, amountInWei, groupAddress } = params
+  const { action, amountInWei, groupAddress: _groupAddress } = params
+  const groupAddress = normalizeAddress(_groupAddress)
 
   if (action === StakeActionType.Vote) {
     const maxAmount = getStakingMaxAmount(action, voterBalances, currentVotes, groupAddress)
