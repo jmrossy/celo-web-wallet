@@ -3,15 +3,18 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from 'src/app/hooks'
 import { Address } from 'src/components/Address'
+import { Fade } from 'src/components/animation/Fade'
 import { Button } from 'src/components/buttons/Button'
 import { HrDivider } from 'src/components/HrDivider'
 import SendPaymentIcon from 'src/components/icons/send_payment.svg'
+import WarningIcon from 'src/components/icons/warning.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
 import { estimateFeeActions } from 'src/features/fees/estimateFee'
 import { FeeHelpIcon } from 'src/features/fees/FeeHelpIcon'
 import { useFee } from 'src/features/fees/utils'
+import { useIsAddressContract } from 'src/features/send/addressContractCheck'
 import {
   createTransferTx,
   getTokenTransferType,
@@ -39,10 +42,11 @@ export function SendConfirmationScreen() {
 
   useEffect(() => {
     // Make sure we belong on this screen
-    if (!tx || tx.type !== TxFlowType.Send) {
+    if (tx?.type !== TxFlowType.Send) {
       navigate('/send')
       return
     }
+
     const { tokenAddress, recipient, amountInWei } = tx.params
     const type = getTokenTransferType(tx.params)
     if (isNativeTokenAddress(tokenAddress)) {
@@ -61,7 +65,11 @@ export function SendConfirmationScreen() {
     }
   }, [tx])
 
-  if (!tx || tx.type !== TxFlowType.Send) return null
+  const isRecipientContract = useIsAddressContract(
+    tx?.type === TxFlowType.Send ? tx.params.recipient : undefined
+  )
+
+  if (tx?.type !== TxFlowType.Send) return null
   const params = tx.params
   const txToken = tokens[params.tokenAddress]
 
@@ -95,6 +103,15 @@ export function SendConfirmationScreen() {
     <ScreenContentFrame>
       <div css={style.content}>
         <h1 css={Font.h2Green}>Review Payment</h1>
+
+        <Fade show={isRecipientContract}>
+          <Box align="center" styles={{ ...style.inputRow, ...style.warningBox }} justify="between">
+            <img src={WarningIcon} width="23px" height="20px" />
+            <div css={style.warningText}>
+              Warning: this recipient address is a contract, not a simple account.
+            </div>
+          </Box>
+        </Fade>
 
         <Box align="center" styles={style.inputRow} justify="between">
           <label css={style.labelCol}>To</label>
@@ -224,5 +241,16 @@ const style: Stylesheet = {
     fontSize: '1.2em',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+  },
+  warningBox: {
+    background: Color.fillWarning,
+    padding: '0.6em 0.8em',
+    borderRadius: 6,
+    opacity: 0.95,
+  },
+  warningText: {
+    ...Font.body2,
+    lineHeight: '1.4em',
+    marginLeft: '0.8em',
   },
 }
