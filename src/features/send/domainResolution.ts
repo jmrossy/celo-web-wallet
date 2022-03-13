@@ -48,7 +48,8 @@ export function useDomainResolver(value: string): DomainResolverStatus {
   useEffect(() => {
     if (isDebouncing) return
 
-    const domainType = findDomainNameType(debouncedValue)
+    const name = debouncedValue?.trim()
+    const domainType = findDomainNameType(name)
     if (!domainType) {
       setResolvedAddress(null)
       setIsResolving(false)
@@ -56,8 +57,8 @@ export function useDomainResolver(value: string): DomainResolverStatus {
       return
     }
 
-    if (resolutionCache[domainType][debouncedValue]) {
-      setResolvedAddress(resolutionCache[domainType][debouncedValue])
+    if (resolutionCache[domainType][name]) {
+      setResolvedAddress(resolutionCache[domainType][name])
       setIsResolving(false)
       setIsError(false)
       return
@@ -67,9 +68,9 @@ export function useDomainResolver(value: string): DomainResolverStatus {
     setIsResolving(true)
     setIsError(false)
 
-    resolveDomainName(debouncedValue, domainType)
+    resolveDomainName(name, domainType)
       .then((address: Address) => {
-        resolutionCache[domainType][debouncedValue] = address
+        resolutionCache[domainType][name] = address
         setResolvedAddress(address)
         setIsResolving(false)
         setIsError(false)
