@@ -23,7 +23,6 @@ import {
   getExpiryTime,
   getPeerName,
   getPeerUrl,
-  getPermissionList,
   getStartTime,
   rpcMethodToLabel,
   validateWalletConnectForm,
@@ -188,9 +187,11 @@ function ReviewSession({ session }: { session: WalletConnectSession | null }) {
 
   return (
     <Box direction="column" align="center">
-      <h3 css={style.h3}>{`${peerName} would like to connect to your wallet`}</h3>
-      <label css={style.label}>Requested permissions:</label>
-      <div css={style.details}>{getPermissionList(session)}</div>
+      <h3
+        css={style.h3}
+      >{`${peerName} would like to connect to your wallet. No transactions will be made without your confirmation.`}</h3>
+      {/* <label css={style.label}>Requested permissions:</label>
+      <div css={style.details}>{getPermissionList(session)}</div> */}
       {peerUrl && (
         <TextLink link={peerUrl} styles={style.dappUrl}>
           {trimToLength(peerUrl, 70)}
@@ -233,10 +234,12 @@ function ViewSession({ session, close }: { session: WalletConnectSession | null 
         <div css={[style.details, { marginRight: '1em' }]}>Connected since:</div>
         <div css={style.details}>{start}</div>
       </Box>
-      <Box align="center">
-        <div css={[style.details, { marginRight: '1em' }]}>Session expires:</div>
-        <div css={style.details}>{expiry}</div>
-      </Box>
+      {expiry && (
+        <Box align="center">
+          <div css={[style.details, { marginRight: '1em' }]}>Session expires:</div>
+          <div css={style.details}>{expiry}</div>
+        </Box>
+      )}
       {peerUrl && (
         <TextLink link={peerUrl} styles={style.dappUrl}>
           {trimToLength(peerUrl, 70)}

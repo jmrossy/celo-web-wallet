@@ -62,7 +62,7 @@ export const AmountAndCurrencyInput = (props: Props) => {
     [tokens]
   )
 
-  const renderDropdownValue = useCallback(
+  const renderSelectValue = useCallback(
     (value: string) => {
       const option = selectOptions.find((o) => o.display === value)
       if (!option) return null
@@ -91,8 +91,8 @@ export const AmountAndCurrencyInput = (props: Props) => {
         options={selectOptions}
         placeholder="Currency"
         inputStyles={style.token}
+        renderSelectValue={renderSelectValue}
         renderDropdownOption={renderDropdownOption}
-        renderDropdownValue={renderDropdownValue}
         {...errors[selectName]}
       />
       <NumberInput

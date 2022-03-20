@@ -170,11 +170,13 @@ export function StakeFormScreen() {
               <SelectInput
                 name="groupAddress"
                 autoComplete={true}
-                width="19em"
+                allowRawOption={true}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.groupAddress}
                 options={selectOptions}
+                fillWidth={true}
+                hideChevron={true}
                 {...errors['groupAddress']}
               />
             </Box>
@@ -194,10 +196,10 @@ export function StakeFormScreen() {
 
             <Box direction="column" justify="end" align="start" margin="1.5em 0 0 0">
               <label css={style.inputLabel}>Amount</label>
-              <Box direction="row" align="center">
+              <Box direction="row" align="center" justify="between" styles={style.amountContainer}>
                 <NumberInput
-                  width="12em"
-                  margin="0 1.6em 0 0"
+                  width="14em"
+                  margin="0 1em 0 0"
                   name="amount"
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -219,17 +221,16 @@ export function StakeFormScreen() {
                 total={resultData.total}
                 showTotal={false}
                 showLabels={true}
-                width="20.25em"
+                width="23.5em"
               />
             </Box>
 
-            <Box direction="row" margin="2em 0 0 0">
+            <Box direction="row" margin="2em 0 0 0" justify="between">
               <Button
                 type="button"
                 size="m"
                 color={Color.primaryWhite}
                 onClick={onGoBack}
-                margin="0 5.4em 0 0"
                 width="5em"
               >
                 Back
@@ -337,7 +338,8 @@ const style: Stylesheet = {
   },
   content: {
     width: '100%',
-    maxWidth: '26em',
+    maxWidth: '23.5em',
+    paddingRight: '3em',
     paddingBottom: '1em',
   },
   inputLabel: {
@@ -346,6 +348,9 @@ const style: Stylesheet = {
   },
   radioBox: {
     justifyContent: 'flex-start',
+  },
+  amountContainer: {
+    width: '100%',
   },
   maxAmountButton: {
     fontWeight: 300,

@@ -10,6 +10,7 @@ export enum Color {
   accentBlue = '#6A9EDC',
 
   textGrey = '#818181',
+  textPlaceholder = '#CCCCCC',
   textError = '#E53935',
   textWarning = '#F3C335',
 
@@ -23,6 +24,7 @@ export enum Color {
   fillLight = '#F4F5F6',
   fillLighter = '#F6F7F9',
   fillError = '#FFCDD2',
+  fillWarning = '#FAD189',
 
   chartBlueGreen = '#3E7688',
   chartPurple = '#BB6BD9',

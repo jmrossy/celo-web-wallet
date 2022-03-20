@@ -30,16 +30,21 @@ const isElectron = __IS_ELECTRON__ ?? false
 // const isElectron = true
 // @ts-ignore Defined by webpack define plugin
 const version = __VERSION__ || null
+// @ts-ignore Defined by webpack define plugin
+const alchemyApiKey = __ALCHEMY_KEY__ || null
+// @ts-ignore Defined by webpack define plugin
+const walletConnectV2ProjectId = __WALLET_CONNECT_KEY__ || null
 
 interface Config {
   debug: boolean
   isElectron: boolean
   version: string | null
+  alchemyApiKey: string | null
+  walletConnectV2ProjectId: string | null
   jsonRpcUrlPrimary: string
   jsonRpcUrlSecondary?: string
   gatewayFeeRecipient?: string
   blockscoutUrl: string
-  walletConnectV2ProjectId?: string
   discordUrl: string
   desktopUrls: {
     windows: string
@@ -48,6 +53,8 @@ interface Config {
   }
   chainId: number
   contractAddresses: Record<CeloContract, string>
+  nomspaceRegistry: string
+  ensCoinTypeValue?: number
 }
 
 const desktopUrls = {
@@ -63,11 +70,12 @@ const configMainnet: Config = {
   debug: debugMode,
   isElectron,
   version,
+  alchemyApiKey,
+  walletConnectV2ProjectId,
   jsonRpcUrlPrimary: 'https://node.celowallet.app',
   jsonRpcUrlSecondary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
-  walletConnectV2ProjectId: 'a98dc66ddc2368f25c077dd5d5c8af1b',
   discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainId: 42220,
@@ -90,6 +98,8 @@ const configMainnet: Config = {
     [CeloContract.StableTokenBRL]: '0xe8537a3d056DA446677B9E9d6c5dB704EaAb4787',
     [CeloContract.Validators]: '0xaEb865bCa93DdC8F47b8e29F40C5399cE34d0C58',
   },
+  nomspaceRegistry: '0x3DE51c3960400A0F752d3492652Ae4A0b2A36FB3',
+  ensCoinTypeValue: 2147525868, // https://github.com/ensdomains/address-encoder/issues/329
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -97,6 +107,8 @@ const configAlfajores: Config = {
   debug: true,
   isElectron,
   version,
+  alchemyApiKey,
+  walletConnectV2ProjectId,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   discordUrl: 'https://discord.gg/ht885KmG5A',
@@ -121,6 +133,7 @@ const configAlfajores: Config = {
     [CeloContract.StableTokenBRL]: '0xE4D517785D091D3c54818832dB6094bcc2744545',
     [CeloContract.Validators]: '0x9acF2A99914E083aD0d610672E93d14b0736BBCc',
   },
+  nomspaceRegistry: '0x40cd4db228e9c172dA64513D0e874d009486A9a9',
 }
 
 export const config = Object.freeze(configMainnet)
