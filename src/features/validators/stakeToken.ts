@@ -24,6 +24,7 @@ import { selectVoterAccountAddress } from 'src/features/wallet/hooks'
 import { CELO } from 'src/tokens'
 import { areAddressesEqual, isValidAddress, normalizeAddress } from 'src/utils/addresses'
 import {
+  areAmountsNearlyEqual,
   BigNumberMin,
   getAdjustedAmount,
   validateAmount,
@@ -162,22 +163,41 @@ export function getStakeActionTxPlan(
     let amountRemaining = BigNumber.from(amountInWei)
     const amountPending = BigNumber.from(groupVotes.pending)
     const amountActive = BigNumber.from(groupVotes.active)
-    const pendingValue = BigNumberMin(amountPending, amountRemaining)
-    const pendingAdjusted = getAdjustedAmount(amountRemaining, pendingValue, CELO)
-    if (pendingValue.gt(0)) {
+
+    // Start by revoking from pending amounts
+    let pendingToRevoke: BigNumber
+    if (areAmountsNearlyEqual(amountPending, amountRemaining, CELO)) {
+      pendingToRevoke = amountPending
+    } else {
+      pendingToRevoke = BigNumberMin(amountPending, amountRemaining)
+    }
+    if (pendingToRevoke.gt(0)) {
       txs.push({
         type: TransactionType.ValidatorRevokePendingCelo,
-        amountInWei: pendingAdjusted.toString(),
+        amountInWei: pendingToRevoke.toString(),
         groupAddress,
         voterAddress,
       })
-      amountRemaining = amountRemaining.sub(pendingAdjusted)
+      amountRemaining = amountRemaining.sub(pendingToRevoke)
     }
-    if (amountRemaining.gt(0)) {
-      const activeAdjusted = getAdjustedAmount(amountRemaining, amountActive, CELO)
+
+    // Stop here if remaining after pending is very small
+    if (amountRemaining.lt(MIN_VOTE_AMOUNT)) return txs
+
+    // Otherwise, any remaining is taken from active amounts
+    let activeToRevoke: BigNumber
+    if (areAmountsNearlyEqual(amountActive, amountRemaining, CELO)) {
+      activeToRevoke = amountActive
+    } else if (amountRemaining.lt(amountActive)) {
+      activeToRevoke = amountRemaining
+    } else {
+      // Should never happen, validation function should prevent this
+      throw new Error('Cannot revoke more votes than active + pending')
+    }
+    if (activeToRevoke.gt(0)) {
       txs.push({
         type: TransactionType.ValidatorRevokeActiveCelo,
-        amountInWei: activeAdjusted.toString(),
+        amountInWei: activeToRevoke.toString(),
         groupAddress,
         voterAddress,
       })

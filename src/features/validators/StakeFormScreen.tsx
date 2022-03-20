@@ -176,6 +176,7 @@ export function StakeFormScreen() {
                 value={values.groupAddress}
                 options={selectOptions}
                 fillWidth={true}
+                hideChevron={true}
                 {...errors['groupAddress']}
               />
             </Box>
