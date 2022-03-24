@@ -54,7 +54,7 @@ export function DomainResolverStatus({
   if (result && result !== NULL_ADDRESS && !loading && !error) {
     return (
       <TransparentIconButton
-        icon={<CheckmarkIcon fill={Color.primaryGreen} />}
+        icon={<CheckmarkIcon />}
         onClick={onClickCheckmark}
         title="Address found"
         opacity={1}

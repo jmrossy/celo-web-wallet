@@ -1,10 +1,27 @@
 import { memo } from 'react'
 import Celo_Elipse from 'src/components/icons/celo_elipse.svg'
+import { Color } from 'src/styles/Color'
 
-function _CheckmarkIcon({ fill }: { fill: string }) {
+function _CheckmarkIcon({
+  fill,
+  height,
+  width,
+}: {
+  fill?: string
+  height?: string
+  width?: string
+}) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 43.3">
-      <path fill={fill} d="M20.8 42.3L.7 27.2l6-8 12.2 9.1L39.3 1.1l8 6z" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width ?? 20}
+      height={height ?? 20}
+      viewBox="0 0 16 16"
+    >
+      <path
+        fill={fill ?? Color.primaryGreen}
+        d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"
+      />
     </svg>
   )
 }

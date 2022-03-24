@@ -300,8 +300,8 @@ const style: Stylesheet = {
   },
   domainStatusIcon: {
     position: 'absolute',
-    height: '1.2em',
-    width: '1.2em',
+    height: '1.3em',
+    width: '1.3em',
     top: '30%',
     right: '0.6em',
   },
