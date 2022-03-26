@@ -36,7 +36,9 @@ function _CheckmarkInElipseIcon() {
     <div css={{ position: 'relative', marginBottom: '-0.6em' }}>
       <img src={Celo_Elipse} alt="checkmark in elipse" css={{ height: '8em' }} />
       <div css={{ position: 'absolute', top: '35%', left: '29%', width: '2.7em' }}>
-        <CheckmarkIcon fill="#FFFFFF" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 43.3">
+          <path fill="#FFFFFF" d="M20.8 42.3L.7 27.2l6-8 12.2 9.1L39.3 1.1l8 6z" />
+        </svg>
       </div>
     </div>
   )
