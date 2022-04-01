@@ -31,6 +31,9 @@ const config = {
       enforceSizeThreshold: 100000,
     },
   },
+  experiments: {
+    asyncWebAssembly: true,
+  },
   externals: {
     'node-hid': 'commonjs node-hid', // Exclude node-hid as it gets included in electron separately
     ws: 'ws', // Exclude WS to work around walletconnect client bundling issue
@@ -103,6 +106,11 @@ const config = {
       path.resolve('./node_modules'), // Then check root node_modules
       path.resolve('./'), // Finally check root dir (i.e. for src)
     ],
+    fallback: {
+      stream: require.resolve('stream-browserify'),
+      assert: require.resolve('assert/'),
+      util: require.resolve('util/'),
+    },
   },
   // Note about react fast refresh: I tried to enable this but it doesn't seem to work with webpack 5 yet.
   plugins: [
@@ -139,6 +147,12 @@ const config = {
       __IS_ELECTRON__: targetElectron,
       __ALCHEMY_KEY__: JSON.stringify(alchemyApiKey),
       __WALLET_CONNECT_KEY__: JSON.stringify(walletConnectKey),
+      process: {
+        browser: true,
+        env: {
+          NODE_DEBUG: false,
+        },
+      },
     }),
     // Bundle analyzer, don't leave enabled
     // new BundleAnalyzerPlugin(),

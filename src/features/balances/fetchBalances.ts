@@ -9,6 +9,7 @@ import {
   setVoterBalances,
   updateBalances,
 } from 'src/features/balances/balancesSlice'
+import { fetchCeloBalanceVerified } from 'src/features/balances/fetchBalancesVerified'
 import { Balances } from 'src/features/balances/types'
 import { areBalancesEmpty } from 'src/features/balances/utils'
 import { fetchLockedCeloStatus, fetchTotalLocked } from 'src/features/lock/fetchLockedStatus'
@@ -25,12 +26,12 @@ import { call, put } from 'typed-redux-saga'
 
 // Fetch wallet balances and other frequently used data like votes
 // Essentially, fetch all the data that forms need to validate inputs
-function* fetchBalances() {
+function* fetchBalances(useVerified?: boolean) {
   const address = yield* appSelect((state) => state.wallet.address)
   if (!address) throw new Error('Cannot fetch balances before address is set')
 
   const tokenAddrToToken = yield* call(getMigratedTokens)
-  const tokenAddrToValue = yield* call(fetchTokenBalances, address, tokenAddrToToken)
+  const tokenAddrToValue = yield* call(fetchTokenBalances, address, tokenAddrToToken, useVerified)
 
   let lockedCelo: LockedCeloBalances
   if (config.isElectron) {
@@ -62,7 +63,8 @@ export function* fetchBalancesIfStale() {
 
 async function fetchTokenBalances(
   address: Address,
-  tokenMap: TokenMap
+  tokenMap: TokenMap,
+  useVerified?: boolean
 ): Promise<Record<Address, string>> {
   const tokenAddrs = Object.keys(tokenMap)
   // TODO may be good to batch here if token list is really long
@@ -70,7 +72,7 @@ async function fetchTokenBalances(
   for (const tokenAddr of tokenAddrs) {
     // logger.debug(`Fetching ${t.id} balance`)
     if (tokenAddr === CELO.address) {
-      fetchPromises.push(fetchCeloBalance(address))
+      fetchPromises.push(fetchCeloBalance(address, useVerified))
     } else {
       fetchPromises.push(fetchTokenBalance(address, tokenAddr))
     }
@@ -84,10 +86,15 @@ async function fetchTokenBalances(
 
 // TODO Figure out why the balanceOf result is incorrect for GoldToken
 // Contractkit works around this in the same way, must be a low-level issue
-async function fetchCeloBalance(address: Address) {
-  const provider = getProvider()
-  const balance = await provider.getBalance(address)
-  return { tokenAddress: CELO.address, value: balance.toString() }
+async function fetchCeloBalance(address: Address, useVerified?: boolean) {
+  if (!useVerified) {
+    const provider = getProvider()
+    const balance = await provider.getBalance(address)
+    return { tokenAddress: CELO.address, value: balance.toString() }
+  } else {
+    const verifiedBalance = await fetchCeloBalanceVerified(address)
+    return { tokenAddress: CELO.address, value: verifiedBalance.toString() }
+  }
 }
 
 async function fetchTokenBalance(address: Address, tokenAddress: Address) {
@@ -125,4 +132,4 @@ export const {
   wrappedSaga: fetchBalancesSaga,
   reducer: fetchBalancesReducer,
   actions: fetchBalancesActions,
-} = createMonitoredSaga(fetchBalances, 'fetchBalances')
+} = createMonitoredSaga<boolean | undefined>(fetchBalances, 'fetchBalances')

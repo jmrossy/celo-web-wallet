@@ -7,6 +7,7 @@ declare module '@ledgerhq/hw-transport-webusb'
 declare module '@ledgerhq/hw-transport-webhid'
 declare module '@ledgerhq/hw-transport-node-hid-noevents'
 declare module '@ledgerhq/hw-transport-node-hid-singleton'
+declare module 'eth-proof'
 
 declare module '*.svg' {
   import { FunctionComponent, SVGProps } from 'react'

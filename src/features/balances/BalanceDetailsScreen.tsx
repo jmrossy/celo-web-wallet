@@ -3,6 +3,7 @@ import { useAppDispatch } from 'src/app/hooks'
 import { Address } from 'src/components/Address'
 import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
+import { CheckmarkIcon } from 'src/components/icons/Checkmark'
 import { TokenIcon } from 'src/components/icons/tokens/TokenIcon'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -35,7 +36,7 @@ export function BalanceDetailsScreen() {
   const balances = useBalancesWithTokens()
 
   useEffect(() => {
-    dispatch(fetchBalancesActions.trigger())
+    dispatch(fetchBalancesActions.trigger(true))
   }, [])
 
   const status = useSagaStatus(
@@ -87,6 +88,9 @@ export function BalanceDetailsScreen() {
     <ScreenContentFrame>
       <div css={style.content}>
         <h1 css={style.h1}>Account Balance Details</h1>
+        <h2 css={style.h2}>
+          Balances verified with Plumo <CheckmarkIcon />
+        </h2>
         <Table<BalanceTableRow>
           columns={tableColumns}
           data={tableData}
@@ -204,7 +208,15 @@ const style: Stylesheet = {
   },
   h1: {
     ...Font.h2Green,
-    marginBottom: '1.5em',
+    marginBottom: 0,
+  },
+  h2: {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '0.8em 0 1.5em 0',
+    fontSize: '1.1em',
+    fontWeight: 400,
+    color: Color.textGrey,
   },
   tokenLabel: {
     paddingLeft: '0.6em',
