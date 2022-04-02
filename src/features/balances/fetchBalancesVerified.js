@@ -28,6 +28,41 @@ function convert(Uint8Arr) {
 
   return result
 }
+function convertResponseToProof(resp) {
+  return {
+    proofs: [resp.response.proof],
+    epochs: [resp.response.first_epoch, resp.response.last_epoch],
+    vk: VK,
+  }
+}
+
+
+async function fetchAndVerify(plumo, startEpoch, endEpoch) {
+    return (fetch(`${SERVER_URL}/proof_get`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          start_epoch: startEpoch,
+          end_epoch: endEpoch,
+        }),
+      })
+    )
+    .then((resp) => resp.json())
+    .then((resp) => {
+      logger.info(
+        `Verifying Plumo proof for epochs ${resp.response.first_epoch_index} to ${
+          resp.response.last_epoch_index
+        } (up until block ${resp.response.last_epoch_index * 17280})...`
+      )
+      const validatorSet = plumo.plumo_verify(convertResponseToProof(resp));
+      PROOF_CACHE[startEpoch] = {};
+      PROOF_CACHE[startEpoch][endEpoch] = { verified: true };
+
+      return validatorSet;
+    });
+}
 
 // TODO use address instead of hardcoded account
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -46,67 +81,32 @@ export async function fetchCeloBalanceVerified(address, tokenAddress) {
     const currentEpoch = Math.floor(blockNumber / EPOCH_DURATION)
     const numProofs = Math.ceil((currentEpoch - MIN_CIP22_EPOCH) / MAX_TRANSITIONS)
 
-    const convertResponseToProof = (resp) => {
-      return {
-        proofs: [resp.response.proof],
-        epochs: [resp.response.first_epoch, resp.response.last_epoch],
-        vk: VK,
-      }
-    }
-
     for (let i = 0; i < numProofs - 1; i++) {
       const startEpoch = MIN_CIP22_EPOCH + MAX_TRANSITIONS * i;
       const endEpoch = MIN_CIP22_EPOCH + MAX_TRANSITIONS * (i + 1);
-      if (PROOF_CACHE[startEpoch] && PROOF_CACHE[startEpoch][endEpoch]) {
+      if (PROOF_CACHE[startEpoch] && PROOF_CACHE[startEpoch][endEpoch] && PROOF_CACHE[startEpoch][endEpoch]['verified']) {
+        continue;
+      } else if (PROOF_CACHE[startEpoch] && PROOF_CACHE[startEpoch][endEpoch] && PROOF_CACHE[startEpoch][endEpoch]['pending']) {
+        await PROOF_CACHE[startEpoch][endEpoch]['pending'];
         continue;
       }
-      const resp = await (
-        await fetch(`${SERVER_URL}/proof_get`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            start_epoch: startEpoch,
-            end_epoch: endEpoch,
-          }),
-        })
-      ).json()
-      logger.info(
-        `Verifying Plumo proof for epochs ${resp.response.first_epoch_index} to ${
-          resp.response.last_epoch_index
-        } (up until block ${resp.response.last_epoch_index * 17280})...`
-      )
-      plumo.plumo_verify(convertResponseToProof(resp))
+      const future = fetchAndVerify(plumo, startEpoch, endEpoch)
       PROOF_CACHE[startEpoch] = {};
-      PROOF_CACHE[startEpoch][endEpoch] = { verified: true };
+      PROOF_CACHE[startEpoch][endEpoch] = { pending: future };
+      await future;
     }
 
     const lastEpoch = MIN_CIP22_EPOCH + MAX_TRANSITIONS * (numProofs - 1);
     let validatorSet;
     if (PROOF_CACHE[lastEpoch] && PROOF_CACHE[lastEpoch][currentEpoch] && PROOF_CACHE[lastEpoch][currentEpoch]['validatorSet']) {
       validatorSet = PROOF_CACHE[lastEpoch][currentEpoch]['validatorSet'];
+    } else if (PROOF_CACHE[lastEpoch] && PROOF_CACHE[lastEpoch][currentEpoch] && PROOF_CACHE[lastEpoch][currentEpoch]['pending']) {
+      validatorSet = await PROOF_CACHE[lastEpoch][currentEpoch]['pending'];
     } else {
-      // TODO DRY this up with loop above?
-      const plumoProof = await (
-        await fetch(`${SERVER_URL}/proof_get`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            start_epoch: lastEpoch,
-            end_epoch: currentEpoch,
-          }),
-        })
-      ).json()
-
-      logger.info(
-        `Verifying Plumo proof for epochs ${plumoProof.response.first_epoch_index} to ${
-          plumoProof.response.last_epoch_index
-        } (up until block ${plumoProof.response.last_epoch_index * 17280})...`
-      )
-      validatorSet = plumo.plumo_verify(convertResponseToProof(plumoProof))
+      const plumoProofFuture = fetchAndVerify(plumo, lastEpoch, currentEpoch)
+      PROOF_CACHE[lastEpoch] = {};
+      PROOF_CACHE[lastEpoch][currentEpoch] = { pending: plumoProofFuture };
+      validatorSet = await plumoProofFuture;
       PROOF_CACHE[lastEpoch] = {}
       PROOF_CACHE[lastEpoch][currentEpoch] = { verified: true, validatorSet }
     }
@@ -135,10 +135,6 @@ export async function fetchCeloBalanceVerified(address, tokenAddress) {
     const blockHashThatITrust = block.hash
     const untrustedAccount = address
 
-    const rpcBlock = await getAndVerify.get.rpc.eth_getBlockByHash(blockHashThatITrust, false)
-    // const rpcProof = await getAndVerify.get.eth_getProof(untrustedAccount, [], rpcBlock.number)
-
-    logger.debug('rpc block: ', rpcBlock)
     if (!tokenAddress) {
       let resp = await getAndVerify.accountAgainstBlockHash(untrustedAccount, blockHashThatITrust)
       const balance = convert(resp.balance)
