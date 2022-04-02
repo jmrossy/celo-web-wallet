@@ -42,6 +42,7 @@
     "buffer": "^6.0.3",
     "electron-updater": "^4.6.5",
     "eth-proof": "github:kobigurk/celo-proof#d79c3cf39a05f4832426adce1fb30e2fa938776c",
+    "eth-util-lite": "github.com:MichaelAllenWarner/eth-util-lite",
     "ethers": "^5.5.1",
     "frappe-charts": "^1.6.2",
     "history": "^5.2.0",
