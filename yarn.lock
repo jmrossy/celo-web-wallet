@@ -4822,7 +4822,7 @@ etag@~1.8.1:
     merkle-patricia-tree "github:zmitton/merkle-patricia-tree#build"
     promisfy "^1.2.0"
 
-eth-util-lite@^1.0.1:
+eth-util-lite@^1.0.1, "eth-util-lite@github.com:MichaelAllenWarner/eth-util-lite":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/eth-util-lite/-/eth-util-lite-1.0.1.tgz#e0eef3dd317375f22548cda4ca483807a63fa71a"
   integrity sha512-I9zp4kqxEjYhyvpAlap4uupvlwIgCUMDcZCaPNcny6wYUA2hhBkNlAwsMaqhTa19LpYVWsd9TABdx8M1ZUrJ2A==
