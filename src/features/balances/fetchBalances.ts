@@ -7,7 +7,7 @@ import { BALANCE_STALE_TIME } from 'src/consts'
 import {
   balancesInitialState,
   setVoterBalances,
-  updateBalances,
+  updateBalances
 } from 'src/features/balances/balancesSlice'
 import { fetchCeloBalanceVerified } from 'src/features/balances/fetchBalancesVerified'
 import { Balances } from 'src/features/balances/types'
@@ -74,7 +74,7 @@ async function fetchTokenBalances(
     if (tokenAddr === CELO.address) {
       fetchPromises.push(fetchCeloBalance(address, useVerified))
     } else {
-      fetchPromises.push(fetchTokenBalance(address, tokenAddr))
+      fetchPromises.push(fetchTokenBalance(address, tokenAddr, useVerified))
     }
   }
 
@@ -97,7 +97,7 @@ async function fetchCeloBalance(address: Address, useVerified?: boolean) {
   }
 }
 
-async function fetchTokenBalance(address: Address, tokenAddress: Address) {
+async function fetchTokenBalance(address: Address, tokenAddress: Address, useVerified?: boolean) {
   let contract: Contract | null
   if (isNativeTokenAddress(tokenAddress)) {
     contract = getContractByAddress(tokenAddress)
@@ -105,7 +105,12 @@ async function fetchTokenBalance(address: Address, tokenAddress: Address) {
     contract = getTokenContract(tokenAddress)
   }
   if (!contract) throw new Error(`No contract found for token: ${tokenAddress}`)
-  const balance: BigNumberish = await contract.balanceOf(address)
+  let balance: BigNumberish;
+  if (isNativeTokenAddress(tokenAddress) && useVerified ) {
+    balance = await fetchCeloBalanceVerified(address, tokenAddress)
+  } else {
+    balance = await contract.balanceOf(address)
+  }
   return { tokenAddress, value: BigNumber.from(balance).toString() }
 }
 
