@@ -18,6 +18,7 @@ import { HomeNavigator } from 'src/features/home/HomeNavigator'
 import { HomeScreen } from 'src/features/home/HomeScreen'
 import { LockConfirmationScreen } from 'src/features/lock/LockConfirmationScreen'
 import { LockFormScreen } from 'src/features/lock/LockFormScreen'
+import { NftDashboardScreen } from 'src/features/nft/NftDashboardScreen'
 import { ImportAccountScreen } from 'src/features/onboarding/import/ImportAccountScreen'
 import { ImportChoiceScreen } from 'src/features/onboarding/import/ImportChoiceScreen'
 import { LedgerImportScreen } from 'src/features/onboarding/import/LedgerImportScreen'
@@ -77,20 +78,6 @@ export const App = () => {
           <Routes>
             <Route path="/" element={<HomeNavigator />}>
               <Route index element={<HomeScreen />} />
-              <Route path="tx" element={<TransactionReview />} />
-              <Route path="send" element={<SendFormScreen />} />
-              <Route path="send-review" element={<SendConfirmationScreen />} />
-              <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
-              <Route path="exchange" element={<ExchangeFormScreen />} />
-              <Route path="lock" element={<LockFormScreen />} />
-              <Route path="lock-review" element={<LockConfirmationScreen />} />
-              <Route path="validators" element={<ExploreValidatorsScreen />} />
-              <Route path="stake" element={<StakeFormScreen />} />
-              <Route path="stake-review" element={<StakeConfirmationScreen />} />
-              <Route path="stake-rewards" element={<StakeRewardsScreen />} />
-              <Route path="governance" element={<GovernanceFormScreen />} />
-              <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
-              <Route path="balances" element={<BalanceDetailsScreen />} />
               <Route path="account" element={<ViewAccountScreen />} />
               <Route path="accounts" element={<AccountsNavigator />}>
                 <Route index element={<AccountsAndContactsScreen />} />
@@ -101,7 +88,22 @@ export const App = () => {
                 <Route path="ledger" element={<AddLedgerScreen />} />
                 <Route path="set-pin" element={<AddSetPasswordScreen />} />
               </Route>
+              <Route path="balances" element={<BalanceDetailsScreen />} />
+              <Route path="exchange" element={<ExchangeFormScreen />} />
+              <Route path="exchange-review" element={<ExchangeConfirmationScreen />} />
+              <Route path="governance" element={<GovernanceFormScreen />} />
+              <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
+              <Route path="lock" element={<LockFormScreen />} />
+              <Route path="lock-review" element={<LockConfirmationScreen />} />
+              <Route path="nft" element={<NftDashboardScreen />} />
+              <Route path="send" element={<SendFormScreen />} />
+              <Route path="send-review" element={<SendConfirmationScreen />} />
               <Route path="settings" element={<SettingsScreen />} />
+              <Route path="stake" element={<StakeFormScreen />} />
+              <Route path="stake-review" element={<StakeConfirmationScreen />} />
+              <Route path="stake-rewards" element={<StakeRewardsScreen />} />
+              <Route path="tx" element={<TransactionReview />} />
+              <Route path="validators" element={<ExploreValidatorsScreen />} />
             </Route>
 
             <Route path="/setup" element={<OnboardingNavigator />}>

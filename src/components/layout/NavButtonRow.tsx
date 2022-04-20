@@ -7,6 +7,7 @@ import CoinStackIcon from 'src/components/icons/coin_stack.svg'
 import CubeIcon from 'src/components/icons/cube.svg'
 import LockIcon from 'src/components/icons/lock_small.svg'
 import WalletConnectIcon from 'src/components/icons/logos/wallet_connect.svg'
+import NftIcon from 'src/components/icons/nft.svg'
 import SendIcon from 'src/components/icons/send_payment.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'
 import VoteIcon from 'src/components/icons/vote_small.svg'
@@ -101,6 +102,11 @@ export function NavButtonRow({ mobile, disabled }: Props) {
     }
   }
 
+  const onNftClick = () => {
+    hideDropdown()
+    navigate('/nft')
+  }
+
   const onConnectClick = () => {
     hideDropdown()
     showWalletConnectModal()
@@ -187,6 +193,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               description="Vote for proposals"
               onClick={onGovernClick}
             />
+            <MenuItem icon={NftIcon} title="NFTs" description="Manage NFTs" onClick={onNftClick} />
             <MenuItem
               icon={WalletConnectIcon}
               title="Connect"

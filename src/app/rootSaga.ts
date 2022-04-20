@@ -51,6 +51,12 @@ import {
   lockTokenSagaName,
 } from 'src/features/lock/lockToken'
 import {
+  fetchNftsActions,
+  fetchNftsReducer,
+  fetchNftsSaga,
+  fetchNftsSagaName,
+} from 'src/features/nft/fetchNfts'
+import {
   changePasswordActions,
   changePasswordReducer,
   changePasswordSaga,
@@ -216,6 +222,11 @@ export const monitoredSagas: {
     saga: governanceVoteSaga,
     reducer: governanceVoteReducer,
     actions: governanceVoteActions,
+  },
+  [fetchNftsSagaName]: {
+    saga: fetchNftsSaga,
+    reducer: fetchNftsReducer,
+    actions: fetchNftsActions,
   },
   [editAccountSagaName]: {
     saga: editAccountSaga,
