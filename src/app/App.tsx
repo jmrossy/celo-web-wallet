@@ -19,6 +19,9 @@ import { HomeScreen } from 'src/features/home/HomeScreen'
 import { LockConfirmationScreen } from 'src/features/lock/LockConfirmationScreen'
 import { LockFormScreen } from 'src/features/lock/LockFormScreen'
 import { NftDashboardScreen } from 'src/features/nft/NftDashboardScreen'
+import { NftDetailsScreen } from 'src/features/nft/NftDetailsScreen'
+import { NftSendConfirmScreen } from 'src/features/nft/NftSendConfirmScreen'
+import { NftSendFormScreen } from 'src/features/nft/NftSendFormScreen'
 import { ImportAccountScreen } from 'src/features/onboarding/import/ImportAccountScreen'
 import { ImportChoiceScreen } from 'src/features/onboarding/import/ImportChoiceScreen'
 import { LedgerImportScreen } from 'src/features/onboarding/import/LedgerImportScreen'
@@ -95,7 +98,12 @@ export const App = () => {
               <Route path="governance-review" element={<GovernanceConfirmationScreen />} />
               <Route path="lock" element={<LockFormScreen />} />
               <Route path="lock-review" element={<LockConfirmationScreen />} />
-              <Route path="nft" element={<NftDashboardScreen />} />
+              <Route path="nft">
+                <Route index element={<NftDashboardScreen />} />
+                <Route path="details" element={<NftDetailsScreen />} />
+                <Route path="send" element={<NftSendFormScreen />} />
+                <Route path="confirm" element={<NftSendConfirmScreen />} />
+              </Route>
               <Route path="send" element={<SendFormScreen />} />
               <Route path="send-review" element={<SendConfirmationScreen />} />
               <Route path="settings" element={<SettingsScreen />} />

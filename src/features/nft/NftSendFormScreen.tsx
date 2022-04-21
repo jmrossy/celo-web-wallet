@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch } from 'src/app/hooks'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -10,7 +11,8 @@ interface LocationState {
   id: string
 }
 
-export function NftDetailsScreen() {
+export function NftSendFormScreen() {
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const locationState = useLocationState<LocationState>()
 
@@ -25,13 +27,13 @@ export function NftDetailsScreen() {
   if (!locationState?.address || !locationState?.id) return null
   const { address, id } = locationState
 
-  const onClickSend = () => {
-    navigate('/nft/send', { state: { address, id } })
+  const onClickContinue = () => {
+    navigate('/nft/confirm')
   }
 
   return (
     <ScreenContentFrame>
-      <h1 css={style.h1}>Your Non-Fungible Tokens (NFTs)</h1>
+      <h1 css={style.h1}>{`Send ${name}`}</h1>
     </ScreenContentFrame>
   )
 }

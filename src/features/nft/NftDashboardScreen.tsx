@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from 'src/app/hooks'
 import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
@@ -11,6 +12,7 @@ import { SagaStatus } from 'src/utils/saga'
 import { useSagaStatus } from 'src/utils/useSagaStatus'
 
 export function NftDashboardScreen() {
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
   useEffect(() => {
@@ -23,6 +25,10 @@ export function NftDashboardScreen() {
     'Something went wrong when looking for your NFTs, sorry! Please try again later.'
   )
 
+  const onClickNft = (address: Address, id: string) => {
+    navigate('/nft/details', { state: { address, id } })
+  }
+
   const { showModalWithContent, closeModal } = useModal()
 
   const onClickAdd = () => {
@@ -32,7 +38,7 @@ export function NftDashboardScreen() {
 
   return (
     <ScreenContentFrame>
-      <h1 css={style.h1}>Non-Fungible Tokens</h1>
+      <h1 css={style.h1}>Your Non-Fungible Tokens (NFTs)</h1>
 
       <DashedBorderButton
         onClick={onClickAdd}

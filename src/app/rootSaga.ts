@@ -57,6 +57,12 @@ import {
   fetchNftsSagaName,
 } from 'src/features/nft/fetchNfts'
 import {
+  sendNftActions,
+  sendNftReducer,
+  sendNftSaga,
+  sendNftSagaName,
+} from 'src/features/nft/sendNft'
+import {
   changePasswordActions,
   changePasswordReducer,
   changePasswordSaga,
@@ -227,6 +233,11 @@ export const monitoredSagas: {
     saga: fetchNftsSaga,
     reducer: fetchNftsReducer,
     actions: fetchNftsActions,
+  },
+  [sendNftSagaName]: {
+    saga: sendNftSaga,
+    reducer: sendNftReducer,
+    actions: sendNftActions,
   },
   [editAccountSagaName]: {
     saga: editAccountSaga,
