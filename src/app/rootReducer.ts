@@ -7,6 +7,7 @@ import { feedReducer } from 'src/features/feed/feedSlice'
 import { feeReducer } from 'src/features/fees/feeSlice'
 import { governanceReducer } from 'src/features/governance/governanceSlice'
 import { lockReducer } from 'src/features/lock/lockSlice'
+import { nftReducer } from 'src/features/nft/nftSlice'
 import { persistedSettingsReducer } from 'src/features/settings/settingsSlice'
 import { persistedTokenPriceReducer } from 'src/features/tokenPrice/tokenPriceSlice'
 import { persistedTokensReducer } from 'src/features/tokens/tokensSlice'
@@ -27,6 +28,7 @@ export const rootReducer = combineReducers({
   tokenPrice: persistedTokenPriceReducer,
   validators: persistedValidatorsReducer,
   governance: governanceReducer,
+  nft: nftReducer,
   settings: persistedSettingsReducer,
   walletConnect: walletConnectReducer,
   txFlow: txFlowReducer,
