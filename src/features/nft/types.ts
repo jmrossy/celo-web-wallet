@@ -1,12 +1,11 @@
-// TODO remove?
 export interface Nft {
-  contract: Address
-  index: number
+  tokenId: number
+  tokenUri: string
 }
 
-export interface NftProject {
+export interface NftContract {
+  contract: Address
   name: string
   symbol: string
-  uri: string
-  contract: Address
+  uri?: string
 }

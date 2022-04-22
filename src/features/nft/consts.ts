@@ -1,18 +1,19 @@
-import { NftProject } from 'src/features/nft/types'
+import { NftContract } from 'src/features/nft/types'
 
-export const POPULAR_NFT_PROJECTS: NftProject[] = [
+export const POPULAR_NFT_CONTRACTS: NftContract[] = [
   {
     name: 'Celo Apes Kingdom',
     symbol: 'CAK',
     uri: 'https://www.celoapes.club',
     contract: '0x1eCD77075F7504bA849d47DCe4cdC9695f1FE942',
   },
-  {
-    name: 'Celo Espresso',
-    symbol: 'cESPRESSO',
-    uri: 'https://celo-espresso.cafe',
-    contract: '0x7DD354dB71fbFa060070BC0a05d24F87d24A31B7',
-  },
+  // Disabled: does not fully implement extended erc-721
+  // {
+  //   name: 'Celo Espresso',
+  //   symbol: 'cESPRESSO',
+  //   uri: 'https://celo-espresso.cafe',
+  //   contract: '0x7DD354dB71fbFa060070BC0a05d24F87d24A31B7',
+  // },
   {
     name: 'Celo Paints',
     symbol: 'CPAINT',
@@ -91,12 +92,13 @@ export const POPULAR_NFT_PROJECTS: NftProject[] = [
     uri: 'https://nom.space',
     contract: '0x8237f38694211F25b4c872F147F027044466Fa80',
   },
-  {
-    name: 'Nomspace Domains',
-    symbol: 'Nomspace',
-    uri: 'https://nom.space',
-    contract: '0x046D19c5E5E8938D54FB02DCC396ACf7F275490A',
-  },
+  // Disabled: does not fully implement extended erc-721
+  // {
+  //   name: 'Nomspace Domains',
+  //   symbol: 'Nomspace',
+  //   uri: 'https://nom.space',
+  //   contract: '0xdf204de57532242700D988422996e9cED7Aba4Cb',
+  // },
   {
     name: 'Womxn of Celo',
     symbol: 'WMXN',

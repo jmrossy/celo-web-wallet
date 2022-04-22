@@ -2,6 +2,7 @@ import { Contract } from 'ethers'
 import { ABI as AccountsAbi } from 'src/blockchain/ABIs/accounts'
 import { ABI as ElectionAbi } from 'src/blockchain/ABIs/election'
 import { ABI as Erc20Abi } from 'src/blockchain/ABIs/erc20'
+import { ABI as Erc721Abi } from 'src/blockchain/ABIs/erc721'
 import { ABI as EscrowAbi } from 'src/blockchain/ABIs/escrow'
 import { ABI as ExchangeAbi } from 'src/blockchain/ABIs/exchange'
 import { ABI as GoldTokenAbi } from 'src/blockchain/ABIs/goldToken'
@@ -28,12 +29,20 @@ export function getContract(c: CeloContract) {
   return contract
 }
 
+export function getErc20Contract(tokenAddress: Address) {
+  return getTokenContract(tokenAddress, Erc20Abi)
+}
+
+export function getErc721Contract(tokenAddress: Address) {
+  return getTokenContract(tokenAddress, Erc721Abi)
+}
+
 // Search for token contract by address
-export function getTokenContract(tokenAddress: Address) {
+export function getTokenContract(tokenAddress: Address, abi: string) {
   const cachedContract = tokenContractCache[tokenAddress]
   if (cachedContract) return cachedContract
   const signer = getSigner().signer
-  const contract = new Contract(tokenAddress, Erc20Abi, signer)
+  const contract = new Contract(tokenAddress, abi, signer)
   tokenContractCache[tokenAddress] = contract
   return contract
 }

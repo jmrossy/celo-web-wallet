@@ -1,6 +1,6 @@
 import { BigNumber, BigNumberish, Contract } from 'ethers'
 import { appSelect } from 'src/app/appSelect'
-import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
+import { getContractByAddress, getErc20Contract } from 'src/blockchain/contracts'
 import { getProvider } from 'src/blockchain/provider'
 import { config } from 'src/config'
 import { BALANCE_STALE_TIME } from 'src/consts'
@@ -95,7 +95,7 @@ async function fetchTokenBalance(address: Address, tokenAddress: Address) {
   if (isNativeTokenAddress(tokenAddress)) {
     contract = getContractByAddress(tokenAddress)
   } else {
-    contract = getTokenContract(tokenAddress)
+    contract = getErc20Contract(tokenAddress)
   }
   if (!contract) throw new Error(`No contract found for token: ${tokenAddress}`)
   const balance: BigNumberish = await contract.balanceOf(address)
