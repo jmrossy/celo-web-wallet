@@ -2,13 +2,13 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from 'src/app/hooks'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { Nft } from 'src/features/nft/types'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { useLocationState } from 'src/utils/useLocationState'
 
 interface LocationState {
-  address: Address
-  id: string
+  nft: Nft
 }
 
 export function NftSendFormScreen() {
@@ -18,14 +18,14 @@ export function NftSendFormScreen() {
 
   useEffect(() => {
     // Make sure we belong on this screen
-    if (!locationState?.address || !locationState?.id) {
+    if (!locationState?.nft) {
       navigate('/nft')
       return
     }
   }, [locationState])
 
-  if (!locationState?.address || !locationState?.id) return null
-  const { address, id } = locationState
+  if (!locationState?.nft) return null
+  const nft = locationState.nft
 
   const onClickContinue = () => {
     navigate('/nft/confirm')

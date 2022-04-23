@@ -89,6 +89,12 @@ export const Font: Stylesheet = {
       color: Color.primaryBlack,
     },
   },
+  light: {
+    fontWeight: 300,
+  },
+  regular: {
+    fontWeight: 400,
+  },
   bold: {
     fontWeight: 500,
   },

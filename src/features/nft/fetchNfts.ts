@@ -49,6 +49,7 @@ async function fetchNftsForContracts(account: Address, contracts: Address[]) {
         tokens.push({
           tokenId: tokenId.toNumber(),
           tokenUri,
+          contract: contractAddr,
         })
       }
       if (tokens.length) {

@@ -5,7 +5,7 @@ import { Nft, NftContract } from 'src/features/nft/types'
 
 interface NftState {
   owned: Record<Address, Nft[]>
-  lastUpdated: number | null
+  lastUpdated: number | null // for owned
   customContracts: NftContract[]
 }
 
