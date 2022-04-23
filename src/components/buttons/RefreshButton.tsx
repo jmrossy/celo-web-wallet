@@ -11,8 +11,8 @@ interface Props {
 
 export function RefreshButton({ width, height, onClick, styles }: Props) {
   return (
-    <button css={{ ...defaultStyle, ...styles }} onClick={onClick} type="button">
-      <img src={RefreshIcon} width={width} height={height} alt="refresh" />
+    <button css={{ ...defaultStyle, ...styles }} onClick={onClick} title="Refresh" type="button">
+      <img src={RefreshIcon} width={width} height={height} alt="Refresh" />
     </button>
   )
 }

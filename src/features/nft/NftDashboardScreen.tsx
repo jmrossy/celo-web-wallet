@@ -1,15 +1,18 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from 'src/app/hooks'
-import { transparentButtonStyles } from 'src/components/buttons/Button'
-import { DashedBorderButton } from 'src/components/buttons/DashedBorderButton'
+import { useAppDispatch } from 'src/app/hooks'
+import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
+import { RefreshButton } from 'src/components/buttons/RefreshButton'
+import { TextButton } from 'src/components/buttons/TextButton'
 import { KebabMenuIcon } from 'src/components/icons/KebabMenu'
 import NftIcon from 'src/components/icons/nft.svg'
+import { PlusIcon } from 'src/components/icons/Plus'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
 import { fetchNftsActions, fetchNftsSagaName } from 'src/features/nft/fetchNfts'
+import { useNftContracts, useSortedOwnedNfts } from 'src/features/nft/hooks'
 import { Nft } from 'src/features/nft/types'
 import { AddTokenModal } from 'src/features/tokens/AddTokenModal'
 import { Color } from 'src/styles/Color'
@@ -34,18 +37,15 @@ export function NftDashboardScreen() {
   )
   const isLoading = status === SagaStatus.Started
 
-  const owned = useAppSelector((state) => state.nft.owned)
-  const sortedOwned = useMemo(() => {
-    let sortedNfts: Nft[] = []
-    const sortedContracts = Object.keys(owned).sort((a, b) => (a < b ? 1 : -1))
-    for (const contract of sortedContracts) {
-      sortedNfts = [...sortedNfts, ...owned[contract]]
-    }
-    return sortedNfts
-  }, [owned])
+  const contracts = useNftContracts()
+  const owned = useSortedOwnedNfts()
 
   const onClickNft = (nft: Nft) => {
     navigate('/nft/details', { state: { nft } })
+  }
+
+  const onClickRefresh = () => {
+    dispatch(fetchNftsActions.trigger(true))
   }
 
   const { showModalWithContent, closeModal } = useModal()
@@ -57,30 +57,52 @@ export function NftDashboardScreen() {
 
   return (
     <ScreenContentFrame>
-      <h1 css={style.h1}>Your Non-Fungible Tokens (NFTs)</h1>
-      <div>
+      <Box align="center">
+        <h1 css={style.h1}>Non-Fungible Tokens (NFTs)</h1>
+        {/* TODO make buttons look better and fix on mobile*/}
+        <Button
+          size="icon"
+          icon={<PlusIcon width="1em" height="1em" />}
+          onClick={onClickAdd}
+          width="1.8em"
+          height="1.8em"
+          margin="0 2em"
+          title="Add NFT Contract"
+        />
+        <RefreshButton
+          width="18px"
+          height="18px"
+          onClick={onClickRefresh}
+          styles={style.refreshIcon}
+        />
+      </Box>
+      <div css={style.content}>
         {isLoading && (
           <div css={style.spinner}>
             <Spinner />
           </div>
         )}
 
-        {isLoading && !sortedOwned.length && (
-          <Box>
-            <h2>Searching contracts for your NFTs...</h2>
+        {isLoading && !owned.length && (
+          <Box align="center" margin="4em 3em">
+            <img src={NftIcon} css={style.emptyImage} />
+            <h3 css={style.h3}>Searching contracts for your NFTs...</h3>
           </Box>
         )}
 
-        {!isLoading && !sortedOwned.length && (
-          <Box>
-            <h2>No NFTs found for this account</h2>
-            <h3>Try adding the NFT contract manually</h3>
+        {!isLoading && !owned.length && (
+          <Box direction="column" align="center" margin="4em 3em">
+            <img src={NftIcon} css={style.emptyImage} />
+            <h3 css={style.h3}>No NFTs found for this account</h3>
+            <TextButton onClick={onClickAdd} styles={style.h4}>
+              Add an NFT contract manually
+            </TextButton>
           </Box>
         )}
 
-        {sortedOwned.length > 0 && (
-          <Box wrap={true}>
-            {sortedOwned.map((nft) => (
+        {owned.length > 0 && (
+          <Box wrap={true} margin="0 0 1.5em">
+            {owned.map((nft) => (
               <button
                 css={style.nftButton}
                 onClick={() => onClickNft(nft)}
@@ -93,8 +115,10 @@ export function NftDashboardScreen() {
                   </Box>
                   <Box align="center" justify="between" styles={style.infoContainer}>
                     <Box direction="column" align="start">
-                      <label css={style.infoHeader}>{'TODO'}</label>
-                      <div css={style.infoText}>{nft.tokenId}</div>
+                      <label css={style.infoHeader}>{contracts[nft.contract].name}</label>
+                      <div css={style.infoText}>
+                        {contracts[nft.contract].symbol + ' #' + nft.tokenId}
+                      </div>
                     </Box>
                     <KebabMenuIcon size={5} color={Color.altGrey} />
                   </Box>
@@ -103,36 +127,53 @@ export function NftDashboardScreen() {
             ))}
           </Box>
         )}
-
-        <DashedBorderButton onClick={onClickAdd} margin="1.5em 0 0 0" disabled={isLoading}>
-          + Add missing NFT
-        </DashedBorderButton>
       </div>
     </ScreenContentFrame>
   )
 }
 
 const style: Stylesheet = {
+  content: {
+    position: 'relative',
+  },
   h1: {
     ...Font.h2Green,
     marginBottom: 0,
   },
+  h3: {
+    ...Font.h3,
+    color: Color.textGrey,
+    textAlign: 'center',
+  },
+  h4: {
+    ...Font.h4Center,
+    color: Color.textGrey,
+    marginTop: '0.2em',
+  },
+  emptyImage: {
+    width: '3em',
+    height: '3em',
+    filter: 'invert(1)',
+    opacity: 0.3,
+  },
   nftButton: {
     ...transparentButtonStyles,
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
+    borderRadius: 8,
     display: 'flex',
+    position: 'relative',
     margin: '1.5em 1.5em 0 0',
     [mq[1024]]: {
       margin: '1.8em 1.8em 0 0',
     },
-    [mq[1200]]: {
-      margin: '2em 2em 0 0',
+    ':hover': {
+      top: -2,
+      boxShadow: '0px 6px 4px rgba(0, 0, 0, 0.1)',
     },
   },
   defaultImageContainer: {
     background: '#CFD4D9',
-    borderRadius: 8,
-    width: '14em',
-    height: '12em',
+    borderRadius: '8px 8px 0 0',
     [mq[1024]]: {
       width: '16em',
       height: '14em',
@@ -149,9 +190,8 @@ const style: Stylesheet = {
   },
   infoContainer: {
     position: 'relative',
-    top: -10,
     borderRadius: '0 0 8px 8px',
-    padding: '1.5em 1em 1em 1em',
+    padding: '1em',
     border: `1px solid ${Color.borderMedium}`,
     background: 'rgba(46, 51, 56, 0.02)',
     zIndex: 5,
@@ -171,11 +211,13 @@ const style: Stylesheet = {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    left: 0,
+    left: -10,
     right: 0,
-    top: 0,
+    top: 20,
     bottom: 0,
     zIndex: 100,
     opacity: 0.7,
+    background: Color.fillLighter,
+    borderRadius: 20,
   },
 }

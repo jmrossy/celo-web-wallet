@@ -1,18 +1,23 @@
 import { BigNumber } from 'ethers'
 import { appSelect } from 'src/app/appSelect'
 import { getErc721Contract } from 'src/blockchain/contracts'
+import { NFT_SEARCH_STALE_TIME } from 'src/consts'
 import { POPULAR_NFT_CONTRACTS } from 'src/features/nft/consts'
 import { updateOwnedNfts } from 'src/features/nft/nftSlice'
 import { Nft } from 'src/features/nft/types'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
+import { isStale } from 'src/utils/time'
 import { call, put } from 'typed-redux-saga'
 
-function* fetchNfts() {
+function* fetchNfts(force?: boolean) {
   const address = yield* appSelect((state) => state.wallet.address)
   if (!address) throw new Error('Cannot fetch NFTs before address is set')
 
-  const customContracts = yield* appSelect((state) => state.nft.customContracts)
+  const { customContracts, lastUpdated } = yield* appSelect((state) => state.nft)
+
+  if (!isStale(lastUpdated, NFT_SEARCH_STALE_TIME) && !force) return
+
   const customContractsAddrs = customContracts.map((p) => p.contract)
   const popularContractAddrs = POPULAR_NFT_CONTRACTS.map((p) => p.contract)
   const allContracts = new Set<Address>([...customContractsAddrs, ...popularContractAddrs])
@@ -67,4 +72,4 @@ export const {
   wrappedSaga: fetchNftsSaga,
   reducer: fetchNftsReducer,
   actions: fetchNftsActions,
-} = createMonitoredSaga(fetchNfts, 'fetchNfts')
+} = createMonitoredSaga<boolean | undefined>(fetchNfts, 'fetchNfts')
