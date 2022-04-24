@@ -13,6 +13,7 @@ import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
 import { fetchNftsActions, fetchNftsSagaName } from 'src/features/nft/fetchNfts'
 import { useNftContracts, useSortedOwnedNfts } from 'src/features/nft/hooks'
+import { NftImage } from 'src/features/nft/NftImage'
 import { Nft } from 'src/features/nft/types'
 import { AddTokenModal } from 'src/features/tokens/AddTokenModal'
 import { Color } from 'src/styles/Color'
@@ -109,19 +110,15 @@ export function NftDashboardScreen() {
                 type="button"
                 key={nft.contract + nft.tokenId}
               >
-                <Box direction="column">
-                  <Box align="center" justify="center" styles={style.defaultImageContainer}>
-                    <img src={NftIcon} css={style.defaultImage} />
+                <NftImage nft={nft} contract={contracts[nft.contract]} />
+                <Box align="center" justify="between" styles={style.infoContainer}>
+                  <Box direction="column" align="start">
+                    <label css={style.infoHeader}>{contracts[nft.contract].name}</label>
+                    <div css={style.infoText}>
+                      {contracts[nft.contract].symbol + ' #' + nft.tokenId}
+                    </div>
                   </Box>
-                  <Box align="center" justify="between" styles={style.infoContainer}>
-                    <Box direction="column" align="start">
-                      <label css={style.infoHeader}>{contracts[nft.contract].name}</label>
-                      <div css={style.infoText}>
-                        {contracts[nft.contract].symbol + ' #' + nft.tokenId}
-                      </div>
-                    </Box>
-                    <KebabMenuIcon size={5} color={Color.altGrey} />
-                  </Box>
+                  <KebabMenuIcon size={5} color={Color.altGrey} />
                 </Box>
               </button>
             ))}
@@ -158,34 +155,20 @@ const style: Stylesheet = {
   },
   nftButton: {
     ...transparentButtonStyles,
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
+    overflow: 'hidden',
     borderRadius: 8,
     display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
     position: 'relative',
     margin: '1.5em 1.5em 0 0',
     [mq[1024]]: {
       margin: '1.8em 1.8em 0 0',
     },
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
     ':hover': {
       top: -2,
       boxShadow: '0px 6px 4px rgba(0, 0, 0, 0.1)',
-    },
-  },
-  defaultImageContainer: {
-    background: '#CFD4D9',
-    borderRadius: '8px 8px 0 0',
-    [mq[1024]]: {
-      width: '16em',
-      height: '14em',
-    },
-    zIndex: 10,
-  },
-  defaultImage: {
-    width: '5em',
-    height: '5em',
-    [mq[1024]]: {
-      width: '6em',
-      height: '6em',
     },
   },
   infoContainer: {
@@ -194,7 +177,6 @@ const style: Stylesheet = {
     padding: '1em',
     border: `1px solid ${Color.borderMedium}`,
     background: 'rgba(46, 51, 56, 0.02)',
-    zIndex: 5,
   },
   infoHeader: {
     ...Font.body2,

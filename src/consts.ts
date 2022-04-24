@@ -54,7 +54,7 @@ export const VALIDATOR_ACTIVATABLE_STALE_TIME = 43200000 // 12 hours
 export const STAKE_EVENTS_STALE_TIME = 10000 // 10 seconds
 export const PROPOSAL_LIST_STALE_TIME = 60000 // 1 minutes
 export const TOKEN_PRICE_STALE_TIME = 900000 // 15 minutes
-export const NFT_SEARCH_STALE_TIME = 30000 // 30 seconds
+export const NFT_SEARCH_STALE_TIME = 60000 // 60 seconds
 
 export const GOVERNANCE_GITHUB_BASEURL =
   'https://api.github.com/repos/celo-org/governance/contents/CGPs/'
