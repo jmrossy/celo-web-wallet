@@ -10,3 +10,9 @@ export interface NftContract {
   symbol: string
   uri?: string
 }
+
+export interface SendNftParams {
+  recipient: Address
+  contract: Address
+  tokenId: string
+}

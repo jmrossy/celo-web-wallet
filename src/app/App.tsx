@@ -102,7 +102,7 @@ export const App = () => {
                 <Route index element={<NftDashboardScreen />} />
                 <Route path="details" element={<NftDetailsScreen />} />
                 <Route path="send" element={<NftSendFormScreen />} />
-                <Route path="confirm" element={<NftSendConfirmScreen />} />
+                <Route path="review" element={<NftSendConfirmScreen />} />
               </Route>
               <Route path="send" element={<SendFormScreen />} />
               <Route path="send-review" element={<SendConfirmationScreen />} />

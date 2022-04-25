@@ -4,7 +4,6 @@ import { useAppDispatch } from 'src/app/hooks'
 import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
 import { RefreshButton } from 'src/components/buttons/RefreshButton'
 import { TextButton } from 'src/components/buttons/TextButton'
-import { KebabMenuIcon } from 'src/components/icons/KebabMenu'
 import NftIcon from 'src/components/icons/nft.svg'
 import { PlusIcon } from 'src/components/icons/Plus'
 import { Box } from 'src/components/layout/Box'
@@ -13,7 +12,7 @@ import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
 import { fetchNftsActions, fetchNftsSagaName } from 'src/features/nft/fetchNfts'
 import { useNftContracts, useSortedOwnedNfts } from 'src/features/nft/hooks'
-import { NftImage } from 'src/features/nft/NftImage'
+import { NftImageWithInfo } from 'src/features/nft/NftImage'
 import { Nft } from 'src/features/nft/types'
 import { AddTokenModal } from 'src/features/tokens/AddTokenModal'
 import { Color } from 'src/styles/Color'
@@ -110,16 +109,7 @@ export function NftDashboardScreen() {
                 type="button"
                 key={nft.contract + nft.tokenId}
               >
-                <NftImage nft={nft} contract={contracts[nft.contract]} />
-                <Box align="center" justify="between" styles={style.infoContainer}>
-                  <Box direction="column" align="start">
-                    <label css={style.infoHeader}>{contracts[nft.contract].name}</label>
-                    <div css={style.infoText}>
-                      {contracts[nft.contract].symbol + ' #' + nft.tokenId}
-                    </div>
-                  </Box>
-                  <KebabMenuIcon size={5} color={Color.altGrey} />
-                </Box>
+                <NftImageWithInfo nft={nft} contract={contracts[nft.contract]} />
               </button>
             ))}
           </Box>
@@ -155,39 +145,13 @@ const style: Stylesheet = {
   },
   nftButton: {
     ...transparentButtonStyles,
-    overflow: 'hidden',
-    borderRadius: 8,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'stretch',
     position: 'relative',
     margin: '1.5em 1.5em 0 0',
     [mq[1024]]: {
       margin: '1.8em 1.8em 0 0',
     },
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.05)',
-    ':hover': {
-      top: -2,
-      boxShadow: '0px 6px 4px rgba(0, 0, 0, 0.1)',
-    },
   },
-  infoContainer: {
-    position: 'relative',
-    borderRadius: '0 0 8px 8px',
-    padding: '1em',
-    border: `1px solid ${Color.borderMedium}`,
-    background: 'rgba(46, 51, 56, 0.02)',
-  },
-  infoHeader: {
-    ...Font.body2,
-    color: Color.textGrey,
-  },
-  infoText: {
-    ...Font.body,
-    ...Font.bold,
-    fontSize: '1.2em',
-    marginTop: '0.1em',
-  },
+
   spinner: {
     display: 'flex',
     alignItems: 'center',

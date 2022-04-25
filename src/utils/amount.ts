@@ -236,6 +236,17 @@ export function amountFieldFromWei<T extends { amountInWei: string }>(
   }
 }
 
+export function safeParseInt(value: string | number | null | undefined) {
+  if (value === null || value === undefined) return null
+  try {
+    const asInt = parseInt('' + value)
+    return asInt
+  } catch (error) {
+    logger.warn('Error parsing int', error)
+    return null
+  }
+}
+
 export function fromFixidity(value: BigNumberish | null | undefined): number {
   if (!value) return 0
   return FixedNumber.from(value)
