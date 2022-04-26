@@ -1,3 +1,5 @@
+import { FeeEstimate } from 'src/features/fees/types'
+
 export interface Nft {
   tokenId: number
   tokenUri: string
@@ -15,4 +17,5 @@ export interface SendNftParams {
   recipient: Address
   contract: Address
   tokenId: string
+  feeEstimate?: FeeEstimate
 }

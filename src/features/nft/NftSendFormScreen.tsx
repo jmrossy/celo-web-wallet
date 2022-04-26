@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from 'src/app/hooks'
+import { useAppDispatch } from 'src/app/hooks'
 import { BackButton } from 'src/components/buttons/BackButton'
 import { Button } from 'src/components/buttons/Button'
 import PasteIcon from 'src/components/icons/paste.svg'
@@ -10,7 +10,7 @@ import { SelectInput } from 'src/components/input/SelectInput'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useContactsAndAccountsSelect } from 'src/features/contacts/hooks'
-import { useNftContracts } from 'src/features/nft/hooks'
+import { useResolvedNftAndContract } from 'src/features/nft/hooks'
 import { NftImageWithInfo } from 'src/features/nft/NftImage'
 import { validate } from 'src/features/nft/sendNft'
 import { Nft, SendNftParams } from 'src/features/nft/types'
@@ -20,7 +20,7 @@ import { TxFlowTransaction, TxFlowType } from 'src/features/txFlow/types'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
-import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
+import { isValidAddress } from 'src/utils/addresses'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { useCustomForm } from 'src/utils/useCustomForm'
 import { useLocationState } from 'src/utils/useLocationState'
@@ -41,8 +41,6 @@ export function NftSendFormScreen() {
   const locationState = useLocationState<LocationState>()
   const tx = useFlowTransaction()
   const contactOptions = useContactsAndAccountsSelect()
-  const contracts = useNftContracts()
-  const owned = useAppSelector((state) => state.nft.owned)
 
   const getInitialFormValues = () => getInitialValues(locationState, tx)
 
@@ -59,23 +57,7 @@ export function NftSendFormScreen() {
     resetValues(getInitialFormValues())
   }, [tx])
 
-  // Derive chosen contract and nft from inputted values
-  const { contract, nft } = useMemo(() => {
-    const { contract: contractAddr, tokenId } = values
-    if (!contractAddr || !tokenId || !isValidAddress(contractAddr)) {
-      return {
-        contract: null,
-        nft: null,
-      }
-    }
-    const normalizedAddr = normalizeAddress(contractAddr)
-    const contract = contracts[normalizedAddr] || null
-    const nft = owned[normalizedAddr]?.find((n) => n.tokenId.toString() === tokenId) || null
-    return {
-      contract,
-      nft,
-    }
-  }, [values.contract, values.tokenId])
+  const { contract, nft } = useResolvedNftAndContract(values.contract, values.tokenId)
 
   const onPasteAddress = async () => {
     const value = await tryClipboardGet()
@@ -147,7 +129,7 @@ export function NftSendFormScreen() {
                 {...errors['tokenId']}
               />
             </Box>
-            <Button type="submit" size="m" margin="2em 0 0 0">
+            <Button type="submit" size="m" margin="2em 0 0 0" disabled={!contract || !nft}>
               Continue
             </Button>
           </form>

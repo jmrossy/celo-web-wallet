@@ -28,15 +28,16 @@ export function NftImageWithInfo({ nft, contract, styles }: Props) {
   const containerStyle = styles
     ? { ...style.imageAndInfoContainer, ...styles }
     : style.imageAndInfoContainer
+
+  const isValid = !!(contract && nft)
+
   return (
     <div css={containerStyle}>
       <NftImage nft={nft} contract={contract} />
       <Box align="center" justify="between" styles={style.infoContainer}>
         <Box direction="column" align="start">
-          <label css={style.infoHeader}>{contract ? contract.name : ''}</label>
-          <div css={style.infoText}>
-            {contract && nft ? contract.symbol + ' #' + nft.tokenId : ''}
-          </div>
+          <label css={style.infoHeader}>{isValid ? contract.name : ''}</label>
+          <div css={style.infoText}>{isValid ? contract.symbol + ' #' + nft.tokenId : ''}</div>
         </Box>
         <KebabMenuIcon size={5} color={Color.altGrey} />
       </Box>

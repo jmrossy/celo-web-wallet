@@ -1,4 +1,5 @@
 import { appSelect } from 'src/app/appSelect'
+import { getErc721Contract } from 'src/blockchain/contracts'
 import { SendNftParams } from 'src/features/nft/types'
 import { isValidAddress } from 'src/utils/addresses'
 import { safeParseInt } from 'src/utils/amount'
@@ -61,3 +62,15 @@ export const {
   reducer: sendNftReducer,
   actions: sendNftActions,
 } = createMonitoredSaga<SendNftParams>(sendNft, 'sendNft')
+
+export function createNftTransferTx(accountAddr: Address, params: SendNftParams) {
+  const { recipient, contract: contractAddr, tokenId } = params
+  const contract = getErc721Contract(contractAddr)
+  if (!contract) throw new Error(`No contract found for nft ${contractAddr}`)
+  // Need to specify signature in method name because erc721 overloads safeTransferFrom
+  return contract.populateTransaction['safeTransferFrom(address,address,uint256)'](
+    accountAddr,
+    recipient,
+    tokenId
+  )
+}

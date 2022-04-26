@@ -40,6 +40,7 @@ export enum TransactionType {
   ValidatorRevokePendingCelo,
   ValidatorActivateCelo,
   GovernanceVote,
+  NftTransfer,
   Other,
 }
 
@@ -131,6 +132,12 @@ export interface GovernanceVoteTx extends Transaction {
   type: TransactionType.GovernanceVote
   proposalId: string
   vote: VoteValue
+}
+
+export interface NftTransferTx extends Transaction {
+  type: TransactionType.NftTransfer
+  contract: Address
+  tokenId: string
 }
 
 export interface OtherTx extends Transaction {
