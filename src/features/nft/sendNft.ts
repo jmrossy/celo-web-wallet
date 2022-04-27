@@ -1,11 +1,20 @@
+import { providers } from 'ethers'
 import { appSelect } from 'src/app/appSelect'
 import { getErc721Contract } from 'src/blockchain/contracts'
+import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
+import { fetchBalancesActions } from 'src/features/balances/fetchBalances'
+import { addPlaceholderTransaction } from 'src/features/feed/feedSlice'
+import { createPlaceholderForTx } from 'src/features/feed/placeholder'
+import { fetchNftsActions } from 'src/features/nft/fetchNfts'
 import { SendNftParams } from 'src/features/nft/types'
+import { setNumSignatures } from 'src/features/txFlow/txFlowSlice'
+import { NftTransferTx, TransactionType } from 'src/features/types'
 import { isValidAddress } from 'src/utils/addresses'
 import { safeParseInt } from 'src/utils/amount'
 import { logger } from 'src/utils/logger'
 import { createMonitoredSaga } from 'src/utils/saga'
-import { ErrorState, invalidInput } from 'src/utils/validation'
+import { ErrorState, invalidInput, validateOrThrow } from 'src/utils/validation'
+import { call, put } from 'typed-redux-saga'
 
 export function validate(params: SendNftParams): ErrorState {
   const { recipient, contract, tokenId } = params
@@ -51,9 +60,23 @@ export function validate(params: SendNftParams): ErrorState {
   return errors
 }
 
-function* sendNft({ recipient, contract, tokenId }: SendNftParams) {
+function* sendNft(params: SendNftParams) {
   const address = yield* appSelect((state) => state.wallet.address)
   if (!address) throw new Error('Cannot send Nfts before address is set')
+
+  validateOrThrow(() => validate(params), 'Invalid transaction')
+
+  const signedTx = yield* call(createAndSignTx, address, params)
+  yield* put(setNumSignatures(1))
+
+  const txReceipt = yield* call(sendSignedTransaction, signedTx)
+  logger.info(`NFT transfer hash received: ${txReceipt.transactionHash}`)
+
+  const placeholderTx = getPlaceholderTx(params, txReceipt)
+  yield* put(addPlaceholderTransaction(placeholderTx))
+
+  yield* put(fetchNftsActions.trigger())
+  yield* put(fetchBalancesActions.trigger())
 }
 
 export const {
@@ -62,6 +85,13 @@ export const {
   reducer: sendNftReducer,
   actions: sendNftActions,
 } = createMonitoredSaga<SendNftParams>(sendNft, 'sendNft')
+
+async function createAndSignTx(accountAddr: Address, params: SendNftParams) {
+  const tx = await createNftTransferTx(accountAddr, params)
+  logger.info(`Signing tx to send NFT to ${params.recipient}`)
+  const signedTx = await signTransaction(tx, params.feeEstimate)
+  return signedTx
+}
 
 export function createNftTransferTx(accountAddr: Address, params: SendNftParams) {
   const { recipient, contract: contractAddr, tokenId } = params
@@ -73,4 +103,17 @@ export function createNftTransferTx(accountAddr: Address, params: SendNftParams)
     recipient,
     tokenId
   )
+}
+
+function getPlaceholderTx(
+  params: SendNftParams,
+  txReceipt: providers.TransactionReceipt
+): NftTransferTx {
+  return {
+    ...createPlaceholderForTx(txReceipt, '0', params.feeEstimate!),
+    type: TransactionType.NftTransfer,
+    to: params.recipient,
+    contract: params.contract,
+    tokenId: params.tokenId,
+  }
 }

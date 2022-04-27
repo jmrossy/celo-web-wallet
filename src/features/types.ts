@@ -168,6 +168,7 @@ export type CeloTransaction =
   | LockTokenTx
   | StakeTokenTx
   | GovernanceVoteTx
+  | NftTransferTx
   | OtherTx
 
 export type TransactionMap = Record<string, CeloTransaction> // hash to item

@@ -30,7 +30,7 @@ const nftSlice = createSlice({
   },
 })
 
-export const { updateOwnedNfts, resetNfts } = nftSlice.actions
+export const { updateOwnedNfts, addCustomContract, resetNfts } = nftSlice.actions
 const nftReducer = nftSlice.reducer
 
 const persistConfig = {

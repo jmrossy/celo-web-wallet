@@ -19,3 +19,7 @@ export interface SendNftParams {
   tokenId: string
   feeEstimate?: FeeEstimate
 }
+
+export interface AddNftContractParams {
+  address: Address
+}

@@ -13,7 +13,7 @@ import { ABI as StableTokenAbi } from 'src/blockchain/ABIs/stableToken'
 import { ABI as ValidatorsAbi } from 'src/blockchain/ABIs/validators'
 import { getSigner } from 'src/blockchain/signer'
 import { CeloContract, config } from 'src/config'
-import { areAddressesEqual } from 'src/utils/addresses'
+import { areAddressesEqual, normalizeAddress } from 'src/utils/addresses'
 
 let contractCache: Partial<Record<CeloContract, Contract>> = {}
 let tokenContractCache: Partial<Record<string, Contract>> = {} // token address to contract
@@ -38,12 +38,13 @@ export function getErc721Contract(tokenAddress: Address) {
 }
 
 // Search for token contract by address
-export function getTokenContract(tokenAddress: Address, abi: string) {
-  const cachedContract = tokenContractCache[tokenAddress]
+function getTokenContract(tokenAddress: Address, abi: string) {
+  const normalizedAddr = normalizeAddress(tokenAddress)
+  const cachedContract = tokenContractCache[normalizedAddr]
   if (cachedContract) return cachedContract
   const signer = getSigner().signer
-  const contract = new Contract(tokenAddress, abi, signer)
-  tokenContractCache[tokenAddress] = contract
+  const contract = new Contract(normalizedAddr, abi, signer)
+  tokenContractCache[normalizedAddr] = contract
   return contract
 }
 

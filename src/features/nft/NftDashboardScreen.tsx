@@ -10,11 +10,11 @@ import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { useModal } from 'src/components/modal/useModal'
 import { Spinner } from 'src/components/Spinner'
+import { AddNftContractModal } from 'src/features/nft/AddNftContractModal'
 import { fetchNftsActions, fetchNftsSagaName } from 'src/features/nft/fetchNfts'
 import { useNftContracts, useSortedOwnedNfts } from 'src/features/nft/hooks'
 import { NftImageWithInfo } from 'src/features/nft/NftImage'
 import { Nft } from 'src/features/nft/types'
-import { AddTokenModal } from 'src/features/tokens/AddTokenModal'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -49,10 +49,11 @@ export function NftDashboardScreen() {
   }
 
   const { showModalWithContent, closeModal } = useModal()
-
   const onClickAdd = () => {
-    //TODO
-    showModalWithContent({ head: 'Add New NFT', content: <AddTokenModal close={closeModal} /> })
+    showModalWithContent({
+      head: 'Add New NFT',
+      content: <AddNftContractModal close={closeModal} />,
+    })
   }
 
   return (
@@ -151,7 +152,6 @@ const style: Stylesheet = {
       margin: '1.8em 1.8em 0 0',
     },
   },
-
   spinner: {
     display: 'flex',
     alignItems: 'center',

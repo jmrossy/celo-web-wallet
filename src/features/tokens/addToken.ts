@@ -59,7 +59,8 @@ export function* addTokensByAddress(addresses: Set<string>) {
 }
 
 async function getTokenInfo(tokenAddress: Address): Promise<Token> {
-  const contract = getErc20Contract(tokenAddress)
+  const normalizedAddr = normalizeAddress(tokenAddress)
+  const contract = getErc20Contract(normalizedAddr)
   // Note this assumes the existence of decimals, symbols, and name methods,
   // which are technically optional. May revisit later
   const symbolP: Promise<string> = contract.symbol()
@@ -73,7 +74,7 @@ async function getTokenInfo(tokenAddress: Address): Promise<Token> {
   return {
     symbol: symbol.substring(0, 8),
     name,
-    address: normalizeAddress(tokenAddress),
+    address: normalizedAddr,
     decimals,
     chainId: config.chainId,
   }
