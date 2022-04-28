@@ -6,6 +6,7 @@ import { CloseButton } from 'src/components/buttons/CloseButton'
 import { Box } from 'src/components/layout/Box'
 import { GenericTransactionReview } from 'src/features/feed/components/GenericTransactionReview'
 import { GovernanceVoteReview } from 'src/features/feed/components/GovernanceVoteReview'
+import { NftTransferReview } from 'src/features/feed/components/NftTransferReview'
 import { StakeTokenReview } from 'src/features/feed/components/StakeTokenReview'
 import { TokenExchangeReview } from 'src/features/feed/components/TokenExchangeReview'
 import { TokenTransferReview } from 'src/features/feed/components/TokenTransferReview'
@@ -107,6 +108,13 @@ function getContentByTxType(tx: CeloTransaction, tokens: TokenMap) {
     return {
       description,
       content: <GovernanceVoteReview tx={tx} />,
+    }
+  }
+
+  if (tx.type === TransactionType.NftTransfer) {
+    return {
+      description,
+      content: <NftTransferReview tx={tx} />,
     }
   }
 

@@ -22,11 +22,11 @@ export function validate(params: AddNftContractParams, customContracts: NftContr
   const normalized = normalizeAddress(address)
   if (POPULAR_NFT_CONTRACTS.find((c) => c.contract === normalized)) {
     logger.error(`Contract already exists in popular list: ${address}`)
-    return invalidInput('address', 'Contract is already checked by default')
+    return invalidInput('address', 'This contract is already checked by default')
   }
   if (customContracts.find((c) => c.contract === normalized)) {
     logger.error(`Contract already exists in custom list: ${address}`)
-    return invalidInput('address', 'Contract already included')
+    return invalidInput('address', 'This contract already included')
   }
   return { isValid: true }
 }

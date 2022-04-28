@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from 'src/app/hooks'
-import { Button, transparentButtonStyles } from 'src/components/buttons/Button'
+import { transparentButtonStyles } from 'src/components/buttons/Button'
 import { RefreshButton } from 'src/components/buttons/RefreshButton'
 import { TextButton } from 'src/components/buttons/TextButton'
+import { TransparentIconButton } from 'src/components/buttons/TransparentIconButton'
 import NftIcon from 'src/components/icons/nft.svg'
 import { PlusIcon } from 'src/components/icons/Plus'
 import { Box } from 'src/components/layout/Box'
@@ -60,19 +61,16 @@ export function NftDashboardScreen() {
     <ScreenContentFrame>
       <Box align="center">
         <h1 css={style.h1}>Non-Fungible Tokens (NFTs)</h1>
-        {/* TODO make buttons look better and fix on mobile*/}
-        <Button
-          size="icon"
-          icon={<PlusIcon width="1em" height="1em" />}
+        <TransparentIconButton
+          icon={<PlusIcon width="18px" height="18px" color={Color.primaryGreen} />}
           onClick={onClickAdd}
-          width="1.8em"
-          height="1.8em"
-          margin="0 2em"
+          margin="0 1.5em"
           title="Add NFT Contract"
+          styles={style.addButton}
         />
         <RefreshButton
-          width="18px"
-          height="18px"
+          width="16px"
+          height="16px"
           onClick={onClickRefresh}
           styles={style.refreshIcon}
         />
@@ -137,6 +135,15 @@ const style: Stylesheet = {
     ...Font.h4Center,
     color: Color.textGrey,
     marginTop: '0.2em',
+  },
+  addButton: {
+    opacity: 1,
+    ':hover': {
+      filter: 'brightness(1.1)',
+    },
+    ':active': {
+      filter: 'brightness(1.2)',
+    },
   },
   emptyImage: {
     width: '3em',

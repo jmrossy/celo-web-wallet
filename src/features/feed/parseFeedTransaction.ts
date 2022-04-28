@@ -132,6 +132,8 @@ export function parseTransaction(
     return parseGovernanceTx(tx, abiInterfaces)
   }
 
+  // TODO parse NFT transfers here
+
   if (tx.tokenTransfers && tx.tokenTransfers.length && !isTxInputEmpty(tx)) {
     return parseTxWithTokenTransfers(tx, address, abiInterfaces)
   }

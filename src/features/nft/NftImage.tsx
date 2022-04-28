@@ -13,6 +13,8 @@ interface Props {
   styles?: Styles
 }
 
+// TODO
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function NftImage({ nft, contract, styles }: Props) {
   const containerStyle = styles
     ? { ...style.defaultImageContainer, ...styles }

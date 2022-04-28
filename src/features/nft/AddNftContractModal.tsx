@@ -43,6 +43,8 @@ export function AddNftContractModal(props: { close: () => void }) {
         <p css={style.p}>
           Most cERC-721 compatible contract can be added.
           <br />
+          The Metadata + Enumerable extensions are required.
+          <br />
           Enter the NFT contract address.
         </p>
         <AddressInput
@@ -59,7 +61,7 @@ export function AddNftContractModal(props: { close: () => void }) {
             Unable to add contract, please check address.
           </HelpText>
         )}
-        <Box direction="row" align="center" margin="7em 0 0 0">
+        <Box direction="row" align="center" margin="2.75em 0 0 0">
           <Button
             size="s"
             color={Color.primaryWhite}
