@@ -7,7 +7,7 @@ export interface Nft {
 }
 
 export interface NftContract {
-  contract: Address
+  address: Address
   name: string
   symbol: string
   uri?: string

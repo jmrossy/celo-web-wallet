@@ -18,8 +18,8 @@ function* fetchNfts(force?: boolean) {
 
   if (!isStale(lastUpdated, NFT_SEARCH_STALE_TIME) && !force) return
 
-  const customContractsAddrs = customContracts.map((p) => p.contract)
-  const popularContractAddrs = POPULAR_NFT_CONTRACTS.map((p) => p.contract)
+  const customContractsAddrs = customContracts.map((p) => p.address)
+  const popularContractAddrs = POPULAR_NFT_CONTRACTS.map((p) => p.address)
   const allContracts = new Set<Address>([...customContractsAddrs, ...popularContractAddrs])
 
   const owned = yield* call(

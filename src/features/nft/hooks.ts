@@ -9,10 +9,10 @@ export function useNftContracts(): Record<Address, NftContract> {
   return useMemo(() => {
     const result: Record<Address, NftContract> = {}
     for (const contract of POPULAR_NFT_CONTRACTS) {
-      result[contract.contract] = contract
+      result[contract.address] = contract
     }
     for (const contract of customContracts) {
-      result[contract.contract] = contract
+      result[contract.address] = contract
     }
     return result
   }, [customContracts])

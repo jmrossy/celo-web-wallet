@@ -20,11 +20,11 @@ export function validate(params: AddNftContractParams, customContracts: NftContr
     return invalidInput('address', 'Invalid contract address')
   }
   const normalized = normalizeAddress(address)
-  if (POPULAR_NFT_CONTRACTS.find((c) => c.contract === normalized)) {
+  if (POPULAR_NFT_CONTRACTS.find((c) => c.address === normalized)) {
     logger.error(`Contract already exists in popular list: ${address}`)
     return invalidInput('address', 'This contract is already checked by default')
   }
-  if (customContracts.find((c) => c.contract === normalized)) {
+  if (customContracts.find((c) => c.address === normalized)) {
     logger.error(`Contract already exists in custom list: ${address}`)
     return invalidInput('address', 'This contract already included')
   }
@@ -54,7 +54,7 @@ async function getNftInfo(contractAddress: Address): Promise<NftContract> {
   return {
     symbol: symbol.substring(0, 20),
     name,
-    contract: normalizedAddr,
+    address: normalizedAddr,
   }
 }
 

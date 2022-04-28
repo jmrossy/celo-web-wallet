@@ -13,8 +13,6 @@ interface Props {
   styles?: Styles
 }
 
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function NftImage({ nft, contract, styles }: Props) {
   const containerStyle = styles
     ? { ...style.defaultImageContainer, ...styles }
@@ -22,6 +20,20 @@ export function NftImage({ nft, contract, styles }: Props) {
   return (
     <Box align="center" justify="center" styles={containerStyle}>
       <img src={NftIcon} css={style.defaultImage} />
+      {nft?.tokenUri && contract && (
+        <div css={style.frameContainer}>
+          <iframe
+            srcDoc={ImageFrameSrcdoc(nft.tokenUri)}
+            height="100%"
+            width="100%"
+            sandbox=""
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            name={`${contract.address}-${nft.tokenId}`}
+            css={style.imageIframe}
+          ></iframe>
+        </div>
+      )}
     </Box>
   )
 }
@@ -47,8 +59,21 @@ export function NftImageWithInfo({ nft, contract, styles }: Props) {
   )
 }
 
+// TODO add csp here too?
+function ImageFrameSrcdoc(tokenUri: string): string {
+  return `
+ <!DOCTYPE html>
+ <html>
+ <script>
+ console.log('Test in frame', '${tokenUri}')
+ </script>
+ </html>
+ `
+}
+
 const style: Stylesheet = {
   defaultImageContainer: {
+    position: 'relative',
     background: '#CFD4D9',
     width: '16em',
     height: '14em',
@@ -89,5 +114,15 @@ const style: Stylesheet = {
     ...Font.bold,
     fontSize: '1.2em',
     marginTop: '0.1em',
+  },
+  frameContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  imageIframe: {
+    border: 'none',
   },
 }
