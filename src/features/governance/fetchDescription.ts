@@ -1,6 +1,7 @@
 import { GOVERNANCE_GITHUB_BASEURL } from 'src/consts'
 import { Proposal } from 'src/features/governance/types'
 import { logger } from 'src/utils/logger'
+import { fetchWithTimeout } from 'src/utils/timeout'
 
 // Putting these in a seperate file to faciliate testing for now
 export async function fetchProposalDescription(proposal: Proposal) {
@@ -30,7 +31,7 @@ async function fetchProposalDescriptionFromGithub(url: URL) {
   if (pathMatches?.length !== 2) throw new Error('Unable to extract proposal number')
 
   const proposalRawUrl = `${GOVERNANCE_GITHUB_BASEURL}${pathMatches[1]}`
-  const response = await fetch(proposalRawUrl, {
+  const response = await fetchWithTimeout(proposalRawUrl, {
     headers: {
       Accept: 'application/vnd.github.3.raw',
     },

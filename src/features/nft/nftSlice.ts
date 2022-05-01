@@ -23,6 +23,14 @@ const nftSlice = createSlice({
       state.owned = action.payload
       state.lastUpdated = Date.now()
     },
+    setImageUri: (
+      state,
+      action: PayloadAction<{ contract: Address; tokenId: number; imageUri: string }>
+    ) => {
+      const { contract, tokenId, imageUri } = action.payload
+      const nft = state.owned[contract]?.find((n) => n.tokenId === tokenId)
+      if (nft) nft.imageUri = imageUri
+    },
     addCustomContract: (state, action: PayloadAction<NftContract>) => {
       state.customContracts.push(action.payload)
     },
@@ -30,7 +38,7 @@ const nftSlice = createSlice({
   },
 })
 
-export const { updateOwnedNfts, addCustomContract, resetNfts } = nftSlice.actions
+export const { updateOwnedNfts, setImageUri, addCustomContract, resetNfts } = nftSlice.actions
 const nftReducer = nftSlice.reducer
 
 const persistConfig = {
