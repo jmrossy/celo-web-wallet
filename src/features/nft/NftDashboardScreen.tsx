@@ -83,7 +83,7 @@ export function NftDashboardScreen() {
         )}
 
         {isLoading && !owned.length && (
-          <Box align="center" margin="4em 3em">
+          <Box direction="column" align="center" margin="4em 3em">
             <img src={NftIcon} css={style.emptyImage} />
             <h3 css={style.h3}>Searching contracts for your NFTs...</h3>
           </Box>
@@ -169,7 +169,7 @@ const style: Stylesheet = {
     top: 20,
     bottom: 0,
     zIndex: 100,
-    opacity: 0.7,
+    opacity: 0.6,
     background: Color.fillLighter,
     borderRadius: 20,
   },

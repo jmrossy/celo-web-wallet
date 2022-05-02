@@ -8,6 +8,7 @@ import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
 import { Styles, Stylesheet } from 'src/styles/types'
+import { logger } from 'src/utils/logger'
 
 interface Props {
   nft: Nft | null
@@ -33,7 +34,10 @@ export function NftImage({ nft, contract, styles }: Props) {
               css={style.actualImage}
               alt={nft.tokenId.toString()}
               onLoad={() => setLoaded(true)}
-              onError={() => setLoaded(false)}
+              onError={(e) => {
+                logger.error('Error loading nft image', e, nft.imageUri)
+                setLoaded(false)
+              }}
             />
           </Fade>
         </div>

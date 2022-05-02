@@ -12,6 +12,8 @@ import {
   BlockscoutTx,
   BlockscoutTxBase,
 } from 'src/features/feed/types'
+import { selectNftContracts } from 'src/features/nft/hooks'
+import { NftContractMap } from 'src/features/nft/types'
 import { addTokensByAddress } from 'src/features/tokens/addToken'
 import { selectTokens } from 'src/features/tokens/hooks'
 import { TokenMap } from 'src/features/tokens/types'
@@ -35,11 +37,13 @@ function* fetchFeed() {
 
   const lastBlockNumber = yield* appSelect((state) => state.feed.lastBlockNumber)
   const tokensByAddress = yield* selectTokens()
+  const nftContractsByAddress = yield* selectNftContracts()
 
   const { newTransactions, newLastBlockNumber } = yield* call(
     doFetchFeed,
     address,
     tokensByAddress,
+    nftContractsByAddress,
     lastBlockNumber
   )
   yield* put(
@@ -67,6 +71,7 @@ export const {
 async function doFetchFeed(
   address: Address,
   tokensByAddress: TokenMap,
+  nftContractsByAddress: NftContractMap,
   lastBlockNumber: number | null
 ) {
   const txList = await fetchTxsFromBlockscout(address, lastBlockNumber)
@@ -85,6 +90,7 @@ async function doFetchFeed(
       address,
       tokensByAddress,
       exchangesByAddress,
+      nftContractsByAddress,
       abiInterfaces
     )
     if (parsedTx) newTransactions[parsedTx.hash] = parsedTx
@@ -124,6 +130,10 @@ async function fetchTxsFromBlockscout(address: Address, lastBlockNumber: number 
 
   //  Attach the token transfers to their parent txs in the first list
   for (const tx of tokenTxList) {
+    // Ignoring incoming NFT transfers for now
+    // TODO revisit this if incoming NFT parsing is needed
+    if (tx.tokenId || !tx.value) continue
+
     // If transfer doesn't have a corresponding tx from the first list, make a placeholder
     // Most common reason would be incoming token transfer
     if (!txMap.has(tx.hash)) {

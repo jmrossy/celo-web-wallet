@@ -1,21 +1,28 @@
 import { useMemo } from 'react'
+import { appSelect } from 'src/app/appSelect'
 import { useAppSelector } from 'src/app/hooks'
 import { POPULAR_NFT_CONTRACTS } from 'src/features/nft/consts'
-import { Nft, NftContract } from 'src/features/nft/types'
+import { Nft, NftContract, NftContractMap } from 'src/features/nft/types'
 import { isValidAddress, normalizeAddress } from 'src/utils/addresses'
 
-export function useNftContracts(): Record<Address, NftContract> {
+export function useNftContracts(): NftContractMap {
   const customContracts = useAppSelector((s) => s.nft.customContracts)
-  return useMemo(() => {
-    const result: Record<Address, NftContract> = {}
-    for (const contract of POPULAR_NFT_CONTRACTS) {
+  return useMemo(() => mergeWithPopularContracts(customContracts), [customContracts])
+}
+
+export function* selectNftContracts() {
+  const customContracts = yield* appSelect((s) => s.nft.customContracts)
+  return mergeWithPopularContracts(customContracts)
+}
+
+function mergeWithPopularContracts(customContracts: NftContract[]): NftContractMap {
+  return [...POPULAR_NFT_CONTRACTS, ...customContracts].reduce<NftContractMap>(
+    (result, contract) => {
       result[contract.address] = contract
-    }
-    for (const contract of customContracts) {
-      result[contract.address] = contract
-    }
-    return result
-  }, [customContracts])
+      return result
+    },
+    {}
+  )
 }
 
 export function useSortedOwnedNfts(): Nft[] {

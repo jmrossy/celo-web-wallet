@@ -14,6 +14,8 @@ export interface NftContract {
   uri?: string
 }
 
+export type NftContractMap = Record<Address, NftContract>
+
 export interface SendNftParams {
   recipient: Address
   contract: Address

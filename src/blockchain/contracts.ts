@@ -1,4 +1,4 @@
-import { Contract } from 'ethers'
+import { Contract, utils } from 'ethers'
 import { ABI as AccountsAbi } from 'src/blockchain/ABIs/accounts'
 import { ABI as ElectionAbi } from 'src/blockchain/ABIs/election'
 import { ABI as Erc20Abi } from 'src/blockchain/ABIs/erc20'
@@ -97,6 +97,17 @@ export function getContractName(address: Address): CeloContract | null {
     }
   }
   return null
+}
+
+let erc721Interface: utils.Interface
+
+// Normally, interfaces are retrieved through the getContract() function
+// but ERC721 is an exception because no core celo contracts use it
+export function getErc721AbiInterface() {
+  if (!erc721Interface) {
+    erc721Interface = new utils.Interface(Erc721Abi)
+  }
+  return erc721Interface
 }
 
 // Necessary if the signer changes, as in after a logout

@@ -17,6 +17,8 @@ interface Transaction {
   inputData?: string
 }
 
+// Note, new tx types must be added at the bottom
+// or old txs will be mislabeled in the feed.
 export enum TransactionType {
   StableTokenTransfer,
   StableTokenTransferWithComment,
@@ -40,8 +42,8 @@ export enum TransactionType {
   ValidatorRevokePendingCelo,
   ValidatorActivateCelo,
   GovernanceVote,
-  NftTransfer,
   Other,
+  NftTransfer,
 }
 
 interface TokenTransferTx extends Transaction {
