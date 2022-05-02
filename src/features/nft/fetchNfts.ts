@@ -22,13 +22,7 @@ function* fetchNfts(force?: boolean) {
 
   const contractList = getContractList(customContracts)
 
-  const ownedUpdated = yield* call(
-    fetchNftsForContracts,
-    //TODO
-    '0xDE33e71fAECdEad20e6A8af8f362d2236CbA005f',
-    contractList,
-    owned
-  )
+  const ownedUpdated = yield* call(fetchNftsForContracts, address, contractList, owned)
   yield* put(updateOwnedNfts(ownedUpdated))
   yield* spawn(fetchNftImageUris, ownedUpdated)
 }
