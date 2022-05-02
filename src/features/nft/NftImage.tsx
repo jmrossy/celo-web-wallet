@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { Fade } from 'src/components/animation/Fade'
 import { KebabMenuIcon } from 'src/components/icons/KebabMenu'
 import NftIcon from 'src/components/icons/nft.svg'
 import { Box } from 'src/components/layout/Box'
@@ -14,24 +16,26 @@ interface Props {
 }
 
 export function NftImage({ nft, contract, styles }: Props) {
+  const [loaded, setLoaded] = useState(false)
+
   const containerStyle = styles
     ? { ...style.defaultImageContainer, ...styles }
     : style.defaultImageContainer
+
   return (
     <Box align="center" justify="center" styles={containerStyle}>
       <img src={NftIcon} css={style.defaultImage} />
-      {nft?.tokenUri && contract && (
-        <div css={style.frameContainer}>
-          <iframe
-            srcDoc={ImageFrameSrcdoc(nft.tokenUri)}
-            height="100%"
-            width="100%"
-            sandbox=""
-            referrerPolicy="no-referrer"
-            loading="lazy"
-            name={`${contract.address}-${nft.tokenId}`}
-            css={style.imageIframe}
-          ></iframe>
+      {nft?.imageUri && contract && (
+        <div css={style.actualImageContainer}>
+          <Fade show={loaded} transparent={true} duration="300ms">
+            <img
+              src={nft.imageUri}
+              css={style.actualImage}
+              alt={nft.tokenId.toString()}
+              onLoad={() => setLoaded(true)}
+              onError={() => setLoaded(false)}
+            />
+          </Fade>
         </div>
       )}
     </Box>
@@ -57,18 +61,6 @@ export function NftImageWithInfo({ nft, contract, styles }: Props) {
       </Box>
     </div>
   )
-}
-
-// TODO add csp here too?
-function ImageFrameSrcdoc(tokenUri: string): string {
-  return `
- <!DOCTYPE html>
- <html>
- <script>
- console.log('Test in frame', '${tokenUri}')
- </script>
- </html>
- `
 }
 
 const style: Stylesheet = {
@@ -115,14 +107,20 @@ const style: Stylesheet = {
     fontSize: '1.2em',
     marginTop: '0.1em',
   },
-  frameContainer: {
+  actualImageContainer: {
     position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
+    div: {
+      width: '100%',
+      height: '100%',
+    },
   },
-  imageIframe: {
-    border: 'none',
+  actualImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
 }
