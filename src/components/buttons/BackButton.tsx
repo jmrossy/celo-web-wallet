@@ -6,12 +6,17 @@ import {
 import { ArrowIcon } from 'src/components/icons/Arrow'
 import { Color } from 'src/styles/Color'
 
-export function BackButton(props: Omit<Omit<TransparentIconButtonProps, 'icon'>, 'onClick'>) {
-  const { styles, iconStyles, margin, title, color } = props
+type Props = Omit<Omit<TransparentIconButtonProps, 'icon'>, 'onClick'> & {
+  onGoBack?: () => void
+}
+
+export function BackButton(props: Props) {
+  const { styles, iconStyles, margin, title, color, onGoBack } = props
 
   const navigate = useNavigate()
   const onClickBack = () => {
-    navigate(-1)
+    if (onGoBack) onGoBack()
+    else navigate(-1)
   }
 
   return (

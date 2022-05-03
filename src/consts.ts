@@ -54,10 +54,12 @@ export const VALIDATOR_ACTIVATABLE_STALE_TIME = 43200000 // 12 hours
 export const STAKE_EVENTS_STALE_TIME = 10000 // 10 seconds
 export const PROPOSAL_LIST_STALE_TIME = 60000 // 1 minutes
 export const TOKEN_PRICE_STALE_TIME = 900000 // 15 minutes
+export const NFT_SEARCH_STALE_TIME = 120000 // 2 minutes
 
 export const GOVERNANCE_GITHUB_BASEURL =
   'https://api.github.com/repos/celo-org/governance/contents/CGPs/'
 export const ALCHEMY_UNSTOPPABLE_BASEURL = 'https://unstoppabledomains.g.alchemy.com/domains/'
+export const IPFS_PROVIDER_BASEURL = 'https://cloudflare-ipfs.com/ipfs/'
 
 export const DONATION_ADDRESS = '0xE3791A4a231D026c9567BEDbAb977617f2900383' // for receiving donations
 export const RAMP_PROJECT_ID = 'jg2gy6y7o35np2w7npw9jnszaz962z3dxhpso4hq'

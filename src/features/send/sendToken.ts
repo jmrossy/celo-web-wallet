@@ -1,6 +1,6 @@
 import { BigNumber, providers } from 'ethers'
 import { appSelect } from 'src/app/appSelect'
-import { getContractByAddress, getTokenContract } from 'src/blockchain/contracts'
+import { getContractByAddress, getErc20Contract } from 'src/blockchain/contracts'
 import { isSignerLedger } from 'src/blockchain/signer'
 import { sendSignedTransaction, signTransaction } from 'src/blockchain/transaction'
 import {
@@ -201,7 +201,7 @@ export function createTransferTx(token: Token, recipient: string, amountInWei: B
   if (isNativeToken(token)) {
     contract = getContractByAddress(token.address)
   } else {
-    contract = getTokenContract(token.address)
+    contract = getErc20Contract(token.address)
   }
   if (!contract) throw new Error(`No contract found for token ${token.address}`)
   return contract.populateTransaction.transfer(recipient, amountInWei)

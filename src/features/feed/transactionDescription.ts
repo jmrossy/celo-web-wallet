@@ -65,5 +65,9 @@ export function getTransactionDescription(
     return 'Governance Vote'
   }
 
+  if (tx.type === TransactionType.NftTransfer) {
+    return 'Nft Sent'
+  }
+
   return 'Transaction Sent'
 }

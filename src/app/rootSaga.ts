@@ -51,6 +51,25 @@ import {
   lockTokenSagaName,
 } from 'src/features/lock/lockToken'
 import {
+  addNftContractActions,
+  addNftContractReducer,
+  addNftContractSaga,
+  addNftContractSagaName,
+} from 'src/features/nft/addNftContract'
+import {
+  fetchNftImagesSaga,
+  fetchNftsActions,
+  fetchNftsReducer,
+  fetchNftsSaga,
+  fetchNftsSagaName,
+} from 'src/features/nft/fetchNfts'
+import {
+  sendNftActions,
+  sendNftReducer,
+  sendNftSaga,
+  sendNftSagaName,
+} from 'src/features/nft/sendNft'
+import {
   changePasswordActions,
   changePasswordReducer,
   changePasswordSaga,
@@ -126,7 +145,7 @@ function* init() {
 }
 
 // All regular sagas must be included here
-const sagas = [walletStatusPoller, watchWalletConnect]
+const sagas = [walletStatusPoller, watchWalletConnect, fetchNftImagesSaga]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {
@@ -216,6 +235,21 @@ export const monitoredSagas: {
     saga: governanceVoteSaga,
     reducer: governanceVoteReducer,
     actions: governanceVoteActions,
+  },
+  [fetchNftsSagaName]: {
+    saga: fetchNftsSaga,
+    reducer: fetchNftsReducer,
+    actions: fetchNftsActions,
+  },
+  [sendNftSagaName]: {
+    saga: sendNftSaga,
+    reducer: sendNftReducer,
+    actions: sendNftActions,
+  },
+  [addNftContractSagaName]: {
+    saga: addNftContractSaga,
+    reducer: addNftContractReducer,
+    actions: addNftContractActions,
   },
   [editAccountSagaName]: {
     saga: editAccountSaga,

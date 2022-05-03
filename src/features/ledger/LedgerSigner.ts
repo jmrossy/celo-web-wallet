@@ -30,9 +30,17 @@ export class LedgerSigner extends Signer {
   }
 
   private async validateCeloAppVersion() {
-    const appConfiguration = await this.perform((celoApp) => celoApp.getAppConfiguration())
-    if (!appConfiguration) throw new Error('Unable to retrieve Ledger app configuration')
-    if (!appConfiguration.version) throw new Error('Ledger app configuration missing version info')
+    let appConfiguration
+    try {
+      appConfiguration = await this.perform((celoApp) => celoApp.getAppConfiguration())
+      if (!appConfiguration) throw new Error('Unable to retrieve Ledger app configuration')
+      if (!appConfiguration.version) throw new Error('Ledger app config missing version info')
+    } catch (error) {
+      // The getAppConfiguration has been flaky since the latest Ledger firmware update
+      // To prevent valid app configs from being blocked, this will fail open for now
+      logger.error('Unable to get ledger app config. Sometimes flaky, swallowing error.', error)
+      return
+    }
 
     const version: string = appConfiguration.version
     const versionSegments = version.split('.').map((s) => parseInt(s))

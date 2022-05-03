@@ -10,9 +10,9 @@ export async function retryAsync<T>(runner: () => T, attempts = 3, delay = 500) 
       if (result) return result
       else throw new Error('Empty result')
     } catch (error) {
-      await sleep(delay * (i + 1))
-      saveError = error
       logger.error(`retryAsync: Failed to execute function on attempt #${i}:`, error)
+      saveError = error
+      await sleep(delay * (i + 1))
     }
   }
   logger.error(`retryAsync: All attempts failed`)

@@ -17,6 +17,8 @@ interface Transaction {
   inputData?: string
 }
 
+// Note, new tx types must be added at the bottom
+// or old txs will be mislabeled in the feed.
 export enum TransactionType {
   StableTokenTransfer,
   StableTokenTransferWithComment,
@@ -41,6 +43,7 @@ export enum TransactionType {
   ValidatorActivateCelo,
   GovernanceVote,
   Other,
+  NftTransfer,
 }
 
 interface TokenTransferTx extends Transaction {
@@ -133,6 +136,12 @@ export interface GovernanceVoteTx extends Transaction {
   vote: VoteValue
 }
 
+export interface NftTransferTx extends Transaction {
+  type: TransactionType.NftTransfer
+  contract: Address
+  tokenId: string
+}
+
 export interface OtherTx extends Transaction {
   type: TransactionType.Other
 }
@@ -161,6 +170,7 @@ export type CeloTransaction =
   | LockTokenTx
   | StakeTokenTx
   | GovernanceVoteTx
+  | NftTransferTx
   | OtherTx
 
 export type TransactionMap = Record<string, CeloTransaction> // hash to item

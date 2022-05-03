@@ -54,8 +54,7 @@ export function SendConfirmationScreen() {
     } else {
       // There are no gas pre-computes for non-native tokens, need to get real tx to estimate
       const token = tokens[tokenAddress]
-      const txRequestP = createTransferTx(token, recipient, BigNumber.from(amountInWei))
-      txRequestP
+      createTransferTx(token, recipient, BigNumber.from(amountInWei))
         .then((txRequest) =>
           dispatch(
             estimateFeeActions.trigger({ txs: [{ type, tx: txRequest }], forceGasEstimation: true })

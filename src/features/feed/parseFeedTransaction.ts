@@ -1,8 +1,10 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
+import { getErc721AbiInterface } from 'src/blockchain/contracts'
 import { CeloContract, config } from 'src/config'
 import { MAX_COMMENT_CHAR_LENGTH } from 'src/consts'
 import { AbiInterfaceMap, BlockscoutTokenTransfer, BlockscoutTx } from 'src/features/feed/types'
 import { OrderedVoteValue } from 'src/features/governance/types'
+import { NftContract, NftContractMap } from 'src/features/nft/types'
 import {
   isNativeTokenAddress,
   isStableToken,
@@ -18,6 +20,7 @@ import {
   EscrowWithdrawTx,
   GovernanceVoteTx,
   LockTokenTx,
+  NftTransferTx,
   OtherTokenApproveTx,
   OtherTokenTransferTx,
   OtherTx,
@@ -82,6 +85,7 @@ export function parseTransaction(
   address: Address, // wallet address
   tokensByAddress: Record<Address, Token>,
   exchangesByAddress: Record<Address, Token>,
+  nftContractsByAddress: NftContractMap,
   abiInterfaces: AbiInterfaceMap
 ): CeloTransaction | null {
   const to = normalizeAddress(tx.to)
@@ -131,6 +135,13 @@ export function parseTransaction(
   if (areAddressesEqual(to, config.contractAddresses[CeloContract.Governance])) {
     return parseGovernanceTx(tx, abiInterfaces)
   }
+
+  if (nftContractsByAddress[to]) {
+    // If recipient was a known NFT
+    return parseOutgoingNftTx(tx, nftContractsByAddress[to])
+  }
+
+  // TODO, support incoming NFT tx parsing. See related TODO in fetchFeed.ts#fetchTxsFromBlockscout
 
   if (tx.tokenTransfers && tx.tokenTransfers.length && !isTxInputEmpty(tx)) {
     return parseTxWithTokenTransfers(tx, address, abiInterfaces)
@@ -349,6 +360,47 @@ function parseTxWithTokenTransfers(
   } catch (error) {
     logger.error('Failed to parse tx with token transfers', error, tx)
     return parseOtherTx(tx)
+  }
+}
+
+// Parse transactions to nft contracts
+function parseOutgoingNftTx(tx: BlockscoutTx, contract: NftContract): NftTransferTx | OtherTx {
+  try {
+    const abiInterface = getErc721AbiInterface()
+    const txDescription = abiInterface.parseTransaction({ data: tx.input })
+    const name = txDescription.name
+    if (name === 'safeTransferFrom' || name === 'transferFrom') {
+      return parseOutgoingNftTransfer(
+        tx,
+        contract,
+        txDescription.args.to,
+        txDescription.args.tokenId
+      )
+    } else {
+      logger.warn(`Parsing nft tx with unsupported tx description name: ${name}`, tx)
+      return parseOtherTx(tx)
+    }
+  } catch (error) {
+    logger.error('Failed to parse nft tx data', error, tx)
+    return parseOtherTx(tx)
+  }
+}
+
+function parseOutgoingNftTransfer(
+  tx: BlockscoutTx,
+  contract: NftContract,
+  to: Address,
+  tokenId: string
+): NftTransferTx {
+  if (!to || !isValidAddress(to) || !tokenId) {
+    throw new Error('Transfer tx has invalid properties')
+  }
+  return {
+    ...parseOtherTx(tx),
+    type: TransactionType.NftTransfer,
+    to,
+    tokenId: tokenId.toString(),
+    contract: contract.address,
   }
 }
 

@@ -4,7 +4,7 @@ export function CircleIcon({
   margin,
 }: {
   color: string
-  size: string
+  size: string | number
   margin?: string
 }) {
   return (

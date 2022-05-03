@@ -1,6 +1,7 @@
 import { ExchangeTokenParams } from 'src/features/exchange/types'
 import { GovernanceVoteParams } from 'src/features/governance/types'
 import { LockTokenParams } from 'src/features/lock/types'
+import { SendNftParams } from 'src/features/nft/types'
 import { SendTokenParams } from 'src/features/send/types'
 import { StakeTokenParams } from 'src/features/validators/types'
 
@@ -12,6 +13,7 @@ export enum TxFlowType {
   Lock,
   Stake,
   Governance,
+  SendNft,
   WalletConnect,
 }
 
@@ -40,9 +42,15 @@ export interface GovernanceFlowTx {
   params: GovernanceVoteParams
 }
 
+export interface SendNftFlowTx {
+  type: TxFlowType.SendNft
+  params: SendNftParams
+}
+
 export type TxFlowTransaction =
   | SendFlowTx
   | ExchangeFlowTx
   | LockFlowTx
   | StakeFlowTx
   | GovernanceFlowTx
+  | SendNftFlowTx

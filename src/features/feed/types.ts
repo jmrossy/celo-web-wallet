@@ -33,6 +33,8 @@ export interface BlockscoutTokenTransfer extends BlockscoutTxBase {
   tokenName: string
   tokenDecimal: string
   logIndex: string
+  // Note, this is normally included for ERC721 (NFT) transfers but not ERC20
+  tokenId?: string
 }
 
 export type AbiInterfaceMap = Partial<Record<CeloContract, utils.Interface>>
