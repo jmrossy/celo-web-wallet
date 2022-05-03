@@ -57,6 +57,7 @@ import {
   addNftContractSagaName,
 } from 'src/features/nft/addNftContract'
 import {
+  fetchNftImagesSaga,
   fetchNftsActions,
   fetchNftsReducer,
   fetchNftsSaga,
@@ -144,7 +145,7 @@ function* init() {
 }
 
 // All regular sagas must be included here
-const sagas = [walletStatusPoller, watchWalletConnect]
+const sagas = [walletStatusPoller, watchWalletConnect, fetchNftImagesSaga]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {

@@ -38,7 +38,7 @@ export function useSortedOwnedNfts(): Nft[] {
 }
 
 // Resolve chosen contract and nft from inputted values
-export function useResolvedNftAndContract(contractAddr: Address, tokenId: string) {
+export function useResolvedNftAndContract(contractAddr?: Address, tokenId?: string) {
   const contracts = useNftContracts()
   const owned = useAppSelector((state) => state.nft.owned)
 
@@ -56,5 +56,5 @@ export function useResolvedNftAndContract(contractAddr: Address, tokenId: string
       contract,
       nft,
     }
-  }, [contractAddr, tokenId])
+  }, [contractAddr, tokenId, owned, contracts])
 }

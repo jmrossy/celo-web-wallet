@@ -161,8 +161,9 @@ const style: Stylesheet = {
   },
   spinner: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
+    paddingTop: 'min(10%, 12em)',
     position: 'absolute',
     left: -10,
     right: 0,

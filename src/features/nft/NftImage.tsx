@@ -34,8 +34,8 @@ export function NftImage({ nft, contract, styles }: Props) {
               css={style.actualImage}
               alt={nft.tokenId.toString()}
               onLoad={() => setLoaded(true)}
-              onError={(e) => {
-                logger.error('Error loading nft image', e, nft.imageUri)
+              onError={() => {
+                logger.error('Error loading nft image', nft.imageUri)
                 setLoaded(false)
               }}
             />

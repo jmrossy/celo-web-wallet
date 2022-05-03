@@ -7,10 +7,17 @@ import { setImageUri, updateOwnedNfts } from 'src/features/nft/nftSlice'
 import { Nft, NftContract, NftMetadata } from 'src/features/nft/types'
 import { formatIpfsUrl, getUrlExtensionType, UrlExtensionType } from 'src/features/nft/utils'
 import { logger } from 'src/utils/logger'
-import { createMonitoredSaga } from 'src/utils/saga'
+import { retryAsync } from 'src/utils/retry'
+import { createMonitoredSaga, createSaga } from 'src/utils/saga'
 import { isStale } from 'src/utils/time'
 import { fetchWithTimeout } from 'src/utils/timeout'
 import { call, put, spawn } from 'typed-redux-saga'
+
+// Skip fetching NFTs for a contract when balance is > this
+const NFT_FETCH_LIMIT = 300
+const NFT_FETCH_LIMIT_ERROR = new Error('NFT_FETCH_LIMIT_ERROR')
+// Skip image fetching for nft sets > this
+const IMAGE_FETCH_LIMIT = 30
 
 function* fetchNfts(force?: boolean) {
   const address = yield* appSelect((state) => state.wallet.address)
@@ -24,7 +31,7 @@ function* fetchNfts(force?: boolean) {
 
   const ownedUpdated = yield* call(fetchNftsForContracts, address, contractList, owned)
   yield* put(updateOwnedNfts(ownedUpdated))
-  yield* spawn(fetchNftImageUris, ownedUpdated)
+  yield* spawn(fetchNftImageUris, Object.values(ownedUpdated).flat())
 }
 
 export const {
@@ -51,8 +58,10 @@ async function fetchNftsForContracts(
   for (const contractAddr of contracts) {
     try {
       const contract = getErc721Contract(contractAddr)
-      const numOwned = await contract.balanceOf(account)
+      const _numOwned = await contract.balanceOf(account)
+      const numOwned = BigNumber.from(_numOwned).toNumber()
       if (!numOwned || numOwned <= 0) continue
+      if (numOwned > NFT_FETCH_LIMIT) throw NFT_FETCH_LIMIT_ERROR
       const nfts: Nft[] = []
       for (let i = 0; i < numOwned; i++) {
         const nft = await fetchNftDetails(contract, i, account, ownedState[contractAddr])
@@ -61,6 +70,8 @@ async function fetchNftsForContracts(
       if (nfts.length) result[contractAddr] = nfts
     } catch (error) {
       logger.error('Failed to fetch NFTs for contract:', contractAddr, error)
+      if (error === NFT_FETCH_LIMIT_ERROR)
+        throw new Error(`Nft count exceeds limit of ${NFT_FETCH_LIMIT}`)
     }
   }
   return result
@@ -92,7 +103,7 @@ async function fetchNftDetails(
       logger.error('Invalid token uri from contract:', contract.address, fetchedTokenUri)
       return null
     }
-    tokenUri = fetchedTokenUri
+    tokenUri = fetchedTokenUri.toString()
   }
 
   let imageUri: string | undefined
@@ -114,8 +125,14 @@ async function fetchNftDetails(
 }
 
 // Note, only IPFS-based images are allowed for now
-function* fetchNftImageUris(owned: Record<Address, Nft[]>) {
-  const nftList = Object.values(owned).flat()
+function* fetchNftImageUris(nftList: Nft[]) {
+  // IPFS, even via cloudflare, is unreliable
+  // So skipping image fetching for large lists
+  if (nftList.length > IMAGE_FETCH_LIMIT) {
+    logger.debug('NFT length exceeds image fetch limit, skipping', nftList.length)
+    return
+  }
+
   for (const nft of nftList) {
     if (nft.imageUri) continue
 
@@ -137,6 +154,10 @@ function* fetchNftImageUris(owned: Record<Address, Nft[]>) {
   }
 }
 
+export const { wrappedSaga: fetchNftImagesSaga, trigger: fetchNftImagesTrigger } = createSaga<
+  Nft[]
+>(fetchNftImageUris, 'fetchNftImages')
+
 async function fetchNftImageUri(nft: Nft) {
   logger.debug('Attempting to fetch NFT image uri from:', nft.tokenUri)
   try {
@@ -145,14 +166,8 @@ async function fetchNftImageUri(nft: Nft) {
     const formattedTokenUri = formatIpfsUrl(tokenUri)
     if (!formattedTokenUri) return null
 
-    const result = await fetchWithTimeout(formattedTokenUri, undefined, 12000)
-    const json = (await result.json()) as NftMetadata
-    if (!json?.image) {
-      logger.debug('No image found for nft', tokenUri)
-      return null
-    }
-
-    const imageUri = json.image
+    const imageUri = await fetchImageFromTokenUri(formattedTokenUri)
+    if (!imageUri) return null
 
     const imageUriExt = getUrlExtensionType(imageUri)
     if (imageUriExt !== UrlExtensionType.image) {
@@ -162,9 +177,28 @@ async function fetchNftImageUri(nft: Nft) {
 
     const formattedImageUri = formatIpfsUrl(imageUri)
     if (!formattedImageUri) return null
-    else return formattedImageUri
+
+    logger.debug('Found NFT image uri:', formattedImageUri, nft.tokenId)
+    return formattedImageUri
   } catch (error) {
     logger.error('Failed to fetch NFT imageUri for:', nft.tokenId, nft.contract, error)
     return null
   }
+}
+
+async function fetchImageFromTokenUri(tokenUri: string) {
+  // IPFS is unreliable so timeouts + errors are frequent
+  // This still doesn't work very well
+  const result = await retryAsync(async () => {
+    const response = await fetchWithTimeout(tokenUri)
+    if (!response.ok) throw new Error('Response not ok')
+    const json = (await response.json()) as NftMetadata
+    if (!json?.image) {
+      logger.debug('No image found for nft', tokenUri)
+      return null
+    } else {
+      return json.image
+    }
+  })
+  return result
 }

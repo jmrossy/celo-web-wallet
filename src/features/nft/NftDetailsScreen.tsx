@@ -1,5 +1,6 @@
 import { css } from '@emotion/react'
 import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { BackButton } from 'src/components/buttons/BackButton'
 import { Button } from 'src/components/buttons/Button'
@@ -7,7 +8,8 @@ import { TextLink } from 'src/components/buttons/TextLink'
 import SendIcon from 'src/components/icons/send_payment.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
-import { useNftContracts } from 'src/features/nft/hooks'
+import { fetchNftImagesTrigger } from 'src/features/nft/fetchNfts'
+import { useResolvedNftAndContract } from 'src/features/nft/hooks'
 import { NftImage } from 'src/features/nft/NftImage'
 import { Nft } from 'src/features/nft/types'
 import { Color } from 'src/styles/Color'
@@ -22,22 +24,30 @@ interface LocationState {
 }
 
 export function NftDetailsScreen() {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const locationState = useLocationState<LocationState>()
-  const contracts = useNftContracts()
 
   useEffect(() => {
-    // Make sure we belong on this screen
     if (!locationState?.nft) {
       navigate('/nft')
       return
     }
   }, [locationState])
 
-  if (!locationState?.nft) return null
-  const nft = locationState.nft
+  const { contract, nft } = useResolvedNftAndContract(
+    locationState?.nft?.contract,
+    locationState?.nft?.tokenId?.toString()
+  )
 
-  const contract = contracts[nft.contract]
+  useEffect(() => {
+    if (nft && !nft.imageUri) {
+      dispatch(fetchNftImagesTrigger([nft]))
+    }
+  }, [nft])
+
+  if (!contract || !nft) return null
+
   const fullName = `${contract.symbol} #${nft.tokenId}`
 
   const onClickSend = () => {
