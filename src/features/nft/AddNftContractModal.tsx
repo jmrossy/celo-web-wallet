@@ -57,8 +57,8 @@ export function AddNftContractModal(props: { close: () => void }) {
           {...errors['address']}
         />
         {isFailure && (
-          <HelpText margin="0.8em 0 -1.8em 0">
-            Unable to add contract, please check address.
+          <HelpText margin="1.3em 0 -1.5em 0" styles={{ textAlign: 'center' }}>
+            Unable to add this address, it is not a valid Enumerable ERC721 contract.
           </HelpText>
         )}
         <Box direction="row" align="center" margin="2.75em 0 0 0">

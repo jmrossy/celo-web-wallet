@@ -32,7 +32,7 @@ export function useSagaStatus(
 export function useSagaStatusNoModal(
   sagaName: string,
   onSuccess?: () => void,
-  onFailure?: () => void,
+  onFailure?: (error?: unknown) => void,
   resetSagaOnSuccess = true
 ) {
   const sagaState = _useSagaStatus(sagaName, resetSagaOnSuccess, onSuccess, onFailure)
