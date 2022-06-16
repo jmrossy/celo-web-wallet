@@ -35,35 +35,37 @@ export function Mnemonic(props: Props) {
   const valueToShow = hidden ? getObfuscatedMnemonic(mnemonic) : mnemonic
   const mnemonicWords = chunk<Array<string>>(valueToShow.trim().split(' '), 6)
 
-  return (
-    <Box direction="row" align="center">
-      {!unavailable ? (
-        <div css={style.container}>
-          {mnemonicWords.map((words, i) => (
-            <Box direction="row" align="center" justify="between" key={`mLine-${i}`}>
-              {words.map((word, j) => (
-                <span key={`mWord-${i}-${j}`} css={style.line}>
-                  {word}
-                </span>
-              ))}
-            </Box>
-          ))}
-        </div>
-      ) : (
+  if (unavailable) {
+    return (
+      <Box direction="row" align="center">
         <div css={style.containerUnavailable}>
           <div>Unavailable: secret is on your Ledger.</div>
         </div>
-      )}
-      {!unavailable && (
-        <Box direction="column" justify="between" align="center" margin="0 0 0 -10px">
-          <button css={style.button} onClick={onShowButtonClick} title="Show Key" type="button">
-            <img width="20px" height="20px" src={Eye} alt="Show/Hide" />
-          </button>
-          <button css={style.button} onClick={onCopyButtonClick} title="Copy Key" type="button">
-            <img width="17px" height="17px" src={Paste} alt="Copy" />
-          </button>
-        </Box>
-      )}
+      </Box>
+    )
+  }
+
+  return (
+    <Box direction="row" align="center">
+      <div css={style.container}>
+        {mnemonicWords.map((words, i) => (
+          <Box direction="row" align="center" justify="between" key={`mLine-${i}`}>
+            {words.map((word, j) => (
+              <span key={`mWord-${i}-${j}`} css={style.line}>
+                {word}
+              </span>
+            ))}
+          </Box>
+        ))}
+      </div>
+      <Box direction="column" justify="between" align="center" margin="0 0 0 -10px">
+        <button css={style.button} onClick={onShowButtonClick} title="Show phrase" type="button">
+          <img width="20px" height="20px" src={Eye} alt="Show/Hide" />
+        </button>
+        <button css={style.button} onClick={onCopyButtonClick} title="Copy phrase" type="button">
+          <img width="17px" height="17px" src={Paste} alt="Copy" />
+        </button>
+      </Box>
     </Box>
   )
 }
