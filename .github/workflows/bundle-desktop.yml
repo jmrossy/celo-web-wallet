@@ -55,8 +55,8 @@ jobs:
       - name: Build on Windows
         run: yarn electron-builder --win --publish never || yarn electron-builder --win --publish never
         env:
-          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK2 }}
-          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+          # CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK2 }}
+          # CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
           DISABLE_MULTIPART_DOWNLOADING: true
         if: runner.os == 'Windows'
 

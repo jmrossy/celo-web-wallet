@@ -50,8 +50,8 @@ jobs:
         run: yarn electron-builder --win --publish always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+          # CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
+          # CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
         if: runner.os == 'Windows'
 
       - name: Install deps for Linux
