@@ -4,7 +4,7 @@ import { useAppDispatch } from 'src/app/hooks'
 import { SignerType } from 'src/blockchain/types'
 import { Button } from 'src/components/buttons/Button'
 import { ButtonToggle } from 'src/components/buttons/ButtonToggle'
-import { TextArea } from 'src/components/input/TextArea'
+import { MnemonicInput } from 'src/components/input/MnemonicInput'
 import { Box } from 'src/components/layout/Box'
 import { useModal } from 'src/components/modal/useModal'
 import {
@@ -126,15 +126,9 @@ export function ImportAccountForm(props: Props) {
               setValues={setValues}
             />
           )}
-          <TextArea
-            name="mnemonic"
+          <MnemonicInput
             value={values.mnemonic}
-            placeholder="fish boot jump hand..."
             onChange={handleChange}
-            minWidth="calc(min(22em, 85vw))"
-            maxWidth="26em"
-            minHeight="6.5em"
-            maxHeight="8em"
             margin="1.5em 0 0 0"
             {...errors['mnemonic']}
           />

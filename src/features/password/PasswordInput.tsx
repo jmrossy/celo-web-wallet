@@ -30,10 +30,11 @@ export function PasswordInput(props: Props) {
 
   // Wrap the provided onChange to validate input
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let value = event?.target?.value
-    if (value && inputMode === 'numeric') {
-      value = value.substring(0, 6).replace(/[^0-9]/g, '')
-      event.target.value = value
+    if (!event?.target) return
+    let newValue = event.target.value
+    if (newValue && inputMode === 'numeric') {
+      newValue = newValue.substring(0, 6).replace(/[^0-9]/g, '')
+      event.target.value = newValue
     }
     onChange(event)
   }

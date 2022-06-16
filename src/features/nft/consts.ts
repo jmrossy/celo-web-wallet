@@ -68,12 +68,13 @@ export const POPULAR_NFT_CONTRACTS: NftContract[] = [
     uri: 'https://www.knoxdao.xyz',
     address: '0x1F25F8Df9E33033668d6F04DAE0bDE4854E9F1A5',
   },
-  {
-    name: 'MooPunks',
-    symbol: 'MPUNK',
-    uri: 'https://moola.market',
-    address: '0x517bCe2DdBc21b9A8771Dfd3Db40404BDEF1272D',
-  },
+  // Disabled: does not fully implement extended erc-721
+  // {
+  //   name: 'MooPunks',
+  //   symbol: 'MPUNK',
+  //   uri: 'https://moola.market',
+  //   address: '0x517bCe2DdBc21b9A8771Dfd3Db40404BDEF1272D',
+  // },
   {
     name: 'MetaCelo Game',
     symbol: 'cMETA',

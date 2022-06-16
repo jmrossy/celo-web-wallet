@@ -1,3 +1,4 @@
+import { BigNumber, BigNumberish } from 'ethers'
 import { appSelect } from 'src/app/appSelect'
 import { getErc721Contract } from 'src/blockchain/contracts'
 import { POPULAR_NFT_CONTRACTS } from 'src/features/nft/consts'
@@ -48,9 +49,23 @@ async function getNftInfo(contractAddress: Address): Promise<NftContract> {
   // Enumerable extensions, otherwise rejects
   const symbolP: Promise<string> = contract.symbol()
   const nameP: Promise<string> = contract.name()
-  const [symbol, name] = await Promise.all([symbolP, nameP])
-  if (!symbol || typeof symbol !== 'string') throw new Error('Invalid nft symbol')
-  if (!name || typeof name !== 'string') throw new Error('Invalid nft name')
+  const totalSupplyP: Promise<BigNumberish> = contract.totalSupply()
+  const byIndexP: Promise<BigNumberish> = contract.tokenByIndex(0)
+  const [symbol, name, totalSupply, byIndex] = await Promise.all([
+    symbolP,
+    nameP,
+    totalSupplyP,
+    byIndexP,
+  ])
+  if (!symbol || typeof symbol !== 'string') throw new Error('Contract is missing an nft symbol')
+  if (!name || typeof name !== 'string') throw new Error('Contract is missing an nft name')
+  if (
+    !totalSupply ||
+    BigNumber.from(totalSupply).lte(0) ||
+    !byIndex ||
+    BigNumber.from(byIndex).lte(0)
+  )
+    throw new Error('Contract is missing ERC721 Enumerable extension')
   return {
     symbol: symbol.substring(0, 20),
     name,
