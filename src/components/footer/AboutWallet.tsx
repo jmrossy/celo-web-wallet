@@ -30,18 +30,15 @@ function AboutWalletModal() {
     <Box direction="column" align="center" styles={style.container}>
       <p css={style.text}>
         The Celo Wallet is a free, open source wallet for the Celo network. It was created by{' '}
-        <TextLink link="https://twitter.com/RossyWrote">J M Rossy</TextLink> and{' '}
-        <TextLink link="https://www.linkedin.com/in/brianschwalm/">Brian Schwalm</TextLink>.
+        <TextLink link="https://twitter.com/RossyWrote">J M Rossy</TextLink>
       </p>
       <p css={style.text}>
         The source code for the wallet can be found{' '}
         <TextLink link="https://github.com/celo-tools/celo-web-wallet">on Github</TextLink> and
         includes answers to{' '}
         <TextLink link="https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md">
-          Frequently Asked Questions
+          Frequently Asked Questions.
         </TextLink>
-        . For other help, try asking in the{' '}
-        <TextLink link={config.discordUrl}>Discord chat</TextLink>.
       </p>
       <p css={style.version}>{`Version: ${config.version}`}</p>
     </Box>

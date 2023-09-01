@@ -1,8 +1,19 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 .cache/
 coverage/
 dist/
 dist-electron/
-node_modules/
 *.log
 
 # OS generated files
@@ -13,3 +24,4 @@ node_modules/
 .Trashes
 ehthumbs.db
 Thumbs.db
+

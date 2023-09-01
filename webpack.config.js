@@ -119,6 +119,7 @@ const config = {
         ? {
             patterns: [
               { from: './package-electron.json', to: 'package.json' },
+              { from: './yarn-electron.lock', to: 'yarn.lock' },
               { from: './src/index.html', to: 'index.html' },
               { from: './electron/main.js', to: 'main.js' },
               { from: './static/*', to: 'static/[name][ext]' },

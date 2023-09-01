@@ -3,6 +3,7 @@ import { HrDivider } from 'src/components/HrDivider'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { config } from 'src/config'
 import { useAreBalancesEmpty } from 'src/features/balances/hooks'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
@@ -18,7 +19,7 @@ import { cUSD } from 'src/tokens'
 export function HomeScreen() {
   const isMobile = useIsMobile()
   const isWalletEmpty = useAreBalancesEmpty()
-  const showGraph = !isMobile || isWalletEmpty
+  const showGraph = (!isMobile || isWalletEmpty) && config.showPriceChart
 
   const isDismissed = useAppSelector((state) => state.settings.homeHeaderDismissed)
   const dispatch = useAppDispatch()

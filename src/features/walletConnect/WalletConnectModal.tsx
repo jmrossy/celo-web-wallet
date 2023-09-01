@@ -44,7 +44,6 @@ import { Stylesheet } from 'src/styles/types'
 import { isClipboardReadSupported, tryClipboardGet } from 'src/utils/clipboard'
 import { trimToLength } from 'src/utils/string'
 import { useCustomForm } from 'src/utils/useCustomForm'
-import type { SessionTypes } from 'wcv2/types'
 
 export function useWalletConnectModal() {
   const { showModalWithContent, closeModal } = useModal()
@@ -100,7 +99,7 @@ function ConnectionForm() {
     dispatch(initializeWcClient(values.uri))
   }
 
-  const { values, errors, handleChange, handleBlur, handleSubmit, setValues } =
+  const { values, handleChange, handleBlur, handleSubmit, setValues } =
     useCustomForm<WalletConnectUriForm>(initialValues, onSubmit, validateWalletConnectForm)
 
   const onClickPaste = async () => {
@@ -134,7 +133,7 @@ function ConnectionForm() {
             placeholder="wc:0123..."
             autoFocus={true}
             inputStyles={style.uriInput}
-            {...errors['uri']}
+            // {...errors['uri']}
           />
           {isClipboardReadSupported() && (
             <Button
@@ -268,7 +267,7 @@ function ReviewRequest({
   close,
 }: {
   session: WalletConnectSession | null
-  request: SessionTypes.RequestEvent | null
+  request: any | null
 } & Props) {
   if (session?.status !== SessionStatus.Settled || !request?.request) {
     throw new Error('Invalid WalletConnect request for review')

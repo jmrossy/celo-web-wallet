@@ -6,7 +6,6 @@ import { ChevronIcon } from 'src/components/icons/Chevron'
 import CoinStackIcon from 'src/components/icons/coin_stack.svg'
 import CubeIcon from 'src/components/icons/cube.svg'
 import LockIcon from 'src/components/icons/lock_small.svg'
-import WalletConnectIcon from 'src/components/icons/logos/wallet_connect.svg'
 import NftIcon from 'src/components/icons/nft.svg'
 import SendIcon from 'src/components/icons/send_payment.svg'
 import ExchangeIcon from 'src/components/icons/swap.svg'
@@ -18,7 +17,6 @@ import { useDownloadDesktopModal } from 'src/features/download/DownloadDesktopMo
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { useWalletAddress } from 'src/features/wallet/hooks'
-import { useWalletConnectModal } from 'src/features/walletConnect/WalletConnectModal'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { mq } from 'src/styles/mediaQueries'
@@ -34,7 +32,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const dispatch = useAppDispatch()
   const address = useWalletAddress()
   const showQrModal = useAddressQrCodeModal()
-  const showWalletConnectModal = useWalletConnectModal()
+  // const showWalletConnectModal = useWalletConnectModal()
   const showDownloadDesktopModal = useDownloadDesktopModal()
   const { isDropdownVisible, showDropdown, hideDropdown } = useDropdownBox()
 
@@ -107,10 +105,10 @@ export function NavButtonRow({ mobile, disabled }: Props) {
     navigate('/nft')
   }
 
-  const onConnectClick = () => {
-    hideDropdown()
-    showWalletConnectModal()
-  }
+  // const onConnectClick = () => {
+  //   hideDropdown()
+  //   showWalletConnectModal()
+  // }
 
   const buttonWidth = mobile ? '44%' : '9.75em'
   const buttonHeight = mobile ? '2.75em' : '2.5em'
@@ -194,13 +192,13 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               onClick={onGovernClick}
             />
             <MenuItem icon={NftIcon} title="NFTs" description="Manage NFTs" onClick={onNftClick} />
-            <MenuItem
+            {/* <MenuItem
               icon={WalletConnectIcon}
               title="Connect"
               description="Use WalletConnect"
               onClick={onConnectClick}
               iconStyles={style.walletConnectIcon}
-            />
+            /> */}
           </DropdownBox>
         )}
       </Box>

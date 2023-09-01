@@ -13,7 +13,7 @@ import { Table, TableColumn } from 'src/components/table/Table'
 import { config } from 'src/config'
 import { fetchBalancesActions, fetchBalancesSagaName } from 'src/features/balances/fetchBalances'
 import { useBalancesWithTokens } from 'src/features/balances/hooks'
-import { BalancesWithTokens, BalanceTableRow } from 'src/features/balances/types'
+import { BalanceTableRow, BalancesWithTokens } from 'src/features/balances/types'
 import { getSortedTokenBalances } from 'src/features/balances/utils'
 import { getTotalLockedCelo } from 'src/features/lock/utils'
 import { AddTokenModal } from 'src/features/tokens/AddTokenModal'
@@ -93,7 +93,7 @@ export function BalanceDetailsScreen() {
           isLoading={status === SagaStatus.Started}
           initialSortBy="balance"
         />
-        <DashedBorderButton onClick={onClickAdd} margin="0.5em 0 0 0">
+        <DashedBorderButton onClick={onClickAdd} margin="0.5em 0 0.05em 0">
           + Add a new currency/token
         </DashedBorderButton>
       </div>

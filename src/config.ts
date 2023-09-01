@@ -45,16 +45,17 @@ interface Config {
   jsonRpcUrlSecondary?: string
   gatewayFeeRecipient?: string
   blockscoutUrl: string
-  discordUrl: string
   desktopUrls: {
     windows: string
     mac: string
     linux: string
   }
+  chainName: string
   chainId: number
   contractAddresses: Record<CeloContract, string>
   nomspaceRegistry: string
   ensCoinTypeValue?: number
+  showPriceChart?: boolean
 }
 
 const desktopUrls = {
@@ -72,12 +73,11 @@ const configMainnet: Config = {
   version,
   alchemyApiKey,
   walletConnectV2ProjectId,
-  jsonRpcUrlPrimary: 'https://node.celowallet.app',
-  jsonRpcUrlSecondary: 'https://forno.celo.org',
+  jsonRpcUrlPrimary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
-  discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
+  chainName: 'celo',
   chainId: 42220,
   contractAddresses: {
     [CeloContract.Accounts]: '0x7d21685C17607338b313a7174bAb6620baD0aaB7',
@@ -100,6 +100,7 @@ const configMainnet: Config = {
   },
   nomspaceRegistry: '0x3DE51c3960400A0F752d3492652Ae4A0b2A36FB3',
   ensCoinTypeValue: 2147525868, // https://github.com/ensdomains/address-encoder/issues/329
+  showPriceChart: false,
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -111,8 +112,8 @@ const configAlfajores: Config = {
   walletConnectV2ProjectId,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
-  discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
+  chainName: 'alfajores',
   chainId: 44787,
   contractAddresses: {
     [CeloContract.Accounts]: '0xed7f51A34B4e71fbE69B3091FcF879cD14bD73A9',
@@ -134,6 +135,7 @@ const configAlfajores: Config = {
     [CeloContract.Validators]: '0x9acF2A99914E083aD0d610672E93d14b0736BBCc',
   },
   nomspaceRegistry: '0x40cd4db228e9c172dA64513D0e874d009486A9a9',
+  showPriceChart: false,
 }
 
 export const config = Object.freeze(configMainnet)

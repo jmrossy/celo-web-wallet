@@ -42,8 +42,6 @@ export BUNDLE_HASH=`shasum -b -a 256 dist/bundle.js | awk '{ print $1 }' | xxd -
 echo "Bundle hash ${BUNDLE_HASH}"
 export LEDGER_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-ledger.js | awk '{ print $1 }' | xxd -r -p | base64`
 echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
-export WC1_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-walletconnectv1.js | awk '{ print $1 }' | xxd -r -p | base64`
-echo "WalletConnect v1 bundle hash ${WC1_BUNDLE_HASH}"
 export WC2_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-walletconnectv2.js | awk '{ print $1 }' | xxd -r -p | base64`
 echo "WalletConnect v2 bundle hash ${WC2_BUNDLE_HASH}"
 
@@ -58,7 +56,6 @@ if [ "$ELECTRON" = false ]; then
   echo "Updating Readme"
   xplat_sed "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
   xplat_sed "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
-  xplat_sed "s|bundle-walletconnectv1.js -> sha256-.*\`|bundle-walletconnectv1.js -> sha256-${WC1_BUNDLE_HASH}\`|g" README.md
   xplat_sed "s|bundle-walletconnectv2.js -> sha256-.*\`|bundle-walletconnectv2.js -> sha256-${WC2_BUNDLE_HASH}\`|g" README.md
 else
   echo "Prepping index.html for electron" 

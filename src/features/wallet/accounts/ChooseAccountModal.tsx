@@ -184,7 +184,7 @@ const style: Stylesheet = {
     },
   },
   addButton: {
-    margin: '1.25em 1.1em 0 1.1em',
+    margin: '1.25em 1.1em 0.05em 1.1em',
     padding: '0.7em 0',
     width: 'auto',
   },

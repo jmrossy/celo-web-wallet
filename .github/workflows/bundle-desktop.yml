@@ -12,8 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [macos-latest, windows-latest, ubuntu-latest]
-        os: [windows-2019, ubuntu-latest]
+        os: [macos-11, windows-2019, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -22,11 +21,8 @@ jobs:
           node-version: '14'
           check-latest: true
 
-      - name: Adjust yarn timeout
-        run: yarn config set network-timeout 1800000 -g
-
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Run linter
         run:  yarn lint
@@ -43,21 +39,20 @@ jobs:
           ALCHEMY_KEY: ${{ secrets.ALCHEMY_KEY }}
           WALLET_CONNECT_KEY: ${{ secrets.WALLET_CONNECT_KEY }}
 
-      # Mac builds on Github are very flaky, disabling for now as they're easy to make locally anyway
-      # - name: Build on Mac
-      #   run: yarn electron-builder --mac --publish never
-      #   env:
-      #     CSC_LINK: ${{ secrets.MAC_CSC_LINK2 }}
-      #     CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
-      #     DISABLE_MULTIPART_DOWNLOADING: true
-      #   if: runner.os == 'macOS'
+      - name: Build on Mac
+        run: yarn electron-builder --mac --publish never
+        env:
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+        if: runner.os == 'macOS'
 
       - name: Build on Windows
-        run: yarn electron-builder --win --publish never || yarn electron-builder --win --publish never
-        env:
-          # CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK2 }}
+        run: yarn electron-builder --win --publish never
+        # env:
+          # CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
           # CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
-          DISABLE_MULTIPART_DOWNLOADING: true
         if: runner.os == 'Windows'
 
       - name: Install deps for Linux

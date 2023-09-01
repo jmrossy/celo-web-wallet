@@ -6,10 +6,10 @@ import Nurture from 'src/components/icons/nurture.svg'
 import { Box } from 'src/components/layout/Box'
 import { useAreBalancesEmpty } from 'src/features/balances/hooks'
 import {
-  FeedItem,
-  FeedItemData,
   FEED_ITEM_HEIGHT_COMPACT,
   FEED_ITEM_HEIGHT_NORMAL,
+  FeedItem,
+  FeedItemData,
 } from 'src/features/feed/FeedItem'
 import { openTransaction } from 'src/features/feed/feedSlice'
 import { useTokens } from 'src/features/tokens/hooks'
@@ -70,7 +70,7 @@ export function TransactionFeed(props: { feedState?: FeedState }) {
 
   return (
     <div css={style.container} ref={setNodeRef}>
-      {isFeedEmpty ? (
+      {isFeedEmpty && feedState !== 'mobile' ? (
         <Box direction="column" align="center" justify="center" styles={style.tipContainer}>
           <div>
             <img width="110em" height="110em" src={Nurture} alt="Plant seed" css={style.logo} />
@@ -123,6 +123,10 @@ const style: Stylesheet = {
     },
   },
   tipContainer: {
+    display: 'none',
+    [mq[768]]: {
+      display: 'flex',
+    },
     height: '100%',
     padding: '0 2em 3.2em 2em',
     opacity: 0.8,

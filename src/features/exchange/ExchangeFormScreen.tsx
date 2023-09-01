@@ -7,6 +7,7 @@ import { AmountAndCurrencyInput } from 'src/components/input/AmountAndCurrencyIn
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
 import { MoneyValue } from 'src/components/MoneyValue'
+import { config } from 'src/config'
 import { useBalances } from 'src/features/balances/hooks'
 import { getTokenBalance } from 'src/features/balances/utils'
 import { fetchExchangeRateActions } from 'src/features/exchange/exchangeRate'
@@ -115,6 +116,29 @@ export function ExchangeFormScreen() {
       <h2 css={Font.h2Green}>Make an Exchange</h2>
       <Box styles={style.containerBox}>
         <Box direction="column">
+          <Box direction="row" align="center" justify="center" styles={style.rateRow}>
+            <label css={Font.inputLabel}>Current Rate</label>
+            {rate.isReady ? (
+              <>
+                <MoneyValue
+                  amountInWei={rate.fromCeloWeiValue}
+                  token={stableToken}
+                  baseFontSize={1.2}
+                  margin="0 0 0 1em"
+                  containerCss={style.rateValue}
+                />
+                <span css={style.valueText}>:</span>
+                <MoneyValue
+                  amountInWei={rate.weiBasis}
+                  token={CELO}
+                  baseFontSize={1.2}
+                  containerCss={style.rateValue}
+                />
+              </>
+            ) : (
+              <span css={style.valueText}>Loading...</span>
+            )}
+          </Box>
           <form onSubmit={handleSubmit}>
             <div css={style.inputRow}>
               <Box direction="row" justify="between" align="start">
@@ -157,37 +181,16 @@ export function ExchangeFormScreen() {
             </Button>
           </form>
         </Box>
-        <Box direction="column" styles={style.chartColumn}>
-          <Box direction="row" align="center" justify="center" styles={style.rateRow}>
-            <label css={Font.inputLabel}>Current Rate</label>
-            {rate.isReady ? (
-              <>
-                <MoneyValue
-                  amountInWei={rate.fromCeloWeiValue}
-                  token={stableToken}
-                  baseFontSize={1.2}
-                  margin="0 0 0 1em"
-                  containerCss={style.rateValue}
-                />
-                <span css={style.valueText}>:</span>
-                <MoneyValue
-                  amountInWei={rate.weiBasis}
-                  token={CELO}
-                  baseFontSize={1.2}
-                  containerCss={style.rateValue}
-                />
-              </>
-            ) : (
-              <span css={style.valueText}>Loading...</span>
-            )}
+        {config.showPriceChart && (
+          <Box direction="column" styles={style.chartColumn}>
+            <PriceChartCelo
+              quoteTokenAddress={stableTokenAddress}
+              showHeaderPrice={false}
+              containerCss={style.chartContainer}
+              height={200}
+            />
           </Box>
-          <PriceChartCelo
-            quoteTokenAddress={stableTokenAddress}
-            showHeaderPrice={false}
-            containerCss={style.chartContainer}
-            height={200}
-          />
-        </Box>
+        )}
       </Box>
     </ScreenContentFrame>
   )
@@ -245,8 +248,7 @@ const style: Stylesheet = {
   rateRow: {
     backgroundColor: Color.fillLighter,
     padding: '0.5em 1em',
-    marginBottom: '0.2em',
-    marginRight: '1.5em',
+    marginBottom: '1.5em',
     borderRadius: 6,
   },
   rateValue: {

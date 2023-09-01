@@ -10,7 +10,6 @@ import {
 import { logger } from 'src/utils/logger'
 import { call, cancel, put, spawn, take } from 'typed-redux-saga'
 
-let runWalletConnectV1SessionFn: any
 let runWalletConnectV2SessionFn: any
 
 // This watches for init action dispatches and forks off a saga
@@ -50,29 +49,16 @@ export function* watchWalletConnect() {
 // Dynamic importing for code splitting
 // The WalletConnect bundle is large and includes many libs
 async function dynamicImportWalletConnect(version: WalletConnectVersion) {
-  if (version === 1 && runWalletConnectV1SessionFn) return runWalletConnectV1SessionFn
   if (version === 2 && runWalletConnectV2SessionFn) return runWalletConnectV2SessionFn
 
   try {
-    if (version === 1) {
-      logger.debug('Fetching WalletConnect V1 bundle')
-      const wcModule1 = await import(
-        /* webpackChunkName: "walletconnectv1" */ 'src/features/walletConnect/v1/walletConnect'
-      )
-      runWalletConnectV1SessionFn = wcModule1.runWalletConnectSession
-      logger.debug('Done fetching WalletConnect V1 bundle')
-      return runWalletConnectV1SessionFn
-    } else if (version === 2) {
-      logger.debug('Fetching WalletConnect V2 bundle')
-      const wcModule2 = await import(
-        /* webpackChunkName: "walletconnectv2" */ 'src/features/walletConnect/v2/walletConnect'
-      )
-      runWalletConnectV2SessionFn = wcModule2.runWalletConnectSession
-      logger.debug('Done fetching WalletConnect V2 bundle')
-      return runWalletConnectV2SessionFn
-    } else {
-      throw new Error(`Invalid WC version: ${version}`)
-    }
+    logger.debug('Fetching WalletConnect V2 bundle')
+    const wcModule2 = await import(
+      /* webpackChunkName: "walletconnect2" */ 'src/features/walletConnect/walletConnect'
+    )
+    runWalletConnectV2SessionFn = wcModule2.runWalletConnectSession
+    logger.debug('Done fetching WalletConnect V2 bundle')
+    return runWalletConnectV2SessionFn
   } catch (error) {
     logger.error('Failed to load WalletConnect bundle', error)
     return null

@@ -4,21 +4,16 @@ import {
   WalletConnectSession,
   WalletConnectStatus,
 } from 'src/features/walletConnect/types'
-import type { SessionTypes } from 'wcv2/types'
 
 export const initializeWcClient = createAction<string>('walletConnect/init')
-export const proposeWcSession = createAction<SessionTypes.Proposal>('walletConnect/proposeSession')
+export const proposeWcSession = createAction<any>('walletConnect/proposeSession')
 export const approveWcSession = createAction('walletConnect/approveSession')
 export const rejectWcSession = createAction('walletConnect/rejectSession')
-export const createWcSession = createAction<SessionTypes.Settled>('walletConnect/createSession')
-export const updateWcSession = createAction<SessionTypes.UpdateParams>(
-  'walletConnect/updateSession'
-)
-export const deleteWcSession = createAction<SessionTypes.DeleteParams>(
-  'walletConnect/deleteSession'
-)
+export const createWcSession = createAction<any>('walletConnect/createSession')
+export const updateWcSession = createAction<any>('walletConnect/updateSession')
+export const deleteWcSession = createAction<any>('walletConnect/deleteSession')
 export const failWcSession = createAction<string>('walletConnect/fail')
-export const requestFromWc = createAction<SessionTypes.RequestEvent>('walletConnect/requestEvent')
+export const requestFromWc = createAction<any>('walletConnect/requestEvent')
 export const approveWcRequest = createAction('walletConnect/approveRequest')
 export const rejectWcRequest = createAction('walletConnect/rejectRequest')
 export const completeWcRequest = createAction('walletConnect/completeRequest')
@@ -31,7 +26,7 @@ interface walletConnectState {
   status: WalletConnectStatus
   uri: string | null
   session: WalletConnectSession | null
-  request: SessionTypes.RequestEvent | null
+  request: any | null
   error: string | null
 }
 

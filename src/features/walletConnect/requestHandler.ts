@@ -8,25 +8,12 @@ import { isValidTx, translateTxFields } from 'src/features/walletConnect/utils'
 import { completeWcRequest, dismissWcRequest } from 'src/features/walletConnect/walletConnectSlice'
 import { logger } from 'src/utils/logger'
 import { call, delay, put } from 'typed-redux-saga'
-import type { SessionTypes } from 'wcv2/types'
 
-export type ApproveHandler = (
-  event: SessionTypes.RequestEvent,
-  client: any,
-  result: any
-) => Promise<void>
+export type ApproveHandler = (event: any, client: any, result: any) => Promise<void>
 
-export type DenyHandler = (
-  event: SessionTypes.RequestEvent,
-  client: any,
-  reason: WalletConnectError
-) => Promise<void>
+export type DenyHandler = (event: any, client: any, reason: WalletConnectError) => Promise<void>
 
-export async function validateRequestEvent(
-  event: SessionTypes.RequestEvent,
-  client: any,
-  denyRequest: DenyHandler
-) {
+export async function validateRequestEvent(event: any, client: any, denyRequest: DenyHandler) {
   if (!event) {
     logger.warn('Ignoring null WalletConnect request event')
     return false
@@ -71,7 +58,7 @@ export async function validateRequestEvent(
 }
 
 export function* handleWalletConnectRequest(
-  event: SessionTypes.RequestEvent,
+  event: any,
   client: any,
   approved: boolean,
   approveRequest: ApproveHandler,
@@ -110,21 +97,13 @@ export function* handleWalletConnectRequest(
   yield* put(dismissWcRequest())
 }
 
-function* getAccounts(
-  event: SessionTypes.RequestEvent,
-  client: any,
-  approveRequest: ApproveHandler
-) {
+function* getAccounts(event: any, client: any, approveRequest: ApproveHandler) {
   logger.debug('Responding accounts for WalletConnect request')
   const address = yield* appSelect((s) => s.wallet.address)
   return approveRequest(event, client, [address])
 }
 
-async function signTransaction(
-  event: SessionTypes.RequestEvent,
-  client: any,
-  approveRequest: ApproveHandler
-) {
+async function signTransaction(event: any, client: any, approveRequest: ApproveHandler) {
   logger.debug('WalletConnect request: sign transaction')
   const tx = event.request.params
   const formattedTx = translateTxFields(tx)
@@ -138,11 +117,7 @@ async function signTransaction(
   return approveRequest(event, client, result)
 }
 
-async function signAndSendTransaction(
-  event: SessionTypes.RequestEvent,
-  client: any,
-  approveRequest: ApproveHandler
-) {
+async function signAndSendTransaction(event: any, client: any, approveRequest: ApproveHandler) {
   logger.debug('WalletConnect request: sign and send transaction')
   const tx = event.request.params
   const formattedTx = translateTxFields(tx)
@@ -153,11 +128,7 @@ async function signAndSendTransaction(
   return approveRequest(event, client, txReceipt.transactionHash)
 }
 
-async function signMessage(
-  event: SessionTypes.RequestEvent,
-  client: any,
-  approveRequest: ApproveHandler
-) {
+async function signMessage(event: any, client: any, approveRequest: ApproveHandler) {
   logger.debug('WalletConnect request: send message')
   const signer = getSigner().signer
   const message = event.request.params

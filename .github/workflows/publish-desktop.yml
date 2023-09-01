@@ -6,7 +6,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-2019, ubuntu-latest]
+        os: [macos-11, windows-2019, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -15,11 +15,8 @@ jobs:
           node-version: '14'
           check-latest: true
 
-      - name: Adjust yarn timeout
-        run: yarn config set network-timeout 600000 -g
-
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Run linter
         run:  yarn lint
