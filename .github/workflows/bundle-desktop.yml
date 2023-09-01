@@ -40,21 +40,18 @@ jobs:
           ALCHEMY_KEY: ${{ secrets.ALCHEMY_KEY }}
           WALLET_CONNECT_KEY: ${{ secrets.WALLET_CONNECT_KEY }}
 
-      # Mac builds on Github are very flaky, disabling for now as they're easy to make locally anyway
-      # - name: Build on Mac
-      #   run: yarn electron-builder --mac --publish never
-      #   env:
-      #     CSC_LINK: ${{ secrets.MAC_CSC_LINK2 }}
-      #     CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
-      #     DISABLE_MULTIPART_DOWNLOADING: true
-      #   if: runner.os == 'macOS'
+      - name: Build on Mac
+        run: yarn electron-builder --mac --publish never
+        env:
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK2 }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+        if: runner.os == 'macOS'
 
       - name: Build on Windows
         run: yarn electron-builder --win --publish never || yarn electron-builder --win --publish never
-        env:
+        # env:
           # CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK2 }}
           # CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
-          DISABLE_MULTIPART_DOWNLOADING: true
         if: runner.os == 'Windows'
 
       - name: Install deps for Linux
