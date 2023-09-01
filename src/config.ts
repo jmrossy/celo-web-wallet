@@ -51,6 +51,7 @@ interface Config {
     mac: string
     linux: string
   }
+  chainName: string
   chainId: number
   contractAddresses: Record<CeloContract, string>
   nomspaceRegistry: string
@@ -72,12 +73,12 @@ const configMainnet: Config = {
   version,
   alchemyApiKey,
   walletConnectV2ProjectId,
-  jsonRpcUrlPrimary: 'https://node.celowallet.app',
-  jsonRpcUrlSecondary: 'https://forno.celo.org',
+  jsonRpcUrlPrimary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
   discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
+  chainName: 'celo',
   chainId: 42220,
   contractAddresses: {
     [CeloContract.Accounts]: '0x7d21685C17607338b313a7174bAb6620baD0aaB7',
@@ -113,6 +114,7 @@ const configAlfajores: Config = {
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
   discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
+  chainName: 'alfajores',
   chainId: 44787,
   contractAddresses: {
     [CeloContract.Accounts]: '0xed7f51A34B4e71fbE69B3091FcF879cD14bD73A9',

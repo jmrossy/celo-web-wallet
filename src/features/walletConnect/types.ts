@@ -1,5 +1,3 @@
-import type { SessionTypes } from 'wcv2/types'
-
 export type WalletConnectVersion = 1 | 2
 
 export interface WalletConnectUriForm {
@@ -25,12 +23,12 @@ export enum SessionStatus {
 
 export interface PendingSession {
   status: SessionStatus.Pending
-  data: SessionTypes.Proposal
+  data: any
 }
 
 export interface SettledSession {
   status: SessionStatus.Settled
-  data: SessionTypes.Settled
+  data: any
   startTime: number
 }
 

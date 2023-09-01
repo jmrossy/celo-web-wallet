@@ -136,7 +136,6 @@ import {
   unlockWalletSaga,
   unlockWalletSagaName,
 } from 'src/features/wallet/unlockWallet'
-import { watchWalletConnect } from 'src/features/walletConnect/init'
 import { SagaActions, SagaState } from 'src/utils/saga'
 
 // Things that should happen before other sagas start go here
@@ -145,7 +144,7 @@ function* init() {
 }
 
 // All regular sagas must be included here
-const sagas = [walletStatusPoller, watchWalletConnect, fetchNftImagesSaga]
+const sagas = [walletStatusPoller, fetchNftImagesSaga]
 
 // All monitored sagas must be included here
 export const monitoredSagas: {

@@ -19,13 +19,8 @@ import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
 import { useSagaStatusNoModal } from 'src/utils/useSagaStatus'
-import type { SessionTypes } from 'wcv2/types'
 
-export function RequestDetails({
-  requestEvent,
-}: {
-  requestEvent: SessionTypes.RequestEvent | null
-}) {
+export function RequestDetails({ requestEvent }: { requestEvent: any | null }) {
   if (!requestEvent || !requestEvent.request) {
     throw new Error('WalletConnect request event is missing')
   }

@@ -30,7 +30,7 @@ async function connectToJsonRpcProvider(url: string) {
   try {
     logger.info(`Connecting to json rpc provider: ${url}`)
     provider = new StaticCeloProvider(url, {
-      name: 'Celo',
+      name: config.chainName,
       chainId: config.chainId,
       ensAddress: config.nomspaceRegistry,
     })
