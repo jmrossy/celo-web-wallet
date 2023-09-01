@@ -22,11 +22,8 @@ jobs:
           node-version: '14'
           check-latest: true
 
-      - name: Adjust yarn timeout
-        run: yarn config set network-timeout 1800000 -g
-
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Run linter
         run:  yarn lint
