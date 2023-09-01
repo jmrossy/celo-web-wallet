@@ -28,7 +28,7 @@ const PRECOMPUTED_GAS_ESTIMATES: Partial<Record<TransactionType, number>> = {
   [TransactionType.GovernanceVote]: 550000, //TODO
 }
 
-const CELO_GAS_MULTIPLIER = 2
+const CELO_GAS_MULTIPLIER = 3
 const STABLE_TOKEN_GAS_MULTIPLIER = 5
 
 export async function estimateGas(

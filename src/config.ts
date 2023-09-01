@@ -56,6 +56,7 @@ interface Config {
   contractAddresses: Record<CeloContract, string>
   nomspaceRegistry: string
   ensCoinTypeValue?: number
+  showPriceChart?: boolean
 }
 
 const desktopUrls = {
@@ -101,6 +102,7 @@ const configMainnet: Config = {
   },
   nomspaceRegistry: '0x3DE51c3960400A0F752d3492652Ae4A0b2A36FB3',
   ensCoinTypeValue: 2147525868, // https://github.com/ensdomains/address-encoder/issues/329
+  showPriceChart: false,
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -136,6 +138,7 @@ const configAlfajores: Config = {
     [CeloContract.Validators]: '0x9acF2A99914E083aD0d610672E93d14b0736BBCc',
   },
   nomspaceRegistry: '0x40cd4db228e9c172dA64513D0e874d009486A9a9',
+  showPriceChart: false,
 }
 
 export const config = Object.freeze(configMainnet)
