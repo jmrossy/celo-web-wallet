@@ -43,7 +43,7 @@ export async function estimateGas(
     return computeGasEstimate(tx, feeToken)
   }
 
-  const gasLimit = BigNumber.from(PRECOMPUTED_GAS_ESTIMATES[type])
+  const gasLimit = BigNumber.from(PRECOMPUTED_GAS_ESTIMATES[type]).mul(CELO_GAS_MULTIPLIER)
   if (!feeToken || areAddressesEqual(feeToken, CELO.address)) {
     logger.debug(`Using CELO precompute gas for type: ${type}`)
     return gasLimit
