@@ -45,7 +45,6 @@ interface Config {
   jsonRpcUrlSecondary?: string
   gatewayFeeRecipient?: string
   blockscoutUrl: string
-  discordUrl: string
   desktopUrls: {
     windows: string
     mac: string
@@ -77,7 +76,6 @@ const configMainnet: Config = {
   jsonRpcUrlPrimary: 'https://forno.celo.org',
   gatewayFeeRecipient: '0x97a5fF70483F9320aFA72e04AbA148Aa1c26946C',
   blockscoutUrl: 'https://explorer.celo.org',
-  discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainName: 'celo',
   chainId: 42220,
@@ -114,7 +112,6 @@ const configAlfajores: Config = {
   walletConnectV2ProjectId,
   jsonRpcUrlPrimary: 'https://alfajores-forno.celo-testnet.org',
   blockscoutUrl: 'https://alfajores-blockscout.celo-testnet.org',
-  discordUrl: 'https://discord.gg/ht885KmG5A',
   desktopUrls,
   chainName: 'alfajores',
   chainId: 44787,

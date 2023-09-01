@@ -1,7 +1,6 @@
 import { Component } from 'react'
 import { TextLink } from 'src/components/buttons/TextLink'
 import SadFace from 'src/components/icons/sad_face.svg'
-import { config } from 'src/config'
 import { OnboardingScreenFrame } from 'src/features/onboarding/OnboardingScreenFrame'
 import { Font } from 'src/styles/fonts'
 import { Stylesheet } from 'src/styles/types'
@@ -43,7 +42,7 @@ export function FailScreen({ details }: { details?: string }) {
       <img width="180em" src={SadFace} alt="Sad Face" css={style.img} />
       <h3 css={style.h3}>
         Please refresh the page. If the problem persists, you can{' '}
-        <TextLink link={config.discordUrl}>ask for help here</TextLink>.
+        <TextLink link="https://github.com/celo-tools/celo-web-wallet">report an issue.</TextLink>.
       </h3>
       {details && <p css={style.details}>{details}</p>}
     </OnboardingScreenFrame>

@@ -52,7 +52,3 @@ Your seed phrases, from which you keys are derived, are encrypted using your pas
 Yes, Ledger hardware is supported on both the web and desktop versions. Due to browser limitations, Ledger has been found to work best in Chrome.
 
 Note though that currently not all transactions can be parsed by the Celo Ledger app. Simple payments (like CELO or cUSD transfers) will show transaction details on the Ledger itself but transfers with comments or token exchanges will not yet show details.
-
-## Can feature X be added?
-
-Maybe, let's chat about it! Please see the [wallet Discord channel](https://discord.gg/ht885KmG5A) for open discussion.

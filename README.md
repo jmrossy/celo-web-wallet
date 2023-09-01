@@ -48,7 +48,6 @@ yarn electron:dev
 ## Contributing
 
 For small contributions such as bug fixes or style tweaks, please open a Pull Request.
-For new features, please create an issue to start a discussion on [Discord](https://discord.gg/ht885KmG5A).
 
 ## License
 

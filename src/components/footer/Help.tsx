@@ -1,9 +1,7 @@
 import { TextButton } from 'src/components/buttons/TextButton'
-import Discord from 'src/components/icons/logos/discord.svg'
 import Github from 'src/components/icons/logos/github.svg'
 import { ModalLinkGrid } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
-import { config } from 'src/config'
 import { Styles } from 'src/styles/types'
 
 export function HelpButton({ styles }: { styles: Styles }) {
@@ -12,8 +10,7 @@ export function HelpButton({ styles }: { styles: Styles }) {
     showModalWithContent({
       head: 'Need some help?',
       content: <HelpModal />,
-      subHead:
-        'See the Frequently Asked Questions (FAQ) on Github or join Discord to chat with the Celo community.',
+      subHead: 'See the Frequently Asked Questions (FAQ) on Github.',
     })
   }
   return (
@@ -30,12 +27,6 @@ function HelpModal() {
       imgSrc: Github,
       text: 'FAQ on Github',
       altText: 'Github',
-    },
-    {
-      url: config.discordUrl,
-      imgSrc: Discord,
-      text: 'Chat on Discord',
-      altText: 'Discord',
     },
   ]
   return <ModalLinkGrid links={links} />
