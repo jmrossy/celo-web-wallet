@@ -4,9 +4,6 @@
   "devCommand": "yarn build:prod:vercel",
   "outputDirectory": "dist",
   "framework": null,
-  "redirects": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
   "headers": [
     {
       "source": "/(.*)",
