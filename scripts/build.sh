@@ -41,17 +41,15 @@ if [ "$ELECTRON" = true ]; then
 fi
 yarn run webpack --mode production
 
-if [ "$VERCEL" = false ]; then
-  echo "Checking bundle integrity"
-  export BUNDLE_HASH=`shasum -b -a 256 dist/bundle.js | awk '{ print $1 }' | xxd -r -p | base64`
-  echo "Bundle hash ${BUNDLE_HASH}"
-  export LEDGER_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-ledger.js | awk '{ print $1 }' | xxd -r -p | base64`
-  echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
-  # export WC2_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-walletconnectv2.js | awk '{ print $1 }' | xxd -r -p | base64`
-  # echo "WalletConnect v2 bundle hash ${WC2_BUNDLE_HASH}"
-  echo "Updating index.html bundle hash"
-  xplat_sed "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
-fi
+echo "Checking bundle integrity"
+export BUNDLE_HASH=`node scripts/shasum.js dist/bundle.js`
+echo "Bundle hash ${BUNDLE_HASH}"
+export LEDGER_BUNDLE_HASH=`node scripts/shasum.js dist/bundle-ledger.js`
+echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
+# export WC2_BUNDLE_HASH=`node scripts/shasum.js dist/bundle-walletconnectv2.js`
+# echo "WalletConnect v2 bundle hash ${WC2_BUNDLE_HASH}"
+echo "Updating index.html bundle hash"
+xplat_sed "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
 
 
 if [ "$ELECTRON" = false ]; then
