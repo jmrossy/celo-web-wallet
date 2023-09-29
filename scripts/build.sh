@@ -49,10 +49,10 @@ if [ "$VERCEL" = false ]; then
   echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
   # export WC2_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-walletconnectv2.js | awk '{ print $1 }' | xxd -r -p | base64`
   # echo "WalletConnect v2 bundle hash ${WC2_BUNDLE_HASH}"
+  echo "Updating index.html bundle hash"
+  xplat_sed "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
 fi
 
-echo "Updating index.html bundle hash"
-xplat_sed "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
 
 if [ "$ELECTRON" = false ]; then
   echo "Prepping index.html for web" 

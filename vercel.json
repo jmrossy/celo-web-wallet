@@ -1,6 +1,7 @@
 {
   "installCommand": "yarn install",
   "buildCommand": "yarn build:prod:vercel",
+  "devCommand": "yarn build:prod:vercel",
   "outputDirectory": "dist",
   "framework": null,
   "redirects": [
