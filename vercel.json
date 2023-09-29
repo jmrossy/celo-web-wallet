@@ -1,0 +1,28 @@
+{
+  "installCommand": "yarn install",
+  "buildCommand": "yarn build:prod:vercel",
+  "outputDirectory": "dist",
+  "framework": null,
+  "redirects": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'sha256-a0xx6QQjQFEl3BVHxY4soTXMFurPf9rWKnRLQLOkzg4='; connect-src 'self' https://*.celowallet.app https://*.celo.org wss://walletconnect.celo.org wss://*.walletconnect.com wss://*.walletconnect.org https://eth-mainnet.alchemyapi.io https://unstoppabledomains.g.alchemy.com https://cloudflare-ipfs.com; img-src 'self' data: https://cloudflare-ipfs.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        }
+      ]
+    }
+  ]
+}

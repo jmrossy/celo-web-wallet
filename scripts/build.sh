@@ -4,14 +4,18 @@ set -euo pipefail
 # Builds the app, outputting files ready for Netlify
 # Flags:
 # -n: Name of the network: 'Alfajores' or 'Mainnet'
+# -e: Build for electron
+# -v: Build for Vercel
 
 NETWORK=""
 ELECTRON=false
+VERCEL=false
 
-while getopts 'n:e' flag; do
+while getopts 'n:e:v' flag; do
   case "${flag}" in
     n) NETWORK="$OPTARG" ;;
     e) ELECTRON=true ;;
+    v) VERCEL=true ;;
     *) echo "Unexpected option ${flag}" ;;
   esac
 done
@@ -37,13 +41,15 @@ if [ "$ELECTRON" = true ]; then
 fi
 yarn run webpack --mode production
 
-echo "Checking bundle integrity"
-export BUNDLE_HASH=`shasum -b -a 256 dist/bundle.js | awk '{ print $1 }' | xxd -r -p | base64`
-echo "Bundle hash ${BUNDLE_HASH}"
-export LEDGER_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-ledger.js | awk '{ print $1 }' | xxd -r -p | base64`
-echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
-# export WC2_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-walletconnectv2.js | awk '{ print $1 }' | xxd -r -p | base64`
-# echo "WalletConnect v2 bundle hash ${WC2_BUNDLE_HASH}"
+if [ "$VERCEL" = false ]; then
+  echo "Checking bundle integrity"
+  export BUNDLE_HASH=`shasum -b -a 256 dist/bundle.js | awk '{ print $1 }' | xxd -r -p | base64`
+  echo "Bundle hash ${BUNDLE_HASH}"
+  export LEDGER_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-ledger.js | awk '{ print $1 }' | xxd -r -p | base64`
+  echo "Ledger bundle hash ${LEDGER_BUNDLE_HASH}"
+  # export WC2_BUNDLE_HASH=`shasum -b -a 256 dist/bundle-walletconnectv2.js | awk '{ print $1 }' | xxd -r -p | base64`
+  # echo "WalletConnect v2 bundle hash ${WC2_BUNDLE_HASH}"
+fi
 
 echo "Updating index.html bundle hash"
 xplat_sed "s|sha256-%BUNDLE_HASH%|sha256-${BUNDLE_HASH}|g" dist/index.html
@@ -53,10 +59,12 @@ if [ "$ELECTRON" = false ]; then
   # remove CSP header tag, it gets set via netlify header instead which is preferable
   xplat_sed "s|<meta http-equiv.*>||g" dist/index.html
 
-  echo "Updating Readme"
-  xplat_sed "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
-  xplat_sed "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
-  xplat_sed "s|bundle-walletconnectv2.js -> sha256-.*\`|bundle-walletconnectv2.js -> sha256-${WC2_BUNDLE_HASH}\`|g" README.md
+  if [ "$VERCEL" = false ]; then
+    echo "Updating Readme"
+    xplat_sed "s|bundle.js -> sha256-.*\`|bundle.js -> sha256-${BUNDLE_HASH}\`|g" README.md
+    xplat_sed "s|bundle-ledger.js -> sha256-.*\`|bundle-ledger.js -> sha256-${LEDGER_BUNDLE_HASH}\`|g" README.md
+    # xplat_sed "s|bundle-walletconnectv2.js -> sha256-.*\`|bundle-walletconnectv2.js -> sha256-${WC2_BUNDLE_HASH}\`|g" README.md
+  fi
 else
   echo "Prepping index.html for electron" 
   # Trim title down 

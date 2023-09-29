@@ -19,6 +19,7 @@
     "build:dev": "NODE_ENV=development webpack --devtool source-map --mode development",
     "build:staging": "./scripts/build.sh -n Alfajores",
     "build:prod": "./scripts/build.sh -n Mainnet",
+    "build:prod:vercel": "./scripts/build.sh -n Mainnet -v",
     "clean": "rm -rf dist dist-electron",
     "lint": "eslint src",
     "test": "NODE_ENV=test jasmine",
