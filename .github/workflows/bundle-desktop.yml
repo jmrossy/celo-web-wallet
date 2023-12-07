@@ -42,7 +42,7 @@ jobs:
       - name: Build on Mac
         run: yarn electron-builder --mac --publish never
         env:
-          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK2 }}
           CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
@@ -51,7 +51,7 @@ jobs:
       - name: Build on Windows
         run: yarn electron-builder --win --publish never
         # env:
-          # CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
+          # CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK2 }}
           # CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
         if: runner.os == 'Windows'
 
