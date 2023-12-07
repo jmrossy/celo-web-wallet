@@ -1,6 +1,8 @@
-# Celo Wallet For Web and Desktop
+# Othello Wallet
 
-A lightweight, self-sovereign wallet for the Celo network. Manage small accounts [on the web](https://celowallet.app) or large ones [on your desktop.](https://github.com/celo-tools/celo-web-wallet/releases) Fully compatible with Ledger hardware.
+A lightweight, self-sovereign wallet for the Celo network. Manage small accounts [on the web](https://celowallet.app) or large ones [on your desktop.](https://github.com/celo-tools/celo-web-wallet/releases).
+
+**Note**: This wallet is not currently under active development. Only security updates will be released.
 
 ## Desktop Downloads
 

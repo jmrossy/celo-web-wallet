@@ -11,7 +11,7 @@ interface Contacts {
 
 const contactsInitialState: Contacts = {
   contacts: {
-    [DONATION_ADDRESS]: { address: DONATION_ADDRESS, name: 'Celo Wallet Donations' },
+    [DONATION_ADDRESS]: { address: DONATION_ADDRESS, name: 'Othello Donations' },
   },
 }
 

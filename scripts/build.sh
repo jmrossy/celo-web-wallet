@@ -11,7 +11,7 @@ NETWORK=""
 ELECTRON=false
 VERCEL=false
 
-while getopts 'n:e:v' flag; do
+while getopts 'n:ev' flag; do
   case "${flag}" in
     n) NETWORK="$OPTARG" ;;
     e) ELECTRON=true ;;

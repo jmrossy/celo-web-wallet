@@ -2,7 +2,7 @@ import { config } from 'src/config'
 
 export const APP_METADATA = {
   name: 'CeloWallet.app',
-  description: `Celo Wallet for ${config.isElectron ? 'Desktop' : 'Web'}`,
+  description: `Othello for ${config.isElectron ? 'Desktop' : 'Web'}`,
   url: 'https://celowallet.app',
   icons: ['https://celowallet.app/static/icon.png'],
 }

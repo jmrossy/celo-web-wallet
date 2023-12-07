@@ -1,5 +1,6 @@
 import { PropsWithChildren } from 'react'
 import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
+import { AlertBanner } from 'src/app/AlertBanner'
 import { BadBrowserScreen } from 'src/app/BadBrowserScreen'
 import { useDeepLinkHandler } from 'src/app/deepLink'
 import { ErrorBoundary } from 'src/app/FailScreen'
@@ -77,6 +78,7 @@ export const App = () => {
       <Router>
         <ModalProvider>
           <DeepLinkHandler />
+          <AlertBanner />
           <UpdateBanner />
           <Routes>
             <Route path="/" element={<HomeNavigator />}>

@@ -1,5 +1,7 @@
 # Frequently Asked Questions
 
+[What is the wallet called?](#what-is-the-wallet-called)
+
 [Where can the app be used?](#where-can-the-app-be-used)
 
 [Does it work on phones?](#does-it-work-on-phones)
@@ -14,11 +16,17 @@
 
 [Is Ledger supported?](#is-ledger-supported)
 
-[Can feature X be added?](#can-feature-x-be-added)
+## What is the wallet called?
+
+The original name for this wallet was just "Celo Wallet", but to avoid confusion it has been renamed to "Othello Wallet".
+
+## Who maintains this wallet?
+
+This wallet was created by [J M Rossy](https://twitter.com/RossyWrote). It is not currently under active development. Only security update will be released.
 
 ## Where can the app be used?
 
-The Celo Wallet can run in a modern browser (Chrome is recommended) or on your desktop (Mac, Windows, and Linux).
+It can run in a modern browser (Chrome is recommended) or on your desktop (Mac, Windows, and Linux).
 The desktop version has stricter security guarantees and is strongly recommended for large accounts.
 
 ## Does it work on phones?
@@ -27,11 +35,11 @@ Yes, the web version was designed from the ground-up to be lightweight and mobil
 
 ## Will it work with Valora wallets?
 
-Yes, you can use your Account Key (seed phrase) to import your account into the Celo Wallet, back into Valora, or use both at the same time.
+Yes, you can use your Account Key (seed phrase) to import your account into Othello, back into Valora, or use both at the same time.
 
 ## How is it different than Valora?
 
-The most obvious difference is platform: Valora runs on iOS and Android, whereas Celo Wallet runs in browsers and on desktop. More abstractly though, Valora is a social payments application whereas the Celo Wallet is just a tool. That's why Valora includes extra features around importing contacts, verifying phone numbers, finding friends, etc. In contrast, one of this wallet's design principles is to be minimal, meaning no analytics, no plugins, and no device permissions (except for Ledger access).
+The most obvious difference is platform: Valora runs on iOS and Android, whereas Othello runs in browsers and on desktop. More abstractly though, Valora is a social payments application whereas the Othello is just a tool. That's why Valora includes extra features around importing contacts, verifying phone numbers, finding friends, etc. In contrast, one of this wallet's design principles is to be minimal, meaning no analytics, no plugins, and no device permissions (except for Ledger access).
 
 ## Is the web version safe?
 

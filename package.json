@@ -1,8 +1,9 @@
 {
   "name": "celo-web-wallet",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "A lightweight web and desktop wallet for the Celo network",
   "keywords": [
+    "Othello",
     "Celo",
     "wallet"
   ],

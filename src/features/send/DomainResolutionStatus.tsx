@@ -42,7 +42,7 @@ export function DomainResolverStatus({
   const onClickGenericError = () => {
     showModal({
       head: 'Error retrieving address',
-      body: 'Celo Wallet was unable to retrieve the name records. Check that the wallet is connected and that a valid name was provided.',
+      body: 'Othello was unable to retrieve the name records. Check that the wallet is connected and that a valid name was provided.',
       size: 's',
     })
   }

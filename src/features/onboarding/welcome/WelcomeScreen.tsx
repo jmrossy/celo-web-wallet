@@ -24,7 +24,7 @@ export function WelcomeScreen() {
       <div css={style.topPadding}></div>
       <main>
         <Box direction="column" justify="center" align="center">
-          <img width="410rem" height="100rem" src={Logo} alt="Celo Logo" css={style.logo} />
+          <img width="410rem" height="100rem" src={Logo} alt="Othello Logo" css={style.logo} />
           <h1 css={style.h1}>{`A ${isMobile ? '' : 'simple '}wallet for the Celo network`}</h1>
           <h2 css={style.h2}>Manage your funds in a browser or on your desktop</h2>
           <div css={style.buttonContainer}>

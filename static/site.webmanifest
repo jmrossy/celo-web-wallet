@@ -1,6 +1,6 @@
 {
-    "name": "Celo Wallet",
-    "short_name": "Celo Wallet",
+    "name": "Othello Wallet",
+    "short_name": "Othello",
     "icons": [
         {
             "src": "/static/android-chrome-192x192.png",

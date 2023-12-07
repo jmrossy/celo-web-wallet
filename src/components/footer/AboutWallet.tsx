@@ -29,8 +29,10 @@ function AboutWalletModal() {
   return (
     <Box direction="column" align="center" styles={style.container}>
       <p css={style.text}>
-        The Celo Wallet is a free, open source wallet for the Celo network. It was created by{' '}
-        <TextLink link="https://twitter.com/RossyWrote">J M Rossy</TextLink>
+        Othello (formerly Celo Wallet) is a free, open source wallet for the Celo network. It was
+        created by <TextLink link="https://twitter.com/RossyWrote">J M Rossy</TextLink>. It is not
+        affiliated with the Celo Foundation and is not currently under active development. Only
+        security updates will be made.
       </p>
       <p css={style.text}>
         The source code for the wallet can be found{' '}

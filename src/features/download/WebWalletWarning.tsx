@@ -32,7 +32,7 @@ export function WebWalletWarning({ type, onClose }: Props) {
           hardware is strongly recommended.
         </p>
         <p css={style.text}>
-          The Celo Wallet For Web tries its best to protect your funds but there{' '}
+          Othello for web tries its best to protect your funds but there{' '}
           <TextLink link="https://github.com/celo-tools/celo-web-wallet/blob/master/FAQ.md#is-the-web-wallet-safe">
             are still risks
           </TextLink>
