@@ -24,7 +24,7 @@ export function HeaderSectionEmpty() {
 
   return (
     <Box direction="column">
-      <h1 css={style.header}>Welcome to your Celo wallet!</h1>
+      <h1 css={style.header}>Welcome to your Othello wallet!</h1>
 
       <Box direction="column">
         <Box direction="row" align="end">

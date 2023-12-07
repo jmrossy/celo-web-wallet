@@ -18,7 +18,7 @@ export function useDownloadDesktopModal(limitFeatureVersion = true) {
   const { showModalWithContent } = useModal()
   return () => {
     showModalWithContent({
-      head: 'Celo Wallet for Desktop',
+      head: 'Othello for Desktop',
       content: <DownloadDesktopModal limitFeatureVersion={limitFeatureVersion} />,
     })
   }
@@ -28,7 +28,7 @@ export function DownloadDesktopButton({ children, styles }: PropsWithChildren<Bu
   const { showModalWithContent } = useModal()
 
   const onClick = () => {
-    showModalWithContent({ head: 'Celo Wallet for Desktop', content: <DownloadDesktopModal /> })
+    showModalWithContent({ head: 'Othello for Desktop', content: <DownloadDesktopModal /> })
   }
   return (
     <TextButton onClick={onClick} styles={styles}>

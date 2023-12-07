@@ -18,7 +18,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1250,
     height: 760,
-    title: 'Celo Wallet',
+    title: 'Othello',
     webPreferences: {
       preload: false,
       nodeIntegration: true,
