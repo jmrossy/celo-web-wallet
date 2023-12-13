@@ -15,7 +15,7 @@
   "[javascript]": {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": false
+      "source.organizeImports": "never"
     }
   },
   "[javascriptreact]": {
@@ -48,4 +48,9 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "typescript.tsdk": "node_modules/typescript/lib",
+  "[javascriptreact][typescript][typescriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
 }
