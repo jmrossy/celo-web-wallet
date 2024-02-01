@@ -3,7 +3,7 @@ import { appSelect } from 'src/app/appSelect'
 import { getContract } from 'src/blockchain/contracts'
 import { getSigner } from 'src/blockchain/signer'
 import { signTransaction } from 'src/blockchain/transaction'
-import { executeTxPlan, TxPlanExecutor } from 'src/blockchain/txPlan'
+import { TxPlanExecutor, executeTxPlan } from 'src/blockchain/txPlan'
 import { CeloContract } from 'src/config'
 import { MIN_LOCK_AMOUNT } from 'src/consts'
 import { fetchBalancesActions, fetchBalancesIfStale } from 'src/features/balances/fetchBalances'
@@ -24,8 +24,8 @@ import {
 import { setAccountIsRegistered } from 'src/features/wallet/walletSlice'
 import { CELO } from 'src/tokens'
 import {
-  areAmountsNearlyEqual,
   BigNumberMin,
+  areAmountsNearlyEqual,
   getAdjustedAmount,
   validateAmount,
   validateAmountWithFees,
@@ -208,7 +208,7 @@ export function getLockActionTxPlan(
   const { action, amountInWei } = params
 
   if (action === LockActionType.Unlock) {
-    // If only all three cases where this simple :)
+    // If only all three cases were this simple :)
     const adjustedAmount = getAdjustedAmount(amountInWei, balances.lockedCelo.locked, CELO)
     return [{ type: TransactionType.UnlockCelo, amountInWei: adjustedAmount.toString() }]
   } else if (action === LockActionType.Lock) {
