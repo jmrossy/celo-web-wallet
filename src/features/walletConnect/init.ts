@@ -1,6 +1,5 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 import { appSelect } from 'src/app/appSelect'
-import { WalletConnectVersion } from 'src/features/walletConnect/types'
 import { getWalletConnectVersion } from 'src/features/walletConnect/utils'
 import {
   disconnectWcClient,
@@ -32,7 +31,7 @@ export function* watchWalletConnect() {
       continue
     }
 
-    const sessionRunner = yield* call(dynamicImportWalletConnect, version)
+    const sessionRunner = yield* call(dynamicImportWalletConnect)
     if (!sessionRunner) {
       yield* put(failWcSession('Could not load bundle'))
       continue
@@ -48,8 +47,8 @@ export function* watchWalletConnect() {
 
 // Dynamic importing for code splitting
 // The WalletConnect bundle is large and includes many libs
-async function dynamicImportWalletConnect(version: WalletConnectVersion) {
-  if (version === 2 && runWalletConnectV2SessionFn) return runWalletConnectV2SessionFn
+async function dynamicImportWalletConnect() {
+  if (runWalletConnectV2SessionFn) return runWalletConnectV2SessionFn
 
   try {
     logger.debug('Fetching WalletConnect V2 bundle')
