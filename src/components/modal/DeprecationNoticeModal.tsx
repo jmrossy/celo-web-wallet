@@ -46,8 +46,8 @@ function DeprecationNotice({
         <p css={style.text}>Creating new wallets here is not recommended.</p>
       ) : (
         <p css={style.text}>
-          It is recommended for you to <TextButton onClick={onClickMigrate}>migrate</TextButton> to
-          a different wallet.
+          It is recommended that you <TextButton onClick={onClickMigrate}>migrate</TextButton> to a
+          different wallet.
         </p>
       )}
       <p css={style.text}>
