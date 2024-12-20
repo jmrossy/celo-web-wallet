@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { XIcon } from 'src/components/icons/X'
 import { Box } from 'src/components/layout/Box'
+import { VALORA_URL } from 'src/consts'
 import { Color } from 'src/styles/Color'
 import { Stylesheet } from 'src/styles/types'
 
@@ -15,12 +16,7 @@ export function AlertBanner() {
         <div>
           Othello Wallet (formerly Celo Wallet) is a community-run project. For a wallet with more
           features,{' '}
-          <a
-            href="https://valoraapp.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            css={styles.link}
-          >
+          <a href={VALORA_URL} target="_blank" rel="noopener noreferrer" css={styles.link}>
             try Valora
           </a>
           .

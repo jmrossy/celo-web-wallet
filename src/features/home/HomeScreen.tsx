@@ -3,13 +3,13 @@ import { HrDivider } from 'src/components/HrDivider'
 import Chart from 'src/components/icons/chart.svg'
 import { Box } from 'src/components/layout/Box'
 import { ScreenContentFrame } from 'src/components/layout/ScreenContentFrame'
+import { useDeprecationNoticeModal } from 'src/components/modal/DeprecationNoticeModal'
 import { config } from 'src/config'
 import { useAreBalancesEmpty } from 'src/features/balances/hooks'
 import { HeaderSection } from 'src/features/home/HeaderSection'
 import { HeaderSectionEmpty } from 'src/features/home/HeaderSectionEmpty'
 import { toggleHomeHeaderDismissed } from 'src/features/settings/settingsSlice'
 import { PriceChartCelo } from 'src/features/tokenPrice/PriceChartCelo'
-import { useVoteActivationCheck } from 'src/features/validators/hooks'
 import { Color } from 'src/styles/Color'
 import { Font } from 'src/styles/fonts'
 import { useIsMobile } from 'src/styles/mediaQueries'
@@ -29,7 +29,8 @@ export function HomeScreen() {
   const onClose = isMobile && !isWalletEmpty ? onClickDismiss : undefined
 
   // Detect if user has unactivated staking votes
-  useVoteActivationCheck()
+  // useVoteActivationCheck()
+  useDeprecationNoticeModal()
 
   if (isDismissed) return null
 

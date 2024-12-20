@@ -3,6 +3,7 @@ import { Button } from 'src/components/buttons/Button'
 import { OnboardingFooter } from 'src/components/footer/OnboardingFooter'
 import Logo from 'src/components/icons/logo-full.svg'
 import { Box } from 'src/components/layout/Box'
+import { useDeprecationNoticeModal } from 'src/components/modal/DeprecationNoticeModal'
 import { Font } from 'src/styles/fonts'
 import { mq, useIsMobile } from 'src/styles/mediaQueries'
 import { Stylesheet } from 'src/styles/types'
@@ -18,6 +19,8 @@ export function WelcomeScreen() {
   const onClickUseExisting = () => {
     navigate('/setup/existing')
   }
+
+  useDeprecationNoticeModal(true)
 
   return (
     <Box direction="column" justify="between" align="center" styles={style.frame}>

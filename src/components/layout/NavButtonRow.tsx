@@ -13,8 +13,8 @@ import ExchangeIcon from 'src/components/icons/swap.svg'
 import VoteIcon from 'src/components/icons/vote_small.svg'
 import { Box } from 'src/components/layout/Box'
 import { DropdownBox, useDropdownBox } from 'src/components/modal/DropdownBox'
-import { config } from 'src/config'
-import { useDownloadDesktopModal } from 'src/features/download/DownloadDesktopModal'
+import { MENTO_URL, MONDO_URL } from 'src/consts'
+// import { useDownloadDesktopModal } from 'src/features/download/DownloadDesktopModal'
 import { useAddressQrCodeModal } from 'src/features/qr/QrCodeModal'
 import { txFlowReset } from 'src/features/txFlow/txFlowSlice'
 import { useWalletAddress } from 'src/features/wallet/hooks'
@@ -35,7 +35,7 @@ export function NavButtonRow({ mobile, disabled }: Props) {
   const address = useWalletAddress()
   const showQrModal = useAddressQrCodeModal()
   const showWalletConnectModal = useWalletConnectModal()
-  const showDownloadDesktopModal = useDownloadDesktopModal()
+  // const showDownloadDesktopModal = useDownloadDesktopModal()
   const { isDropdownVisible, showDropdown, hideDropdown } = useDropdownBox()
 
   const onSendClick = () => {
@@ -54,8 +54,9 @@ export function NavButtonRow({ mobile, disabled }: Props) {
 
   const onExchangeClick = () => {
     hideDropdown()
-    dispatch(txFlowReset())
-    navigate('/exchange')
+    // dispatch(txFlowReset())
+    // navigate('/exchange')
+    window.open(MENTO_URL, '_blank')
   }
 
   const onBalancesClick = () => {
@@ -65,41 +66,45 @@ export function NavButtonRow({ mobile, disabled }: Props) {
 
   const onLockClick = () => {
     hideDropdown()
-    if (config.isElectron) {
-      dispatch(txFlowReset())
-      navigate('/lock')
-    } else {
-      showDownloadDesktopModal()
-    }
+    window.open(MONDO_URL, '_blank')
+    // if (config.isElectron) {
+    //   dispatch(txFlowReset())
+    //   navigate('/lock')
+    // } else {
+    //   showDownloadDesktopModal()
+    // }
   }
 
   const onStakeClick = () => {
     hideDropdown()
-    if (config.isElectron) {
-      dispatch(txFlowReset())
-      navigate('/validators')
-    } else {
-      showDownloadDesktopModal()
-    }
+    window.open(MONDO_URL, '_blank')
+    // if (config.isElectron) {
+    //   dispatch(txFlowReset())
+    //   navigate('/validators')
+    // } else {
+    //   showDownloadDesktopModal()
+    // }
   }
 
   const onTrackClick = () => {
     hideDropdown()
-    if (config.isElectron) {
-      navigate('/stake-rewards')
-    } else {
-      showDownloadDesktopModal()
-    }
+    window.open(MONDO_URL, '_blank')
+    // if (config.isElectron) {
+    //   navigate('/stake-rewards')
+    // } else {
+    //   showDownloadDesktopModal()
+    // }
   }
 
   const onGovernClick = () => {
     hideDropdown()
-    if (config.isElectron) {
-      dispatch(txFlowReset())
-      navigate('/governance')
-    } else {
-      showDownloadDesktopModal()
-    }
+    window.open(MONDO_URL, '_blank')
+    // if (config.isElectron) {
+    //   dispatch(txFlowReset())
+    //   navigate('/governance')
+    // } else {
+    //   showDownloadDesktopModal()
+    // }
   }
 
   const onNftClick = () => {
@@ -151,6 +156,19 @@ export function NavButtonRow({ mobile, disabled }: Props) {
         {isDropdownVisible && (
           <DropdownBox hide={hideDropdown} styles={style.menu}>
             <MenuItem
+              icon={WalletConnectIcon}
+              title="Connect"
+              description="Use WalletConnect"
+              onClick={onConnectClick}
+              iconStyles={style.walletConnectIcon}
+            />
+            <MenuItem
+              icon={CoinStackIcon}
+              title="Balance"
+              description="View balances"
+              onClick={onBalancesClick}
+            />
+            <MenuItem
               icon={SendIcon}
               title="Receive"
               description="Show QR code"
@@ -162,12 +180,6 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               title="Exchange"
               description="Swap Celo tokens"
               onClick={onExchangeClick}
-            />
-            <MenuItem
-              icon={CoinStackIcon}
-              title="Balance"
-              description="View balances"
-              onClick={onBalancesClick}
             />
             <MenuItem
               icon={LockIcon}
@@ -194,13 +206,6 @@ export function NavButtonRow({ mobile, disabled }: Props) {
               onClick={onGovernClick}
             />
             <MenuItem icon={NftIcon} title="NFTs" description="Manage NFTs" onClick={onNftClick} />
-            <MenuItem
-              icon={WalletConnectIcon}
-              title="Connect"
-              description="Use WalletConnect"
-              onClick={onConnectClick}
-              iconStyles={style.walletConnectIcon}
-            />
           </DropdownBox>
         )}
       </Box>
