@@ -1,4 +1,5 @@
 import { CeloTransactionRequest } from '@celo-tools/celo-ethers-wrapper'
+import { WalletKitTypes } from '@reown/walletkit'
 import { BigNumber } from 'ethers'
 import { useEffect, useState } from 'react'
 import { useAppDispatch } from 'src/app/hooks'
@@ -20,11 +21,8 @@ import { Stylesheet } from 'src/styles/types'
 import { CELO } from 'src/tokens'
 import { useSagaStatusNoModal } from 'src/utils/useSagaStatus'
 
-export function RequestDetails({ requestEvent }: { requestEvent: any | null }) {
-  if (!requestEvent || !requestEvent.request) {
-    throw new Error('WalletConnect request event is missing')
-  }
-  const { method, params } = requestEvent.request
+export function RequestDetails({ requestEvent }: { requestEvent: WalletKitTypes.SessionRequest }) {
+  const { method, params } = requestEvent.params.request
   if (method === WalletConnectMethod.accounts) {
     return <AccountsRequest />
   }
@@ -41,7 +39,8 @@ export function RequestDetails({ requestEvent }: { requestEvent: any | null }) {
     method === WalletConnectMethod.sendTransaction ||
     method === WalletConnectMethod.signTransaction
   ) {
-    const formattedTx = translateTxFields(params)
+    // TODO support multiple txs here
+    const formattedTx = translateTxFields(params[0])
     return <TransactionRequest txRequest={formattedTx} />
   }
   if (method === WalletConnectMethod.signTypedData) {

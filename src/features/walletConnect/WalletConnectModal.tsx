@@ -1,3 +1,4 @@
+import { WalletKitTypes } from '@reown/walletkit'
 import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from 'src/app/hooks'
 import { Button } from 'src/components/buttons/Button'
@@ -49,7 +50,7 @@ export function useWalletConnectModal() {
   const { showModalWithContent, closeModal } = useModal()
   return () => {
     showModalWithContent({
-      head: 'WalletConnect (Beta)',
+      head: 'WalletConnect',
       content: <WalletConnectModal close={closeModal} />,
       headIcon: <Icon />,
     })
@@ -76,7 +77,7 @@ function WalletConnectModal({ close }: Props) {
         <ViewSession session={session} close={close} />
       )}
       {status === WalletConnectStatus.RequestPending && (
-        <ReviewRequest session={session} request={request} close={close} />
+        <ReviewRequest session={session} sessionRequest={request} close={close} />
       )}
       {status === WalletConnectStatus.RequestActive && <LoadingIndicator text="Working..." />}
       {status === WalletConnectStatus.RequestComplete && <RequestComplete close={close} />}
@@ -263,19 +264,22 @@ function ViewSession({ session, close }: { session: WalletConnectSession | null 
 
 function ReviewRequest({
   session,
-  request,
+  sessionRequest,
   close,
 }: {
   session: WalletConnectSession | null
-  request: any | null
+  sessionRequest: WalletKitTypes.SessionRequest | null
 } & Props) {
-  if (session?.status !== SessionStatus.Settled || !request?.request) {
-    throw new Error('Invalid WalletConnect request for review')
+  const walletRequest = sessionRequest?.params.request
+  if (session?.status !== SessionStatus.Settled || !walletRequest) {
+    // throw new Error('Invalid WalletConnect request for review')
+    return null
   }
 
   const dispatch = useAppDispatch()
   const onClickApprove = () => {
     dispatch(approveWcRequest())
+    close()
   }
   const onClickDeny = () => {
     dispatch(rejectWcRequest())
@@ -284,12 +288,12 @@ function ReviewRequest({
 
   const peerName = getPeerName(session)
   const peerUrl = getPeerUrl(session)
-  const requestMethod = rpcMethodToLabel(request.request.method)
+  const requestMethod = rpcMethodToLabel(walletRequest.method)
 
   return (
     <Box direction="column" align="center">
       <h3 css={style.h3}>{`${peerName} would like to ${requestMethod}`}</h3>
-      <RequestDetails requestEvent={request} />
+      <RequestDetails requestEvent={sessionRequest} />
       {peerUrl && (
         <TextLink link={peerUrl} styles={style.dappUrl}>
           {trimToLength(peerUrl, 70)}

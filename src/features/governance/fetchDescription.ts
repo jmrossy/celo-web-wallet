@@ -3,7 +3,7 @@ import { Proposal } from 'src/features/governance/types'
 import { logger } from 'src/utils/logger'
 import { fetchWithTimeout } from 'src/utils/timeout'
 
-// Putting these in a seperate file to faciliate testing for now
+// Putting these in a separate file to facilitate testing for now
 export async function fetchProposalDescription(proposal: Proposal) {
   try {
     if (!proposal || !proposal.url) throw new Error('No url provided')
