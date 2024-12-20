@@ -2,6 +2,7 @@ import { TextLink } from 'src/components/buttons/TextLink'
 import { AboutWalletLink } from 'src/components/footer/AboutWallet'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
+import { VALORA_URL } from 'src/consts'
 import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
 import { Color } from 'src/styles/Color'
 import { mq } from 'src/styles/mediaQueries'
@@ -20,7 +21,7 @@ export function OnboardingFooter() {
               <span>-</span>
             </>
           )}
-          <TextLink link="https://valoraapp.com" styles={style.anchor}>
+          <TextLink link={VALORA_URL} styles={style.anchor}>
             Valora Mobile App
           </TextLink>
           <span css={style.desktopOnly}>-</span>

@@ -4,12 +4,12 @@ import { getContractName } from 'src/blockchain/contracts'
 import { config } from 'src/config'
 import { MIN_GAS_AMOUNT } from 'src/consts'
 import { findTokenByAddress } from 'src/features/tokens/tokenList'
+import { SUPPORTED_METHODS } from 'src/features/walletConnect/config'
 import {
   SessionStatus,
   WalletConnectMethod,
   WalletConnectSession,
   WalletConnectUriForm,
-  WalletConnectVersion,
 } from 'src/features/walletConnect/types'
 import { isValidAddress } from 'src/utils/addresses'
 import { logger } from 'src/utils/logger'
@@ -27,7 +27,7 @@ export function validateWalletConnectForm(values: WalletConnectUriForm): ErrorSt
   return { isValid: true }
 }
 
-export function getWalletConnectVersion(uri: string): WalletConnectVersion | null {
+export function getWalletConnectVersion(uri: string): number | null {
   if (/^wc:[a-z0-9-].*@1/.test(uri)) return 1
   else if (/^wc:[a-z0-9].*@2/.test(uri)) return 2
   else return null
@@ -47,17 +47,12 @@ export function clearWalletConnectStorage() {
 }
 
 export function getPeerName(session: WalletConnectSession | null, trim = false) {
-  let name = 'Unknown DApp'
-  if (session?.status === SessionStatus.Pending)
-    name = session.data.proposer?.metadata?.name || name
-  if (session?.status === SessionStatus.Settled) name = session.data.peer?.metadata?.name || name
+  const name = session?.data.params.proposer.metadata.name || 'Unknown DApp'
   return trim ? trimToLength(name, 10) : name
 }
 
 export function getPeerUrl(session: WalletConnectSession | null) {
-  if (session?.status === SessionStatus.Pending) return session.data.proposer?.metadata?.url
-  if (session?.status === SessionStatus.Settled) return session.data.peer?.metadata?.url
-  return null
+  return session?.data.params.proposer.metadata.url || null
 }
 
 export function getStartTime(session: WalletConnectSession | null) {
@@ -66,17 +61,16 @@ export function getStartTime(session: WalletConnectSession | null) {
 }
 
 export function getExpiryTime(session: WalletConnectSession | null) {
-  let time
-  if (session?.status === SessionStatus.Pending) time = session.data.ttl
-  if (session?.status === SessionStatus.Settled) time = session.data.expiry
+  const time = session?.data.params.expiry
   return time && typeof time === 'number' ? new Date(time * 1000).toLocaleString() : null
 }
 
 export function getPermissionList(session: WalletConnectSession | null) {
-  const rpcMethods = session?.data?.permissions?.jsonrpc?.methods
-  if (!rpcMethods || !Array.isArray(rpcMethods)) return 'Session permissions unknown'
-  if (rpcMethods.length === 0) return 'No permissions requested'
-  return rpcMethods.map(rpcMethodToLabel).join(', ')
+  if (!session) return 'Session permissions unknown'
+  // const rpcMethods = session?.data?.params.permissions?.jsonrpc?.methods
+  // if (!rpcMethods || !Array.isArray(rpcMethods)) return 'Session permissions unknown'
+  // if (rpcMethods.length === 0) return 'No permissions requested'
+  return SUPPORTED_METHODS.map(rpcMethodToLabel).join(', ')
 }
 
 export function rpcMethodToLabel(method: string) {

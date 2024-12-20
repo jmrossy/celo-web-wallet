@@ -1,4 +1,4 @@
-export type WalletConnectVersion = 1 | 2
+import { type WalletKitTypes } from '@reown/walletkit'
 
 export interface WalletConnectUriForm {
   uri: string
@@ -23,12 +23,12 @@ export enum SessionStatus {
 
 export interface PendingSession {
   status: SessionStatus.Pending
-  data: any
+  data: WalletKitTypes.SessionProposal
 }
 
 export interface SettledSession {
   status: SessionStatus.Settled
-  data: any
+  data: WalletKitTypes.SessionProposal
   startTime: number
 }
 
@@ -45,8 +45,6 @@ export enum WalletConnectMethod {
   computeSharedSecret = 'personal_computeSharedSecret',
 }
 
-// This is mostly a dupe of errors in the WCv2 error enum
-// But using a custom subset to avoid bundle issues
 export enum WalletConnectError {
   unsupportedJsonRpc = 'unsupported_json_rpc',
   unsupportedChains = 'unsupported_chains',

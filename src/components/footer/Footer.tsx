@@ -4,6 +4,7 @@ import { ConnectionStatusLink } from 'src/components/footer/ConnectionStatus'
 import { HelpButton } from 'src/components/footer/Help'
 import { Box } from 'src/components/layout/Box'
 import { config } from 'src/config'
+import { VALORA_URL } from 'src/consts'
 import { DownloadDesktopButton } from 'src/features/download/DownloadDesktopModal'
 import { useWalletAddress } from 'src/features/wallet/hooks'
 import { Color } from 'src/styles/Color'
@@ -56,7 +57,7 @@ function FooterMobile() {
 
 function ValoraLink() {
   return (
-    <a css={style.text} href="https://valoraapp.com" target="_blank" rel="noopener noreferrer">
+    <a css={style.text} href={VALORA_URL} target="_blank" rel="noopener noreferrer">
       Valora Mobile App
     </a>
   )

@@ -9,7 +9,7 @@ import Simplex from 'src/components/icons/logos/simplex.svg'
 import { Box } from 'src/components/layout/Box'
 import { ModalLinkGrid, SmallGridLink } from 'src/components/modal/ModalLinkGrid'
 import { useModal } from 'src/components/modal/useModal'
-import { RAMP_PROJECT_ID } from 'src/consts'
+import { RAMP_PROJECT_ID, VALORA_URL } from 'src/consts'
 
 export function useFundWalletModal() {
   const { showModalWithContent } = useModal()
@@ -36,7 +36,7 @@ export function FundWalletModal({ address }: { address: Address }) {
       text: 'Coinbase',
     },
     {
-      url: `https://valoraapp.com/simplex?address=${address}`,
+      url: `${VALORA_URL}/simplex?address=${address}`,
       imgSrc: Simplex,
       text: 'Simplex',
     },
